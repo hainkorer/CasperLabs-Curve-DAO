@@ -12,8 +12,8 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
-use vesting_escrow_simple::{self, VESTINGESCROWSIMPLE};
 use erc20_crate::{self, ERC20};
+use vesting_escrow_simple::{self, VESTINGESCROWSIMPLE};
 
 #[derive(Default)]
 struct VestingEscrowSimple(OnChainContractStorage);
@@ -26,27 +26,61 @@ impl ERC20<OnChainContractStorage> for VestingEscrowSimple {}
 impl VESTINGESCROWSIMPLE<OnChainContractStorage> for VestingEscrowSimple {}
 
 impl VestingEscrowSimple {
-    fn constructor(
-        &mut self,
-        contract_hash: ContractHash,
-        package_hash: ContractPackageHash,
-    ) {
-        VESTINGESCROWSIMPLE::init(
-            self,
-            Key::from(contract_hash),
-            package_hash,
-        );
+    fn constructor(&mut self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
+        VESTINGESCROWSIMPLE::init(self, Key::from(contract_hash), package_hash);
     }
 }
 
 #[no_mangle]
 fn constructor() {
-   
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     VestingEscrowSimple::default().constructor(contract_hash, package_hash);
 }
+#[no_mangle]
+fn toggle_disable() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    VestingEscrowSimple::default().toggle_disable(recipient);
+}
 
+#[no_mangle]
+fn disable_can_disable() {
+    VestingEscrowSimple::default().disable_can_disable();
+}
+#[no_mangle]
+fn vested_of() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret = VestingEscrowSimple::default().vested_of(recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn vested_supply() {
+    let ret = VestingEscrowSimple::default().vested_supply();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn balance_of_vest() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret = VestingEscrowSimple::default().balance_of_vest(recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn locked_of() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret = VestingEscrowSimple::default().locked_of(recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn commit_transfer_ownership() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret = VestingEscrowSimple::default().commit_transfer_ownership(recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn apply_transfer_ownership() {
+    let ret = VestingEscrowSimple::default().apply_transfer_ownership();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
 
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -60,7 +94,58 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
-   
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "toggle_disable",
+        vec![Parameter::new("recipient", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "disable_can_disable",
+        vec![],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "vested_of",
+        vec![
+            Parameter::new("recipient", Key::cl_type())
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of_vest",
+        vec![Parameter::new("recipient", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "locked_of",
+        vec![Parameter::new("recipient", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "commit_transfer_ownership",
+        vec![Parameter::new("addr", Key::cl_type())],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "apply_transfer_ownership",
+        vec![],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
 
     entry_points
 }
@@ -71,7 +156,7 @@ fn call() {
     let (package_hash, access_token) = storage::create_contract_package_at_hash();
     let (contract_hash, _) =
         storage::add_contract_version(package_hash, get_entry_points(), Default::default());
-  
+
     let constructor_args = runtime_args! {
 
         "contract_hash" => contract_hash,

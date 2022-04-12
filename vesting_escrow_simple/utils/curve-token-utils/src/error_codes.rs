@@ -10,6 +10,5 @@ pub enum ErrorCodes {
     Underflow,
     Overflow,
     LiquidityGuardDisabled,
-    StakeInactive
-    // Insert more error codes here as per need.
+    StakeInactive, // Insert more error codes here as per need.
 }

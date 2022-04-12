@@ -19,7 +19,6 @@ pub const CAN_DISABLE: &str = "can_disable";
 pub const ADMIN: &str = "admin";
 pub const FUTURE_ADMIN: &str = "future_admin";
 
-
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {
         Some(key) => {
@@ -40,14 +39,14 @@ pub fn set_token(token: Key) {
 pub fn get_token() -> Key {
     get_key(TOKEN).unwrap_or_revert()
 }
-pub fn set_start_time(start_time:U256) {
+pub fn set_start_time(start_time: U256) {
     set_key(START_TIME, start_time);
 }
 
 pub fn get_start_time() -> U256 {
     get_key(START_TIME).unwrap_or_revert()
 }
-pub fn set_end_time(end_time:U256) {
+pub fn set_end_time(end_time: U256) {
     set_key(END_TIME, end_time);
 }
 
@@ -60,7 +59,7 @@ pub struct InitialLocked {
 }
 
 impl InitialLocked {
-    pub fn instance() -> InitialLocked{
+    pub fn instance() -> InitialLocked {
         InitialLocked {
             dict: Dict::instance(INITIAL_LOCKED),
         }
@@ -85,7 +84,7 @@ pub struct TotalClaimed {
 }
 
 impl TotalClaimed {
-    pub fn instance() -> TotalClaimed{
+    pub fn instance() -> TotalClaimed {
         TotalClaimed {
             dict: Dict::instance(TOTAL_CLAIMED),
         }
@@ -110,7 +109,7 @@ pub struct DisableddAt {
 }
 
 impl DisableddAt {
-    pub fn instance() -> DisableddAt{
+    pub fn instance() -> DisableddAt {
         DisableddAt {
             dict: Dict::instance(DISABLED_AT),
         }
@@ -129,35 +128,34 @@ impl DisableddAt {
     }
 }
 
-pub fn set_initial_locked_supply(initial_locked_supply:U256) {
+pub fn set_initial_locked_supply(initial_locked_supply: U256) {
     set_key(INITIAL_LOCKED_SUPPLY, initial_locked_supply);
 }
 
 pub fn get_initial_locked_supply() -> U256 {
     get_key(INITIAL_LOCKED_SUPPLY).unwrap_or_revert()
 }
-pub fn set_can_disable(can_disable:bool) {
+pub fn set_can_disable(can_disable: bool) {
     set_key(CAN_DISABLE, can_disable);
 }
 
 pub fn get_can_disable() -> bool {
     get_key(CAN_DISABLE).unwrap_or_revert()
 }
-pub fn set_admin(admin:Key) {
+pub fn set_admin(admin: Key) {
     set_key(ADMIN, admin);
 }
 
 pub fn get_admin() -> Key {
     get_key(ADMIN).unwrap_or_revert()
 }
-pub fn set_future_admin(future_admin:Key) {
+pub fn set_future_admin(future_admin: Key) {
     set_key(FUTURE_ADMIN, future_admin);
 }
 pub fn get_future_admin() -> Key {
     get_key(FUTURE_ADMIN).unwrap_or_revert()
 }
-pub fn ZERO_ADDRESS() -> Key 
-{
+pub fn ZERO_ADDRESS() -> Key {
     Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )

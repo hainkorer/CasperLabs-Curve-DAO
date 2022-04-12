@@ -13,14 +13,13 @@ pub mod key_names {
     pub const SELF_PACKAGE_HASH: &str = "package_hash";
     pub const SELF_CONTRACT_HASH: &str = "self_hash";
     pub const GUARD_CONTRACT_HASH: &str = "guard_contract_hash";
-   
 
     // key names from globals crate
     pub const GLOBALS_GLOBALS_STRUCT: &str = "globals_globals_struct";
     pub const GLOBALS_TOTAL_STAKED: &str = "globals_total_staked";
     pub const GLOBALS_TOTAL_SHARES: &str = "globals_total_shares";
     pub const GLOBALS_SHARE_PRICE: &str = "globals_share_price";
-  
+
     pub const GLOBALS_REFERRAL_SHARES: &str = "globals_referral_shares";
     pub const GLOBALS_LIQUIDITY_SHARES: &str = "globals_liquidity_shares";
 
@@ -58,8 +57,8 @@ pub mod key_names {
     pub const STAKING_TOKEN_OWNER: &str = "staking_token_owner";
 
     // key names fro STABLE_USD_EQUIVALENT
-    pub const STABLE_USD_EQUIVALENT_LATEST_STABLE_USD_EQUIVALENT: &str = "stable_usd_equivalent_latest_stable_usd_equivalent";
-  
+    pub const STABLE_USD_EQUIVALENT_LATEST_STABLE_USD_EQUIVALENT: &str =
+        "stable_usd_equivalent_latest_stable_usd_equivalent";
 
     // key names from transfer invoker
     pub const TRANSFER_HELPER_TRANSFER_INVOKER: &str = "transfer_helper_transfer_invoker";
@@ -68,8 +67,6 @@ pub mod key_names {
     pub const LIQUIDITY_GUARD_LIQUIDITY_GUARD_STATUS: &str =
         "liquidity_guard_liquidity_guard_status";
     pub const LIQUIDITY_GUARD_INFLATION_DICT: &str = "liquidity_guard_inflation_dict";
-
-   
 
     // erc20 key names
 

@@ -1,5 +1,10 @@
 extern crate alloc;
-use alloc::{string::{String, ToString}, str::FromStr, vec::Vec, fmt::Debug};
+use alloc::{
+    fmt::Debug,
+    str::FromStr,
+    string::{String, ToString},
+    vec::Vec,
+};
 
 pub fn typecast_to_string<T>(list: Vec<T>) -> Vec<String>
 where
