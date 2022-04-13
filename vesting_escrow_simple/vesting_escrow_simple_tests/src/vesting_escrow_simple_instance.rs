@@ -48,10 +48,39 @@ impl VESTINGESCROWSIMPLEInstance {
         self.0
             .call_contract(sender, "disable_can_disable", runtime_args! {});
     }
+    pub fn vested_supply(&self, sender: AccountHash) {
+        self.0
+            .call_contract(sender, "vested_supply", runtime_args! {
+            });
+    }
     pub fn vested_of(&self, sender: AccountHash,recipient: Key) {
         self.0
             .call_contract(sender, "vested_of", runtime_args! {
                 "recipient" => recipient
+            });
+    }
+    pub fn locked_supply(&self, sender: AccountHash) {
+        self.0
+            .call_contract(sender, "locked_supply", runtime_args! {
+            });
+    }
+    pub fn balance_of_vest(&self, sender: AccountHash,recipient: Key) {
+        self.0
+            .call_contract(sender, "balance_of_vest", runtime_args! {
+                "recipient" => recipient
+            });
+    }
+    pub fn commit_transfer_ownership(&self, sender: AccountHash,addr: Key) {
+        self.0
+            .call_contract(sender, "commit_transfer_ownership", runtime_args! {
+                "addr" => addr
+            });
+    }
+    
+    pub fn apply_transfer_ownership(&self, sender: AccountHash) {
+        self.0
+            .call_contract(sender, "apply_transfer_ownership", runtime_args! {
+                
             });
     }
 

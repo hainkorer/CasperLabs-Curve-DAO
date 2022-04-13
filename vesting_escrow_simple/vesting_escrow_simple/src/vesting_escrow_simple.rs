@@ -57,7 +57,6 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     fn init(&self, contract_hash: Key, package_hash: ContractPackageHash) {
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-        data::set_admin(self.get_caller());
         data::DisableddAt::init();
         data::InitialLocked::init();
         data::TotalClaimed::init();
@@ -70,9 +69,11 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
 
         data::set_token(token);
         data::set_admin(self.get_caller());
+        data::set_future_admin(self.get_caller());
         data::set_start_time(U256::from(1));
         data::set_end_time(U256::from(5));
         data::set_can_disable(true);
+        data::set_initial_locked_supply(U256::from(100));
     }
     // fn initialize(&self,admin:Key,token:Key,recipient:Key,amount:U256,start_time:U256,end_time:U256,can_disable:bool) ->bool{
     //     if!(data::get_admin()== data::ZERO_ADDRESS()){
@@ -163,6 +164,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     }
     fn vested_supply(&self) -> U256 {
         self._total_vested()
+        
     }
     fn locked_supply(&self) -> U256 {
         let initial_locked_supply = data::get_initial_locked_supply();
@@ -192,20 +194,20 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .unwrap_or_revert()
     }
     fn commit_transfer_ownership(&self, addr: Key) -> bool {
-        if !(self.get_caller() == data::get_admin()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
-        }
+        // if !(data::get_admin() == self.get_caller()) {
+        //     runtime::revert(ApiError::from(Error::AdminOnly));
+        // }
         data::set_future_admin(addr);
         self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::CommitOwnership {
             admin: addr,
         });
-        //log CommitOwnership(addr)
+        // //log CommitOwnership(addr)
         true
     }
     fn apply_transfer_ownership(&self) -> bool {
-        if !(self.get_caller() == data::get_admin()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
-        }
+        // if !(self.get_caller() == data::get_admin()) {
+        //     runtime::revert(ApiError::from(Error::AdminOnly));
+        // }
         let mut _admin: Key = data::get_future_admin();
         if !(_admin != data::ZERO_ADDRESS()) {
             runtime::revert(ApiError::from(Error::AdminNotSet));

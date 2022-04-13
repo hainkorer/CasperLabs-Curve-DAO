@@ -54,16 +54,22 @@ fn vested_of() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn vested_supply() {
-    let ret = VestingEscrowSimple::default().vested_supply();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
 fn balance_of_vest() {
     let recipient: Key = runtime::get_named_arg("recipient");
     let ret = VestingEscrowSimple::default().balance_of_vest(recipient);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+#[no_mangle]
+fn vested_supply() {
+    let ret = VestingEscrowSimple::default().vested_supply();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn locked_supply() {
+    let ret = VestingEscrowSimple::default().locked_supply();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
 #[no_mangle]
 fn locked_of() {
     let recipient: Key = runtime::get_named_arg("recipient");
@@ -72,8 +78,8 @@ fn locked_of() {
 }
 #[no_mangle]
 fn commit_transfer_ownership() {
-    let recipient: Key = runtime::get_named_arg("recipient");
-    let ret = VestingEscrowSimple::default().commit_transfer_ownership(recipient);
+    let addr: Key = runtime::get_named_arg("addr");
+    let ret = VestingEscrowSimple::default().commit_transfer_ownership(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
@@ -119,12 +125,22 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "balance_of_vest",
-        vec![Parameter::new("recipient", Key::cl_type())],
+        "vested_supply",
+        vec![
+        ],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "locked_supply",
+        vec![
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    
     entry_points.add_entry_point(EntryPoint::new(
         "locked_of",
         vec![Parameter::new("recipient", Key::cl_type())],
@@ -143,6 +159,15 @@ fn get_entry_points() -> EntryPoints {
         "apply_transfer_ownership",
         vec![],
         bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of_vest",
+        vec![
+            Parameter::new("recipient", Key::cl_type())
+        ],
+        U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

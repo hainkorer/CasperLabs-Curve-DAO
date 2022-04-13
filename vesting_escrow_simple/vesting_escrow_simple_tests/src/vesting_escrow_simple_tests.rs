@@ -39,21 +39,67 @@ fn vested_of() {
     let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
     let proxy =VESTINGESCROWSIMPLEInstance::contract_instance(proxy);
     let recipient_arg:Key= Key::Account(owner);
-   let res= proxy.vested_of(owner,recipient_arg);
+  proxy.vested_of(owner,recipient_arg);
+  let res:U256= proxy.result();
+  // println!("{:}",res);
+   assert_eq!(res,0.into());
+}
+#[test]
+fn vested_supply() {
+    let (env, owner, contract,proxy) = deploy();
+    let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
+    let proxy =VESTINGESCROWSIMPLEInstance::contract_instance(proxy);
+   proxy.vested_supply(owner);
+  let res:U256= proxy.result();
+  println!("{:}",res);
+  //assert_eq!(res,0.into());
   
 }
-// #[test]
-// fn burn_caller() {
-//     let (env, owner, contract) = deploy();
-//     let contract = CURVETOKENV1Instance::contract_instance(contract);
-//     let _value: U256 = 100.into();
-//     contract.burn_caller(owner, _value);
-// }
-// #[test]
-// fn burn_from() {
-//     let (env, owner, contract) = deploy();
-//     let contract = CURVETOKENV1Instance::contract_instance(contract);
-//     let _to: Key = Key::Account(owner);
-//     let _value: U256 = 100.into();
-//     contract.burn_from(owner, _to, _value);
-// }
+#[test]
+fn locked_supply() {
+    let (env, owner, contract,proxy) = deploy();
+    let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
+    let proxy =VESTINGESCROWSIMPLEInstance::contract_instance(proxy);
+    proxy.locked_supply(owner);
+    let res:U256= proxy.result();
+    //println!("{:}",res);
+    assert_eq!(res,100.into());
+}
+#[test]
+fn balance_of_vest() {
+    let (env, owner, contract,proxy) = deploy();
+    let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
+    let proxy =VESTINGESCROWSIMPLEInstance::contract_instance(proxy);
+    let recipient_arg:Key= Key::Account(owner);
+    proxy.balance_of_vest(owner,recipient_arg);
+    let res:U256= proxy.result();
+   // println!("{:}",res);
+   assert_eq!(res,0.into());
+
+  
+}
+#[test]
+fn commit_transfer_ownership() {
+    let (env, owner, contract,proxy) = deploy();
+    let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
+    let proxy =VESTINGESCROWSIMPLEInstance::contract_instance(proxy);
+    // let addr:Key= Key::from_formatted_str(
+    //     "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+    // )
+    // .unwrap();
+   let addr:Key= Key::Account(owner);
+    proxy.commit_transfer_ownership(owner,addr);
+    let res:bool= proxy.result();
+   // println!("{:}",res);
+    assert_eq!(res,true);
+}
+#[test]
+fn apply_transfer_ownership() {
+    let (env, owner, contract,proxy) = deploy();
+    let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
+    let proxy =VESTINGESCROWSIMPLEInstance::contract_instance(proxy);
+    proxy.apply_transfer_ownership(owner);
+    let res:bool= proxy.result();
+    //println!("{:}",res);
+    assert_eq!(res,true);
+}
