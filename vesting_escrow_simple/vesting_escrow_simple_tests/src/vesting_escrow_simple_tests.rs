@@ -4,12 +4,39 @@ use casper_types::{
 use test_env::{TestContract, TestEnv};
 
 use crate::vesting_escrow_simple_instance::VESTINGESCROWSIMPLEInstance;
-
+fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
+    TestContract::new(
+        &env,
+        "erc20-token.wasm",
+        "erc2020",
+        owner,
+        runtime_args! {
+            "name" => "ERC",
+            "symbol" => "ERC20",
+            "decimals" => 18 as u8,
+            "initial_supply" => U256::from(1000000000000000 as u128)
+        },
+    )
+}
 fn deploy() -> (TestEnv, AccountHash, TestContract,TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let contract = VESTINGESCROWSIMPLEInstance::new(&env, "VESTINGESCROWSIMPLE", owner);
+    let erc20 = deploy_erc20(&env, owner);
+    let contract = VESTINGESCROWSIMPLEInstance::new(&env, "VESTINGESCROWSIMPLE", owner,Key::Hash(erc20.package_hash()));
     let proxy = VESTINGESCROWSIMPLEInstance::proxy(&env, "VESTINGESCROWSIMPLEPROXY", owner,Key::Hash(contract.contract_hash()));
+    let key: ContractPackageHash = contract.query_named_key("self_package_hash".to_string());
+    let to: Key = Key::from(key);
+    let amount: U256 = U256::from(100000000000 as u128);
+    erc20.call_contract(
+        owner,
+        "mint",
+        runtime_args! {"to" => to , "amount" => amount},
+    );
+    erc20.call_contract(
+        owner,
+        "approve",
+        runtime_args! {"spender" => to , "amount" => amount},
+    );
 
 
     (env, owner, contract,proxy)
@@ -74,9 +101,7 @@ fn balance_of_vest() {
     proxy.balance_of_vest(owner,recipient_arg);
     let res:U256= proxy.result();
    // println!("{:}",res);
-   assert_eq!(res,0.into());
-
-  
+   assert_eq!(res,0.into()); 
 }
 #[test]
 fn commit_transfer_ownership() {
@@ -102,4 +127,11 @@ fn apply_transfer_ownership() {
     let res:bool= proxy.result();
     //println!("{:}",res);
     assert_eq!(res,true);
+}
+#[test]
+fn claim() {
+    let (env, owner, contract,proxy) = deploy();
+    let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
+    let addr_arg: Key = Key::Account(owner);
+    contract.claim(owner, addr_arg);
 }

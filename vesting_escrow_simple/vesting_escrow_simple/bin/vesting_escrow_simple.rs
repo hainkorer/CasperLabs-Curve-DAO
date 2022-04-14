@@ -26,16 +26,17 @@ impl ERC20<OnChainContractStorage> for VestingEscrowSimple {}
 impl VESTINGESCROWSIMPLE<OnChainContractStorage> for VestingEscrowSimple {}
 
 impl VestingEscrowSimple {
-    fn constructor(&mut self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
-        VESTINGESCROWSIMPLE::init(self, Key::from(contract_hash), package_hash);
+    fn constructor(&mut self,token:Key, contract_hash: ContractHash, package_hash: ContractPackageHash) {
+        VESTINGESCROWSIMPLE::init(self, token,Key::from(contract_hash), package_hash);
     }
 }
 
 #[no_mangle]
 fn constructor() {
+    let token: Key = runtime::get_named_arg("token");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    VestingEscrowSimple::default().constructor(contract_hash, package_hash);
+    VestingEscrowSimple::default().constructor(token,contract_hash, package_hash);
 }
 #[no_mangle]
 fn toggle_disable() {
@@ -87,12 +88,18 @@ fn apply_transfer_ownership() {
     let ret = VestingEscrowSimple::default().apply_transfer_ownership();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+#[no_mangle]
+fn claim() {
+    let addr: Key = runtime::get_named_arg("addr");
+     VestingEscrowSimple::default().claim(addr);
+}
 
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(
         "constructor",
         vec![
+            Parameter::new("token", Key::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
         ],
@@ -171,6 +178,13 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "claim",
+        vec![Parameter::new("addr", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
 
     entry_points
 }
@@ -181,9 +195,9 @@ fn call() {
     let (package_hash, access_token) = storage::create_contract_package_at_hash();
     let (contract_hash, _) =
         storage::add_contract_version(package_hash, get_entry_points(), Default::default());
-
+        let token: Key = runtime::get_named_arg("token");
     let constructor_args = runtime_args! {
-
+        "token" => token,
         "contract_hash" => contract_hash,
         "package_hash"=> package_hash
     };

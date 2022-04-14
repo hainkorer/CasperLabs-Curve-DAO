@@ -10,13 +10,15 @@ impl VESTINGESCROWSIMPLEInstance {
     pub fn contract_instance(contract: TestContract) -> VESTINGESCROWSIMPLEInstance {
         VESTINGESCROWSIMPLEInstance(contract)
     }
-    pub fn new(env: &TestEnv, contract_name: &str, sender: AccountHash) -> TestContract {
+    pub fn new(env: &TestEnv, contract_name: &str, sender: AccountHash,token:Key) -> TestContract {
         TestContract::new(
             env,
             "vesting_escrow_simple.wasm",
             contract_name,
             sender,
-            runtime_args! {},
+            runtime_args! {
+                "token"=>token
+            },
         )
     }
     pub fn proxy(
@@ -81,6 +83,12 @@ impl VESTINGESCROWSIMPLEInstance {
         self.0
             .call_contract(sender, "apply_transfer_ownership", runtime_args! {
                 
+            });
+    }
+    pub fn claim(&self, sender: AccountHash,addr: Key) {
+        self.0
+            .call_contract(sender, "claim", runtime_args! {
+                "addr" => addr
             });
     }
 

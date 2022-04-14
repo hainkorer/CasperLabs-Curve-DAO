@@ -54,7 +54,7 @@ impl VESTINGESCROWSIMPLE_EVENT {
     }
 }
 pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage> {
-    fn init(&self, contract_hash: Key, package_hash: ContractPackageHash) {
+    fn init(&self,token:Key, contract_hash: Key, package_hash: ContractPackageHash) {
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
         data::DisableddAt::init();
@@ -62,10 +62,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         data::TotalClaimed::init();
 
         //initialization for testing purposes
-        let token: Key = Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-        )
-        .unwrap();
+       
 
         data::set_token(token);
         data::set_admin(self.get_caller());
@@ -204,6 +201,39 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         // //log CommitOwnership(addr)
         true
     }
+    fn claim(&self,addr:Key){
+        let mut t:U256= DisableddAt::instance().get(&addr);
+        let blocktime: u64 = runtime::get_blocktime().into();
+        if (t==U256::from(0)){
+            t=U256::from(blocktime);
+        }
+        let _total_vested_of:U256=self._total_vested_of(addr,t);
+        let _total_claimed:U256=TotalClaimed::instance().get(&addr);
+        let claimable:U256=_total_vested_of.checked_sub(_total_claimed).unwrap_or_revert();
+        let updated_total_claimed=_total_claimed.checked_add(claimable).unwrap_or_revert();
+        TotalClaimed::instance().set(&addr,updated_total_claimed);
+
+        let ret: Result<(), u32> = runtime::call_versioned_contract(
+            data::get_token()
+                .into_hash()
+                .unwrap_or_revert()
+                .into(),
+            None,
+            "transfer",
+            runtime_args! {
+                "recipient" =>addr,
+                "amount" => claimable,
+            },
+        );
+        match ret {
+            Ok(()) => {}
+            Err(e) => runtime::revert(ApiError::User(e as u16)),
+        }
+        //     assert ERC20(self.token).transfer(addr, claimable)
+
+        // log Claim(addr, claimable)
+    }
+
     fn apply_transfer_ownership(&self) -> bool {
         // if !(self.get_caller() == data::get_admin()) {
         //     runtime::revert(ApiError::from(Error::AdminOnly));
