@@ -1,4 +1,5 @@
 use crate::data::{self};
+
 use alloc::{
     collections::BTreeMap,
     string::{String, ToString},
@@ -7,7 +8,7 @@ use alloc::{
 use erc20_crate::{self, data as erc20_data, ERC20};
 use casper_contract::{
     contract_api::{runtime, storage},
-    unwrap_or_revert::UnwrapOrRevert,
+    unwrap_or_revert::{UnwrapOrRevert, self},
 };
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
@@ -16,7 +17,11 @@ use contract_utils::{ContractContext, ContractStorage};
 pub enum Error {
     InvalidMinter=0,
     OnlyMinterAllowed=1,
-    AdminOnly=2
+    AdminOnly=2,
+    TooSoon=3,
+    ZeroAddress=4,
+    MinterOnly=5,
+    ExceedsAllowableMint=6
 }
 
 impl From<Error> for ApiError {
@@ -92,11 +97,95 @@ ContractContext<Storage> + ERC20<Storage> {
         erc20_data::set_total_supply(data::get_init_supply());
        data::set_admin(self.get_caller());
     }
+    fn _update_mining_parameters(&self){
+        let mut rate:U256=data::get_rate();
+        let mut start_epoch_supply=data::get_start_epoch_supply();
+        let prev_start_epoch_time:U256=data::get_start_eporch_time();
+        let updated_start_epoch_time:U256=prev_start_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert();
+        let prev_mining_epoch:U256=data::get_mining_epoch();
+        data::set_mining_epoch(prev_mining_epoch.checked_add(1.into()).unwrap_or_revert());
+        if (rate==0.into()){
+            rate=data::INITIAL_RATE;
+        }
+        else{
+            start_epoch_supply=start_epoch_supply.checked_add(rate.checked_mul(data::RATE_REDUCTION_TIME).unwrap_or_revert()).unwrap_or_revert();
+            data::set_start_epoch_supply(start_epoch_supply);
+          //  rate=rate.checked_mul(data::RATE_DENOMINATOR.checked_div(data::RATE_REDUCTION_COEFFICIENT)) _rate = _rate * RATE_DENOMINATOR / RATE_REDUCTION_COEFFICIENT
+
+        }
+        data::set_rate(rate);
+        //log UpdateMiningParameters(block.timestamp, _rate, _start_epoch_supply)
+    }
+    fn update_mining_parameters(&self){
+        let blocktime: u64 = runtime::get_blocktime().into();
+        if !(U256::from(blocktime)>=data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+            runtime::revert(ApiError::from(Error::TooSoon));
+        }
+        self._update_mining_parameters();
+    }
+    fn start_epoch_time_write(&self)->U256{
+        let mut start_epoch_time=data::get_start_eporch_time();
+        let blocktime: u64 = runtime::get_blocktime().into();
+        if (U256::from(blocktime)>=data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+            self._update_mining_parameters();
+            return data::get_start_eporch_time();
+        }
+        else{
+            return start_epoch_time;
+        }
+
+    }
+    fn future_epoch_time_write(&self)->U256{
+        let mut start_epoch_time=data::get_start_eporch_time();
+        let blocktime: u64 = runtime::get_blocktime().into();
+        if (U256::from(blocktime)>=data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+            self._update_mining_parameters();
+            return data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert();
+        }
+        else{
+            return start_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert();
+        }
+
+    }
+    fn _available_supply(&self)->U256{
+        let blocktime: u64 = runtime::get_blocktime().into();
+        let var:U256=U256::from(blocktime).checked_sub(data::get_start_eporch_time()).unwrap_or_revert();
+        let ans:U256=var.checked_mul(data::get_rate()).unwrap_or_revert();
+        data::get_start_epoch_supply().checked_add(ans).unwrap_or_revert()
+    }
+    fn available_supply(&self)->U256{
+        self._available_supply()
+    }
+    fn mint_crv(&self,to:Key,value:U256)->bool{
+        if !(self.get_caller() == data::get_minter()) {
+            runtime::revert(ApiError::from(Error::MinterOnly));
+        }
+        if !(to != data::ZERO_ADDRESS()) {
+            runtime::revert(ApiError::from(Error::ZeroAddress));
+        }
+        let blocktime: u64 = runtime::get_blocktime().into();
+        if (U256::from(blocktime)>=data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+            self._update_mining_parameters();
+        }
+        let total_supply:U256=erc20_data::total_supply().checked_add(value).unwrap_or_revert();
+        if !(total_supply<=self.available_supply()){
+            runtime::revert(ApiError::from(Error::ExceedsAllowableMint));
+        }
+        erc20_data::set_total_supply(total_supply);
+        let existing_balance:U256=erc20_data::Balances::instance().get(&to);
+        erc20_data::Balances::instance().set(&to,existing_balance.checked_add(value).unwrap_or_revert() );
+       // log Transfer(ZERO_ADDRESS, _to, _value)
+        true
+    }
+
+
+
     fn set_minter(&self, _minter: Key) {
         if !(self.get_caller() == _minter) {
             runtime::revert(ApiError::from(Error::InvalidMinter));
         }
         data::set_minter(_minter);
+        // log SetMinter(_minter)
     }
     fn set_name(&self, _name: String, _symbol: String) {
         if !(data::get_minter() == self.get_caller()) {
@@ -117,6 +206,7 @@ ContractContext<Storage> + ERC20<Storage> {
         }
         data::set_admin(_admin);
     }
+   
 
 
   

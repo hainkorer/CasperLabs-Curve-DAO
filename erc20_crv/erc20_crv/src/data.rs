@@ -4,18 +4,21 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U256,U128};
-use contract_utils::{get_key, set_key, Dict};
-pub const YEAR: U256 = 31536000.into();
-pub const INITIAL_SUPPLY: U256 = 1_303_030_303.into();
+use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U256};
 
-//pub const INITIAL_RATE: U256 = 7 * 86_400;     //
+use contract_utils::{get_key, set_key, Dict};
+
+pub const YEAR: U256 = U256([31536000, 0, 0, 0]);
+pub const INITIAL_SUPPLY: U256 =U256([1_303_030_303, 0, 0, 0]);
+
+//pub const INITIAL_RATE: U256 = 7 * 86_400;     //604800
+pub const INITIAL_RATE: U256 =U256([604800, 0, 0, 0]);
 pub const RATE_REDUCTION_TIME: U256 = YEAR;
 
-pub const RATE_REDUCTION_COEFFICIENT: U256 = 1189207115002721024.into();
+//pub const RATE_REDUCTION_COEFFICIENT: U256 = 1189207115002721024.into();
 
-pub const RATE_DENOMINATOR: U256 =U256::from(10_i32.pow(18)) ;
-pub const INFLATION_DELAY: U256 =86400.into();
+//pub const RATE_DENOMINATOR: U256 =U256([0,0,0,0]);
+pub const INFLATION_DELAY: U256 =U256([86400, 0, 0, 0]);
 
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_PACKAGE_HASH: &str = "self_package_hash";
@@ -27,7 +30,6 @@ pub const START_EPOCH_SUPPLY: &str = "start_epoch_supply";
 pub const INIT_SUPPLY: &str = "init_supply";
 pub const ADMIN: &str = "admin";
 pub const MINTER: &str = "minter";
-
 
 
 
@@ -79,7 +81,6 @@ pub fn set_init_supply(init_supply: U256) {
 pub fn get_minter() -> Key {
     get_key(MINTER).unwrap_or_revert()
 }
-
 pub fn set_minter(minter: Key) {
     set_key(MINTER, minter);
 }
@@ -90,8 +91,12 @@ pub fn get_admin() -> Key {
 pub fn set_admin(admin: Key) {
     set_key(ADMIN,admin);
 }
-
-
+pub fn get_mining_epoch() -> U256 {
+    get_key(MINING_EPOCH).unwrap_or_revert()
+}
+pub fn set_mining_epoch(mining_epoch: U256) {
+    set_key(MINING_EPOCH,mining_epoch);
+}
 
 pub fn ZERO_ADDRESS() -> Key {
     Key::from_formatted_str(
