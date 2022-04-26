@@ -4,16 +4,13 @@ use test_env::{TestContract, TestEnv};
 use crate::minter_instance::MINTERInstance;
 
 const NAME: &str = "MINTER";
-const SYMBOL: &str = "ERC";
-const DECIMALS: u8 = 8;
-const REWARD_COUNT: u64 = 1;
 
 fn deploy() -> (
     TestEnv,
     MINTERInstance,
     AccountHash,
-    MINTERInstance,
-    MINTERInstance,
+    // MINTERInstance,
+    // MINTERInstance,
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
@@ -21,41 +18,39 @@ fn deploy() -> (
         &env,
         NAME,
         owner,
-        NAME,
         Key::from(owner),
         Key::from(owner),
-        REWARD_COUNT.into(),
     );
-    let test_contract: TestContract =
-        MINTERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
-    let test_contract2: TestContract =
-        MINTERInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
+    // let test_contract: TestContract =
+    //     MINTERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
+    // let test_contract2: TestContract =
+    //     MINTERInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
     (
         env,
         MINTERInstance::instance(token),
         owner,
-        MINTERInstance::instance(test_contract),
-        MINTERInstance::instance(test_contract2),
+        // MINTERInstance::instance(test_contract),
+        // MINTERInstance::instance(test_contract2),
     )
 }
 
-// #[test]
-// fn test_deploy() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     assert_eq!(token.name(), NAME);
-//     assert_eq!(token.symbol(), SYMBOL);
-//     // assert_eq!(token.meta(), meta::contract_meta());
-//     assert_eq!(
-//         token.total_supply(),
-//         (INIT_TOTAL_SUPPLY + INIT_TOTAL_SUPPLY).into()
-//     );
-//     assert_eq!(token.decimals(), DECIMALS);
-//     assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-//     assert_eq!(token.balance_of(user), 0.into());
-//     assert_eq!(token.allowance(owner, user), 0.into());
-//     assert_eq!(token.allowance(user, owner), 0.into());
-// }
+#[test]
+fn test_deploy() {
+    let (env, token, owner) = deploy();
+    let user = env.next_user();
+    // assert_eq!(token.name(), NAME);
+    // assert_eq!(token.symbol(), SYMBOL);
+    // // assert_eq!(token.meta(), meta::contract_meta());
+    // assert_eq!(
+    //     token.total_supply(),
+    //     (INIT_TOTAL_SUPPLY + INIT_TOTAL_SUPPLY).into()
+    // );
+    // assert_eq!(token.decimals(), DECIMALS);
+    // assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
+    // assert_eq!(token.balance_of(user), 0.into());
+    // assert_eq!(token.allowance(owner, user), 0.into());
+    // assert_eq!(token.allowance(user, owner), 0.into());
+}
 
 // #[test]
 // fn test_minter_approve() {

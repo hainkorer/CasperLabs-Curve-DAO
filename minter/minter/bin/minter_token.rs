@@ -3,6 +3,7 @@
 
 #[macro_use]
 extern crate alloc;
+use alloc::vec::Vec;
 
 use alloc::{boxed::Box, collections::BTreeSet, format, string::String};
 use casper_contract::{
@@ -13,8 +14,8 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use minter_crate::MINTER;
 use contract_utils::{ContractContext, OnChainContractStorage};
+use minter_crate::MINTER;
 
 #[derive(Default)]
 struct Token(OnChainContractStorage);
@@ -29,19 +30,15 @@ impl MINTER<OnChainContractStorage> for Token {}
 impl Token {
     fn constructor(
         &mut self,
-        name: String,
-        owner: Key,
-        reward_receiver: Key,
-        reward_count: U256,
+        token: Key,
+        controller: Key,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
         MINTER::init(
             self,
-            name,
-            owner,
-            reward_receiver,
-            reward_count,
+            token,
+            controller,
             Key::from(contract_hash),
             package_hash,
         );
@@ -50,38 +47,63 @@ impl Token {
 
 #[no_mangle]
 fn constructor() {
-    let name = runtime::get_named_arg::<String>("name");
-    let owner: Key = runtime::get_named_arg::<Key>("owner");
-    let reward_receiver: Key = runtime::get_named_arg("reward_receiver");
-    let reward_count: U256 = runtime::get_named_arg("reward_count");
+    let token: Key = runtime::get_named_arg::<Key>("token");
+    let controller: Key = runtime::get_named_arg("controller");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
 
-    Token::default().constructor(
-        name,
-        owner,
-        reward_receiver,
-        reward_count,
-        contract_hash,
-        package_hash,
-    );
+    Token::default().constructor(token, controller, contract_hash, package_hash);
 }
 
-/// This function is to transfer tokens against the address that user provided
-///
-/// # Parameters
-///
-/// * `recipient` - A Key that holds the account address of the user
-///
-/// * `amount` - A U256 that holds the amount for transfer
-///  
+///"""
+///@notice Mint everything which belongs to `msg.sender` and send to them
+///@param gauge_addr `LiquidityGauge` address to get mintable amount from
+///"""
 
 #[no_mangle]
-fn transfer() {
-    let recipient: Key = runtime::get_named_arg("recipient");
-    let amount: U256 = runtime::get_named_arg("amount");
-    let ret = Token::default().transfer(recipient, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+fn mint() {
+    let gauge_addr: Key = runtime::get_named_arg("gauge_addr");
+    Token::default().mint(gauge_addr);
+}
+
+///"""
+///@notice Mint everything which belongs to `msg.sender` across multiple gauges
+///@param gauge_addrs List of `LiquidityGauge` addresses
+///"""
+
+#[no_mangle]
+fn mint_many() {
+    let _gauge_addrs: Vec<String> = runtime::get_named_arg("gauge_addrs");
+    let mut gauge_addrs: Vec<Key> = Vec::new();
+    for i in 0..(_gauge_addrs.len()) {
+        gauge_addrs.push(Key::from_formatted_str(&_gauge_addrs[i]).unwrap());
+    }
+    Token::default().mint_many(gauge_addrs);
+}
+
+/// """
+/// @notice Mint tokens for `_for`
+/// @dev Only possible when `msg.sender` has been approved via `toggle_approve_mint`
+/// @param gauge_addr `LiquidityGauge` address to get mintable amount from
+/// @param _for Address to mint to
+/// """
+
+#[no_mangle]
+fn mint_for() {
+    let gauge_addr: Key = runtime::get_named_arg("gauge_addr");
+    let _for: Key = runtime::get_named_arg("for");
+    Token::default().mint_for(gauge_addr, _for);
+}
+
+/// """
+/// @notice allow `minting_user` to mint for `msg.sender`
+/// @param minting_user Address to toggle permission for
+/// """
+
+#[no_mangle]
+fn toggle_approve_mint() {
+    let minting_user: Key = runtime::get_named_arg("minting_user");
+    Token::default().toggle_approve_mint(minting_user);
 }
 
 #[no_mangle]
@@ -102,20 +124,15 @@ fn call() {
         let (contract_hash, _) =
             storage::add_contract_version(package_hash, get_entry_points(), Default::default());
         // Read arguments for the constructor call.
-        let name: String = runtime::get_named_arg("name");
-        let owner: Key = runtime::get_named_arg("owner");
-
-        let reward_receiver: Key = runtime::get_named_arg("reward_receiver");
-        let reward_count: U256 = runtime::get_named_arg("reward_count");
+        let token: Key = runtime::get_named_arg("token");
+        let controller: Key = runtime::get_named_arg("controller");
 
         // Prepare constructor args
         let constructor_args = runtime_args! {
-            "name" => name,
-            "owner" => owner,
-             "reward_receiver" => reward_receiver,
-             "reward_count" => reward_count,
-             "contract_hash" => contract_hash,
-             "package_hash"=> package_hash
+            "token" => token,
+            "controller" => controller,
+            "contract_hash" => contract_hash,
+            "package_hash"=> package_hash
 
         };
 
@@ -187,10 +204,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "constructor",
         vec![
-            Parameter::new("name", String::cl_type()),
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("reward_receiver", Key::cl_type()),
-            Parameter::new("reward_count", U256::cl_type()),
+            Parameter::new("token", Key::cl_type()),
+            Parameter::new("controller", Key::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
         ],
@@ -200,113 +215,37 @@ fn get_entry_points() -> EntryPoints {
     ));
 
     entry_points.add_entry_point(EntryPoint::new(
-        "transfer",
-        vec![
-            Parameter::new("recipient", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "transfer_from",
-        vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("recipient", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "permit",
-        vec![
-            Parameter::new("public", String::cl_type()),
-            Parameter::new("signature", String::cl_type()),
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("spender", Key::cl_type()),
-            Parameter::new("value", U256::cl_type()),
-            Parameter::new("deadline", u64::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "approve",
-        vec![
-            Parameter::new("spender", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-
-    entry_points.add_entry_point(EntryPoint::new(
-        "balance_of",
-        vec![Parameter::new("owner", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "nonce",
-        vec![Parameter::new("owner", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "allowance",
-        vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("spender", Key::cl_type()),
-        ],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "total_supply",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "mint",
-        vec![
-            Parameter::new("to", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
+        vec![Parameter::new("gauge_addr", Key::cl_type())],
         <()>::cl_type(),
-        EntryPointAccess::Public,
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "burn",
-        vec![
-            Parameter::new("from", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
+        "mint_many",
+        vec![Parameter::new(
+            "gauge_addrs",
+            CLType::List(Box::new(String::cl_type())),
+        )],
         <()>::cl_type(),
-        EntryPointAccess::Public,
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "name",
-        vec![],
-        String::cl_type(),
-        EntryPointAccess::Public,
+        "mint_for",
+        vec![
+            Parameter::new("gauge_addr", Key::cl_type()),
+            Parameter::new("for", Key::cl_type()),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "toggle_approve_mint",
+        vec![Parameter::new("minting_user", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
@@ -316,58 +255,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "owner",
-        vec![],
-        String::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "increase_allowance",
-        vec![
-            Parameter::new("spender", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "decrease_allowance",
-        vec![
-            Parameter::new("spender", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "increase_allowance_js_client",
-        vec![
-            Parameter::new("spender", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "decrease_allowance_js_client",
-        vec![
-            Parameter::new("spender", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
+
     entry_points
 }

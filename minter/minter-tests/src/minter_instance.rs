@@ -49,10 +49,8 @@ impl MINTERInstance {
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
-        name: &str,
-        owner: Key,
-        reward_receiver: Key,
-        reward_count: U256,
+        token: Key,
+        controller: Key,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -60,10 +58,8 @@ impl MINTERInstance {
             contract_name,
             sender,
             runtime_args! {
-                "reward_receiver" => reward_receiver,
-                "name" => name,
-                "owner" => owner,
-                "reward_count" => reward_count
+                "controller" => controller,
+                "token" => token,
             },
             0,
         )
@@ -73,17 +69,17 @@ impl MINTERInstance {
         &self,
         sender: AccountHash,
         name: &str,
-        owner: Key,
-        reward_receiver: Key,
+        token: Key,
+        controller: Key,
         reward_count: U256,
     ) {
         self.0.call_contract(
             sender,
             "constructor",
             runtime_args! {
-                "reward_receiver" => reward_receiver,
+                "controller" => controller,
                 "name" => name,
-                "owner" => owner,
+                "token" => token,
                 "reward_count" => reward_count
             },
             0,

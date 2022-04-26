@@ -15,11 +15,13 @@ use crate::event::MINTEREvent;
 const BALANCES_DICT: &str = "balances";
 pub const NONCES_DICT: &str = "nonces";
 pub const ALLOWANCES_DICT: &str = "allowances";
+pub const MINTED_DICT: &str = "minted";
+pub const ALLOWED_TO_MINT_FOR_DICT: &str = "allowed_to_mint_for";
 
 pub const NAME: &str = "name";
 // pub const META: &str = "meta";
-pub const OWNER: &str = "owner";
-pub const REWARD_RECEIVER: &str = "reward_receiver";
+pub const TOKEN: &str = "token";
+pub const CONTROLLER: &str = "controller";
 pub const REWARD_COUNT: &str = "reward_count";
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
@@ -96,6 +98,56 @@ impl Allowances {
     }
 }
 
+
+pub struct Minted {
+    dict: Dict,
+}
+
+impl Minted {
+    pub fn instance() -> Minted {
+        Minted {
+            dict: Dict::instance(MINTED_DICT),
+        }
+    }
+
+    pub fn init() {
+        Dict::init(MINTED_DICT)
+    }
+
+    pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
+        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
+    }
+
+    pub fn set(&self, owner: &Key, spender: &Key, value: U256) {
+        self.dict.set_by_keys((owner, spender), value);
+    }
+}
+
+pub struct AllowedToMintFor {
+    dict: Dict,
+}
+
+impl AllowedToMintFor {
+    pub fn instance() -> AllowedToMintFor {
+        AllowedToMintFor {
+            dict: Dict::instance(ALLOWED_TO_MINT_FOR_DICT),
+        }
+    }
+
+    pub fn init() {
+        Dict::init(ALLOWED_TO_MINT_FOR_DICT)
+    }
+
+    pub fn get(&self, owner: &Key, spender: &Key) -> bool {
+        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
+    }
+
+    pub fn set(&self, owner: &Key, spender: &Key, value: bool) {
+        self.dict.set_by_keys((owner, spender), value);
+    }
+}
+
+
 pub fn name() -> String {
     get_key(NAME).unwrap_or_revert()
 }
@@ -104,20 +156,20 @@ pub fn set_name(name: String) {
     set_key(NAME, name);
 }
 
-pub fn owner() -> Key {
-    get_key(OWNER).unwrap_or_revert()
+pub fn token() -> Key {
+    get_key(TOKEN).unwrap_or_revert()
 }
 
-pub fn set_owner(owner: Key) {
-    set_key(OWNER, owner);
+pub fn set_token(token: Key) {
+    set_key(TOKEN, token);
 }
 
-pub fn reward_receiver() -> Key {
-    get_key(REWARD_RECEIVER).unwrap_or_revert()
+pub fn controller() -> Key {
+    get_key(CONTROLLER).unwrap_or_revert()
 }
 
-pub fn set_reward_receiver(reward_receiver: Key) {
-    set_key(REWARD_RECEIVER, reward_receiver);
+pub fn set_controller(controller: Key) {
+    set_key(CONTROLLER, controller);
 }
 
 pub fn reward_count() -> U256 {

@@ -1,12 +1,12 @@
 use crate::alloc::string::ToString;
-use crate::data::{self, Allowances, Balances, Nonces};
+use crate::data::{self, Allowances, AllowedToMintFor, Balances, Minted, Nonces};
 use alloc::collections::BTreeMap;
 use alloc::{format, string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{
-    system::mint::Error as MintError, ApiError, BlockTime, ContractHash, ContractPackageHash, Key,
-    URef, U256,
+    runtime_args, system::mint::Error as MintError, ApiError, BlockTime, ContractHash,
+    ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use contract_utils::{set_key, ContractContext, ContractStorage};
 use cryptoxide::ed25519;
@@ -14,31 +14,21 @@ use hex::encode;
 use renvm_sig::{hash_message, keccak256};
 
 pub enum MINTEREvent {
-    Approval {
-        owner: Key,
-        spender: Key,
-        value: U256,
-    },
-    Transfer {
-        from: Key,
-        to: Key,
-        value: U256,
+    Minted {
+        recipient: Key,
+        gauge: Key,
+        minted: U256,
     },
 }
 
 impl MINTEREvent {
     pub fn type_name(&self) -> String {
         match self {
-            MINTEREvent::Approval {
-                owner: _,
-                spender: _,
-                value: _,
-            } => "approve",
-            MINTEREvent::Transfer {
-                from: _,
-                to: _,
-                value: _,
-            } => "minter_transfer",
+            MINTEREvent::Minted {
+                recipient: _,
+                gauge: _,
+                minted: _,
+            } => "minted",
         }
         .to_string()
     }
@@ -47,27 +37,7 @@ impl MINTEREvent {
 #[repr(u16)]
 pub enum Error {
     /// 65,536 for (UniswapV2 Core MINTER EXPIRED)
-    UniswapV2CoreMINTEREXPIRED = 0,
-    /// 65,537 for (UniswapV2 Core MINTER Signature Verification Failed)
-    UniswapV2CoreMINTERSignatureVerificationFailed = 1,
-    /// 65,538 for (UniswapV2 Core MINTER OverFlow1)
-    UniswapV2CoreMINTEROverFlow1 = 2,
-    /// 65,539 for (UniswapV2 Core MINTER OverFlow2)
-    UniswapV2CoreMINTEROverFlow2 = 3,
-    /// 65,540 for (UniswapV2 Core MINTER OverFlow3)
-    UniswapV2CoreMINTEROverFlow3 = 4,
-    /// 65,541 for (UniswapV2 Core MINTER OverFlow4)
-    UniswapV2CoreMINTEROverFlow4 = 5,
-    /// 65,542 for (UniswapV2 Core MINTER UnderFlow1)
-    UniswapV2CoreMINTERUnderFlow1 = 6,
-    /// 65,543 for (UniswapV2 Core MINTER UnderFlow2)
-    UniswapV2CoreMINTERUnderFlow2 = 7,
-    /// 65,544 for (UniswapV2 Core MINTER UnderFlow3)
-    UniswapV2CoreMINTERUnderFlow3 = 8,
-    /// 65,545 for (UniswapV2 Core MINTER UnderFlow4)
-    UniswapV2CoreMINTERUnderFlow4 = 9,
-    /// 65,546 for (UniswapV2 Core MINTER UnderFlow5)
-    UniswapV2CoreMINTERUnderFlow5 = 10,
+    MinterGaugeIsNotAdded = 0,
 }
 
 impl From<Error> for ApiError {
@@ -79,88 +49,131 @@ impl From<Error> for ApiError {
 pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(
         &mut self,
-        name: String,
-        owner: Key,
-        reward_receiver: Key,
-        reward_count: U256,
+        token: Key,
+        controller: Key,
         contract_hash: Key,
         package_hash: ContractPackageHash,
     ) {
-        data::set_name(name);
-        data::set_owner(owner);
-        data::set_reward_count(reward_count);
-        data::set_reward_receiver(reward_receiver);
+        data::set_token(token);
+        data::set_controller(controller);
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-        Nonces::init();
-        let nonces = Nonces::instance();
-        nonces.set(&Key::from(self.get_caller()), U256::from(0));
         Allowances::init();
         Balances::init();
+        Minted::init();
+        AllowedToMintFor::init();
     }
 
-    fn transfer(&mut self, recipient: Key, amount: U256) -> Result<(), u32> {
-        self.make_transfer(self.get_caller(), recipient, amount)
+    fn _mint_for(&mut self, gauge_addr: Key, _for: Key) {
+        let controller: Key = self.controller();
+        let to_mint = 0;
+        let controller_hash_add_array = match controller {
+            Key::Hash(package) => package,
+            _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+        };
+        let controller_package_hash = ContractPackageHash::new(controller_hash_add_array);
+        let ret: U256 = runtime::call_versioned_contract(
+            controller_package_hash,
+            None,
+            "gauge_types",
+            runtime_args! {"gauge_addr" => gauge_addr},
+        );
+
+        if ret <= U256::from(0) {
+            //dev: gauge is not added
+            runtime::revert(Error::MinterGaugeIsNotAdded);
+        }
+
+        let gauge_addr_hash_add_array = match gauge_addr {
+            Key::Hash(package) => package,
+            _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+        };
+        let gauge_addr_package_hash = ContractPackageHash::new(gauge_addr_hash_add_array);
+        let ret: () = runtime::call_versioned_contract(
+            gauge_addr_package_hash,
+            None,
+            "user_checkpoint",
+            runtime_args! {"_for" => _for},
+        );
+        let total_mint: U256 = runtime::call_versioned_contract(
+            gauge_addr_package_hash,
+            None,
+            "integrate_fraction",
+            runtime_args! {"_for" => _for},
+        );
+
+        let minted = self.minted(_for, gauge_addr);
+        let to_mint: U256 = total_mint - minted;
+        if to_mint != U256::from(0) {
+            let token = self.token();
+            let token_hash_add_array = match token {
+                Key::Hash(package) => package,
+                _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+            };
+            let token_package_hash = ContractPackageHash::new(token_hash_add_array);
+            let _result: () = runtime::call_versioned_contract(
+                token_package_hash,
+                None,
+                "mint",
+                runtime_args! {"to" => _for,"amount" => to_mint},
+            );
+            Minted::instance().set(&_for, &gauge_addr, total_mint);
+            self.emit(&MINTEREvent::Minted {
+                recipient: _for,
+                gauge: gauge_addr,
+                minted: total_mint,
+            });
+        }
+    }
+    fn mint(&mut self, gauge_addr: Key) {
+        self._mint_for(gauge_addr, self.get_caller())
+    }
+    fn mint_many(&mut self, gauge_addrs: Vec<Key>) {
+        for i in 0..(gauge_addrs.len() - 1) {
+            self._mint_for(gauge_addrs[i], self.get_caller())
+        }
+    }
+    fn mint_for(&mut self, gauge_addr: Key, _for: Key) {
+        let is_allowed = self.allowed_to_mint_for(self.get_caller(), _for);
+        if is_allowed == true {
+            self._mint_for(gauge_addr, _for)
+        }
     }
 
-    fn make_transfer(&mut self, sender: Key, recipient: Key, amount: U256) -> Result<(), u32> {
-        if sender == recipient {
-            return Err(4); // Same sender recipient error
-        }
+    fn toggle_approve_mint(&mut self, minting_user: Key) {
+        let is_allowed = self.allowed_to_mint_for(minting_user, self.get_caller());
+        AllowedToMintFor::instance().set(&minting_user, &self.get_caller(), !is_allowed);
+    }
 
-        if amount.is_zero() {
-            return Err(5); // Amount to transfer is 0
-        }
+    fn allowed_to_mint_for(&mut self, owner: Key, spender: Key) -> bool {
+        AllowedToMintFor::instance().get(&owner, &spender)
+    }
+    fn minted(&mut self, owner: Key, spender: Key) -> U256 {
+        Minted::instance().get(&owner, &spender)
+    }
 
-        let balances: Balances = Balances::instance();
-        let sender_balance: U256 = balances.get(&sender);
-        let recipient_balance: U256 = balances.get(&recipient);
-        balances.set(
-            &sender,
-            sender_balance
-                .checked_sub(amount)
-                .ok_or(Error::UniswapV2CoreMINTERUnderFlow5)
-                .unwrap_or_revert(),
-        );
-        balances.set(
-            &recipient,
-            recipient_balance
-                .checked_add(amount)
-                .ok_or(Error::UniswapV2CoreMINTEROverFlow4)
-                .unwrap_or_revert(),
-        );
-        self.emit(&MINTEREvent::Transfer {
-            from: sender,
-            to: recipient,
-            value: amount,
-        });
-        Ok(())
+    fn token(&mut self) -> Key {
+        data::token()
+    }
+    fn controller(&mut self) -> Key {
+        data::controller()
     }
 
     fn emit(&mut self, minter_event: &MINTEREvent) {
         let mut events = Vec::new();
         let package = data::get_package_hash();
         match minter_event {
-            MINTEREvent::Approval {
-                owner,
-                spender,
-                value,
+            MINTEREvent::Minted {
+                recipient,
+                gauge,
+                minted,
             } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", minter_event.type_name());
-                event.insert("owner", owner.to_string());
-                event.insert("spender", spender.to_string());
-                event.insert("value", value.to_string());
-                events.push(event);
-            }
-            MINTEREvent::Transfer { from, to, value } => {
-                let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
-                event.insert("event_type", minter_event.type_name());
-                event.insert("from", from.to_string());
-                event.insert("to", to.to_string());
-                event.insert("value", value.to_string());
+                event.insert("recipient", recipient.to_string());
+                event.insert("gauge", gauge.to_string());
+                event.insert("minted", minted.to_string());
                 events.push(event);
             }
         };
