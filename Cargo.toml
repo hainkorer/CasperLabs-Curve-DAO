@@ -1,0 +1,13 @@
+[workspace]
+
+members = [
+  # ERC20
+  "erc20/erc20",
+  "erc20/erc20-crate",
+  "erc20/erc20-proxy",
+  "erc20/erc20-tests",
+  # VotingEscrow
+  "voting-escrow/voting-escrow",
+  "voting-escrow/voting-escrow-crate",
+  "voting-escrow/voting-escrow-tests"
+]
