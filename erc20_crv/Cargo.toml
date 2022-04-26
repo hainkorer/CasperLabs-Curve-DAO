@@ -2,7 +2,8 @@
 
 members = [
     "erc20_crv",
-    "erc20_crv_tests"
+    "erc20_crv_tests",
+    "contract"
 ]
 
 [profile.release]

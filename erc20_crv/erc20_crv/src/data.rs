@@ -1,24 +1,22 @@
-use core::{convert::TryInto, f32::MIN};
-use alloc::string::String;
+use alloc::string::{String, ToString};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U256};
+use core::{convert::TryInto, f32::MIN};
 
 use contract_utils::{get_key, set_key, Dict};
 
+
 pub const YEAR: U256 = U256([31536000, 0, 0, 0]);
-pub const INITIAL_SUPPLY: U256 =U256([1_303_030_303, 0, 0, 0]);
-
-//pub const INITIAL_RATE: U256 = 7 * 86_400;     //604800
-pub const INITIAL_RATE: U256 =U256([604800, 0, 0, 0]);
+pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);
+pub const INITIAL_RATE: U256 = U256([604800, 0, 0, 0]);
 pub const RATE_REDUCTION_TIME: U256 = YEAR;
+pub const RATE_REDUCTION_COEFFICIENT: U256=U256([1189207115002721024, 0, 0, 0]);
 
-//pub const RATE_REDUCTION_COEFFICIENT: U256 = 1189207115002721024.into();
-
-//pub const RATE_DENOMINATOR: U256 =U256([0,0,0,0]);
-pub const INFLATION_DELAY: U256 =U256([86400, 0, 0, 0]);
+pub const RATE_DENOMINATOR: U256 =U256([10000000000000000000,0,0,0]);   //10^18
+pub const INFLATION_DELAY: U256 = U256([86400, 0, 0, 0]);
 
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_PACKAGE_HASH: &str = "self_package_hash";
@@ -30,8 +28,6 @@ pub const START_EPOCH_SUPPLY: &str = "start_epoch_supply";
 pub const INIT_SUPPLY: &str = "init_supply";
 pub const ADMIN: &str = "admin";
 pub const MINTER: &str = "minter";
-
-
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {
@@ -70,7 +66,7 @@ pub fn set_start_epoch_supply(start_epoch_supply: U256) {
 }
 pub fn get_start_epoch_supply() -> U256 {
     get_key(START_EPOCH_SUPPLY).unwrap_or_revert()
-} 
+}
 pub fn get_init_supply() -> U256 {
     get_key(INIT_SUPPLY).unwrap_or_revert()
 }
@@ -87,15 +83,14 @@ pub fn set_minter(minter: Key) {
 pub fn get_admin() -> Key {
     get_key(ADMIN).unwrap_or_revert()
 }
-
 pub fn set_admin(admin: Key) {
-    set_key(ADMIN,admin);
+    set_key(ADMIN, admin);
 }
-pub fn get_mining_epoch() -> U256 {
+pub fn get_mining_epoch() -> i64 {
     get_key(MINING_EPOCH).unwrap_or_revert()
 }
-pub fn set_mining_epoch(mining_epoch: U256) {
-    set_key(MINING_EPOCH,mining_epoch);
+pub fn set_mining_epoch(mining_epoch: i64) {
+    set_key(MINING_EPOCH, mining_epoch.to_string());
 }
 
 pub fn ZERO_ADDRESS() -> Key {
@@ -104,19 +99,15 @@ pub fn ZERO_ADDRESS() -> Key {
     )
     .unwrap()
 }
-
 pub fn set_hash(contract_hash: Key) {
     set_key(SELF_CONTRACT_HASH, contract_hash);
 }
-
 pub fn get_hash() -> Key {
     get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
 }
-
 pub fn set_package_hash(package_hash: ContractPackageHash) {
     set_key(SELF_PACKAGE_HASH, package_hash);
 }
-
 pub fn get_package_hash() -> ContractPackageHash {
     get_key(SELF_PACKAGE_HASH).unwrap_or_revert()
 }

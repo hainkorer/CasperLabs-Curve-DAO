@@ -5,23 +5,26 @@ use alloc::{
     string::{String, ToString},
     vec::Vec,
 };
-use erc20_crate::{self, data as erc20_data, ERC20};
 use casper_contract::{
     contract_api::{runtime, storage},
-    unwrap_or_revert::{UnwrapOrRevert, self},
+    unwrap_or_revert::{self, UnwrapOrRevert},
 };
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
+use erc20_crate::{self, data as erc20_data, ERC20};
 
 #[repr(u16)]
 pub enum Error {
-    InvalidMinter=0,
-    OnlyMinterAllowed=1,
-    AdminOnly=2,
-    TooSoon=3,
-    ZeroAddress=4,
-    MinterOnly=5,
-    ExceedsAllowableMint=6
+    InvalidMinter = 0,
+    OnlyMinterAllowed = 1,
+    AdminOnly = 2,
+    TooSoon = 3,
+    ZeroAddress = 4,
+    MinterOnly = 5,
+    ExceedsAllowableMint = 6,
+    StartGreaterThanEnd=7,
+    TooFarInFuture=8,
+    CurrRateLessThanInitRate=9
 }
 
 impl From<Error> for ApiError {
@@ -30,13 +33,28 @@ impl From<Error> for ApiError {
     }
 }
 pub enum ERC20CRV_EVENT {
-    Transfer { from: Key, to: Key,value:U256},
-    Approval{ owner: Key, spender: Key,value:U256},
-    UpdateMiningParameters{ time:U256,rate:U256,supply:U256},
-    SetMinter{minter:Key},
-    SetAdmin{admin:Key}
+    Transfer {
+        from: Key,
+        to: Key,
+        value: U256,
+    },
+    Approval {
+        owner: Key,
+        spender: Key,
+        value: U256,
+    },
+    UpdateMiningParameters {
+        time: U256,
+        rate: U256,
+        supply: U256,
+    },
+    SetMinter {
+        minter: Key,
+    },
+    SetAdmin {
+        admin: Key,
+    },
 }
-
 
 impl ERC20CRV_EVENT {
     pub fn type_name(&self) -> String {
@@ -44,30 +62,25 @@ impl ERC20CRV_EVENT {
             ERC20CRV_EVENT::Transfer {
                 from: _,
                 to: _,
-                value:_,
+                value: _,
             } => "transfer",
             ERC20CRV_EVENT::Approval {
                 owner: _,
                 spender: _,
-                value:_,
+                value: _,
             } => "approval",
             ERC20CRV_EVENT::UpdateMiningParameters {
                 time: _,
                 rate: _,
-                supply:_,
+                supply: _,
             } => "update_mining_parameters",
-            ERC20CRV_EVENT::SetMinter {
-                minter:_,
-            } => "set_minter",
-            ERC20CRV_EVENT::SetAdmin {
-                admin:_,
-            } => "set_admin",
+            ERC20CRV_EVENT::SetMinter { minter: _ } => "set_minter",
+            ERC20CRV_EVENT::SetAdmin { admin: _ } => "set_admin",
         }
         .to_string()
     }
 }
-pub trait ERC20CRV<Storage: ContractStorage>: 
-ContractContext<Storage> + ERC20<Storage> {
+pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<Storage> {
     fn init(
         &self,
         name: String,
@@ -92,71 +105,117 @@ ContractContext<Storage> + ERC20<Storage> {
             data::get_hash(),
             data::get_package_hash(),
         );
-        erc20_data::Balances::instance().set(&self.get_caller(), 1000.into());
+        erc20_data::Balances::instance().set(&self.get_caller(), data::get_init_supply());
 
         erc20_data::set_total_supply(data::get_init_supply());
-       data::set_admin(self.get_caller());
-    }
-    fn _update_mining_parameters(&self){
-        let mut rate:U256=data::get_rate();
-        let mut start_epoch_supply=data::get_start_epoch_supply();
-        let prev_start_epoch_time:U256=data::get_start_eporch_time();
-        let updated_start_epoch_time:U256=prev_start_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert();
-        let prev_mining_epoch:U256=data::get_mining_epoch();
-        data::set_mining_epoch(prev_mining_epoch.checked_add(1.into()).unwrap_or_revert());
-        if (rate==0.into()){
-            rate=data::INITIAL_RATE;
-        }
-        else{
-            start_epoch_supply=start_epoch_supply.checked_add(rate.checked_mul(data::RATE_REDUCTION_TIME).unwrap_or_revert()).unwrap_or_revert();
-            data::set_start_epoch_supply(start_epoch_supply);
-          //  rate=rate.checked_mul(data::RATE_DENOMINATOR.checked_div(data::RATE_REDUCTION_COEFFICIENT)) _rate = _rate * RATE_DENOMINATOR / RATE_REDUCTION_COEFFICIENT
+        data::set_admin(self.get_caller());
 
+        data::set_minter(self.get_caller());
+        self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
+            from: data::ZERO_ADDRESS(),
+            to: self.get_caller(),
+            value: data::get_init_supply(),
+        });
+     //  let blocktime_u64: u64 =u64::from(1000);// runtime::get_blocktime().into();
+        let blocktime:U256=  100000000.into();  //blocktime is set to 100000000 for testing purposes
+       
+        let add_block_inflat: U256 = blocktime.checked_add(data::INFLATION_DELAY).unwrap_or_revert();
+        let start_eporch_time: U256 = add_block_inflat.checked_sub(data::RATE_REDUCTION_TIME).unwrap_or_revert();
+        data::set_start_eporch_time(start_eporch_time);
+        data::set_mining_epoch(-1);
+        data::set_rate(0.into());
+        data::set_start_epoch_supply(data::get_init_supply());
+        data::set_start_eporch_time(0.into());   //testing purpose
+
+    }
+    fn _update_mining_parameters(&self) {
+        let mut rate: U256 = data::get_rate();
+        let mut start_epoch_supply = data::get_start_epoch_supply();
+        let prev_start_epoch_time: U256 = data::get_start_eporch_time();
+        let updated_start_epoch_time: U256 = prev_start_epoch_time
+            .checked_add(data::RATE_REDUCTION_TIME)
+            .unwrap_or_revert();
+       let prev_mining_epoch: i64= data::get_mining_epoch();
+        data::set_mining_epoch(prev_mining_epoch.checked_add(1.into()).unwrap_or_revert());
+        if (rate == 0.into()) {
+            rate = data::INITIAL_RATE;
+        } else {
+            start_epoch_supply = start_epoch_supply
+                .checked_add(
+                    rate.checked_mul(data::RATE_REDUCTION_TIME)
+                        .unwrap_or_revert(),
+                )
+                .unwrap_or_revert();
+            data::set_start_epoch_supply(start_epoch_supply);
+            rate=(rate.checked_mul(data::RATE_DENOMINATOR).unwrap_or_revert()).checked_div(data::RATE_REDUCTION_COEFFICIENT).unwrap_or_revert();
+            
         }
         data::set_rate(rate);
-        //log UpdateMiningParameters(block.timestamp, _rate, _start_epoch_supply)
-    }
-    fn update_mining_parameters(&self){
         let blocktime: u64 = runtime::get_blocktime().into();
-        if !(U256::from(blocktime)>=data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+        self.erc20_crv_emit(&ERC20CRV_EVENT::UpdateMiningParameters {
+            time: U256::from(blocktime),
+            rate: rate,
+            supply: data::get_start_epoch_supply(),
+        });
+        
+    }
+    fn update_mining_parameters(&self) {
+        let blocktime: u64 = runtime::get_blocktime().into();
+        if !(U256::from(blocktime)
+            >= data::get_start_eporch_time()
+                .checked_add(data::RATE_REDUCTION_TIME)
+                .unwrap_or_revert())
+        {
             runtime::revert(ApiError::from(Error::TooSoon));
         }
         self._update_mining_parameters();
     }
-    fn start_epoch_time_write(&self)->U256{
-        let mut start_epoch_time=data::get_start_eporch_time();
+    fn start_epoch_time_write(&self) -> U256 {
+        let mut start_epoch_time = data::get_start_eporch_time();
         let blocktime: u64 = runtime::get_blocktime().into();
-        if (U256::from(blocktime)>=data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+        if (U256::from(blocktime)
+            >= data::get_start_eporch_time()
+                .checked_add(data::RATE_REDUCTION_TIME)
+                .unwrap_or_revert())
+        {
             self._update_mining_parameters();
             return data::get_start_eporch_time();
-        }
-        else{
+        } else {
             return start_epoch_time;
         }
-
     }
-    fn future_epoch_time_write(&self)->U256{
-        let mut start_epoch_time=data::get_start_eporch_time();
+    fn future_epoch_time_write(&self) -> U256 {
+        let mut start_epoch_time = data::get_start_eporch_time();
         let blocktime: u64 = runtime::get_blocktime().into();
-        if (U256::from(blocktime)>=data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+        if (U256::from(blocktime)
+            >= data::get_start_eporch_time()
+                .checked_add(data::RATE_REDUCTION_TIME)
+                .unwrap_or_revert())
+        {
             self._update_mining_parameters();
-            return data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert();
+            return data::get_start_eporch_time()
+                .checked_add(data::RATE_REDUCTION_TIME)
+                .unwrap_or_revert();
+        } else {
+            return start_epoch_time
+                .checked_add(data::RATE_REDUCTION_TIME)
+                .unwrap_or_revert();
         }
-        else{
-            return start_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert();
-        }
-
     }
-    fn _available_supply(&self)->U256{
+    fn _available_supply(&self) -> U256 {
         let blocktime: u64 = runtime::get_blocktime().into();
-        let var:U256=U256::from(blocktime).checked_sub(data::get_start_eporch_time()).unwrap_or_revert();
-        let ans:U256=var.checked_mul(data::get_rate()).unwrap_or_revert();
-        data::get_start_epoch_supply().checked_add(ans).unwrap_or_revert()
+        let var: U256 = U256::from(blocktime)
+            .checked_sub(data::get_start_eporch_time())
+            .unwrap_or_revert();
+        let ans: U256 = var.checked_mul(data::get_rate()).unwrap_or_revert();
+        data::get_start_epoch_supply()
+            .checked_add(ans)
+            .unwrap_or_revert()
     }
-    fn available_supply(&self)->U256{
+    fn available_supply(&self) -> U256 {
         self._available_supply()
     }
-    fn mint_crv(&self,to:Key,value:U256)->bool{
+    fn mint_crv(&self, to: Key, value: U256) -> bool {
         if !(self.get_caller() == data::get_minter()) {
             runtime::revert(ApiError::from(Error::MinterOnly));
         }
@@ -164,28 +223,41 @@ ContractContext<Storage> + ERC20<Storage> {
             runtime::revert(ApiError::from(Error::ZeroAddress));
         }
         let blocktime: u64 = runtime::get_blocktime().into();
-        if (U256::from(blocktime)>=data::get_start_eporch_time().checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+        if (U256::from(blocktime)
+            >= data::get_start_eporch_time()
+                .checked_add(data::RATE_REDUCTION_TIME)
+                .unwrap_or_revert())
+        {
             self._update_mining_parameters();
         }
-        let total_supply:U256=erc20_data::total_supply().checked_add(value).unwrap_or_revert();
-        if !(total_supply<=self.available_supply()){
+        let total_supply: U256 = erc20_data::total_supply()
+            .checked_add(value)
+            .unwrap_or_revert();
+        if !(total_supply <= self.available_supply()) {
             runtime::revert(ApiError::from(Error::ExceedsAllowableMint));
         }
         erc20_data::set_total_supply(total_supply);
-        let existing_balance:U256=erc20_data::Balances::instance().get(&to);
-        erc20_data::Balances::instance().set(&to,existing_balance.checked_add(value).unwrap_or_revert() );
-       // log Transfer(ZERO_ADDRESS, _to, _value)
+        let existing_balance: U256 = erc20_data::Balances::instance().get(&to);
+        erc20_data::Balances::instance()
+            .set(&to, existing_balance.checked_add(value).unwrap_or_revert());
+        self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
+            from: data::ZERO_ADDRESS(),
+            to: to,
+            value: value,
+        });
+
         true
     }
-
-
 
     fn set_minter(&self, _minter: Key) {
         if !(self.get_caller() == _minter) {
             runtime::revert(ApiError::from(Error::InvalidMinter));
         }
         data::set_minter(_minter);
-        // log SetMinter(_minter)
+        self.erc20_crv_emit(&ERC20CRV_EVENT:: SetMinter{
+            minter: _minter,
+        });
+       
     }
     fn set_name(&self, _name: String, _symbol: String) {
         if !(data::get_minter() == self.get_caller()) {
@@ -200,64 +272,112 @@ ContractContext<Storage> + ERC20<Storage> {
         }
         ERC20::burn(self, self.get_caller(), _value);
     }
-    fn set_admin(&self, _admin: Key) {
-        if !(self.get_caller() == _admin) {
+    fn set_admin(&self, admin: Key) {
+        if !(self.get_caller() == admin) {
             runtime::revert(ApiError::from(Error::AdminOnly));
         }
-        data::set_admin(_admin);
+        data::set_admin(admin);
     }
-   
+    fn mintable_in_timeframe(&self,start: U256, end: U256)->U256{
+        if !(start<=end){
+            runtime::revert(ApiError::from(Error::StartGreaterThanEnd));
+        }
+        let mut to_mint:U256=0.into();
+        let  mut current_epoch_time:U256=data::get_start_eporch_time();
+        let mut current_rate:U256=data::get_rate();
+        if (end>current_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+            current_epoch_time=current_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert();
+            current_rate=current_rate.checked_mul(data::RATE_DENOMINATOR.checked_div(data::RATE_REDUCTION_COEFFICIENT).unwrap_or_revert()).unwrap_or_revert();
 
+        }
+        if !(end<=current_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+            runtime::revert(ApiError::from(Error::TooFarInFuture));
+        }
+        let mut current_end:U256;
+        let mut current_start:U256;
 
-  
-    // fn vesting_escrow_simple_emit(&self, vesting_escrow_simple_event: &ERC20CRV_EVENT) {
-    //     let mut events = Vec::new();
-    //     let package = data::get_package_hash();
-    //     match vesting_escrow_simple_event {
-    //         VESTINGESCROWSIMPLE_EVENT::Fund { recipient, amount } => {
-    //             let mut event = BTreeMap::new();
-    //             event.insert("contract_package_hash", package.to_string());
-    //             event.insert("event_type", vesting_escrow_simple_event.type_name());
-    //             event.insert("recipient", recipient.to_string());
-    //             event.insert("amount", amount.to_string());
-    //             events.push(event);
-    //         }
-    //         VESTINGESCROWSIMPLE_EVENT::Claim { recipient, claimed } => {
-    //             let mut event = BTreeMap::new();
-    //             event.insert("contract_package_hash", package.to_string());
-    //             event.insert("event_type", vesting_escrow_simple_event.type_name());
-    //             event.insert("recipient", recipient.to_string());
-    //             event.insert("claimed", claimed.to_string());
-    //             events.push(event);
-    //         }
-    //         VESTINGESCROWSIMPLE_EVENT::ToggleDisable {
-    //             recipient,
-    //             disabled,
-    //         } => {
-    //             let mut event = BTreeMap::new();
-    //             event.insert("contract_package_hash", package.to_string());
-    //             event.insert("event_type", vesting_escrow_simple_event.type_name());
-    //             event.insert("recipient", recipient.to_string());
-    //             event.insert("disabled", disabled.to_string());
-    //             events.push(event);
-    //         }
-    //         VESTINGESCROWSIMPLE_EVENT::CommitOwnership { admin } => {
-    //             let mut event = BTreeMap::new();
-    //             event.insert("contract_package_hash", package.to_string());
-    //             event.insert("event_type", vesting_escrow_simple_event.type_name());
-    //             event.insert("admin", admin.to_string());
-    //             events.push(event);
-    //         }
-    //         VESTINGESCROWSIMPLE_EVENT::ApplyOwnership { admin } => {
-    //             let mut event = BTreeMap::new();
-    //             event.insert("contract_package_hash", package.to_string());
-    //             event.insert("event_type", vesting_escrow_simple_event.type_name());
-    //             event.insert("admin", admin.to_string());
-    //             events.push(event);
-    //         }
-    //     };
-    //     for event in events {
-    //         let _: URef = storage::new_uref(event);
-    //     }
-    // }
+        for i in 0..999 {
+            if (end>=current_epoch_time){
+                current_end=end;
+                if (current_end> current_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+                    current_end=current_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert();
+                }
+                current_start=start;
+                if (current_start>= current_epoch_time.checked_add(data::RATE_REDUCTION_TIME).unwrap_or_revert()){
+                    break;
+                }
+                else if (current_start<current_epoch_time){
+                    current_start = current_epoch_time;
+
+                }
+                let sub_ce_cs:U256=current_end.checked_sub(current_start).unwrap_or_revert();  
+                to_mint=to_mint.checked_mul(sub_ce_cs).unwrap_or_revert();
+                if (start>=current_epoch_time){
+                    break;
+                }
+                
+            }
+            current_epoch_time=current_epoch_time.checked_sub(data::RATE_REDUCTION_TIME).unwrap_or_revert();
+            current_rate=current_rate.checked_mul(data::RATE_REDUCTION_COEFFICIENT.checked_div(data::RATE_DENOMINATOR).unwrap_or_revert()).unwrap_or_revert();
+            if !(current_rate<=data::INITIAL_RATE){
+                runtime::revert(ApiError::from(Error::CurrRateLessThanInitRate));
+            }
+        }
+        to_mint
+
+    }
+    fn erc20_crv_emit(&self, erc20_crv_event: &ERC20CRV_EVENT) {
+        let mut events = Vec::new();
+        let package = data::get_package_hash();
+        match erc20_crv_event {
+            ERC20CRV_EVENT::Transfer { from, to, value } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", erc20_crv_event.type_name());
+                event.insert("from", from.to_string());
+                event.insert("to", to.to_string());
+                event.insert("value", value.to_string());
+                events.push(event);
+            }
+            ERC20CRV_EVENT::Approval {
+                owner,
+                spender,
+                value,
+            } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", erc20_crv_event.type_name());
+                event.insert("owner", owner.to_string());
+                event.insert("spender", spender.to_string());
+                event.insert("value", value.to_string());
+                events.push(event);
+            }
+            ERC20CRV_EVENT::UpdateMiningParameters { time, rate, supply } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", erc20_crv_event.type_name());
+                event.insert("time", time.to_string());
+                event.insert("rate", rate.to_string());
+                event.insert("supply", supply.to_string());
+                events.push(event);
+            }
+            ERC20CRV_EVENT::SetMinter { minter } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", erc20_crv_event.type_name());
+                event.insert("minter", minter.to_string());
+                events.push(event);
+            }
+            ERC20CRV_EVENT::SetAdmin { admin } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", erc20_crv_event.type_name());
+                event.insert("admin", admin.to_string());
+                events.push(event);
+            }
+        };
+        for event in events {
+            let _: URef = storage::new_uref(event);
+        }
+    }
 }

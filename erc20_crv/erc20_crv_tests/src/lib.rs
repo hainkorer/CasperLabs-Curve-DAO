@@ -1,5 +1,5 @@
 #[cfg(test)]
-pub mod vesting_escrow_simple_tests;
+pub mod erc20_crv_tests;
 
 #[cfg(test)]
-pub mod vesting_escrow_simple_instance;
+pub mod erc20_crv_instance;
