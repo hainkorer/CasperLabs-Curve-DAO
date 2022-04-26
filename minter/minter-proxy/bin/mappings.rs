@@ -43,8 +43,8 @@ pub fn self_package_key() -> String {
     format!("package_hash")
 }
 
-pub fn child_streamer_key() -> String {
-    format!("child_streamer")
+pub fn minter_key() -> String {
+    format!("minter")
 }
 
 pub fn transfer_key() -> String {

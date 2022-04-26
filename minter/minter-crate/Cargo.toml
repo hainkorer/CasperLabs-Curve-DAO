@@ -1,5 +1,5 @@
 [package]
-name = "child-streamer-crate"
+name = "minter-crate"
 version = "0.2.0"
 authors = ["Bassam Monib <bassam.munib@scytalelabs.com>"]
 edition = "2018"

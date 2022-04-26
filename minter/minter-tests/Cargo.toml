@@ -1,5 +1,5 @@
 [package]
-name = "child-streamer-tests"
+name = "minter-tests"
 version = "0.2.1"
 authors = ["Bassam Monib <bassam.munib@scytalelabs.com>"]
 edition = "2018"

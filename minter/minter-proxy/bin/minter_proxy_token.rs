@@ -20,19 +20,19 @@ pub mod mappings;
 fn constructor() {
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    let child_streamer: Key = runtime::get_named_arg("child_streamer");
+    let minter: Key = runtime::get_named_arg("minter");
 
     mappings::set_key(&mappings::self_hash_key(), contract_hash);
     mappings::set_key(&mappings::self_package_key(), package_hash);
     mappings::set_key(
-        &mappings::child_streamer_key(),
-        ContractHash::from(child_streamer.into_hash().unwrap_or_default()),
+        &mappings::minter_key(),
+        ContractHash::from(minter.into_hash().unwrap_or_default()),
     );
 }
 
 #[no_mangle]
 fn transfer() {
-    let child_streamer_address: ContractHash = mappings::get_key(&mappings::child_streamer_key());
+    let minter_address: ContractHash = mappings::get_key(&mappings::minter_key());
 
     let recipient: Key = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
@@ -42,13 +42,13 @@ fn transfer() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(child_streamer_address, "transfer", args);
+    let ret: Result<(), u32> = runtime::call_contract(minter_address, "transfer", args);
     mappings::set_key(&mappings::transfer_key(), ret);
 }
 
 #[no_mangle]
 fn approve() {
-    let child_streamer_address: ContractHash = mappings::get_key(&mappings::child_streamer_key());
+    let minter_address: ContractHash = mappings::get_key(&mappings::minter_key());
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
     let args: RuntimeArgs = runtime_args! {
@@ -56,12 +56,12 @@ fn approve() {
         "amount" => amount,
     };
 
-    let _ret: () = runtime::call_contract(child_streamer_address, "approve", args);
+    let _ret: () = runtime::call_contract(minter_address, "approve", args);
 }
 
 #[no_mangle]
 fn allowance() {
-    let child_streamer_address: ContractHash = mappings::get_key(&mappings::child_streamer_key());
+    let minter_address: ContractHash = mappings::get_key(&mappings::minter_key());
     let owner: Key = runtime::get_named_arg("owner");
     let spender: Key = runtime::get_named_arg("spender");
     let args: RuntimeArgs = runtime_args! {
@@ -69,13 +69,13 @@ fn allowance() {
         "spender" => spender,
     };
 
-    let ret: U256 = runtime::call_contract(child_streamer_address, "allowance", args);
+    let ret: U256 = runtime::call_contract(minter_address, "allowance", args);
     mappings::set_key(&mappings::allowance(), ret);
 }
 
 #[no_mangle]
 fn transfer_from() {
-    let child_streamer_address: ContractHash = mappings::get_key(&mappings::child_streamer_key());
+    let minter_address: ContractHash = mappings::get_key(&mappings::minter_key());
 
     let owner: Key = runtime::get_named_arg("owner");
     let recipient: Key = runtime::get_named_arg("recipient");
@@ -87,13 +87,13 @@ fn transfer_from() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(child_streamer_address, "transfer_from", args);
+    let ret: Result<(), u32> = runtime::call_contract(minter_address, "transfer_from", args);
     mappings::set_key(&mappings::transfer_from_key(), ret);
 }
 
 #[no_mangle]
 fn increase_allowance() {
-    let child_streamer_address: ContractHash = mappings::get_key(&mappings::child_streamer_key());
+    let minter_address: ContractHash = mappings::get_key(&mappings::minter_key());
 
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
@@ -102,13 +102,13 @@ fn increase_allowance() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(child_streamer_address, "increase_allowance", args);
+    let ret: Result<(), u32> = runtime::call_contract(minter_address, "increase_allowance", args);
     mappings::set_key(&mappings::increase_allowance_key(), ret);
 }
 
 #[no_mangle]
 fn decrease_allowance() {
-    let child_streamer_address: ContractHash = mappings::get_key(&mappings::child_streamer_key());
+    let minter_address: ContractHash = mappings::get_key(&mappings::minter_key());
 
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
@@ -117,7 +117,7 @@ fn decrease_allowance() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(child_streamer_address, "decrease_allowance", args);
+    let ret: Result<(), u32> = runtime::call_contract(minter_address, "decrease_allowance", args);
     mappings::set_key(&mappings::decrease_allowance_key(), ret);
 }
 
@@ -128,7 +128,7 @@ fn get_entry_points() -> EntryPoints {
         vec![
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
-            Parameter::new("child_streamer", Key::cl_type()),
+            Parameter::new("minter", Key::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
@@ -204,13 +204,13 @@ fn call() {
     let (package_hash, access_token) = storage::create_contract_package_at_hash();
     let (contract_hash, _) =
         storage::add_contract_version(package_hash, get_entry_points(), Default::default());
-    let child_streamer: Key = runtime::get_named_arg("child_streamer");
+    let minter: Key = runtime::get_named_arg("minter");
 
     // Prepare constructor args
     let constructor_args = runtime_args! {
         "contract_hash" => contract_hash,
         "package_hash" => package_hash,
-        "child_streamer" => child_streamer
+        "minter" => minter
     };
 
     // Add the constructor group to the package hash with a single URef.

@@ -13,7 +13,7 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use child_streamer_crate::CHILDSTREAMER;
+use minter_crate::MINTER;
 use contract_utils::{ContractContext, OnChainContractStorage};
 
 #[derive(Default)]
@@ -25,7 +25,7 @@ impl ContractContext<OnChainContractStorage> for Token {
     }
 }
 
-impl CHILDSTREAMER<OnChainContractStorage> for Token {}
+impl MINTER<OnChainContractStorage> for Token {}
 impl Token {
     fn constructor(
         &mut self,
@@ -36,7 +36,7 @@ impl Token {
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-        CHILDSTREAMER::init(
+        MINTER::init(
             self,
             name,
             owner,

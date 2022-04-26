@@ -3,7 +3,7 @@ use casper_types::Key;
 
 use crate::TokenId;
 
-pub enum CHILDSTREAMEREvent {
+pub enum MINTEREvent {
     Mint {
         recipient: Key,
         token_ids: Vec<TokenId>,

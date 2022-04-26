@@ -1,8 +1,8 @@
 [workspace]
 members = [
-  # CHILDSTREAMER
-  "child-streamer/child-streamer",
-  "child-streamer/child-streamer-crate",
-  "child-streamer/child-streamer-proxy",
-  "child-streamer/child-streamer-tests",
+  # MINTER
+  "minter/minter",
+  "minter/minter-crate",
+  "minter/minter-proxy",
+  "minter/minter-tests",
 ]

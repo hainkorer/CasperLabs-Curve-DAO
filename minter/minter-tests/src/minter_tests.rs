@@ -1,23 +1,23 @@
 use casper_types::{account::AccountHash, Key, U256};
 use test_env::{TestContract, TestEnv};
 
-use crate::child_streamer_instance::CHILDSTREAMERInstance;
+use crate::minter_instance::MINTERInstance;
 
-const NAME: &str = "CHILDSTREAMER";
+const NAME: &str = "MINTER";
 const SYMBOL: &str = "ERC";
 const DECIMALS: u8 = 8;
 const REWARD_COUNT: u64 = 1;
 
 fn deploy() -> (
     TestEnv,
-    CHILDSTREAMERInstance,
+    MINTERInstance,
     AccountHash,
-    CHILDSTREAMERInstance,
-    CHILDSTREAMERInstance,
+    MINTERInstance,
+    MINTERInstance,
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let token: TestContract = CHILDSTREAMERInstance::new(
+    let token: TestContract = MINTERInstance::new(
         &env,
         NAME,
         owner,
@@ -27,15 +27,15 @@ fn deploy() -> (
         REWARD_COUNT.into(),
     );
     let test_contract: TestContract =
-        CHILDSTREAMERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
+        MINTERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
     let test_contract2: TestContract =
-        CHILDSTREAMERInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
+        MINTERInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
     (
         env,
-        CHILDSTREAMERInstance::instance(token),
+        MINTERInstance::instance(token),
         owner,
-        CHILDSTREAMERInstance::instance(test_contract),
-        CHILDSTREAMERInstance::instance(test_contract2),
+        MINTERInstance::instance(test_contract),
+        MINTERInstance::instance(test_contract2),
     )
 }
 
@@ -58,7 +58,7 @@ fn deploy() -> (
 // }
 
 // #[test]
-// fn test_child_streamer_approve() {
+// fn test_minter_approve() {
 //     let (env, token, owner, _, _) = deploy();
 //     let user = env.next_user();
 //     let amount = 10.into();
@@ -70,7 +70,7 @@ fn deploy() -> (
 // }
 
 // #[test]
-// fn test_child_streamer_mint() {
+// fn test_minter_mint() {
 //     let (env, token, owner, _, _) = deploy();
 //     let user = env.next_user();
 //     let amount = 10.into();
@@ -81,7 +81,7 @@ fn deploy() -> (
 // }
 
 // #[test]
-// fn test_child_streamer_burn() {
+// fn test_minter_burn() {
 //     let (env, token, owner, _, _) = deploy();
 //     let user = env.next_user();
 //     let amount = 10.into();
@@ -95,7 +95,7 @@ fn deploy() -> (
 // }
 
 // #[test]
-// fn test_child_streamer_transfer() {
+// fn test_minter_transfer() {
 //     let (env, token, owner, proxy, _proxy2) = deploy();
 //     let package_hash = proxy.package_hash_result();
 //     let user = env.next_user();
@@ -125,7 +125,7 @@ fn deploy() -> (
 
 // #[test]
 // #[should_panic]
-// fn test_child_streamer_transfer_with_same_sender_and_recipient() {
+// fn test_minter_transfer_with_same_sender_and_recipient() {
 //     let (env, token, owner, proxy, _proxy2) = deploy();
 //     let package_hash = proxy.package_hash_result();
 //     let user = env.next_user();
@@ -156,7 +156,7 @@ fn deploy() -> (
 // }
 
 // #[test]
-// fn test_child_streamer_transfer_from() {
+// fn test_minter_transfer_from() {
 //     let (env, token, owner, proxy, proxy2) = deploy();
 //     let package_hash = proxy.package_hash_result();
 //     let package_hash2 = proxy2.package_hash_result();
@@ -191,7 +191,7 @@ fn deploy() -> (
 
 // #[test]
 // #[should_panic]
-// fn test_child_streamer_transfer_from_too_much() {
+// fn test_minter_transfer_from_too_much() {
 //     let (env, token, owner, proxy, proxy2) = deploy();
 //     let package_hash = proxy.package_hash_result();
 //     let package_hash2 = proxy2.package_hash_result();
@@ -212,7 +212,7 @@ fn deploy() -> (
 // }
 
 // #[test]
-// fn test_child_streamer_increase_allowance() {
+// fn test_minter_increase_allowance() {
 //     let (_, token, owner, proxy, proxy2) = deploy();
 //     let package_hash = proxy.package_hash_result();
 //     let package_hash2 = proxy2.package_hash_result();
@@ -239,7 +239,7 @@ fn deploy() -> (
 // }
 
 // #[test]
-// fn test_child_streamer_decrease_allowance() {
+// fn test_minter_decrease_allowance() {
 //     let (_, token, owner, proxy, proxy2) = deploy();
 //     let package_hash = proxy.package_hash_result();
 //     let package_hash2 = proxy2.package_hash_result();

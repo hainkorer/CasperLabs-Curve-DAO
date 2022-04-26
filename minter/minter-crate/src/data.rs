@@ -10,7 +10,7 @@ use casper_contract::{
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
 use contract_utils::{get_key, key_to_str, set_key, Dict};
 
-use crate::event::CHILDSTREAMEREvent;
+use crate::event::MINTEREvent;
 
 const BALANCES_DICT: &str = "balances";
 pub const NONCES_DICT: &str = "nonces";
@@ -156,34 +156,34 @@ pub fn contract_package_hash() -> ContractPackageHash {
     package_hash.unwrap_or_revert()
 }
 
-pub fn emit(event: &CHILDSTREAMEREvent) {
+pub fn emit(event: &MINTEREvent) {
     let mut events = Vec::new();
     let package = contract_package_hash();
     match event {
-        CHILDSTREAMEREvent::Mint {
+        MINTEREvent::Mint {
             recipient,
             token_ids,
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
                 param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "child_streamer_mint_remove_one".to_string());
+                param.insert("event_type", "minter_mint_remove_one".to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
             }
         }
-        CHILDSTREAMEREvent::Burn { owner, token_ids } => {
+        MINTEREvent::Burn { owner, token_ids } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
                 param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "child_streamer_burn_remove_one".to_string());
+                param.insert("event_type", "minter_burn_remove_one".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
             }
         }
-        CHILDSTREAMEREvent::Approve {
+        MINTEREvent::Approve {
             owner,
             spender,
             token_ids,
@@ -191,14 +191,14 @@ pub fn emit(event: &CHILDSTREAMEREvent) {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
                 param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "child_streamer_approve_token".to_string());
+                param.insert("event_type", "minter_approve_token".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("spender", spender.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
             }
         }
-        CHILDSTREAMEREvent::Transfer {
+        MINTEREvent::Transfer {
             sender,
             recipient,
             token_ids,
@@ -206,17 +206,17 @@ pub fn emit(event: &CHILDSTREAMEREvent) {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
                 param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "child_streamer_transfer_token".to_string());
+                param.insert("event_type", "minter_transfer_token".to_string());
                 param.insert("sender", sender.to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
             }
         }
-        CHILDSTREAMEREvent::MetadataUpdate { token_id } => {
+        MINTEREvent::MetadataUpdate { token_id } => {
             let mut param = BTreeMap::new();
             param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-            param.insert("event_type", "child_streamer_metadata_update".to_string());
+            param.insert("event_type", "minter_metadata_update".to_string());
             param.insert("token_id", token_id.to_string());
             events.push(param);
         }

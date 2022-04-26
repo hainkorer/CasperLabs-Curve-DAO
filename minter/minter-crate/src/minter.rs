@@ -13,7 +13,7 @@ use cryptoxide::ed25519;
 use hex::encode;
 use renvm_sig::{hash_message, keccak256};
 
-pub enum CHILDSTREAMEREvent {
+pub enum MINTEREvent {
     Approval {
         owner: Key,
         spender: Key,
@@ -26,19 +26,19 @@ pub enum CHILDSTREAMEREvent {
     },
 }
 
-impl CHILDSTREAMEREvent {
+impl MINTEREvent {
     pub fn type_name(&self) -> String {
         match self {
-            CHILDSTREAMEREvent::Approval {
+            MINTEREvent::Approval {
                 owner: _,
                 spender: _,
                 value: _,
             } => "approve",
-            CHILDSTREAMEREvent::Transfer {
+            MINTEREvent::Transfer {
                 from: _,
                 to: _,
                 value: _,
-            } => "child_streamer_transfer",
+            } => "minter_transfer",
         }
         .to_string()
     }
@@ -46,28 +46,28 @@ impl CHILDSTREAMEREvent {
 
 #[repr(u16)]
 pub enum Error {
-    /// 65,536 for (UniswapV2 Core CHILDSTREAMER EXPIRED)
-    UniswapV2CoreCHILDSTREAMEREXPIRED = 0,
-    /// 65,537 for (UniswapV2 Core CHILDSTREAMER Signature Verification Failed)
-    UniswapV2CoreCHILDSTREAMERSignatureVerificationFailed = 1,
-    /// 65,538 for (UniswapV2 Core CHILDSTREAMER OverFlow1)
-    UniswapV2CoreCHILDSTREAMEROverFlow1 = 2,
-    /// 65,539 for (UniswapV2 Core CHILDSTREAMER OverFlow2)
-    UniswapV2CoreCHILDSTREAMEROverFlow2 = 3,
-    /// 65,540 for (UniswapV2 Core CHILDSTREAMER OverFlow3)
-    UniswapV2CoreCHILDSTREAMEROverFlow3 = 4,
-    /// 65,541 for (UniswapV2 Core CHILDSTREAMER OverFlow4)
-    UniswapV2CoreCHILDSTREAMEROverFlow4 = 5,
-    /// 65,542 for (UniswapV2 Core CHILDSTREAMER UnderFlow1)
-    UniswapV2CoreCHILDSTREAMERUnderFlow1 = 6,
-    /// 65,543 for (UniswapV2 Core CHILDSTREAMER UnderFlow2)
-    UniswapV2CoreCHILDSTREAMERUnderFlow2 = 7,
-    /// 65,544 for (UniswapV2 Core CHILDSTREAMER UnderFlow3)
-    UniswapV2CoreCHILDSTREAMERUnderFlow3 = 8,
-    /// 65,545 for (UniswapV2 Core CHILDSTREAMER UnderFlow4)
-    UniswapV2CoreCHILDSTREAMERUnderFlow4 = 9,
-    /// 65,546 for (UniswapV2 Core CHILDSTREAMER UnderFlow5)
-    UniswapV2CoreCHILDSTREAMERUnderFlow5 = 10,
+    /// 65,536 for (UniswapV2 Core MINTER EXPIRED)
+    UniswapV2CoreMINTEREXPIRED = 0,
+    /// 65,537 for (UniswapV2 Core MINTER Signature Verification Failed)
+    UniswapV2CoreMINTERSignatureVerificationFailed = 1,
+    /// 65,538 for (UniswapV2 Core MINTER OverFlow1)
+    UniswapV2CoreMINTEROverFlow1 = 2,
+    /// 65,539 for (UniswapV2 Core MINTER OverFlow2)
+    UniswapV2CoreMINTEROverFlow2 = 3,
+    /// 65,540 for (UniswapV2 Core MINTER OverFlow3)
+    UniswapV2CoreMINTEROverFlow3 = 4,
+    /// 65,541 for (UniswapV2 Core MINTER OverFlow4)
+    UniswapV2CoreMINTEROverFlow4 = 5,
+    /// 65,542 for (UniswapV2 Core MINTER UnderFlow1)
+    UniswapV2CoreMINTERUnderFlow1 = 6,
+    /// 65,543 for (UniswapV2 Core MINTER UnderFlow2)
+    UniswapV2CoreMINTERUnderFlow2 = 7,
+    /// 65,544 for (UniswapV2 Core MINTER UnderFlow3)
+    UniswapV2CoreMINTERUnderFlow3 = 8,
+    /// 65,545 for (UniswapV2 Core MINTER UnderFlow4)
+    UniswapV2CoreMINTERUnderFlow4 = 9,
+    /// 65,546 for (UniswapV2 Core MINTER UnderFlow5)
+    UniswapV2CoreMINTERUnderFlow5 = 10,
 }
 
 impl From<Error> for ApiError {
@@ -76,7 +76,7 @@ impl From<Error> for ApiError {
     }
 }
 
-pub trait CHILDSTREAMER<Storage: ContractStorage>: ContractContext<Storage> {
+pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(
         &mut self,
         name: String,
@@ -119,17 +119,17 @@ pub trait CHILDSTREAMER<Storage: ContractStorage>: ContractContext<Storage> {
             &sender,
             sender_balance
                 .checked_sub(amount)
-                .ok_or(Error::UniswapV2CoreCHILDSTREAMERUnderFlow5)
+                .ok_or(Error::UniswapV2CoreMINTERUnderFlow5)
                 .unwrap_or_revert(),
         );
         balances.set(
             &recipient,
             recipient_balance
                 .checked_add(amount)
-                .ok_or(Error::UniswapV2CoreCHILDSTREAMEROverFlow4)
+                .ok_or(Error::UniswapV2CoreMINTEROverFlow4)
                 .unwrap_or_revert(),
         );
-        self.emit(&CHILDSTREAMEREvent::Transfer {
+        self.emit(&MINTEREvent::Transfer {
             from: sender,
             to: recipient,
             value: amount,
@@ -137,27 +137,27 @@ pub trait CHILDSTREAMER<Storage: ContractStorage>: ContractContext<Storage> {
         Ok(())
     }
 
-    fn emit(&mut self, child_streamer_event: &CHILDSTREAMEREvent) {
+    fn emit(&mut self, minter_event: &MINTEREvent) {
         let mut events = Vec::new();
         let package = data::get_package_hash();
-        match child_streamer_event {
-            CHILDSTREAMEREvent::Approval {
+        match minter_event {
+            MINTEREvent::Approval {
                 owner,
                 spender,
                 value,
             } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
-                event.insert("event_type", child_streamer_event.type_name());
+                event.insert("event_type", minter_event.type_name());
                 event.insert("owner", owner.to_string());
                 event.insert("spender", spender.to_string());
                 event.insert("value", value.to_string());
                 events.push(event);
             }
-            CHILDSTREAMEREvent::Transfer { from, to, value } => {
+            MINTEREvent::Transfer { from, to, value } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
-                event.insert("event_type", child_streamer_event.type_name());
+                event.insert("event_type", minter_event.type_name());
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
                 event.insert("value", value.to_string());

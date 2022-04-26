@@ -13,33 +13,33 @@ use test_env::{TestContract, TestEnv};
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
-pub struct CHILDSTREAMERInstance(TestContract);
+pub struct MINTERInstance(TestContract);
 
-impl CHILDSTREAMERInstance {
-    pub fn instance(child_streamer: TestContract) -> CHILDSTREAMERInstance {
-        CHILDSTREAMERInstance(child_streamer)
+impl MINTERInstance {
+    pub fn instance(minter: TestContract) -> MINTERInstance {
+        MINTERInstance(minter)
     }
 
-    pub fn proxy(env: &TestEnv, child_streamer: Key, sender: AccountHash) -> TestContract {
+    pub fn proxy(env: &TestEnv, minter: Key, sender: AccountHash) -> TestContract {
         TestContract::new(
             env,
-            "child-streamer-proxy-token.wasm",
+            "minter-proxy-token.wasm",
             "proxy_test",
             sender,
             runtime_args! {
-                "child_streamer" => child_streamer
+                "minter" => minter
             },
             0,
         )
     }
-    pub fn proxy2(env: &TestEnv, child_streamer: Key, sender: AccountHash) -> TestContract {
+    pub fn proxy2(env: &TestEnv, minter: Key, sender: AccountHash) -> TestContract {
         TestContract::new(
             env,
-            "child-streamer-proxy-token.wasm",
+            "minter-proxy-token.wasm",
             "proxy_test2",
             sender,
             runtime_args! {
-                "child_streamer" => child_streamer
+                "minter" => minter
             },
             0,
         )
@@ -56,7 +56,7 @@ impl CHILDSTREAMERInstance {
     ) -> TestContract {
         TestContract::new(
             env,
-            "child-streamer-token.wasm",
+            "minter-token.wasm",
             contract_name,
             sender,
             runtime_args! {
@@ -97,10 +97,10 @@ impl CHILDSTREAMERInstance {
     //     symbol: &str,
     //     decimals: u8,
     //     initial_supply: U256,
-    // ) -> CHILDSTREAMERInstance {
-    //     CHILDSTREAMERInstance(TestContract::new(
+    // ) -> MINTERInstance {
+    //     MINTERInstance(TestContract::new(
     //         env,
-    //         "child_streamer-token.wasm",
+    //         "minter-token.wasm",
     //         contract_name,
     //         sender,
     //         runtime_args! {
