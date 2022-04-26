@@ -1,0 +1,4 @@
+target
+Cargo.lock
+./liquid-locker/liquid-locker-tests/wasm/*.wasm
+./liquid-helper/liquid-helper-tests/wasm/*.wasm
