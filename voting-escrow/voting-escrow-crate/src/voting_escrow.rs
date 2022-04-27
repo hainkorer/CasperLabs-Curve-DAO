@@ -12,8 +12,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    account::AccountHash, runtime_args, ApiError, ContractHash, ContractPackageHash, Key,
-    RuntimeArgs, URef, U128, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use contract_utils::{ContractContext, ContractStorage};
 
@@ -59,7 +58,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let mut point_history: Point = PointHistory::instance().get(&U256::from(0));
         // self.point_history[0].blk = block.number
         point_history.ts = U256::from(u64::from(get_blocktime()));
-        set_controller(self.get_caller());
         set_controller(self.get_caller());
         set_transfers_enabled(true);
 
@@ -118,27 +116,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn apply_smart_wallet_checker(&self) {
         self.only_admin();
         set_smart_wallet_checker(get_future_smart_wallet_checker());
-    }
-
-    /// @notice Check if the call is from a whitelisted smart contract, revert if not
-    /// @param addr Address to be checked
-    fn _assert_not_contract(&self, addr: Key) {
-        if AccountHash(addr.into_hash().unwrap_or_revert()) != runtime::get_caller() {
-            let checker: Key = get_smart_wallet_checker();
-            if checker != zero_address() {
-                if runtime::call_versioned_contract(
-                    checker.into_hash().unwrap_or_revert().into(),
-                    None,
-                    "check",
-                    runtime_args! {
-                        "addr" => addr
-                    },
-                ) {
-                    return;
-                }
-            }
-            runtime::revert(ApiError::from(Error::SmartContractDepositorsNotAllowed));
-        }
     }
 
     /// @notice Get the most recently recorded rate of voting power decrease for `addr`
@@ -374,7 +351,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     ) {
         let mut locked: LockedBalance = locked_balance;
         let supply_before: U256 = get_supply();
-
         set_supply(supply_before.checked_add(value).unwrap_or_revert());
         let old_locked: LockedBalance = locked;
         // Adding to existing lock, or if a lock is expired - creating a new one
@@ -398,7 +374,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 "transfer_from",
                 runtime_args! {
                     "owner" => addr,
-                    "recepient" => Key::from(get_package_hash()),
+                    "recipient" => Key::from(get_package_hash()),
                     "amount" => value
                 },
             );
@@ -471,37 +447,36 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(ApiError::from(Error::IsLocked));
         }
         set_lock(true);
-        self._assert_not_contract(self.get_caller());
-        // let unlock_time: U256 = unlock_time
-        //     .checked_div(WEEK)
-        //     .unwrap_or_revert()
-        //     .checked_mul(WEEK)
-        //     .unwrap_or_revert(); // Locktime is rounded down to weeks
-        // let locked: LockedBalance = Locked::instance().get(&self.get_caller());
-        // if !(value > 0.into()) {
-        //     runtime::revert(ApiError::from(Error::NeedNonZeroValue));
-        // }
-        // if !(locked.amount == 0.into()) {
-        //     runtime::revert(ApiError::from(Error::WithdrawOldTokensFirst));
-        // }
-        // if !(unlock_time > U256::from(u64::from(get_blocktime()))) {
-        //     runtime::revert(ApiError::from(Error::CanOnlyLockUntilTimeInTheFuture));
-        // }
-        // if !(unlock_time
-        //     <= U256::from(u64::from(get_blocktime()))
-        //         .checked_add(MAXTIME)
-        //         .unwrap_or_revert())
-        // {
-        //     runtime::revert(ApiError::from(Error::VotingLockCanBe4YearsMax));
-        // }
-        // self._deposit_for(
-        //     self.get_caller(),
-        //     value,
-        //     unlock_time,
-        //     locked,
-        //     CREATE_LOCK_TYPE,
-        // );
-        // set_lock(false);
+        let unlock_time: U256 = unlock_time
+            .checked_div(WEEK)
+            .unwrap_or_revert()
+            .checked_mul(WEEK)
+            .unwrap_or_revert(); // Locktime is rounded down to weeks
+        let locked: LockedBalance = Locked::instance().get(&self.get_caller());
+        if !(value > 0.into()) {
+            runtime::revert(ApiError::from(Error::NeedNonZeroValue));
+        }
+        if !(locked.amount == 0.into()) {
+            runtime::revert(ApiError::from(Error::WithdrawOldTokensFirst));
+        }
+        if !(unlock_time > U256::from(u64::from(get_blocktime()))) {
+            runtime::revert(ApiError::from(Error::CanOnlyLockUntilTimeInTheFuture));
+        }
+        if !(unlock_time
+            <= U256::from(u64::from(get_blocktime()))
+                .checked_add(MAXTIME)
+                .unwrap_or_revert())
+        {
+            runtime::revert(ApiError::from(Error::VotingLockCanBe4YearsMax));
+        }
+        self._deposit_for(
+            self.get_caller(),
+            value,
+            unlock_time,
+            locked,
+            CREATE_LOCK_TYPE,
+        );
+        set_lock(false);
     }
 
     /// @notice Deposit `_value` additional tokens for `self.get_caller()` without modifying the unlock time
@@ -511,7 +486,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(ApiError::from(Error::IsLocked));
         }
         set_lock(true);
-        self._assert_not_contract(self.get_caller());
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
         if !(value > 0.into()) {
             runtime::revert(ApiError::from(Error::NeedNonZeroValue));
@@ -539,7 +513,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(ApiError::from(Error::IsLocked));
         }
         set_lock(true);
-        self._assert_not_contract(self.get_caller());
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
         let unlock_time: U256 = unlock_time
             .checked_div(WEEK)
@@ -851,7 +824,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// Dummy methods for compatibility with Aragon
     /// @dev Dummy method required for Aragon compatibility
     fn change_controller(&self, new_controller: Key) {
-        if !(self.get_caller() == get_controller()) {
+        if self.get_caller() == get_controller() {
             set_controller(new_controller);
         }
     }

@@ -1,5 +1,5 @@
 use casper_types::{
-    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, URef, U256,
+    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use test_env::{TestContract, TestEnv};
 
@@ -123,6 +123,94 @@ impl VOTINGESCROWInstance {
             },
             0,
         );
+    }
+
+    pub fn increase_amount(&self, owner: AccountHash, value: U256) {
+        self.0.call_contract(
+            owner,
+            "increase_amount",
+            runtime_args! {
+                "value" => value
+            },
+            0,
+        );
+    }
+
+    pub fn increase_unlock_time(&self, owner: AccountHash, unlock_time: U256) {
+        self.0.call_contract(
+            owner,
+            "increase_unlock_time",
+            runtime_args! {
+                "unlock_time" => unlock_time
+            },
+            0,
+        );
+    }
+
+    pub fn withdraw(&self, owner: AccountHash, time: u64) {
+        self.0
+            .call_contract(owner, "withdraw", runtime_args! {}, time);
+    }
+
+    pub fn balance_of_js_client(&self, owner: AccountHash, addr: Key, t: U256) {
+        self.0.call_contract(
+            owner,
+            "balance_of_js_client",
+            runtime_args! {
+                "addr" => addr,
+                "t" => t
+            },
+            0,
+        );
+    }
+
+    pub fn balance_of_at_js_client(&self, owner: AccountHash, addr: Key, block: U256) {
+        self.0.call_contract(
+            owner,
+            "balance_of_at_js_client",
+            runtime_args! {
+                "addr" => addr,
+                "block" => block
+            },
+            0,
+        );
+    }
+
+    pub fn total_supply_js_client(&self, owner: AccountHash, t: U256) {
+        self.0.call_contract(
+            owner,
+            "total_supply_js_client",
+            runtime_args! {
+                "t" => t
+            },
+            0,
+        );
+    }
+
+    pub fn total_supply_at_js_client(&self, owner: AccountHash, block: U256) {
+        self.0.call_contract(
+            owner,
+            "total_supply_at_js_client",
+            runtime_args! {
+                "block" => block
+            },
+            0,
+        );
+    }
+
+    pub fn change_controller(&self, owner: AccountHash, new_controller: Key) {
+        self.0.call_contract(
+            owner,
+            "change_controller",
+            runtime_args! {
+                "new_controller" => new_controller
+            },
+            0,
+        );
+    }
+
+    pub fn package_hash(&self) -> [u8; 32] {
+        self.0.package_hash()
     }
 
     // Get stored key values
