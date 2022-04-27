@@ -32,22 +32,22 @@ impl ERC20CRVInstance {
             },
         )
     }
-    pub fn proxy(
-        env: &TestEnv,
-        contract_name: &str,
-        sender: AccountHash,
-        erc20_crv: Key,
-    ) -> TestContract {
-        TestContract::new(
-            env,
-            "erc20_crv_test.wasm",
-            contract_name,
-            sender,
-            runtime_args! {
-                "erc20_crv" => erc20_crv
-            },
-        )
-    }
+    // pub fn proxy(
+    //     env: &TestEnv,
+    //     contract_name: &str,
+    //     sender: AccountHash,
+    //     erc20_crv: Key,
+    // ) -> TestContract {
+    //     TestContract::new(
+    //         env,
+    //         "erc20_crv_test.wasm",
+    //         contract_name,
+    //         sender,
+    //         runtime_args! {
+    //             "erc20_crv" => erc20_crv
+    //         },
+    //     )
+    // }
     pub fn set_minter(&self, sender: AccountHash, _minter: Key) {
         self.0.call_contract(
             sender,
@@ -88,6 +88,14 @@ impl ERC20CRVInstance {
             },
         );
     }
+    pub fn start_epoch_time_write_js_client(&self, sender: AccountHash) {
+        self.0.call_contract(
+            sender,
+            "start_epoch_time_write_js_client",
+            runtime_args! {
+            },
+        );
+    }
     pub fn future_epoch_time_write(&self, sender: AccountHash) {
         self.0.call_contract(
             sender,
@@ -96,10 +104,27 @@ impl ERC20CRVInstance {
             },
         );
     }
+    pub fn future_epoch_time_write_js_client(&self, sender: AccountHash) {
+        self.0.call_contract(
+            sender,
+            "future_epoch_time_write_js_client",
+            runtime_args! {
+            },
+        );
+    }
     pub fn available_supply(&self, sender: AccountHash) {
         self.0.call_contract(
             sender,
             "available_supply",
+            runtime_args! {
+            },
+        );
+
+    }
+    pub fn available_supply_js_client(&self, sender: AccountHash) {
+        self.0.call_contract(
+            sender,
+            "available_supply_js_client",
             runtime_args! {
             },
         );
@@ -115,8 +140,36 @@ impl ERC20CRVInstance {
             },
         );
     }
-
-
+    pub fn mintable_in_timeframe_js_client(&self, sender: AccountHash,start:U256,end:U256) {
+        self.0.call_contract(
+            sender,
+            "mintable_in_timeframe_js_client",
+            runtime_args! {
+                "start"=>start,
+                "end"=>end
+            },
+        );
+    }
+    pub fn mint_crv(&self, sender: AccountHash,to:Key,value:U256) {
+        self.0.call_contract(
+            sender,
+            "mint_crv",
+            runtime_args! {
+                "to"=>to,
+                "value"=>value
+            },
+        );
+    }
+    pub fn mint_crv_js_client(&self, sender: AccountHash,to:Key,value:U256) {
+        self.0.call_contract(
+            sender,
+            "mint_crv_js_client",
+            runtime_args! {
+                "to"=>to,
+                "value"=>value
+            },
+        );
+    }
 
     // Result methods
     pub fn result<T: CLTyped + FromBytes>(&self) -> T {

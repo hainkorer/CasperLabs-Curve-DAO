@@ -29,6 +29,8 @@ pub const INIT_SUPPLY: &str = "init_supply";
 pub const ADMIN: &str = "admin";
 pub const MINTER: &str = "minter";
 
+
+
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {
         Some(key) => {
@@ -41,13 +43,9 @@ pub fn set_result<T: ToBytes + CLTyped>(value: T) {
         }
     }
 }
-// pub fn set_mining_epoch(mining_epoch: i128) {
-//     set_key(MINING_EPOCH, mining_epoch);
-// }
 
-// pub fn get_mining_epoch() -> i128 {
-//     get_key(MINING_EPOCH).unwrap_or_revert()
-// }
+
+
 
 pub fn set_start_eporch_time(start_eporch_time: U256) {
     set_key(START_EPOCH_TIME, start_eporch_time);
