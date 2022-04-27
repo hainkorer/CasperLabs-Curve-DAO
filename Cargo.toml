@@ -5,4 +5,9 @@ members = [
   "minter/minter-crate",
   "minter/minter-proxy",
   "minter/minter-tests",
+  # GAUGE CONTROLLER
+  "gauge-controller/gauge-controller",
+  "gauge-controller/gauge-controller-crate",
+  "gauge-controller/gauge-controller-proxy",
+  "gauge-controller/gauge-controller-tests",
 ]

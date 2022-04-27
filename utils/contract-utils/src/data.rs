@@ -7,7 +7,7 @@ use casper_contract::{
 };
 use casper_types::{
     bytesrepr::{FromBytes, ToBytes},
-    ApiError, CLTyped, Key, URef,
+    ApiError, CLTyped, Key, URef, U256,
 };
 
 pub struct Dict {
@@ -42,6 +42,9 @@ impl Dict {
     pub fn get_by_keys<T: CLTyped + FromBytes>(&self, keys: (&Key, &Key)) -> Option<T> {
         self.get(&keys_to_str(keys.0, keys.1))
     }
+    // pub fn get_by_key_and_int<T: CLTyped + FromBytes>(&self, keys: (&Key, &U256)) -> Option<T> {
+    //     self.get(&key_and_value_to_str(keys.0, keys.1))
+    // }
 
     pub fn set<T: CLTyped + ToBytes>(&self, key: &str, value: T) {
         storage::dictionary_put(self.uref, key, Some(value));
@@ -54,6 +57,10 @@ impl Dict {
     pub fn set_by_keys<T: CLTyped + ToBytes>(&self, keys: (&Key, &Key), value: T) {
         self.set(&keys_to_str(keys.0, keys.1), value)
     }
+
+    // pub fn set_by_key_and_int<T: CLTyped + ToBytes>(&self, keys: (&Key, &U256), value: T) {
+    //     self.set(&key_and_value_to_str(keys.0, keys.1), value)
+    // }
 
     pub fn remove<T: CLTyped + ToBytes>(&self, key: &str) {
         storage::dictionary_put(self.uref, key, Option::<T>::None);
@@ -79,6 +86,15 @@ pub fn key_to_str(key: &Key) -> String {
 pub fn keys_to_str(key_a: &Key, key_b: &Key) -> String {
     let mut bytes_a = key_a.to_bytes().unwrap_or_revert();
     let mut bytes_b = key_b.to_bytes().unwrap_or_revert();
+
+    bytes_a.append(&mut bytes_b);
+
+    let bytes = runtime::blake2b(bytes_a);
+    hex::encode(bytes)
+}
+pub fn values_to_str<T: CLTyped + ToBytes>(value_a: &T, value_b: &T) -> String {
+    let mut bytes_a = value_a.to_bytes().unwrap_or_revert();
+    let mut bytes_b = value_b.to_bytes().unwrap_or_revert();
 
     bytes_a.append(&mut bytes_b);
 

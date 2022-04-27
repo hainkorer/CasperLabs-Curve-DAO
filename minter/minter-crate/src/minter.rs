@@ -36,7 +36,7 @@ impl MINTEREvent {
 
 #[repr(u16)]
 pub enum Error {
-    /// 65,536 for (UniswapV2 Core MINTER EXPIRED)
+    /// 65,536 for (Minter Gauge Is Not Added)
     MinterGaugeIsNotAdded = 0,
 }
 
