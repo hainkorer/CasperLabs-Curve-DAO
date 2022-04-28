@@ -16,7 +16,7 @@ use casper_types::{
     U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
-use gauge_controller_crate::GAUGECOLTROLLER;
+use gauge_controller_crate::GAUGECONLTROLLER;
 
 #[derive(Default)]
 struct Token(OnChainContractStorage);
@@ -27,7 +27,7 @@ impl ContractContext<OnChainContractStorage> for Token {
     }
 }
 
-impl GAUGECOLTROLLER<OnChainContractStorage> for Token {}
+impl GAUGECONLTROLLER<OnChainContractStorage> for Token {}
 impl Token {
     fn constructor(
         &mut self,
@@ -36,7 +36,7 @@ impl Token {
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-        GAUGECOLTROLLER::init(
+        GAUGECONLTROLLER::init(
             self,
             token,
             voting_escrow,

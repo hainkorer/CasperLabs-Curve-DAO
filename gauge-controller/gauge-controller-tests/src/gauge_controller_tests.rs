@@ -1,20 +1,20 @@
 use casper_types::{account::AccountHash, Key, U256};
 use test_env::{TestContract, TestEnv};
 
-use crate::gauge_controller_instance::GAUGECOLTROLLERInstance;
+use crate::gauge_controller_instance::GAUGECONLTROLLERInstance;
 
-const NAME: &str = "GAUGECOLTROLLER";
+const NAME: &str = "GAUGECONLTROLLER";
 
 fn deploy() -> (
     TestEnv,
-    GAUGECOLTROLLERInstance,
+    GAUGECONLTROLLERInstance,
     AccountHash,
-    // GAUGECOLTROLLERInstance,
-    // GAUGECOLTROLLERInstance,
+    // GAUGECONLTROLLERInstance,
+    // GAUGECONLTROLLERInstance,
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let token: TestContract = GAUGECOLTROLLERInstance::new(
+    let token: TestContract = GAUGECONLTROLLERInstance::new(
         &env,
         NAME,
         owner,
@@ -22,15 +22,15 @@ fn deploy() -> (
         Key::from(owner),
     );
     // let test_contract: TestContract =
-    //     GAUGECOLTROLLERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
+    //     GAUGECONLTROLLERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
     // let test_contract2: TestContract =
-    //     GAUGECOLTROLLERInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
+    //     GAUGECONLTROLLERInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
     (
         env,
-        GAUGECOLTROLLERInstance::instance(token),
+        GAUGECONLTROLLERInstance::instance(token),
         owner,
-        // GAUGECOLTROLLERInstance::instance(test_contract),
-        // GAUGECOLTROLLERInstance::instance(test_contract2),
+        // GAUGECONLTROLLERInstance::instance(test_contract),
+        // GAUGECONLTROLLERInstance::instance(test_contract2),
     )
 }
 

@@ -1,8 +1,8 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, admin, time_total, Point, CHANGESSUM, CHANGESWEIGHT, GAUGES, GAUGETYPENAMES, GAUGETYPES_,
-    LASTUSERVOTE, MULTIPLIER, POINTSSUM, POINTSTOTAL, POINTSTYPEWEIGHT, POINTSWEIGHT, TIMESUM,
-    TIMETYPEWEIGHT, TIMEWEIGHT, VOTEUSERPOWER, VOTEUSERSLOPES, WEEK,
+    self, admin, time_total, Point, ChangeSum, ChangesWeight, Gauges, GaugeTypeNames, GaugeTypes_,
+    LastUserVote, MULTIPLIER, PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum,
+    TimeTypeWeight, TimeWeight, VoteUserPower, VoteUserSlopes, WEEK,
 };
 use alloc::collections::BTreeMap;
 use alloc::{format, string::String, vec::Vec};
@@ -17,7 +17,7 @@ use cryptoxide::ed25519;
 use hex::encode;
 use renvm_sig::{hash_message, keccak256};
 
-pub enum GAUGECOLTROLLEREvent {
+pub enum GAUGECONLTROLLEREvent {
     Minted {
         recipient: Key,
         gauge: Key,
@@ -43,23 +43,23 @@ pub enum GAUGECOLTROLLEREvent {
     },
 }
 
-impl GAUGECOLTROLLEREvent {
+impl GAUGECONLTROLLEREvent {
     pub fn type_name(&self) -> String {
         match self {
-            GAUGECOLTROLLEREvent::Minted {
+            GAUGECONLTROLLEREvent::Minted {
                 recipient: _,
                 gauge: _,
                 minted: _,
             } => "minted",
-            GAUGECOLTROLLEREvent::CommitOwnership { admin: _ } => "CommitOwnership",
-            GAUGECOLTROLLEREvent::ApplyOwnership { admin: _ } => "ApplyOwnership",
-            GAUGECOLTROLLEREvent::NewTypeWeight {
+            GAUGECONLTROLLEREvent::CommitOwnership { admin: _ } => "CommitOwnership",
+            GAUGECONLTROLLEREvent::ApplyOwnership { admin: _ } => "ApplyOwnership",
+            GAUGECONLTROLLEREvent::NewTypeWeight {
                 type_id: _,
                 time: _,
                 weight: _,
                 total_weight: _,
             } => "NewTypeWeight",
-            GAUGECOLTROLLEREvent::NewGaugeWeight {
+            GAUGECONLTROLLEREvent::NewGaugeWeight {
                 gauge_address: _,
                 time: _,
                 weight: _,
@@ -96,7 +96,7 @@ impl From<Error> for ApiError {
     }
 }
 
-pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
+pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// """
     /// @notice Contract constructor
     /// @param _token `ERC20CRV` contract address
@@ -126,21 +126,21 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_time_total(
             U256::from(u64::from(runtime::get_blocktime())) / data::WEEK * data::WEEK,
         );
-        GAUGETYPENAMES::init();
-        GAUGETYPES_::init();
-        VOTEUSERSLOPES::init();
-        VOTEUSERPOWER::init();
-        LASTUSERVOTE::init();
-        POINTSWEIGHT::init();
-        CHANGESWEIGHT::init();
-        TIMEWEIGHT::init();
-        GAUGES::init();
-        TIMESUM::init();
-        POINTSSUM::init();
-        CHANGESSUM::init();
-        POINTSTOTAL::init();
-        POINTSTYPEWEIGHT::init();
-        TIMETYPEWEIGHT::init();
+        GaugeTypeNames::init();
+        GaugeTypes_::init();
+        VoteUserSlopes::init();
+        VoteUserPower::init();
+        LastUserVote::init();
+        PointsWeight::init();
+        ChangesWeight::init();
+        TimeWeight::init();
+        Gauges::init();
+        TimeSum::init();
+        PointsSum::init();
+        ChangeSum::init();
+        PointsTotal::init();
+        PointsTypeWeight::init();
+        TimeTypeWeight::init();
     }
 
     fn commit_transfer_ownership(&mut self, addr: Key) {
@@ -149,7 +149,7 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::GaugeControllerOnlyAdmin1);
         }
         data::set_future_admin(addr);
-        self.emit(&GAUGECOLTROLLEREvent::CommitOwnership { admin: addr });
+        self.emit(&GAUGECONLTROLLEREvent::CommitOwnership { admin: addr });
     }
     fn apply_transfer_ownership(&mut self) {
         if self.get_caller() != self.admin() {
@@ -162,11 +162,11 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::GaugeControllerAdminNotSet);
         }
         data::set_admin(_admin);
-        self.emit(&GAUGECOLTROLLEREvent::ApplyOwnership { admin: _admin });
+        self.emit(&GAUGECONLTROLLEREvent::ApplyOwnership { admin: _admin });
     }
 
     fn gauge_types(&mut self, _addr: Key) -> U128 {
-        let gauge_type = GAUGETYPES_::instance().get(&_addr);
+        let gauge_type = GaugeTypes_::instance().get(&_addr);
         if gauge_type == U128::from(0) {
             //Gauge Controller Gauge Type Is Zero
             runtime::revert(Error::GaugeControllerGaugeTypeIsZero);
@@ -190,9 +190,9 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return Gauge weight
     /// """
     fn _get_weight(&mut self, gauge_addr: Key) -> U256 {
-        let mut t: U256 = TIMEWEIGHT::instance().get(&gauge_addr);
+        let mut t: U256 = TimeWeight::instance().get(&gauge_addr);
         if t > U256::from(0) {
-            let mut pt: Point = POINTSWEIGHT::instance().get(&gauge_addr, &t);
+            let mut pt: Point = PointsWeight::instance().get(&gauge_addr, &t);
             for _ in 0..(500) {
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
                     break;
@@ -201,15 +201,15 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 let d_bias: U256 = pt.slope * WEEK;
                 if pt.bias > d_bias {
                     pt.bias = pt.bias - d_bias;
-                    let d_slope: U256 = CHANGESWEIGHT::instance().get(&gauge_addr, &t);
+                    let d_slope: U256 = ChangesWeight::instance().get(&gauge_addr, &t);
                     pt.slope = pt.slope - d_slope;
                 } else {
                     pt.bias = 0.into();
                     pt.slope = 0.into();
                 }
-                POINTSWEIGHT::instance().set(&gauge_addr, &t, pt);
+                PointsWeight::instance().set(&gauge_addr, &t, pt);
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
-                    TIMEWEIGHT::instance().set(&gauge_addr, t);
+                    TimeWeight::instance().set(&gauge_addr, t);
                 }
             }
             return pt.bias;
@@ -229,7 +229,7 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             // # If we have already checkpointed - still need to change the value
             t = t - WEEK;
         }
-        let mut pt: U256 = POINTSTOTAL::instance().get(&t);
+        let mut pt: U256 = PointsTotal::instance().get(&t);
         for gauge_type in 0..(100) {
             if U128::from(gauge_type) == _n_gauge_types {
                 break;
@@ -247,12 +247,12 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 if U128::from(gauge_type) == _n_gauge_types {
                     break;
                 }
-                let type_sum: U256 = POINTSSUM::instance().get(&U128::from(gauge_type), &t).bias;
+                let type_sum: U256 = PointsSum::instance().get(&U128::from(gauge_type), &t).bias;
                 let type_weight: U256 =
-                    POINTSTYPEWEIGHT::instance().get(&U128::from(gauge_type), &t);
+                    PointsTypeWeight::instance().get(&U128::from(gauge_type), &t);
                 pt = pt + (type_sum * type_weight);
             }
-            POINTSTOTAL::instance().set(&t, pt);
+            PointsTotal::instance().set(&t, pt);
             if t > U256::from(u64::from(runtime::get_blocktime())) {
                 data::set_time_total(t);
             }
@@ -267,9 +267,9 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return Sum of weights
     /// """
     fn _get_sum(&mut self, gauge_type: U128) -> U256 {
-        let mut t: U256 = TIMESUM::instance().get(&U256::from(gauge_type.as_u128()));
+        let mut t: U256 = TimeSum::instance().get(&U256::from(gauge_type.as_u128()));
         if t > U256::from(0) {
-            let mut pt: Point = POINTSSUM::instance().get(&gauge_type, &t);
+            let mut pt: Point = PointsSum::instance().get(&gauge_type, &t);
             for _ in 0..(500) {
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
                     break;
@@ -278,15 +278,15 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 let d_bias: U256 = pt.slope * WEEK;
                 if pt.bias > d_bias {
                     pt.bias = pt.bias - d_bias;
-                    let d_slope: U256 = CHANGESSUM::instance().get(&gauge_type, &t);
+                    let d_slope: U256 = ChangeSum::instance().get(&gauge_type, &t);
                     pt.slope = d_slope;
                 } else {
                     pt.bias = U256::from(0);
                     pt.slope = U256::from(0);
                 }
-                POINTSSUM::instance().set(&gauge_type, &t, pt);
+                PointsSum::instance().set(&gauge_type, &t, pt);
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
-                    TIMESUM::instance().set(&U256::from(gauge_type.as_u128()), t)
+                    TimeSum::instance().set(&U256::from(gauge_type.as_u128()), t)
                 }
             }
             return pt.bias;
@@ -301,17 +301,17 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return Type weight
     /// """
     fn _get_type_weight(&mut self, gauge_type: U128) -> U256 {
-        let mut t: U256 = TIMETYPEWEIGHT::instance().get(&U256::from(gauge_type.as_u128()));
+        let mut t: U256 = TimeTypeWeight::instance().get(&U256::from(gauge_type.as_u128()));
         if t > U256::from(0) {
-            let w: U256 = POINTSTYPEWEIGHT::instance().get(&gauge_type, &t);
+            let w: U256 = PointsTypeWeight::instance().get(&gauge_type, &t);
             for _ in 0..(500) {
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
                     break;
                 }
                 t = t + WEEK;
-                POINTSTYPEWEIGHT::instance().set(&gauge_type, &t, w);
+                PointsTypeWeight::instance().set(&gauge_type, &t, w);
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
-                    TIMETYPEWEIGHT::instance().set(&U256::from(gauge_type.as_u128()), t)
+                    TimeTypeWeight::instance().set(&U256::from(gauge_type.as_u128()), t)
                 }
             }
             return w;
@@ -330,12 +330,12 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// """
     fn _gauge_relative_weight(&mut self, addr: Key, time: U256) -> U256 {
         let t: U256 = time / WEEK * WEEK;
-        let _total_weight = POINTSTOTAL::instance().get(&t);
+        let _total_weight = PointsTotal::instance().get(&t);
 
         if _total_weight > U256::from(0) {
-            let gauge_type: U128 = GAUGETYPES_::instance().get(&addr);
-            let _type_weight: U256 = POINTSTYPEWEIGHT::instance().get(&gauge_type, &t);
-            let _gauge_weight: U256 = POINTSWEIGHT::instance().get(&addr, &t).bias;
+            let gauge_type: U128 = GaugeTypes_::instance().get(&addr);
+            let _type_weight: U256 = PointsTypeWeight::instance().get(&gauge_type, &t);
+            let _gauge_weight: U256 = PointsWeight::instance().get(&addr, &t).bias;
             return MULTIPLIER * _type_weight * _gauge_weight / _total_weight;
         } else {
             return U256::from(0);
@@ -356,11 +356,11 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
 
         let _total_weight = _total_weight + old_sum * weight - old_sum * old_weight;
 
-        POINTSTOTAL::instance().set(&next_time, _total_weight);
-        POINTSTYPEWEIGHT::instance().set(&type_id, &next_time, weight);
+        PointsTotal::instance().set(&next_time, _total_weight);
+        PointsTypeWeight::instance().set(&type_id, &next_time, weight);
         data::set_time_total(next_time);
-        TIMETYPEWEIGHT::instance().set(&U256::from(type_id.as_u128()), next_time);
-        self.emit(&GAUGECOLTROLLEREvent::NewTypeWeight {
+        TimeTypeWeight::instance().set(&U256::from(type_id.as_u128()), next_time);
+        self.emit(&GAUGECONLTROLLEREvent::NewTypeWeight {
             type_id: type_id,
             time: next_time,
             weight: weight,
@@ -371,27 +371,27 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     // # Change gauge weight
     // # Only needed when testing in reality
     fn _change_gauge_weight(&mut self, addr: Key, weight: U256) {
-        let gauge_type: U128 = GAUGETYPES_::instance().get(&addr) - U128::from(1);
+        let gauge_type: U128 = GaugeTypes_::instance().get(&addr) - U128::from(1);
         let old_gauge_weight: U256 = self._get_weight(addr);
         let type_weight: U256 = self._get_type_weight(gauge_type);
         let old_sum: U256 = self._get_sum(gauge_type);
         let _total_weight: U256 = self._get_total();
         let next_time: U256 =
             (U256::from(u64::from(runtime::get_blocktime())) + WEEK) / WEEK * WEEK;
-        let mut points_wight = POINTSWEIGHT::instance().get(&addr, &next_time);
+        let mut points_wight = PointsWeight::instance().get(&addr, &next_time);
         points_wight.bias = weight;
-        POINTSWEIGHT::instance().set(&addr, &next_time, points_wight);
-        TIMEWEIGHT::instance().set(&addr, next_time);
+        PointsWeight::instance().set(&addr, &next_time, points_wight);
+        TimeWeight::instance().set(&addr, next_time);
         let new_sum: U256 = old_sum + weight - old_gauge_weight;
-        let mut point_sum: Point = POINTSSUM::instance().get(&gauge_type, &next_time);
+        let mut point_sum: Point = PointsSum::instance().get(&gauge_type, &next_time);
         point_sum.bias = new_sum;
-        POINTSSUM::instance().set(&gauge_type, &next_time, point_sum);
-        TIMESUM::instance().set(&U256::from(gauge_type.as_u128()), next_time);
+        PointsSum::instance().set(&gauge_type, &next_time, point_sum);
+        TimeSum::instance().set(&U256::from(gauge_type.as_u128()), next_time);
         let _total_weight = _total_weight + new_sum * type_weight - old_sum * type_weight;
-        POINTSTOTAL::instance().set(&next_time, _total_weight);
+        PointsTotal::instance().set(&next_time, _total_weight);
         data::set_time_total(next_time);
 
-        self.emit(&GAUGECOLTROLLEREvent::NewGaugeWeight {
+        self.emit(&GAUGECONLTROLLEREvent::NewGaugeWeight {
             gauge_address: addr,
             time: U256::from(u64::from(runtime::get_blocktime())),
             weight: weight,
@@ -426,27 +426,27 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn get_gauge_weight(&mut self, addr: Key) -> U256 {
-        return POINTSWEIGHT::instance()
-            .get(&addr, &TIMEWEIGHT::instance().get(&addr))
+        return PointsWeight::instance()
+            .get(&addr, &TimeWeight::instance().get(&addr))
             .bias;
     }
 
     fn get_type_weight(&mut self, type_id: U128) -> U256 {
-        return POINTSTYPEWEIGHT::instance().get(
+        return PointsTypeWeight::instance().get(
             &type_id,
-            &TIMETYPEWEIGHT::instance().get(&U256::from(type_id.as_u128())),
+            &TimeTypeWeight::instance().get(&U256::from(type_id.as_u128())),
         );
     }
 
     fn get_total_weight(&mut self) -> U256 {
-        return POINTSTOTAL::instance().get(&data::time_total());
+        return PointsTotal::instance().get(&data::time_total());
     }
 
     fn get_weights_sum_per_type(&mut self, type_id: U128) -> U256 {
-        return POINTSSUM::instance()
+        return PointsSum::instance()
             .get(
                 &type_id,
-                &TIMESUM::instance().get(&U256::from(type_id.as_u128())),
+                &TimeSum::instance().get(&U256::from(type_id.as_u128())),
             )
             .bias;
     }
@@ -505,7 +505,7 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     //             runtime_args! {"to" => _for,"amount" => to_mint},
     //         );
     //         Minted::instance().set(&_for, &gauge_addr, total_mint);
-    //         self.emit(&GAUGECOLTROLLEREvent::Minted {
+    //         self.emit(&GAUGECONLTROLLEREvent::Minted {
     //             recipient: _for,
     //             gauge: gauge_addr,
     //             minted: total_mint,
@@ -549,11 +549,11 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         data::voting_escrow()
     }
 
-    fn emit(&mut self, gauge_controller_event: &GAUGECOLTROLLEREvent) {
+    fn emit(&mut self, gauge_controller_event: &GAUGECONLTROLLEREvent) {
         let mut events = Vec::new();
         let package = data::get_package_hash();
         match gauge_controller_event {
-            GAUGECOLTROLLEREvent::Minted {
+            GAUGECONLTROLLEREvent::Minted {
                 recipient,
                 gauge,
                 minted,
@@ -566,21 +566,21 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 event.insert("minted", minted.to_string());
                 events.push(event);
             }
-            GAUGECOLTROLLEREvent::CommitOwnership { admin } => {
+            GAUGECONLTROLLEREvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
-            GAUGECOLTROLLEREvent::ApplyOwnership { admin } => {
+            GAUGECONLTROLLEREvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
-            GAUGECOLTROLLEREvent::NewTypeWeight {
+            GAUGECONLTROLLEREvent::NewTypeWeight {
                 type_id,
                 time,
                 weight,
@@ -595,7 +595,7 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 event.insert("total_weight", total_weight.to_string());
                 events.push(event);
             }
-            GAUGECOLTROLLEREvent::NewGaugeWeight {
+            GAUGECONLTROLLEREvent::NewGaugeWeight {
                 gauge_address,
                 time,
                 weight,

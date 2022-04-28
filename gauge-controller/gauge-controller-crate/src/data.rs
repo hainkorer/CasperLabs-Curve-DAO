@@ -14,7 +14,7 @@ use casper_types::{
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use contract_utils::{get_key, key_and_value_to_str, key_to_str, set_key, values_to_str, Dict};
 
-use crate::event::GAUGECOLTROLLEREvent;
+use crate::event::GAUGECONLTROLLEREvent;
 
 pub const GAUGE_TYPE_NAMES_DICT: &str = "gauge_type_names";
 pub const GAUGE_TYPES_DICT: &str = "gauge_types_";
@@ -62,13 +62,13 @@ pub struct VotedSlope {
     pub end: U256,
 }
 
-pub struct GAUGETYPENAMES {
+pub struct GaugeTypeNames {
     dict: Dict,
 }
 
-impl GAUGETYPENAMES {
-    pub fn instance() -> GAUGETYPENAMES {
-        GAUGETYPENAMES {
+impl GaugeTypeNames {
+    pub fn instance() -> GaugeTypeNames {
+        GaugeTypeNames {
             dict: Dict::instance(GAUGE_TYPE_NAMES_DICT),
         }
     }
@@ -86,13 +86,13 @@ impl GAUGETYPENAMES {
     }
 }
 
-pub struct GAUGETYPES_ {
+pub struct GaugeTypes_ {
     dict: Dict,
 }
 
-impl GAUGETYPES_ {
-    pub fn instance() -> GAUGETYPES_ {
-        GAUGETYPES_ {
+impl GaugeTypes_ {
+    pub fn instance() -> GaugeTypes_ {
+        GaugeTypes_ {
             dict: Dict::instance(GAUGE_TYPES_DICT),
         }
     }
@@ -110,13 +110,13 @@ impl GAUGETYPES_ {
     }
 }
 
-pub struct VOTEUSERSLOPES {
+pub struct VoteUserSlopes {
     dict: Dict,
 }
 
-impl VOTEUSERSLOPES {
-    pub fn instance() -> VOTEUSERSLOPES {
-        VOTEUSERSLOPES {
+impl VoteUserSlopes {
+    pub fn instance() -> VoteUserSlopes {
+        VoteUserSlopes {
             dict: Dict::instance(VOTE_USER_SLOPES_DICT),
         }
     }
@@ -134,13 +134,13 @@ impl VOTEUSERSLOPES {
     }
 }
 
-pub struct VOTEUSERPOWER {
+pub struct VoteUserPower {
     dict: Dict,
 }
 
-impl VOTEUSERPOWER {
-    pub fn instance() -> VOTEUSERPOWER {
-        VOTEUSERPOWER {
+impl VoteUserPower {
+    pub fn instance() -> VoteUserPower {
+        VoteUserPower {
             dict: Dict::instance(VOTE_USER_POWER_DICT),
         }
     }
@@ -158,13 +158,13 @@ impl VOTEUSERPOWER {
     }
 }
 
-pub struct LASTUSERVOTE {
+pub struct LastUserVote {
     dict: Dict,
 }
 
-impl LASTUSERVOTE {
-    pub fn instance() -> LASTUSERVOTE {
-        LASTUSERVOTE {
+impl LastUserVote {
+    pub fn instance() -> LastUserVote {
+        LastUserVote {
             dict: Dict::instance(LAST_USER_VOTE_DICT),
         }
     }
@@ -182,13 +182,13 @@ impl LASTUSERVOTE {
     }
 }
 
-pub struct POINTSWEIGHT {
+pub struct PointsWeight {
     dict: Dict,
 }
 
-impl POINTSWEIGHT {
-    pub fn instance() -> POINTSWEIGHT {
-        POINTSWEIGHT {
+impl PointsWeight {
+    pub fn instance() -> PointsWeight {
+        PointsWeight {
             dict: Dict::instance(POINTS_WEIGHT_DICT),
         }
     }
@@ -208,13 +208,13 @@ impl POINTSWEIGHT {
     }
 }
 
-pub struct CHANGESWEIGHT {
+pub struct ChangesWeight {
     dict: Dict,
 }
 
-impl CHANGESWEIGHT {
-    pub fn instance() -> CHANGESWEIGHT {
-        CHANGESWEIGHT {
+impl ChangesWeight {
+    pub fn instance() -> ChangesWeight {
+        ChangesWeight {
             dict: Dict::instance(CHANGES_WEIGHT_DICT),
         }
     }
@@ -234,13 +234,13 @@ impl CHANGESWEIGHT {
     }
 }
 
-pub struct TIMEWEIGHT {
+pub struct TimeWeight {
     dict: Dict,
 }
 
-impl TIMEWEIGHT {
-    pub fn instance() -> TIMEWEIGHT {
-        TIMEWEIGHT {
+impl TimeWeight {
+    pub fn instance() -> TimeWeight {
+        TimeWeight {
             dict: Dict::instance(TIME_WEIGHT_DICT),
         }
     }
@@ -257,14 +257,14 @@ impl TIMEWEIGHT {
         self.dict.set(&key_to_str(owner), value);
     }
 }
-pub struct GAUGES {
+pub struct Gauges {
     dict: Dict,
     length: U256,
 }
 
-impl GAUGES {
-    pub fn instance() -> GAUGES {
-        GAUGES {
+impl Gauges {
+    pub fn instance() -> Gauges {
+        Gauges {
             dict: Dict::instance(GAUGES_DICT),
             length: 0.into(),
         }
@@ -288,14 +288,14 @@ impl GAUGES {
     }
 }
 
-pub struct TIMESUM {
+pub struct TimeSum {
     dict: Dict,
     length: U256,
 }
 
-impl TIMESUM {
-    pub fn instance() -> TIMESUM {
-        TIMESUM {
+impl TimeSum {
+    pub fn instance() -> TimeSum {
+        TimeSum {
             dict: Dict::instance(TIME_SUM_DICT),
             length: 0.into(),
         }
@@ -319,13 +319,13 @@ impl TIMESUM {
     }
 }
 
-pub struct POINTSSUM {
+pub struct PointsSum {
     dict: Dict,
 }
 
-impl POINTSSUM {
-    pub fn instance() -> POINTSSUM {
-        POINTSSUM {
+impl PointsSum {
+    pub fn instance() -> PointsSum {
+        PointsSum {
             dict: Dict::instance(POINTS_SUM_DICT),
         }
     }
@@ -345,13 +345,13 @@ impl POINTSSUM {
     }
 }
 
-pub struct CHANGESSUM {
+pub struct ChangeSum {
     dict: Dict,
 }
 
-impl CHANGESSUM {
-    pub fn instance() -> CHANGESSUM {
-        CHANGESSUM {
+impl ChangeSum {
+    pub fn instance() -> ChangeSum {
+        ChangeSum {
             dict: Dict::instance(CHANGES_SUM_DICT),
         }
     }
@@ -371,13 +371,13 @@ impl CHANGESSUM {
     }
 }
 
-pub struct POINTSTOTAL {
+pub struct PointsTotal {
     dict: Dict,
 }
 
-impl POINTSTOTAL {
-    pub fn instance() -> POINTSTOTAL {
-        POINTSTOTAL {
+impl PointsTotal {
+    pub fn instance() -> PointsTotal {
+        PointsTotal {
             dict: Dict::instance(POINTS_TOTAL_DICT),
         }
     }
@@ -395,13 +395,13 @@ impl POINTSTOTAL {
     }
 }
 
-pub struct POINTSTYPEWEIGHT {
+pub struct PointsTypeWeight {
     dict: Dict,
 }
 
-impl POINTSTYPEWEIGHT {
-    pub fn instance() -> POINTSTYPEWEIGHT {
-        POINTSTYPEWEIGHT {
+impl PointsTypeWeight {
+    pub fn instance() -> PointsTypeWeight {
+        PointsTypeWeight {
             dict: Dict::instance(POINTS_TYPE_WEIGHT_DICT),
         }
     }
@@ -421,14 +421,14 @@ impl POINTSTYPEWEIGHT {
     }
 }
 
-pub struct TIMETYPEWEIGHT {
+pub struct TimeTypeWeight {
     dict: Dict,
     length: U256,
 }
 
-impl TIMETYPEWEIGHT {
-    pub fn instance() -> TIMETYPEWEIGHT {
-        TIMETYPEWEIGHT {
+impl TimeTypeWeight {
+    pub fn instance() -> TimeTypeWeight {
+        TimeTypeWeight {
             dict: Dict::instance(TIME_TYPE_WEIGHT_DICT),
             length: 0.into(),
         }
@@ -557,11 +557,11 @@ pub fn contract_package_hash() -> ContractPackageHash {
     package_hash.unwrap_or_revert()
 }
 
-pub fn emit(event: &GAUGECOLTROLLEREvent) {
+pub fn emit(event: &GAUGECONLTROLLEREvent) {
     let mut events = Vec::new();
     let package = contract_package_hash();
     match event {
-        GAUGECOLTROLLEREvent::Mint {
+        GAUGECONLTROLLEREvent::Mint {
             recipient,
             token_ids,
         } => {
@@ -574,7 +574,7 @@ pub fn emit(event: &GAUGECOLTROLLEREvent) {
                 events.push(param);
             }
         }
-        GAUGECOLTROLLEREvent::Burn { owner, token_ids } => {
+        GAUGECONLTROLLEREvent::Burn { owner, token_ids } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
                 param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
@@ -584,7 +584,7 @@ pub fn emit(event: &GAUGECOLTROLLEREvent) {
                 events.push(param);
             }
         }
-        GAUGECOLTROLLEREvent::Approve {
+        GAUGECONLTROLLEREvent::Approve {
             owner,
             spender,
             token_ids,
@@ -599,7 +599,7 @@ pub fn emit(event: &GAUGECOLTROLLEREvent) {
                 events.push(param);
             }
         }
-        GAUGECOLTROLLEREvent::Transfer {
+        GAUGECONLTROLLEREvent::Transfer {
             sender,
             recipient,
             token_ids,
@@ -614,7 +614,7 @@ pub fn emit(event: &GAUGECOLTROLLEREvent) {
                 events.push(param);
             }
         }
-        GAUGECOLTROLLEREvent::MetadataUpdate { token_id } => {
+        GAUGECONLTROLLEREvent::MetadataUpdate { token_id } => {
             let mut param = BTreeMap::new();
             param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
             param.insert("event_type", "gauge_controller_metadata_update".to_string());

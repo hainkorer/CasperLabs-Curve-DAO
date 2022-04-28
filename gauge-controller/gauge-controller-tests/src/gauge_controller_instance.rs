@@ -13,11 +13,11 @@ use test_env::{TestContract, TestEnv};
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
-pub struct GAUGECOLTROLLERInstance(TestContract);
+pub struct GAUGECONLTROLLERInstance(TestContract);
 
-impl GAUGECOLTROLLERInstance {
-    pub fn instance(gauge_controller: TestContract) -> GAUGECOLTROLLERInstance {
-        GAUGECOLTROLLERInstance(gauge_controller)
+impl GAUGECONLTROLLERInstance {
+    pub fn instance(gauge_controller: TestContract) -> GAUGECONLTROLLERInstance {
+        GAUGECONLTROLLERInstance(gauge_controller)
     }
 
     pub fn proxy(env: &TestEnv, gauge_controller: Key, sender: AccountHash) -> TestContract {
@@ -93,8 +93,8 @@ impl GAUGECOLTROLLERInstance {
     //     symbol: &str,
     //     decimals: u8,
     //     initial_supply: U256,
-    // ) -> GAUGECOLTROLLERInstance {
-    //     GAUGECOLTROLLERInstance(TestContract::new(
+    // ) -> GAUGECONLTROLLERInstance {
+    //     GAUGECONLTROLLERInstance(TestContract::new(
     //         env,
     //         "gauge-controller-token.wasm",
     //         contract_name,

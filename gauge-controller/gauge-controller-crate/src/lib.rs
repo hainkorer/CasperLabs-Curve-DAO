@@ -6,7 +6,7 @@ mod gauge_controller;
 pub mod event;
 
 pub use contract_utils;
-pub use gauge_controller::{Error, GAUGECOLTROLLER};
+pub use gauge_controller::{Error, GAUGECONLTROLLER};
 
 use alloc::{collections::BTreeMap, string::String};
 use casper_types::U256;
