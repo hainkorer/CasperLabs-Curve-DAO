@@ -61,23 +61,6 @@ fn test_apply_transfer_ownership() {
 }
 
 #[test]
-fn test_commit_smart_wallet_checker() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
-    instance.commit_smart_wallet_checker(owner, addr);
-    let ret: Key = instance.key_value(FUTURE_SMART_WALLET_CHECKER.to_string());
-    assert_eq!(ret, addr, "Invalid Smart contract checker");
-}
-
-#[test]
-fn test_apply_smart_wallet_checker() {
-    let (_, owner, instance, _) = deploy();
-    instance.apply_smart_wallet_checker(owner);
-    let ret: Key = instance.key_value(SMART_WALLET_CHECKER.to_string());
-    assert_eq!(ret, zero_address(), "Invalid Smart contract checker");
-}
-
-#[test]
 fn test_get_last_user_slope_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());

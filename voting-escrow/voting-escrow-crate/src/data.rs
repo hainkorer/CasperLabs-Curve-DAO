@@ -19,8 +19,6 @@ pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
 
 pub const TOKEN: &str = "token";
 pub const SUPPLY: &str = "supply";
-pub const FUTURE_SMART_WALLET_CHECKER: &str = "future_smart_wallet_checker";
-pub const SMART_WALLET_CHECKER: &str = "smart_wallet_checker";
 pub const ADMIN: &str = "admin";
 pub const FUTURE_ADMIN: &str = "future_admin";
 pub const CONTROLLER: &str = "controller";
@@ -61,6 +59,7 @@ pub struct LockedBalance {
 }
 
 pub const LOCKED: &str = "locked";
+#[derive(CLTyped, ToBytes, FromBytes)]
 pub struct Locked {
     dict: Dict,
 }
@@ -86,6 +85,7 @@ impl Locked {
 }
 
 pub const USER_POINT_HISTORY: &str = "user_point_history";
+#[derive(CLTyped, ToBytes, FromBytes)]
 pub struct UserPointHistory {
     dict: Dict,
 }
@@ -113,6 +113,7 @@ impl UserPointHistory {
 }
 
 pub const USER_POINT_EPOCH: &str = "user_point_epoch";
+#[derive(CLTyped, ToBytes, FromBytes)]
 pub struct UserPointEpoch {
     dict: Dict,
 }
@@ -138,6 +139,7 @@ impl UserPointEpoch {
 }
 
 pub const SLOPE_CHANGES: &str = "slope_changes";
+#[derive(CLTyped, ToBytes, FromBytes)]
 pub struct SlopeChanges {
     dict: Dict,
 }
@@ -163,6 +165,7 @@ impl SlopeChanges {
 }
 
 pub const POINT_HISTORY: &str = "point_history";
+#[derive(CLTyped, ToBytes, FromBytes)]
 pub struct PointHistory {
     dict: Dict,
     length: U256,
@@ -208,22 +211,6 @@ pub fn get_supply() -> U256 {
 
 pub fn set_supply(supply: U256) {
     set_key(SUPPLY, supply);
-}
-
-pub fn get_future_smart_wallet_checker() -> Key {
-    get_key(FUTURE_SMART_WALLET_CHECKER).unwrap_or(zero_address())
-}
-
-pub fn set_future_smart_wallet_checker(future_smart_wallet_checker: Key) {
-    set_key(FUTURE_SMART_WALLET_CHECKER, future_smart_wallet_checker);
-}
-
-pub fn get_smart_wallet_checker() -> Key {
-    get_key(SMART_WALLET_CHECKER).unwrap_or(zero_address())
-}
-
-pub fn set_smart_wallet_checker(smart_wallet_checker: Key) {
-    set_key(SMART_WALLET_CHECKER, smart_wallet_checker);
 }
 
 pub fn get_admin() -> Key {

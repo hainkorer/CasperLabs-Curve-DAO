@@ -3,28 +3,30 @@ use casper_types::{
 };
 use test_env::{TestContract, TestEnv};
 
-pub struct VOTINGESCROWInstance(TestContract);
+pub struct FEEDISTRIBUTORInstance(TestContract);
 
-impl VOTINGESCROWInstance {
+impl FEEDISTRIBUTORInstance {
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
-        token_addr: Key,
-        name: String,
-        symbol: String,
-        version: String,
-    ) -> VOTINGESCROWInstance {
-        VOTINGESCROWInstance(TestContract::new(
+        voting_escrow: Key,
+        start_time: U256,
+        token: Key,
+        admin: Key,
+        emergency_return: Key,
+    ) -> FEEDISTRIBUTORInstance {
+        FEEDISTRIBUTORInstance(TestContract::new(
             env,
-            "voting-escrow.wasm",
+            "fee-distributor.wasm",
             contract_name,
             sender,
             runtime_args! {
-                "token_addr" => token_addr,
-                "name" => name,
-                "symbol" => symbol,
-                "version" => version,
+                "voting_escrow" => voting_escrow,
+                "start_time" => start_time,
+                "token" => token,
+                "admin" => admin,
+                "emergency_return" => emergency_return,
             },
             0,
         ))
@@ -44,6 +46,22 @@ impl VOTINGESCROWInstance {
     pub fn apply_transfer_ownership(&self, owner: AccountHash) {
         self.0
             .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, 0);
+    }
+
+    pub fn commit_smart_wallet_checker(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "commit_smart_wallet_checker",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+
+    pub fn apply_smart_wallet_checker(&self, owner: AccountHash) {
+        self.0
+            .call_contract(owner, "apply_smart_wallet_checker", runtime_args! {}, 0);
     }
 
     pub fn get_last_user_slope_js_client(&self, owner: AccountHash, addr: Key) {

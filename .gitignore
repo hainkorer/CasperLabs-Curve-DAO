@@ -1,3 +1,4 @@
 target
 Cargo.lock
 voting-escrow/voting-escrow-tests/wasm/*.wasm
+fee-distributor/fee-distributor-tests/wasm/*.wasm

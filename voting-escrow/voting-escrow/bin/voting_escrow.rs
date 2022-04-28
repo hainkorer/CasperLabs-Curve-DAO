@@ -75,17 +75,6 @@ fn apply_transfer_ownership() {
 }
 
 #[no_mangle]
-fn commit_smart_wallet_checker() {
-    let addr: Key = runtime::get_named_arg("addr");
-    VotingEscrow::default().commit_smart_wallet_checker(addr);
-}
-
-#[no_mangle]
-fn apply_smart_wallet_checker() {
-    VotingEscrow::default().apply_smart_wallet_checker();
-}
-
-#[no_mangle]
 fn get_last_user_slope() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U128 = VotingEscrow::default().get_last_user_slope(addr);
@@ -231,6 +220,96 @@ fn change_controller() {
     VotingEscrow::default().change_controller(new_controller);
 }
 
+// Variables
+
+#[no_mangle]
+fn token() {
+    runtime::ret(CLValue::from_t(data::get_token()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn supply() {
+    runtime::ret(CLValue::from_t(data::get_supply()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn locked() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::Locked::instance().get(&key)).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn epoch() {
+    runtime::ret(CLValue::from_t(data::get_epoch()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn point_history() {
+    let key: U256 = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::PointHistory::instance().get(&key)).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn user_point_history() {
+    let key1: Key = runtime::get_named_arg("key1");
+    let key2: U256 = runtime::get_named_arg("key2");
+    runtime::ret(
+        CLValue::from_t(data::UserPointHistory::instance().get(&key1, &key2)).unwrap_or_revert(),
+    )
+}
+
+#[no_mangle]
+fn user_point_epoch() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::UserPointEpoch::instance().get(&key)).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn slope_changes() {
+    let key: U256 = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::SlopeChanges::instance().get(&key)).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn controller() {
+    runtime::ret(CLValue::from_t(data::get_controller()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn transfers_enabled() {
+    runtime::ret(CLValue::from_t(data::get_transfers_enabled()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn name() {
+    runtime::ret(CLValue::from_t(data::get_name()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn symbol() {
+    runtime::ret(CLValue::from_t(data::get_symbol()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn version() {
+    runtime::ret(CLValue::from_t(data::get_version()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn decimals() {
+    runtime::ret(CLValue::from_t(data::get_decimals()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn admin() {
+    runtime::ret(CLValue::from_t(data::get_admin()).unwrap_or_revert())
+}
+
+#[no_mangle]
+fn future_admin() {
+    runtime::ret(CLValue::from_t(data::get_future_admin()).unwrap_or_revert())
+}
+
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(
@@ -256,20 +335,6 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "apply_transfer_ownership",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "commit_smart_wallet_checker",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "apply_smart_wallet_checker",
         vec![],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -443,6 +508,119 @@ fn get_entry_points() -> EntryPoints {
         "change_controller",
         vec![Parameter::new("new_controller", Key::cl_type())],
         <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    // Variables
+    entry_points.add_entry_point(EntryPoint::new(
+        "token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "locked",
+        vec![],
+        data::LockedBalance::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "epoch",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "point_history",
+        vec![],
+        data::Point::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "user_point_history",
+        vec![],
+        data::Point::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "user_point_epoch",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "slope_changes",
+        vec![],
+        U128::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "controller",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "transfers_enabled",
+        vec![],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "name",
+        vec![],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "symbol",
+        vec![],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "version",
+        vec![],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "decimals",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_admin",
+        vec![],
+        Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

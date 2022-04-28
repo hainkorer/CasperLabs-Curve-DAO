@@ -9,5 +9,9 @@ members = [
   # VotingEscrow
   "voting-escrow/voting-escrow",
   "voting-escrow/voting-escrow-crate",
-  "voting-escrow/voting-escrow-tests"
+  "voting-escrow/voting-escrow-tests",
+  # Fee Distributor 
+  "fee-distributor/fee-distributor",
+  "fee-distributor/fee-distributor-crate",
+  "fee-distributor/fee-distributor-tests"
 ]

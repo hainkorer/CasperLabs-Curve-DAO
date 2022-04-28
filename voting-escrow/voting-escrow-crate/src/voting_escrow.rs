@@ -105,19 +105,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         VOTINGESCROW::emit(self, &VotingEscrowEvent::ApplyOwnership { admin });
     }
 
-    /// @notice Set an external contract to check for approved smart contract wallets
-    /// @param addr Address of Smart contract checker
-    fn commit_smart_wallet_checker(&self, addr: Key) {
-        self.only_admin();
-        set_future_smart_wallet_checker(addr);
-    }
-
-    /// @notice Apply setting external contract to check approved smart contract wallets
-    fn apply_smart_wallet_checker(&self) {
-        self.only_admin();
-        set_smart_wallet_checker(get_future_smart_wallet_checker());
-    }
-
     /// @notice Get the most recently recorded rate of voting power decrease for `addr`
     /// @param addr Address of the user wallet
     /// @return Value of the slope
