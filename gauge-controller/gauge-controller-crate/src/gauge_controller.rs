@@ -1,17 +1,16 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, Point, CHANGESSUM, CHANGESWEIGHT, GAUGES, GAUGETYPENAMES, GAUGETYPES_, LASTUSERVOTE,
-    MULTIPLIER, POINTSSUM, POINTSTOTAL, POINTSTYPEWEIGHT, POINTSWEIGHT, TIMESUM, TIMETYPEWEIGHT,
-    TIMEWEIGHT, VOTEUSERPOWER, VOTEUSERSLOPES, WEEK,
+    self, admin, time_total, Point, CHANGESSUM, CHANGESWEIGHT, GAUGES, GAUGETYPENAMES, GAUGETYPES_,
+    LASTUSERVOTE, MULTIPLIER, POINTSSUM, POINTSTOTAL, POINTSTYPEWEIGHT, POINTSWEIGHT, TIMESUM,
+    TIMETYPEWEIGHT, TIMEWEIGHT, VOTEUSERPOWER, VOTEUSERSLOPES, WEEK,
 };
 use alloc::collections::BTreeMap;
 use alloc::{format, string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::U128;
 use casper_types::{
     runtime_args, system::mint::Error as MintError, ApiError, BlockTime, ContractHash,
-    ContractPackageHash, Key, RuntimeArgs, URef, U256,
+    ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use contract_utils::{set_key, ContractContext, ContractStorage};
 use cryptoxide::ed25519;
@@ -84,7 +83,11 @@ pub enum Error {
     /// 65,541 for (Gauge Controller Admin Not Set)
     GaugeControllerAdminNotSet = 5,
     /// 65,542 for (Gauge Controller Gauge Type Is Zero)
-    GaugeControllerGaugeTypeIsZero,
+    GaugeControllerGaugeTypeIsZero = 6,
+    /// 65,539 for (Gauge Controller Not Admin1)
+    GaugeControllerNotAdmin1 = 7,
+    /// 65,540 for (Gauge Controller Not Admin2)
+    GaugeControllerNotAdmin2 = 8,
 }
 
 impl From<Error> for ApiError {
@@ -396,6 +399,58 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         });
     }
 
+    fn gauge_relative_weight(&mut self, addr: Key) -> U256 {
+        return self._gauge_relative_weight(addr, U256::from(u64::from(runtime::get_blocktime())));
+    }
+
+    fn gauge_relative_weight_write(&mut self, addr: Key) -> U256 {
+        //self._get_weight(addr);
+        //self._get_total();  // Also calculates get_sum
+        return self._gauge_relative_weight(addr, U256::from(u64::from(runtime::get_blocktime())));
+    }
+
+    fn change_type_weight(&mut self, type_id: U128, weight: U256) {
+        if self.get_caller() == data::admin() {
+            self._change_type_weight(type_id, weight);
+        } else {
+            runtime::revert(Error::GaugeControllerNotAdmin1);
+        }
+    }
+
+    fn change_gauge_weight(&mut self, addr: Key, weight: U256) {
+        if self.get_caller() == data::admin() {
+            self._change_gauge_weight(addr, weight);
+        } else {
+            runtime::revert(Error::GaugeControllerNotAdmin2);
+        }
+    }
+
+    fn get_gauge_weight(&mut self, addr: Key) -> U256 {
+        return POINTSWEIGHT::instance()
+            .get(&addr, &TIMEWEIGHT::instance().get(&addr))
+            .bias;
+    }
+
+    fn get_type_weight(&mut self, type_id: U128) -> U256 {
+        return POINTSTYPEWEIGHT::instance().get(
+            &type_id,
+            &TIMETYPEWEIGHT::instance().get(&U256::from(type_id.as_u128())),
+        );
+    }
+
+    fn get_total_weight(&mut self) -> U256 {
+        return POINTSTOTAL::instance().get(&data::time_total());
+    }
+
+    fn get_weights_sum_per_type(&mut self, type_id: U128) -> U256 {
+        return POINTSSUM::instance()
+            .get(
+                &type_id,
+                &TIMESUM::instance().get(&U256::from(type_id.as_u128())),
+            )
+            .bias;
+    }
+
     // fn _mint_for(&mut self, gauge_addr: Key, _for: Key) {
     //     let controller: Key = self.controller();
     //     let to_mint = 0;
@@ -493,7 +548,6 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     fn voting_escrow(&mut self) -> Key {
         data::voting_escrow()
     }
-    
 
     fn emit(&mut self, gauge_controller_event: &GAUGECOLTROLLEREvent) {
         let mut events = Vec::new();
