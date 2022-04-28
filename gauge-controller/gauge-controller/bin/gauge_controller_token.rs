@@ -12,7 +12,8 @@ use casper_contract::{
 };
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
+    U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
 use gauge_controller_crate::GAUGECOLTROLLER;
@@ -53,6 +54,55 @@ fn constructor() {
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
 
     Token::default().constructor(token, voting_escrow, contract_hash, package_hash);
+}
+
+/// """
+/// @notice Transfer ownership of GaugeController to `addr`
+/// @param addr Address to have ownership transferred to
+/// """
+
+#[no_mangle]
+fn commit_transfer_ownership() {
+    let addr: Key = runtime::get_named_arg::<Key>("addr");
+    Token::default().commit_transfer_ownership(addr);
+}
+
+/// """
+/// @notice Apply pending ownership transfer
+/// """
+#[no_mangle]
+fn apply_transfer_ownership() {
+    Token::default().apply_transfer_ownership();
+}
+
+/// """
+/// @notice Get gauge type for address
+/// @param _addr Gauge address
+/// @return Gauge type id
+/// """
+#[no_mangle]
+fn gauge_types() {
+    let addr: Key = runtime::get_named_arg::<Key>("addr");
+    let ret: U128 = Token::default().gauge_types(addr);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+/// """
+/// @notice Checkpoint to fill data common for all gauges
+/// """
+#[no_mangle]
+fn checkpoint() {
+    Token::default().checkpoint();
+}
+
+/// """
+/// @notice Checkpoint to fill data for both a specific gauge and common for all gauges
+/// @param addr Gauge address
+/// """
+#[no_mangle]
+fn checkpoint_gauge() {
+    let addr: Key = runtime::get_named_arg::<Key>("addr");
+    Token::default().checkpoint_gauge(addr);
 }
 
 #[no_mangle]
@@ -162,7 +212,41 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
-
+    entry_points.add_entry_point(EntryPoint::new(
+        "commit_transfer_ownership",
+        vec![Parameter::new("addr", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "apply_transfer_ownership",
+        vec![],
+        <()>::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "checkpoint",
+        vec![],
+        <()>::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "checkpoint_gauge",
+        vec![Parameter::new("addr", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "gauge_types",
+        vec![Parameter::new("addr", Key::cl_type())],
+        U128::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
     entry_points.add_entry_point(EntryPoint::new(
         "package_hash",
         vec![],
