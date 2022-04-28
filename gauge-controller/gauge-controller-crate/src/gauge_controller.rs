@@ -2,7 +2,7 @@ use crate::alloc::string::ToString;
 use crate::data::{
     self, CHANGESSUM, CHANGESWEIGHT, GAUGES, GAUGETYPENAMES, GAUGETYPES_, LASTUSERVOTE, POINTSSUM,
     POINTSTOTAL, POINTSTYPEWEIGHT, POINTSWEIGHT, TIMESUM, TIMETYPEWEIGHT, TIMEWEIGHT,
-    VOTEUSERPOWER, VOTEUSERSLOPES,
+    VOTEUSERPOWER, VOTEUSERSLOPES, admin, time_total
 };
 use alloc::collections::BTreeMap;
 use alloc::{format, string::String, vec::Vec};
@@ -10,7 +10,7 @@ use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{
     runtime_args, system::mint::Error as MintError, ApiError, BlockTime, ContractHash,
-    ContractPackageHash, Key, RuntimeArgs, URef, U256,
+    ContractPackageHash, Key, RuntimeArgs, URef, U256,U128
 };
 use contract_utils::{set_key, ContractContext, ContractStorage};
 use cryptoxide::ed25519;
@@ -44,6 +44,10 @@ pub enum Error {
     GaugeControllerAddressZero1 = 1,
     /// 65,538 for (Gauge Controller Address Zero2)
     GaugeControllerAddressZero2 = 2,
+    /// 65,539 for (Gauge Controller Not Admin1)
+    GaugeControllerNotAdmin1 = 3,
+    /// 65,540 for (Gauge Controller Not Admin2)
+    GaugeControllerNotAdmin2 = 4,
 }
 
 impl From<Error> for ApiError {
@@ -97,6 +101,132 @@ pub trait GAUGECOLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         POINTSTOTAL::init();
         POINTSTYPEWEIGHT::init();
         TIMETYPEWEIGHT::init();
+    }
+
+    fn gauge_relative_weight(&mut self, addr: Key) -> U256 {
+
+        return self._gauge_relative_weight(addr, U256::from(u64::from(runtime::get_blocktime())));
+    }
+
+    fn gauge_relative_weight_write(&mut self, addr: Key) -> U256{
+
+        //self._get_weight(addr);
+        //self._get_total();  // Also calculates get_sum
+        return self._gauge_relative_weight(addr, U256::from(u64::from(runtime::get_blocktime())));
+    }
+
+    fn _gauge_relative_weight(&mut self, addr: Key, time:U256) -> U256
+    {
+        // """
+        // @notice Get Gauge relative weight (not more than 1.0) normalized to 1e18
+        //         (e.g. 1.0 == 1e18). Inflation which will be received by it is
+        //         inflation_rate * relative_weight / 1e18
+        // @param addr Gauge address
+        // @param time Relative weight at the specified timestamp in the past or present
+        // @return Value of relative weight normalized to 1e18
+        // """
+        // t: uint256 = time / WEEK * WEEK
+        // _total_weight: uint256 = self.points_total[t]
+    
+        // if _total_weight > 0:
+        //     gauge_type: int128 = self.gauge_types_[addr] - 1
+        //     _type_weight: uint256 = self.points_type_weight[gauge_type][t]
+        //     _gauge_weight: uint256 = self.points_weight[addr][t].bias
+        //     return MULTIPLIER * _type_weight * _gauge_weight / _total_weight
+    
+        // else:
+        // return 0
+        return 0.into();
+    }
+
+    fn change_type_weight(&mut self, type_id: U128, weight:U256) {
+
+        if self.get_caller() == data::admin()
+        {
+            self._change_type_weight(type_id,weight);
+        }
+        else {
+            runtime::revert(Error::GaugeControllerNotAdmin1);
+        }
+       
+    }
+
+    fn _change_type_weight(&mut self, type_id: U128, weight:U256) {
+        // """
+        // @notice Change type weight
+        // @param type_id Type id
+        // @param weight New type weight
+        // """
+        // old_weight: uint256 = self._get_type_weight(type_id)
+        // old_sum: uint256 = self._get_sum(type_id)
+        // _total_weight: uint256 = self._get_total()
+        // next_time: uint256 = (block.timestamp + WEEK) / WEEK * WEEK
+    
+        // _total_weight = _total_weight + old_sum * weight - old_sum * old_weight
+        // self.points_total[next_time] = _total_weight
+        // self.points_type_weight[type_id][next_time] = weight
+        // self.time_total = next_time
+        // self.time_type_weight[type_id] = next_time
+    
+        // log NewTypeWeight(type_id, next_time, weight, _total_weight)
+       
+    }
+
+    fn change_gauge_weight(&mut self, addr: Key, weight:U256) {
+
+        if self.get_caller() == data::admin()
+        {
+            self._change_gauge_weight(addr,weight);
+        }
+        else {
+            runtime::revert(Error::GaugeControllerNotAdmin2);
+        }
+       
+    }
+
+    fn _change_gauge_weight(&mut self, addr: Key, weight:U256) {
+        // # Change gauge weight
+        // # Only needed when testing in reality
+        // gauge_type: int128 = self.gauge_types_[addr] - 1
+        // old_gauge_weight: uint256 = self._get_weight(addr)
+        // type_weight: uint256 = self._get_type_weight(gauge_type)
+        // old_sum: uint256 = self._get_sum(gauge_type)
+        // _total_weight: uint256 = self._get_total()
+        // next_time: uint256 = (block.timestamp + WEEK) / WEEK * WEEK
+
+        // self.points_weight[addr][next_time].bias = weight
+        // self.time_weight[addr] = next_time
+
+        // new_sum: uint256 = old_sum + weight - old_gauge_weight
+        // self.points_sum[gauge_type][next_time].bias = new_sum
+        // self.time_sum[gauge_type] = next_time
+
+        // _total_weight = _total_weight + new_sum * type_weight - old_sum * type_weight
+        // self.points_total[next_time] = _total_weight
+        // self.time_total = next_time
+
+        // log NewGaugeWeight(addr, block.timestamp, weight, _total_weight)
+       
+    }
+
+    fn get_gauge_weight( &mut self, addr: Key) -> U256{
+
+        return POINTSWEIGHT::instance().get(&addr,&TIMEWEIGHT::instance().get(&addr)).bias;
+    }
+
+    fn get_type_weight(&mut self, type_id: U128) -> U256{
+
+        return POINTSTYPEWEIGHT::instance().get(&type_id,&TIMETYPEWEIGHT::instance().get(&U256::from(type_id.as_u128())));
+    }
+
+    fn get_total_weight(&mut self) -> U256{
+
+        return POINTSTOTAL::instance().get(&data::time_total());
+    }
+
+    fn get_weights_sum_per_type(&mut self, type_id: U128) -> U256{
+
+        return POINTSSUM::instance().get(&type_id,&TIMESUM::instance().get(&U256::from(type_id.as_u128()))).bias;
     }
 
     // fn _mint_for(&mut self, gauge_addr: Key, _for: Key) {

@@ -12,7 +12,7 @@ use casper_contract::{
 };
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,U128
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
 use gauge_controller_crate::GAUGECOLTROLLER;
@@ -60,6 +60,116 @@ fn package_hash() {
     let ret: ContractPackageHash = Token::default().get_package_hash();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+
+#[no_mangle]
+fn gauge_relative_weight() {
+    
+    // @notice Get Gauge relative weight (not more than 1.0) normalized to 1e18
+    //         (e.g. 1.0 == 1e18). Inflation which will be received by it is
+    //         inflation_rate * relative_weight / 1e18
+    // @param addr Gauge address
+    // @param time Relative weight at the specified timestamp in the past or present
+    // @return Value of relative weight normalized to 1e18
+    
+    let addr: Key = runtime::get_named_arg("addr");
+    let ret: U256 = Token::default().gauge_relative_weight(addr);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn gauge_relative_weight_write() {
+    
+    // @notice Get gauge weight normalized to 1e18 and also fill all the unfilled
+    //         values for type and gauge records
+    // @dev Any address can call, however nothing is recorded if the values are filled already
+    // @param addr Gauge address
+    // @param time Relative weight at the specified timestamp in the past or present
+    // @return Value of relative weight normalized to 1e18
+    
+    
+    let addr: Key = runtime::get_named_arg("addr");
+    let ret: U256 = Token::default().gauge_relative_weight_write(addr);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn change_type_weight() {
+    
+    // @notice Change gauge type `type_id` weight to `weight`
+    // @param type_id Gauge type id
+    // @param weight New Gauge weight
+    
+    
+    let type_id: U128 = runtime::get_named_arg("type_id");
+    let weight: U256 = runtime::get_named_arg("weight");
+    
+    Token::default().change_type_weight(type_id, weight);
+}
+
+#[no_mangle]
+fn change_gauge_weight() {
+    
+    // @notice Change weight of gauge `addr` to `weight`
+    // @param addr `GaugeController` contract address
+    // @param weight New Gauge weight
+    
+    
+    let addr: Key = runtime::get_named_arg("addr");
+    let weight: U256 = runtime::get_named_arg("weight");
+    
+    Token::default().change_gauge_weight(addr, weight);
+}
+
+#[no_mangle]
+fn get_gauge_weight() {
+    
+    // @notice Get current gauge weight
+    // @param addr Gauge address
+    // @return Gauge weight
+    
+    
+    let addr: Key = runtime::get_named_arg("addr");
+    let ret: U256 =Token::default().get_gauge_weight(addr);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn get_type_weight() {
+    
+    // @notice Get current type weight
+    // @param type_id Type id
+    // @return Type weight
+    
+    
+    let type_id: U128 = runtime::get_named_arg("type_id");
+    let ret: U256 =Token::default().get_type_weight(type_id);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn get_total_weight() {
+    
+    // @notice Get current total (type-weighted) weight
+    // @return Total weight
+    
+    
+    let ret: U256 =Token::default().get_total_weight();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn get_weights_sum_per_type() {
+    
+    // @notice Get sum of gauge weights per type
+    // @param type_id Type id
+    // @return Sum of gauge weights
+    
+    
+    let type_id: U128 = runtime::get_named_arg("type_id");
+    let ret: U256 =Token::default().get_weights_sum_per_type(type_id);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
 
 #[no_mangle]
 fn call() {
@@ -171,5 +281,77 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
 
+    entry_points.add_entry_point(EntryPoint::new(
+        "gauge_relative_weight",
+        vec![
+            Parameter::new("addr", Key::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "gauge_relative_weight_write",
+        vec![
+            Parameter::new("addr", Key::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "change_type_weight",
+        vec![
+            Parameter::new("type_id", U128::cl_type()),
+            Parameter::new("weight", U256::cl_type()),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "change_gauge_weight",
+        vec![
+            Parameter::new("addr", Key::cl_type()),
+            Parameter::new("weight", U256::cl_type()),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "get_gauge_weight",
+        vec![
+            Parameter::new("addr", Key::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "get_type_weight",
+        vec![
+            Parameter::new("type_id", U128::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "get_total_weight",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "get_weights_sum_per_type",
+        vec![
+            Parameter::new("type_id", U128::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
     entry_points
 }
