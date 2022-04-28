@@ -1,5 +1,5 @@
 use crate::alloc::string::ToString;
-use crate::data::{self, Allowances, AllowedToMintFor, Balances, Minted, Nonces};
+use crate::data::{self, AllowedToMintFor, Minted};
 use alloc::collections::BTreeMap;
 use alloc::{format, string::String, vec::Vec};
 use casper_contract::contract_api::storage;
@@ -58,15 +58,12 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_controller(controller);
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-        Allowances::init();
-        Balances::init();
         Minted::init();
         AllowedToMintFor::init();
     }
 
     fn _mint_for(&mut self, gauge_addr: Key, _for: Key) {
         let controller: Key = self.controller();
-        let to_mint = 0;
         let controller_hash_add_array = match controller {
             Key::Hash(package) => package,
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
@@ -89,7 +86,7 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let gauge_addr_package_hash = ContractPackageHash::new(gauge_addr_hash_add_array);
-        let ret: () = runtime::call_versioned_contract(
+        let _ret: () = runtime::call_versioned_contract(
             gauge_addr_package_hash,
             None,
             "user_checkpoint",

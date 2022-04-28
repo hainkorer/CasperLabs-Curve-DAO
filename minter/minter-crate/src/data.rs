@@ -11,92 +11,16 @@ use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U25
 use contract_utils::{get_key, key_to_str, set_key, Dict};
 
 use crate::event::MINTEREvent;
-
-const BALANCES_DICT: &str = "balances";
-pub const NONCES_DICT: &str = "nonces";
-pub const ALLOWANCES_DICT: &str = "allowances";
 pub const MINTED_DICT: &str = "minted";
 pub const ALLOWED_TO_MINT_FOR_DICT: &str = "allowed_to_mint_for";
 
 pub const NAME: &str = "name";
-// pub const META: &str = "meta";
 pub const TOKEN: &str = "token";
 pub const CONTROLLER: &str = "controller";
 pub const REWARD_COUNT: &str = "reward_count";
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
 
-pub struct Balances {
-    dict: Dict,
-}
-
-impl Balances {
-    pub fn instance() -> Balances {
-        Balances {
-            dict: Dict::instance(BALANCES_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(BALANCES_DICT)
-    }
-
-    pub fn get(&self, owner: &Key) -> U256 {
-        self.dict.get(&key_to_str(owner)).unwrap_or_default()
-    }
-
-    pub fn set(&self, owner: &Key, value: U256) {
-        self.dict.set(&key_to_str(owner), value);
-    }
-}
-
-pub struct Nonces {
-    dict: Dict,
-}
-
-impl Nonces {
-    pub fn instance() -> Nonces {
-        Nonces {
-            dict: Dict::instance(NONCES_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(NONCES_DICT)
-    }
-
-    pub fn get(&self, owner: &Key) -> U256 {
-        self.dict.get(&key_to_str(owner)).unwrap_or_default()
-    }
-
-    pub fn set(&self, owner: &Key, value: U256) {
-        self.dict.set(&key_to_str(owner), value);
-    }
-}
-
-pub struct Allowances {
-    dict: Dict,
-}
-
-impl Allowances {
-    pub fn instance() -> Allowances {
-        Allowances {
-            dict: Dict::instance(ALLOWANCES_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(ALLOWANCES_DICT)
-    }
-
-    pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
-        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
-    }
-
-    pub fn set(&self, owner: &Key, spender: &Key, value: U256) {
-        self.dict.set_by_keys((owner, spender), value);
-    }
-}
 
 
 pub struct Minted {

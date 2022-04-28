@@ -111,6 +111,30 @@ fn package_hash() {
     let ret: ContractPackageHash = Token::default().get_package_hash();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+#[no_mangle]
+fn allowed_to_mint_for() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let key1: Key = runtime::get_named_arg("key1");
+    let ret: bool = Token::default().allowed_to_mint_for(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn minted() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let key1: Key = runtime::get_named_arg("key1");
+    let ret: U256 = Token::default().minted(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn token() {
+    let ret: Key = Token::default().token();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn controller() {
+    let ret: Key = Token::default().controller();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
 
 #[no_mangle]
 fn call() {
@@ -248,6 +272,42 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "allowed_to_mint_for",
+        vec![
+            Parameter::new("key0", Key::cl_type()),
+            Parameter::new("key1", Key::cl_type()),
+        ],
+        bool::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "minted",
+        vec![
+            Parameter::new("key0", Key::cl_type()),
+            Parameter::new("key1", Key::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "controller",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
     entry_points.add_entry_point(EntryPoint::new(
         "package_hash",
         vec![],
