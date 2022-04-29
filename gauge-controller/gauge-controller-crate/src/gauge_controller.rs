@@ -1,8 +1,8 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, admin, time_total, Point, ChangeSum, ChangesWeight, Gauges, GaugeTypeNames, GaugeTypes_,
+    self, admin, time_total,n_gauge_types,n_gauges,voting_escrow, WEIGHT_VOTE_DELAY, VotedSlope, Point, ChangeSum, ChangesWeight, Gauges, GaugeTypeNames, GaugeTypes_,
     LastUserVote, MULTIPLIER, PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum,
-    TimeTypeWeight, TimeWeight, VoteUserPower, VoteUserSlopes, WEEK,
+    TimeTypeWeight, TimeWeight, VoteUserPower, VoteUserSlopes, WEEK, 
 };
 use alloc::collections::BTreeMap;
 use alloc::{format, string::String, vec::Vec};
@@ -41,6 +41,21 @@ pub enum GAUGECONLTROLLEREvent {
         weight: U256,
         total_weight: U256,
     },
+    AddType {
+        name: String,
+        type_id: U128
+    },
+    VoteForGauge {
+        time: U256,
+        user: Key,
+        gauge_addr: Key,
+        weight: U256
+    },
+    NewGauge {
+        addr: Key,
+        gauge_type: U128,
+        weight: U256
+    },
 }
 
 impl GAUGECONLTROLLEREvent {
@@ -64,7 +79,22 @@ impl GAUGECONLTROLLEREvent {
                 time: _,
                 weight: _,
                 total_weight: _,
-            } => "NewTypeWeight",
+            } => "NewGaugeWeight",
+            GAUGECONLTROLLEREvent::AddType {
+                name: _,
+                type_id: _,
+            } => "AddType",
+            GAUGECONLTROLLEREvent::VoteForGauge {
+                time: _,
+                user: _,
+                gauge_addr: _,
+                weight: _,
+            } => "VoteForGauge",
+            GAUGECONLTROLLEREvent::NewGauge {
+                addr: _,
+                gauge_type: _,
+                weight: _, 
+            } => "NewGauge",
         }
         .to_string()
     }
@@ -84,10 +114,30 @@ pub enum Error {
     GaugeControllerAdminNotSet = 5,
     /// 65,542 for (Gauge Controller Gauge Type Is Zero)
     GaugeControllerGaugeTypeIsZero = 6,
-    /// 65,539 for (Gauge Controller Not Admin1)
+    /// 65,543 for (Gauge Controller Not Admin1)
     GaugeControllerNotAdmin1 = 7,
-    /// 65,540 for (Gauge Controller Not Admin2)
+    /// 65,544 for (Gauge Controller Not Admin2)
     GaugeControllerNotAdmin2 = 8,
+    /// 65,545 for (Gauge Controller Not Admin3)
+    GaugeControllerNotAdmin3 = 9,
+    /// 65,546 for (Gauge Controller Not Admin3)
+    GaugeControllerNotAdmin4 = 10,
+    /// 65,547 for (Gauge Controller cannot add same gauge twice)
+    GaugeControllerCannotAddSameGaugeTwice = 11,
+    /// 65,548 for (Gauge Controller gauge type is greater than equal to zero and less than n_gauge_types)
+    GaugeControllerGaugeType1= 12,
+    /// 65,549 for (Gauge Controller Your token lock expires too soon)
+    GaugeControllerTokenLockExpiresTooSoon= 13,
+    /// 65,550 for (Gauge Controller You used all your voting power)
+    GaugeControllerUsedAllYourVotingPower= 14,
+    /// 65,551 for (Gauge Controller You Cannot vote so often)
+    GaugeControllerCannotVoteSoOften= 15,
+    /// 65,552 for (Gauge Controller Gauge not added)
+    GaugeControllerGaugeNotAdded= 16,
+    /// 65,552 for (Gauge Controller Used too much power)
+    GaugeControllerUsedTooMuchPower= 17,
+    
+
 }
 
 impl From<Error> for ApiError {
@@ -404,8 +454,8 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn gauge_relative_weight_write(&mut self, addr: Key) -> U256 {
-        //self._get_weight(addr);
-        //self._get_total();  // Also calculates get_sum
+        self._get_weight(addr);
+        self._get_total();  // Also calculates get_sum
         return self._gauge_relative_weight(addr, U256::from(u64::from(runtime::get_blocktime())));
     }
 
@@ -451,6 +501,275 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             .bias;
     }
 
+    fn add_type(&mut self,_name : String) {
+        let weight: U256 = 0.into();
+       
+        if self.get_caller() == data::admin() {
+            let type_id: U128 = data::n_gauge_types();
+            GaugeTypeNames::instance().set(&type_id,_name);
+            data::set_n_gauge_types(type_id + U128::from(1));
+            if weight != U256::from(0)
+            {
+                self._change_type_weight(type_id, weight);
+                self.emit(&GAUGECONLTROLLEREvent::AddType { name: _name, type_id: type_id});
+            }
+                
+        } else {
+            runtime::revert(Error::GaugeControllerNotAdmin3);
+        }
+        
+    }
+
+    fn add_gauge(&mut self,addr : Key, gauge_type:U128) {
+        let weight: U256 = 0.into();
+        if self.get_caller() == data::admin() {
+            if gauge_type >= U128::from(0) && gauge_type < data::n_gauge_types()
+            {
+                if GaugeTypes_::instance().get(&addr) == U128::from(0) // dev: cannot add the same gauge twice
+                {
+                    let n: U128 = data::n_gauges();
+                    data::set_n_gauges(n +  U128::from(1));
+                    Gauges::instance().set(&U256::from(n.as_u128()),addr);
+                    GaugeTypes_::instance().set(&addr,gauge_type + U128::from(1));
+                    let next_time: U256 = ((U256::from(u64::from(runtime::get_blocktime()))+ data::WEEK) / data::WEEK) * data::WEEK;
+                    if weight > U256::from(0)
+                    {
+                        let mut _type_weight: U256 = self._get_type_weight(gauge_type);
+                        let mut _old_sum: U256 = self._get_sum(gauge_type);
+                        let mut _old_total: U256 = self._get_total();
+
+                        let mut points_sum_result=PointsSum::instance().get(&gauge_type,&next_time);
+                        (points_sum_result).bias = weight + _old_sum;
+                        PointsSum::instance().set(&gauge_type,&next_time,points_sum_result);
+
+                        TimeSum::instance().set(&U256::from(gauge_type.as_u128()),next_time);
+                        PointsTotal::instance().set(&next_time, _old_total + (_type_weight * weight));
+                        data::set_time_total(next_time);
+
+                        let mut points_weight_result=PointsWeight::instance().get(&addr,&next_time);
+                        (points_weight_result).bias=weight;
+                        PointsWeight::instance().set(&addr,&next_time,points_weight_result);
+                    }
+
+                    if TimeSum::instance().get(&U256::from(gauge_type.as_u128())) == U256::from(0)
+                    {
+                        TimeSum::instance().set(&U256::from(gauge_type.as_u128()),next_time); 
+                    }
+
+                    TimeWeight::instance().set(&addr,next_time); 
+                    self.emit(&GAUGECONLTROLLEREvent::NewGauge { addr: addr, gauge_type: gauge_type,weight: weight});
+
+                } else {
+                    runtime::revert(Error::GaugeControllerCannotAddSameGaugeTwice);
+                }
+            } else {
+                runtime::revert(Error::GaugeControllerGaugeType1);
+            }
+        }
+        else {
+            runtime::revert(Error::GaugeControllerNotAdmin4);
+        }
+    }
+
+    fn vote_for_gauge_weights(&mut self,_gauge_addr:Key, _user_weight:U256) {
+
+        let escrow: Key = data::voting_escrow();
+
+        //convert Key to ContractPackageHash
+        let escrow_package_hash_add_array = match escrow {
+            Key::Hash(package) => package,
+            _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+        };
+        let escrow_package_hash = ContractPackageHash::new(escrow_package_hash_add_array);
+
+        let slope: U256 = runtime::call_versioned_contract(
+            escrow_package_hash,
+            None,
+            "get_last_user_slope",
+            runtime_args! {"msg.sender" => self.get_caller()},
+        );
+        
+        let lock_end: U256 = runtime::call_versioned_contract(
+            escrow_package_hash,
+            None,
+            "locked__end",
+            runtime_args! {"msg.sender" => self.get_caller()},
+        );
+
+        let _n_gauges: U128 = data::n_gauges();
+        let next_time: U256 = ((U256::from(u64::from(runtime::get_blocktime()))+ data::WEEK) / data::WEEK) * data::WEEK;
+
+        if lock_end > next_time
+        {
+            if _user_weight >= U256::from(0) && _user_weight <= U256::from(10000){
+
+                if (U256::from(u64::from(runtime::get_blocktime()))) >= (LastUserVote::instance().get(&self.get_caller(),&_gauge_addr) + data::WEIGHT_VOTE_DELAY) {
+                    let gauge_type: U128 = GaugeTypes_::instance().get(&_gauge_addr) - U128::from(1);
+                    if gauge_type >= U128::from(0)
+                    {
+                        // Prepare slopes and biases in memory
+                        let old_slope: VotedSlope = VoteUserSlopes::instance().get(&self.get_caller(),&_gauge_addr);
+                        let mut old_dt: U256 = 0.into();
+                        if old_slope.end > next_time{
+                            old_dt = old_slope.end - next_time;
+                        }
+                        let old_bias: U256 = old_slope.slope * old_dt;
+                        let new_slope: VotedSlope = VotedSlope{
+                            slope: slope * (_user_weight / U256::from(100000)),
+                            end: lock_end,
+                            power: _user_weight
+                        };
+                        let new_dt: U256 = lock_end - next_time;  // dev: raises when expired
+                        let new_bias: U256 = new_slope.slope * new_dt;
+
+                        // Check and update powers (weights) used
+                        let mut power_used: U256 =  VoteUserPower::instance().get(&self.get_caller());
+                        power_used = power_used + new_slope.power - old_slope.power;
+                        VoteUserPower::instance().set(&self.get_caller(),power_used);
+
+                        if (power_used >= 0.into()) && (power_used <= 10000.into()){
+
+                            // Remove old and schedule new slope changes
+                            // Remove slope changes for old slopes
+                            // Schedule recording of initial slope for next_time
+
+                            let old_weight_bias: U256 = self._get_weight(_gauge_addr);
+                            let old_weight_slope: U256 = PointsWeight::instance().get(&_gauge_addr,&next_time).slope;
+                            let old_sum_bias: U256 = self._get_sum(gauge_type);
+                            let old_sum_slope: U256 = PointsSum::instance().get(&gauge_type,&next_time).slope;
+
+                            let max_weight_bias = old_weight_bias + new_bias;
+                            let max_sum_bias = old_sum_bias + new_bias;
+
+                            if max_weight_bias > old_bias
+                            {
+                                let mut points_weight_result= PointsWeight::instance().get(&_gauge_addr,&next_time);
+                                (points_weight_result).bias = max_weight_bias - old_bias;
+                                PointsWeight::instance().set(&_gauge_addr,&next_time,points_weight_result);
+                            }
+                            else{
+                             
+                                let mut points_weight_result= PointsWeight::instance().get(&_gauge_addr,&next_time);
+                                (points_weight_result).bias = old_bias - old_bias;
+                                PointsWeight::instance().set(&_gauge_addr,&next_time,points_weight_result);
+                            }
+
+                            if max_sum_bias > old_bias
+                            {
+
+                                let mut points_sum_result= PointsSum::instance().get(&gauge_type,&next_time);
+                                (points_sum_result).bias =  max_sum_bias - old_bias;
+                                PointsSum::instance().set(&gauge_type,&next_time,points_sum_result);
+                            }
+                            else{
+                                
+                                let mut points_sum_result= PointsSum::instance().get(&gauge_type,&next_time);
+                                (points_sum_result).bias =  old_bias - old_bias;
+                                PointsSum::instance().set(&gauge_type,&next_time,points_sum_result);
+                            }
+        
+                            if old_slope.end > next_time{
+
+                                let max_weight_slope = old_weight_slope + new_slope.slope;
+                                let max_sum_slope = old_sum_slope + new_slope.slope;
+
+                                if max_weight_slope > old_slope.slope
+                                {
+                                    let mut points_weight_result= PointsWeight::instance().get(&_gauge_addr,&next_time);
+                                    (points_weight_result).slope = max_weight_slope - old_slope.slope;
+                                    PointsWeight::instance().set(&_gauge_addr,&next_time,points_weight_result);
+                                }
+                                else{
+                                
+                                    let mut points_weight_result= PointsWeight::instance().get(&_gauge_addr,&next_time);
+                                    (points_weight_result).slope = old_slope.slope - old_slope.slope;
+                                    PointsWeight::instance().set(&_gauge_addr,&next_time,points_weight_result);
+                                }
+
+                                if max_sum_slope > old_slope.slope
+                                {
+
+                                    let mut points_sum_result= PointsSum::instance().get(&gauge_type,&next_time);
+                                    (points_sum_result).slope =  max_sum_slope - old_slope.slope;
+                                    PointsSum::instance().set(&gauge_type,&next_time,points_sum_result);
+                                }
+                                else{
+                                    
+                                    let mut points_sum_result= PointsSum::instance().get(&gauge_type,&next_time);
+                                    (points_sum_result).slope =  old_slope.slope - old_slope.slope;
+                                    PointsSum::instance().set(&gauge_type,&next_time,points_sum_result);
+                                }
+
+                            }
+                                
+                            else{
+
+                                let mut points_weight_result= PointsWeight::instance().get(&_gauge_addr,&next_time);
+                                (points_weight_result).slope = (points_weight_result).slope + new_slope.slope;
+                                PointsWeight::instance().set(&_gauge_addr,&next_time,points_weight_result);
+
+                                let mut points_sum_result= PointsSum::instance().get(&gauge_type,&next_time);
+                                (points_sum_result).slope =  (points_sum_result).slope + new_slope.slope;
+                                PointsSum::instance().set(&gauge_type,&next_time,points_sum_result);
+
+                            }
+                                
+                            if old_slope.end > U256::from(u64::from(runtime::get_blocktime())){
+                                // Cancel old slope changes if they still didn't happen
+
+                                let mut changes_weight_result= ChangesWeight::instance().get(&_gauge_addr,&old_slope.end);
+                                changes_weight_result = changes_weight_result - old_slope.slope;
+                                ChangesWeight::instance().set(&_gauge_addr,&old_slope.end,changes_weight_result);
+
+                                let mut changes_sum_result= ChangeSum::instance().get(&gauge_type,&old_slope.end);
+                                changes_sum_result = changes_sum_result - old_slope.slope;
+                                ChangeSum::instance().set(&gauge_type,&old_slope.end,changes_sum_result);
+                            }
+                                
+                            // Add slope changes for new slopes
+
+                            let mut changes_weight_result= ChangesWeight::instance().get(&_gauge_addr,&new_slope.end);
+                            changes_weight_result = changes_weight_result + new_slope.slope;
+                            ChangesWeight::instance().set(&_gauge_addr,&old_slope.end,changes_weight_result);
+
+                            let mut changes_sum_result= ChangeSum::instance().get(&gauge_type,&new_slope.end);
+                            changes_sum_result = changes_sum_result + new_slope.slope;
+                            ChangeSum::instance().set(&gauge_type,&old_slope.end,changes_sum_result);
+
+                            self._get_total();
+
+                            VoteUserSlopes::instance().set(&self.get_caller(),&_gauge_addr,new_slope);
+
+                            //Record last action time
+                            LastUserVote::instance().set(&self.get_caller(),&_gauge_addr,U256::from(u64::from(runtime::get_blocktime())));
+                           
+                            self.emit(&GAUGECONLTROLLEREvent::VoteForGauge { time:U256::from(u64::from(runtime::get_blocktime())), user:self.get_caller(), gauge_addr:_gauge_addr, weight:_user_weight});
+                        }
+                        else{
+                            runtime::revert(Error::GaugeControllerUsedTooMuchPower);
+                        }
+
+                    }
+                    else{
+                        runtime::revert(Error::GaugeControllerGaugeNotAdded);
+                    }
+                    
+                } else{
+                    runtime::revert(Error::GaugeControllerCannotVoteSoOften);
+                }
+
+            } else{
+                runtime::revert(Error::GaugeControllerUsedAllYourVotingPower);
+            }
+            
+        } else{
+            runtime::revert(Error::GaugeControllerTokenLockExpiresTooSoon);
+        } 
+        
+
+        
+        
+    }
     // fn _mint_for(&mut self, gauge_addr: Key, _for: Key) {
     //     let controller: Key = self.controller();
     //     let to_mint = 0;
@@ -608,6 +927,45 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 event.insert("time", time.to_string());
                 event.insert("weight", weight.to_string());
                 event.insert("total_weight", total_weight.to_string());
+                events.push(event);
+            }
+            GAUGECONLTROLLEREvent::AddType {
+                name,
+                type_id,
+            } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", gauge_controller_event.type_name());
+                event.insert("name", name.to_string());
+                event.insert("type_id", type_id.to_string());
+                events.push(event);
+            }
+            GAUGECONLTROLLEREvent::NewGauge {
+                addr,
+                gauge_type,
+                weight
+            } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", gauge_controller_event.type_name());
+                event.insert("addr", addr.to_string());
+                event.insert("gauge_type", gauge_type.to_string());
+                event.insert("weight", weight.to_string());
+                events.push(event);
+            }
+            GAUGECONLTROLLEREvent::VoteForGauge {
+                time,
+                user,
+                gauge_addr,
+                weight
+            } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", gauge_controller_event.type_name());
+                event.insert("time", time.to_string());
+                event.insert("user", user.to_string());
+                event.insert("gauge_addr", gauge_addr.to_string());
+                event.insert("weight", weight.to_string());
                 events.push(event);
             }
         };

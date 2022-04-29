@@ -206,6 +206,43 @@ fn get_weights_sum_per_type() {
 }
 
 #[no_mangle]
+fn add_type() {
+    
+    // @notice Add gauge type with name `_name` and weight `weight`
+    // @param _name Name of gauge type
+    // @param weight Weight of gauge type
+    
+    
+    let _name: String = runtime::get_named_arg("_name");
+    Token::default().add_type(_name);
+}
+
+#[no_mangle]
+fn add_gauge() {
+
+    // @notice Add gauge `addr` of type `gauge_type` with weight `weight`
+    // @param addr Gauge address
+    // @param gauge_type Gauge type
+    // @param weight Gauge weight
+    
+    let addr: Key = runtime::get_named_arg("addr");
+    let gauge_type: U128 = runtime::get_named_arg("gauge_type");
+    Token::default().add_gauge(addr,gauge_type);
+}
+
+#[no_mangle]
+fn vote_for_gauge_weights() {
+
+    // @notice Allocate voting power for changing pool weights
+    // @param _gauge_addr Gauge which `msg.sender` votes for
+    // @param _user_weight Weight for a gauge in bps (units of 0.01%). Minimal is 0.01%. Ignored if 0
+    
+    let _gauge_addr: Key = runtime::get_named_arg("_gauge_addr");
+    let _user_weight: U256 = runtime::get_named_arg("_user_weight");
+    Token::default().vote_for_gauge_weights(_gauge_addr,_user_weight);
+}
+
+#[no_mangle]
 fn call() {
     // Contract name must be same for all new versions of the contracts
     let contract_name: String = runtime::get_named_arg("contract_name");
@@ -408,6 +445,35 @@ fn get_entry_points() -> EntryPoints {
         "get_weights_sum_per_type",
         vec![Parameter::new("type_id", U128::cl_type())],
         U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "add_type",
+        vec![
+            Parameter::new("_name", String::cl_type()),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "add_gauge",
+        vec![
+            Parameter::new("addr", Key::cl_type()),
+            Parameter::new("type_id", U128::cl_type()),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "vote_for_gauge_weights",
+        vec![
+            Parameter::new("_gauge_addr", Key::cl_type()),
+            Parameter::new("_user_weight", U256::cl_type())
+        ],
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
