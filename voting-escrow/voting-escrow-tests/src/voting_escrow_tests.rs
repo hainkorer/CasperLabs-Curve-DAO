@@ -1,5 +1,6 @@
 use crate::voting_escrow_instance::VOTINGESCROWInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
+use common::keys::*;
 use test_env::{TestContract, TestEnv};
 use voting_escrow_crate::data::*;
 
@@ -61,11 +62,53 @@ fn test_apply_transfer_ownership() {
 }
 
 #[test]
+fn test_get_last_user_slope() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(env.next_user());
+    TestContract::new(
+        &env,
+        SESSION_CODE_WASM,
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(GET_LAST_USER_SLOPE),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "addr" => addr
+        },
+        0,
+    );
+    let ret: U128 = env.query_account_named_key(owner, &[GET_LAST_USER_SLOPE.into()]);
+    assert_eq!(ret, 0.into(), "Invalid last user scope value");
+}
+
+#[test]
 fn test_get_last_user_slope_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
     instance.get_last_user_slope_js_client(owner, addr);
     let ret: U128 = instance.key_value(RESULT.to_string());
+    assert_eq!(ret, 0.into(), "Invalid default value");
+}
+
+#[test]
+fn test_user_point_history_ts() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(env.next_user());
+    let idx: U256 = 10.into();
+    TestContract::new(
+        &env,
+        SESSION_CODE_WASM,
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(USER_POINT_HISTORY_TS),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "addr" => addr,
+            "idx" => idx,
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[USER_POINT_HISTORY_TS.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
@@ -76,6 +119,26 @@ fn test_user_point_history_ts_js_client() {
     let idx: U256 = 10.into();
     instance.user_point_history_ts_js_client(owner, addr, idx);
     let ret: U256 = instance.key_value(RESULT.to_string());
+    assert_eq!(ret, 0.into(), "Invalid default value");
+}
+
+#[test]
+fn test_locked_end() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(env.next_user());
+    TestContract::new(
+        &env,
+        SESSION_CODE_WASM,
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(LOCKED_END),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "addr" => addr,
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[LOCKED_END.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
@@ -232,6 +295,28 @@ fn test_withdraw() {
 }
 
 #[test]
+fn test_balance_of() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(env.next_user());
+    let t: U256 = 123.into();
+    TestContract::new(
+        &env,
+        SESSION_CODE_WASM,
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "addr" => addr,
+            "t" => t
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, 0.into(), "Invalid default value");
+}
+
+#[test]
 fn test_balance_of_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
@@ -239,6 +324,28 @@ fn test_balance_of_js_client() {
     instance.balance_of_js_client(owner, addr, t);
     let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default balance");
+}
+
+#[test]
+fn test_balance_of_at() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(env.next_user());
+    let block: U256 = 123.into();
+    TestContract::new(
+        &env,
+        SESSION_CODE_WASM,
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF_AT),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "addr" => addr,
+            "block" => block
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF_AT.into()]);
+    assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
 #[test]
@@ -252,11 +359,51 @@ fn test_balance_of_at_js_client() {
 }
 
 #[test]
+fn test_total_supply() {
+    let (env, owner, instance, _) = deploy();
+    let t: U256 = 123.into();
+    TestContract::new(
+        &env,
+        SESSION_CODE_WASM,
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(TOTAL_SUPPLY),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "t" => t,
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
+    assert_eq!(ret, 0.into(), "Invalid default total supply");
+}
+
+#[test]
 fn test_total_supply_js_client() {
     let (_, owner, instance, _) = deploy();
     let t: U256 = 123.into();
     instance.total_supply_js_client(owner, t);
     let ret: U256 = instance.key_value(RESULT.to_string());
+    assert_eq!(ret, 0.into(), "Invalid default total supply");
+}
+
+#[test]
+fn test_total_supply_at() {
+    let (env, owner, instance, _) = deploy();
+    let block: U256 = 123.into();
+    TestContract::new(
+        &env,
+        SESSION_CODE_WASM,
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(TOTAL_SUPPLY_AT),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "block" => block,
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY_AT.into()]);
     assert_eq!(ret, 0.into(), "Invalid default total supply");
 }
 

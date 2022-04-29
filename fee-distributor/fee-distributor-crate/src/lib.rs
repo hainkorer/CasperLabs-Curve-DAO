@@ -3,7 +3,6 @@
 extern crate alloc;
 
 pub mod data;
-pub mod error;
 pub mod event;
 mod fee_distributor;
 

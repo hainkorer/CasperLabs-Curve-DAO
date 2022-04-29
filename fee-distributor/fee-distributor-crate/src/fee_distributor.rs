@@ -1,4 +1,4 @@
-use crate::{data::*, error::Error, event::FeeDistributorEvent};
+use crate::{data::*, event::FeeDistributorEvent};
 use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::{
@@ -12,6 +12,7 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use contract_utils::{ContractContext, ContractStorage};
+use common::errors::*;
 
 pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Contract constructor
@@ -50,6 +51,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         set_package_hash(package_hash);
     }
 
+    #[allow(unused_assignments)]
     fn _checkpoint_token(&self) {
         let token_balance: U256 = runtime::call_versioned_contract(
             get_token().into_hash().unwrap_or_revert().into(),
@@ -331,6 +333,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         self._checkpoint_total_supply();
     }
 
+    #[allow(unused_assignments)]
     fn _claim(&self, addr: Key, ve: Key, last_token_time: U256) -> U256 {
         // Minimal user_epoch is 0 (if user had no point)
         let mut user_epoch: U256 = 0.into();

@@ -1,6 +1,10 @@
 [workspace]
 
 members = [
+  # COMMON
+  "common",
+  # SESSION CODE
+  "session-code",
   # ERC20
   "erc20/erc20",
   "erc20/erc20-crate",

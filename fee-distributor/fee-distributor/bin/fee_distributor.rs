@@ -1,15 +1,14 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec, vec::Vec};
+use alloc::{boxed::Box, collections::BTreeSet, format, vec, vec::Vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
-    U256,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
 use fee_distributor_crate::{self, data::*, FEEDISTRIBUTOR};

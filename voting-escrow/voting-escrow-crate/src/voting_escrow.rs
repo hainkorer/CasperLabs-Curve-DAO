@@ -1,4 +1,4 @@
-use crate::{data::*, error::Error, event::VotingEscrowEvent};
+use crate::{data::*, event::VotingEscrowEvent};
 use alloc::vec::Vec;
 use alloc::{
     collections::BTreeMap,
@@ -15,6 +15,7 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use contract_utils::{ContractContext, ContractStorage};
+use common::errors::*;
 
 /// @notice Votes have a weight depending on time, so that users are committed to the future of (whatever they are voting for)
 /// @dev Vote weight decays linearly over time. Lock time cannot be more than `MAXTIME` (4 years).
@@ -647,6 +648,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param addr User's wallet address
     /// @param _block Block to calculate the voting power at
     /// @return Voting power
+    #[allow(unused_assignments)]
     fn balance_of_at(&self, addr: Key, block: U256) -> U256 {
         // Copying and pasting totalSupply code because Vyper cannot pass by reference yet
         // if !(block <= block.number) {
