@@ -16,6 +16,7 @@ use casper_types::{
     U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
+use gauge_controller_crate::data::{Point, VotedSlope};
 use gauge_controller_crate::GAUGECONLTROLLER;
 
 #[derive(Default)]
@@ -206,6 +207,136 @@ fn get_weights_sum_per_type() {
 }
 
 #[no_mangle]
+fn change_sum() {
+    let key0: U128 = runtime::get_named_arg("key0");
+    let key1: U256 = runtime::get_named_arg("key1");
+    let ret: U256 = Token::default().change_sum(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn changes_weight() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let key1: U256 = runtime::get_named_arg("key1");
+    let ret: U256 = Token::default().changes_weight(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn gauge_type_names() {
+    let key0: U128 = runtime::get_named_arg("key0");
+    let ret: String = Token::default().gauge_type_names(key0);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn gauge_types_() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let ret: U128 = Token::default().gauge_types_(key0);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn gauges() {
+    let key0: U256 = runtime::get_named_arg("key0");
+    let ret: Key = Token::default().gauges(key0);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn last_user_vote() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let key1: Key = runtime::get_named_arg("key1");
+    let ret: U256 = Token::default().last_user_vote(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn points_sum() {
+    let key0: U128 = runtime::get_named_arg("key0");
+    let key1: U256 = runtime::get_named_arg("key1");
+    let ret: Point = Token::default().points_sum(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn points_total() {
+    let key0: U256 = runtime::get_named_arg("key0");
+    let ret: U256 = Token::default().points_total(key0);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn points_type_weight() {
+    let key0: U128 = runtime::get_named_arg("key0");
+    let key1: U256 = runtime::get_named_arg("key1");
+    let ret: U256 = Token::default().points_type_weight(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn points_weight() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let key1: U256 = runtime::get_named_arg("key1");
+    let ret: Point = Token::default().points_weight(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn time_sum() {
+    let key0: U256 = runtime::get_named_arg("key0");
+    let ret: U256 = Token::default().time_sum(key0);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn time_type_weight() {
+    let key0: U256 = runtime::get_named_arg("key0");
+    let ret: U256 = Token::default().time_type_weight(key0);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn time_weight() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let ret: U256 = Token::default().time_weight(key0);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn vote_user_power() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let ret: U256 = Token::default().vote_user_power(key0);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn vote_user_slopes() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let key1: Key = runtime::get_named_arg("key1");
+    let ret: VotedSlope = Token::default().vote_user_slopes(key0, key1);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+// TimeWeight, VoteUserPower, VoteUserSlopes,
+#[no_mangle]
+fn time_total() {
+    let ret: U256 = Token::default().time_total();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn token() {
+    let ret: Key = Token::default().token();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn admin() {
+    let ret: Key = Token::default().admin();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn future_admin() {
+    let ret: Key = Token::default().future_admin();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn voting_escrow() {
+    let ret: Key = Token::default().voting_escrow();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn n_gauge_types() {
+    let ret: U128 = Token::default().n_gauge_types();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
 fn call() {
     // Contract name must be same for all new versions of the contracts
     let contract_name: String = runtime::get_named_arg("contract_name");
@@ -348,6 +479,183 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "n_gauge_types",
+        vec![],
+        U128::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "voting_escrow",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "time_total",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "vote_user_slopes",
+        vec![
+            Parameter::new("key0", Key::cl_type()),
+            Parameter::new("key1", Key::cl_type()),
+        ],
+        VotedSlope::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "vote_user_power",
+        vec![Parameter::new("key0", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "time_weight",
+        vec![Parameter::new("key0", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "time_type_weight",
+        vec![Parameter::new("key0", U256::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "time_sum",
+        vec![Parameter::new("key0", U256::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "points_weight",
+        vec![
+            Parameter::new("key0", Key::cl_type()),
+            Parameter::new("key1", U256::cl_type()),
+        ],
+        Point::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "points_type_weight",
+        vec![
+            Parameter::new("key0", U128::cl_type()),
+            Parameter::new("key1", U256::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "points_total",
+        vec![Parameter::new("key0", U256::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "points_sum",
+        vec![
+            Parameter::new("key0", U128::cl_type()),
+            Parameter::new("key1", U256::cl_type()),
+        ],
+        Point::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "last_user_vote",
+        vec![
+            Parameter::new("key0", Key::cl_type()),
+            Parameter::new("key1", Key::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "gauges",
+        vec![Parameter::new("key0", U256::cl_type())],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "gauge_types_",
+        vec![Parameter::new("key0", Key::cl_type())],
+        U128::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "gauge_type_names",
+        vec![Parameter::new("key0", U128::cl_type())],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "changes_weight",
+        vec![
+            Parameter::new("key0", Key::cl_type()),
+            Parameter::new("key1", U256::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "change_sum",
+        vec![
+            Parameter::new("key0", U128::cl_type()),
+            Parameter::new("key1", U256::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    
 
     entry_points.add_entry_point(EntryPoint::new(
         "gauge_relative_weight",

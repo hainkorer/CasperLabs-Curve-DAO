@@ -1,8 +1,8 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, admin, time_total, Point, ChangeSum, ChangesWeight, Gauges, GaugeTypeNames, GaugeTypes_,
-    LastUserVote, MULTIPLIER, PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum,
-    TimeTypeWeight, TimeWeight, VoteUserPower, VoteUserSlopes, WEEK,
+    self, admin, time_total, ChangeSum, ChangesWeight, GaugeTypeNames, GaugeTypes_, Gauges,
+    LastUserVote, Point, PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum,
+    TimeTypeWeight, TimeWeight, VoteUserPower, VoteUserSlopes, VotedSlope, MULTIPLIER, WEEK,
 };
 use alloc::collections::BTreeMap;
 use alloc::{format, string::String, vec::Vec};
@@ -88,6 +88,25 @@ pub enum Error {
     GaugeControllerNotAdmin1 = 7,
     /// 65,540 for (Gauge Controller Not Admin2)
     GaugeControllerNotAdmin2 = 8,
+    GaugeControllerOverFlow1 = 9,
+    GaugeControllerOverFlow2 = 10,
+    GaugeControllerOverFlow3 = 11,
+    GaugeControllerOverFlow4 = 12,
+    GaugeControllerOverFlow5 = 13,
+    GaugeControllerOverFlow6 = 14,
+    GaugeControllerOverFlow7 = 15,
+    GaugeControllerOverFlow8 = 16,
+    GaugeControllerOverFlow9 = 17,
+    GaugeControllerOverFlow10 = 18,
+    GaugeControllerUnderFlow1 = 19,
+    GaugeControllerUnderFlow2 = 20,
+    GaugeControllerUnderFlow3 = 21,
+    GaugeControllerUnderFlow4 = 22,
+    GaugeControllerUnderFlow5 = 23,
+    GaugeControllerUnderFlow6 = 24,
+    GaugeControllerUnderFlow7 = 25,
+    GaugeControllerUnderFlow8 = 26,
+    GaugeControllerUnderFlow9 = 27,
 }
 
 impl From<Error> for ApiError {
@@ -156,7 +175,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             //Gauge Controller Only Admin
             runtime::revert(Error::GaugeControllerOnlyAdmin2);
         }
-        let _admin = data::future_admin();
+        let _admin = self.future_admin();
         if _admin == data::zero_address() {
             //Gauge Controller Admin Not Set
             runtime::revert(Error::GaugeControllerAdminNotSet);
@@ -166,12 +185,15 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn gauge_types(&mut self, _addr: Key) -> U128 {
-        let gauge_type = GaugeTypes_::instance().get(&_addr);
+        let gauge_type = self.gauge_types_(_addr);
         if gauge_type == U128::from(0) {
             //Gauge Controller Gauge Type Is Zero
             runtime::revert(Error::GaugeControllerGaugeTypeIsZero);
         }
-        return gauge_type - U128::from(1);
+        return gauge_type
+            .checked_sub(U128::from(1))
+            .ok_or(Error::GaugeControllerUnderFlow1)
+            .unwrap_or_revert();
     }
 
     fn checkpoint(&mut self) {
@@ -190,19 +212,31 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return Gauge weight
     /// """
     fn _get_weight(&mut self, gauge_addr: Key) -> U256 {
-        let mut t: U256 = TimeWeight::instance().get(&gauge_addr);
+        let mut t: U256 = self.time_weight(gauge_addr);
         if t > U256::from(0) {
-            let mut pt: Point = PointsWeight::instance().get(&gauge_addr, &t);
+            let mut pt: Point = self.points_weight(gauge_addr, t);
             for _ in 0..(500) {
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
                     break;
                 }
-                t = t + WEEK;
+                t = t
+                    .checked_add(WEEK)
+                    .ok_or(Error::GaugeControllerOverFlow1)
+                    .unwrap_or_revert();
+
                 let d_bias: U256 = pt.slope * WEEK;
                 if pt.bias > d_bias {
-                    pt.bias = pt.bias - d_bias;
-                    let d_slope: U256 = ChangesWeight::instance().get(&gauge_addr, &t);
-                    pt.slope = pt.slope - d_slope;
+                    pt.bias = pt
+                        .bias
+                        .checked_sub(d_bias)
+                        .ok_or(Error::GaugeControllerUnderFlow2)
+                        .unwrap_or_revert();
+                    let d_slope: U256 = self.changes_weight(gauge_addr, t);
+                    pt.slope = pt
+                        .slope
+                        .checked_sub(d_slope)
+                        .ok_or(Error::GaugeControllerUnderFlow3)
+                        .unwrap_or_revert();
                 } else {
                     pt.bias = 0.into();
                     pt.slope = 0.into();
@@ -223,13 +257,16 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return Total weight
     /// """
     fn _get_total(&mut self) -> U256 {
-        let mut t: U256 = data::time_total();
-        let mut _n_gauge_types: U128 = data::n_gauge_types();
+        let mut t: U256 = self.time_total();
+        let mut _n_gauge_types: U128 = self.n_gauge_types();
         if t > U256::from(u64::from(runtime::get_blocktime())) {
             // # If we have already checkpointed - still need to change the value
-            t = t - WEEK;
+            t = t
+                .checked_sub(WEEK)
+                .ok_or(Error::GaugeControllerUnderFlow4)
+                .unwrap_or_revert();
         }
-        let mut pt: U256 = PointsTotal::instance().get(&t);
+        let mut pt: U256 = self.points_total(t);
         for gauge_type in 0..(100) {
             if U128::from(gauge_type) == _n_gauge_types {
                 break;
@@ -241,16 +278,21 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             if t > U256::from(u64::from(runtime::get_blocktime())) {
                 break;
             }
-            t = t + WEEK;
+            t = t
+                .checked_add(WEEK)
+                .ok_or(Error::GaugeControllerOverFlow2)
+                .unwrap_or_revert();
             pt = U256::from(0);
             for gauge_type in 0..(100) {
                 if U128::from(gauge_type) == _n_gauge_types {
                     break;
                 }
-                let type_sum: U256 = PointsSum::instance().get(&U128::from(gauge_type), &t).bias;
-                let type_weight: U256 =
-                    PointsTypeWeight::instance().get(&U128::from(gauge_type), &t);
-                pt = pt + (type_sum * type_weight);
+                let type_sum: U256 = self.points_sum(U128::from(gauge_type), t).bias;
+                let type_weight: U256 = self.points_type_weight(U128::from(gauge_type), t);
+                pt = pt
+                    .checked_add(type_sum * type_weight)
+                    .ok_or(Error::GaugeControllerOverFlow3)
+                    .unwrap_or_revert();
             }
             PointsTotal::instance().set(&t, pt);
             if t > U256::from(u64::from(runtime::get_blocktime())) {
@@ -267,18 +309,25 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return Sum of weights
     /// """
     fn _get_sum(&mut self, gauge_type: U128) -> U256 {
-        let mut t: U256 = TimeSum::instance().get(&U256::from(gauge_type.as_u128()));
+        let mut t: U256 = self.time_sum(U256::from(gauge_type.as_u128()));
         if t > U256::from(0) {
-            let mut pt: Point = PointsSum::instance().get(&gauge_type, &t);
+            let mut pt: Point = self.points_sum(gauge_type, t);
             for _ in 0..(500) {
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
                     break;
                 }
-                t = t + WEEK;
+                t = t
+                    .checked_add(WEEK)
+                    .ok_or(Error::GaugeControllerOverFlow4)
+                    .unwrap_or_revert();
                 let d_bias: U256 = pt.slope * WEEK;
                 if pt.bias > d_bias {
-                    pt.bias = pt.bias - d_bias;
-                    let d_slope: U256 = ChangeSum::instance().get(&gauge_type, &t);
+                    pt.bias = pt
+                        .bias
+                        .checked_sub(d_bias)
+                        .ok_or(Error::GaugeControllerUnderFlow5)
+                        .unwrap_or_revert();
+                    let d_slope: U256 = self.change_sum(gauge_type, t);
                     pt.slope = d_slope;
                 } else {
                     pt.bias = U256::from(0);
@@ -301,14 +350,17 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return Type weight
     /// """
     fn _get_type_weight(&mut self, gauge_type: U128) -> U256 {
-        let mut t: U256 = TimeTypeWeight::instance().get(&U256::from(gauge_type.as_u128()));
+        let mut t: U256 = self.time_type_weight(U256::from(gauge_type.as_u128()));
         if t > U256::from(0) {
-            let w: U256 = PointsTypeWeight::instance().get(&gauge_type, &t);
+            let w: U256 = self.points_type_weight(gauge_type, t);
             for _ in 0..(500) {
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
                     break;
                 }
-                t = t + WEEK;
+                t = t
+                    .checked_add(WEEK)
+                    .ok_or(Error::GaugeControllerOverFlow5)
+                    .unwrap_or_revert();
                 PointsTypeWeight::instance().set(&gauge_type, &t, w);
                 if t > U256::from(u64::from(runtime::get_blocktime())) {
                     TimeTypeWeight::instance().set(&U256::from(gauge_type.as_u128()), t)
@@ -330,12 +382,12 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// """
     fn _gauge_relative_weight(&mut self, addr: Key, time: U256) -> U256 {
         let t: U256 = time / WEEK * WEEK;
-        let _total_weight = PointsTotal::instance().get(&t);
+        let _total_weight = self.points_total(t);
 
         if _total_weight > U256::from(0) {
-            let gauge_type: U128 = GaugeTypes_::instance().get(&addr);
-            let _type_weight: U256 = PointsTypeWeight::instance().get(&gauge_type, &t);
-            let _gauge_weight: U256 = PointsWeight::instance().get(&addr, &t).bias;
+            let gauge_type: U128 = self.gauge_types_(addr);
+            let _type_weight: U256 = self.points_type_weight(gauge_type, t);
+            let _gauge_weight: U256 = self.points_weight(addr, t).bias;
             return MULTIPLIER * _type_weight * _gauge_weight / _total_weight;
         } else {
             return U256::from(0);
@@ -351,10 +403,22 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         let old_weight: U256 = self._get_type_weight(type_id);
         let old_sum: U256 = self._get_sum(type_id);
         let _total_weight: U256 = self._get_total();
-        let next_time: U256 =
-            (U256::from(u64::from(runtime::get_blocktime())) + WEEK) / WEEK * WEEK;
+        let next_time: U256 = (U256::from(u64::from(runtime::get_blocktime()))
+            .checked_add(WEEK)
+            .ok_or(Error::GaugeControllerOverFlow6)
+            .unwrap_or_revert())
+            / WEEK
+            * WEEK;
 
-        let _total_weight = _total_weight + old_sum * weight - old_sum * old_weight;
+        let _total_weight = _total_weight
+            .checked_add(
+                (old_sum * weight)
+                    .checked_sub(old_sum * old_weight)
+                    .ok_or(Error::GaugeControllerUnderFlow6)
+                    .unwrap_or_revert(),
+            )
+            .ok_or(Error::GaugeControllerOverFlow7)
+            .unwrap_or_revert();
 
         PointsTotal::instance().set(&next_time, _total_weight);
         PointsTypeWeight::instance().set(&type_id, &next_time, weight);
@@ -371,23 +435,47 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     // # Change gauge weight
     // # Only needed when testing in reality
     fn _change_gauge_weight(&mut self, addr: Key, weight: U256) {
-        let gauge_type: U128 = GaugeTypes_::instance().get(&addr) - U128::from(1);
+        let gauge_type: U128 = self
+            .gauge_types_(addr)
+            .checked_sub(U128::from(1))
+            .ok_or(Error::GaugeControllerUnderFlow7)
+            .unwrap_or_revert();
         let old_gauge_weight: U256 = self._get_weight(addr);
         let type_weight: U256 = self._get_type_weight(gauge_type);
         let old_sum: U256 = self._get_sum(gauge_type);
         let _total_weight: U256 = self._get_total();
-        let next_time: U256 =
-            (U256::from(u64::from(runtime::get_blocktime())) + WEEK) / WEEK * WEEK;
-        let mut points_wight = PointsWeight::instance().get(&addr, &next_time);
+        let next_time: U256 = (U256::from(u64::from(runtime::get_blocktime()))
+            .checked_add(WEEK)
+            .ok_or(Error::GaugeControllerOverFlow8)
+            .unwrap_or_revert())
+            / WEEK
+            * WEEK;
+        let mut points_wight = self.points_weight(addr, next_time);
         points_wight.bias = weight;
         PointsWeight::instance().set(&addr, &next_time, points_wight);
         TimeWeight::instance().set(&addr, next_time);
-        let new_sum: U256 = old_sum + weight - old_gauge_weight;
-        let mut point_sum: Point = PointsSum::instance().get(&gauge_type, &next_time);
+        let new_sum: U256 = old_sum
+            .checked_add(
+                weight
+                    .checked_sub(old_gauge_weight)
+                    .ok_or(Error::GaugeControllerUnderFlow8)
+                    .unwrap_or_revert(),
+            )
+            .ok_or(Error::GaugeControllerOverFlow9)
+            .unwrap_or_revert();
+        let mut point_sum: Point = self.points_sum(gauge_type, next_time);
         point_sum.bias = new_sum;
         PointsSum::instance().set(&gauge_type, &next_time, point_sum);
         TimeSum::instance().set(&U256::from(gauge_type.as_u128()), next_time);
-        let _total_weight = _total_weight + new_sum * type_weight - old_sum * type_weight;
+        let _total_weight = _total_weight
+            .checked_add(
+                (new_sum * type_weight)
+                    .checked_sub(old_sum * type_weight)
+                    .ok_or(Error::GaugeControllerUnderFlow9)
+                    .unwrap_or_revert(),
+            )
+            .ok_or(Error::GaugeControllerOverFlow10)
+            .unwrap_or_revert();
         PointsTotal::instance().set(&next_time, _total_weight);
         data::set_time_total(next_time);
 
@@ -404,13 +492,13 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn gauge_relative_weight_write(&mut self, addr: Key) -> U256 {
-        //self._get_weight(addr);
-        //self._get_total();  // Also calculates get_sum
+        self._get_weight(addr);
+        self._get_total(); // Also calculates get_sum
         return self._gauge_relative_weight(addr, U256::from(u64::from(runtime::get_blocktime())));
     }
 
     fn change_type_weight(&mut self, type_id: U128, weight: U256) {
-        if self.get_caller() == data::admin() {
+        if self.get_caller() == self.admin() {
             self._change_type_weight(type_id, weight);
         } else {
             runtime::revert(Error::GaugeControllerNotAdmin1);
@@ -418,7 +506,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn change_gauge_weight(&mut self, addr: Key, weight: U256) {
-        if self.get_caller() == data::admin() {
+        if self.get_caller() == self.admin() {
             self._change_gauge_weight(addr, weight);
         } else {
             runtime::revert(Error::GaugeControllerNotAdmin2);
@@ -426,127 +514,89 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn get_gauge_weight(&mut self, addr: Key) -> U256 {
-        return PointsWeight::instance()
-            .get(&addr, &TimeWeight::instance().get(&addr))
-            .bias;
+        let time_weight = self.time_weight(addr);
+        return self.points_weight(addr, time_weight).bias;
     }
 
     fn get_type_weight(&mut self, type_id: U128) -> U256 {
-        return PointsTypeWeight::instance().get(
-            &type_id,
-            &TimeTypeWeight::instance().get(&U256::from(type_id.as_u128())),
-        );
+        let time_type_weight = self.time_type_weight(U256::from(type_id.as_u128()));
+        return self.points_type_weight(type_id, time_type_weight);
     }
 
     fn get_total_weight(&mut self) -> U256 {
-        return PointsTotal::instance().get(&data::time_total());
+        let time_total = self.time_total();
+        return self.points_total(time_total);
     }
 
     fn get_weights_sum_per_type(&mut self, type_id: U128) -> U256 {
-        return PointsSum::instance()
-            .get(
-                &type_id,
-                &TimeSum::instance().get(&U256::from(type_id.as_u128())),
-            )
-            .bias;
+        let total_sum = self.time_sum(U256::from(type_id.as_u128()));
+        return self.points_sum(type_id, total_sum).bias;
     }
 
-    // fn _mint_for(&mut self, gauge_addr: Key, _for: Key) {
-    //     let controller: Key = self.controller();
-    //     let to_mint = 0;
-    //     let controller_hash_add_array = match controller {
-    //         Key::Hash(package) => package,
-    //         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
-    //     };
-    //     let controller_package_hash = ContractPackageHash::new(controller_hash_add_array);
-    //     let ret: U256 = runtime::call_versioned_contract(
-    //         controller_package_hash,
-    //         None,
-    //         "gauge_types",
-    //         runtime_args! {"gauge_addr" => gauge_addr},
-    //     );
+    fn change_sum(&mut self, key0: U128, key1: U256) -> U256 {
+        ChangeSum::instance().get(&key0, &key1)
+    }
+    fn changes_weight(&mut self, key0: Key, key1: U256) -> U256 {
+        ChangesWeight::instance().get(&key0, &key1)
+    }
+    fn gauge_type_names(&mut self, key0: U128) -> String {
+        GaugeTypeNames::instance().get(&key0)
+    }
+    fn gauge_types_(&mut self, key0: Key) -> U128 {
+        GaugeTypes_::instance().get(&key0)
+    }
+    fn gauges(&mut self, key0: U256) -> Key {
+        Gauges::instance().get(&key0)
+    }
+    fn last_user_vote(&mut self, key0: Key, key1: Key) -> U256 {
+        LastUserVote::instance().get(&key0, &key1)
+    }
+    fn points_sum(&mut self, key0: U128, key1: U256) -> Point {
+        PointsSum::instance().get(&key0, &key1)
+    }
+    fn points_total(&mut self, key0: U256) -> U256 {
+        PointsTotal::instance().get(&key0)
+    }
+    fn points_type_weight(&mut self, key0: U128, key1: U256) -> U256 {
+        PointsTypeWeight::instance().get(&key0, &key1)
+    }
+    fn points_weight(&mut self, key0: Key, key1: U256) -> Point {
+        PointsWeight::instance().get(&key0, &key1)
+    }
+    fn time_sum(&mut self, type_id: U256) -> U256 {
+        TimeSum::instance().get(&type_id)
+    }
+    fn time_type_weight(&mut self, type_id: U256) -> U256 {
+        TimeTypeWeight::instance().get(&type_id)
+    }
+    fn time_weight(&mut self, key0: Key) -> U256 {
+        TimeWeight::instance().get(&key0)
+    }
+    fn vote_user_power(&mut self, key0: Key) -> U256 {
+        VoteUserPower::instance().get(&key0)
+    }
+    fn vote_user_slopes(&mut self, key0: Key, key1: Key) -> VotedSlope {
+        VoteUserSlopes::instance().get(&key0, &key1)
+    }
+    // TimeWeight, VoteUserPower, VoteUserSlopes,
 
-    //     if ret <= U256::from(0) {
-    //         //dev: gauge is not added
-    //         runtime::revert(Error::MinterGaugeIsNotAdded);
-    //     }
-
-    //     let gauge_addr_hash_add_array = match gauge_addr {
-    //         Key::Hash(package) => package,
-    //         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
-    //     };
-    //     let gauge_addr_package_hash = ContractPackageHash::new(gauge_addr_hash_add_array);
-    //     let ret: () = runtime::call_versioned_contract(
-    //         gauge_addr_package_hash,
-    //         None,
-    //         "user_checkpoint",
-    //         runtime_args! {"_for" => _for},
-    //     );
-    //     let total_mint: U256 = runtime::call_versioned_contract(
-    //         gauge_addr_package_hash,
-    //         None,
-    //         "integrate_fraction",
-    //         runtime_args! {"_for" => _for},
-    //     );
-
-    //     let minted = self.minted(_for, gauge_addr);
-    //     let to_mint: U256 = total_mint - minted;
-    //     if to_mint != U256::from(0) {
-    //         let token = self.token();
-    //         let token_hash_add_array = match token {
-    //             Key::Hash(package) => package,
-    //             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
-    //         };
-    //         let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-    //         let _result: () = runtime::call_versioned_contract(
-    //             token_package_hash,
-    //             None,
-    //             "mint",
-    //             runtime_args! {"to" => _for,"amount" => to_mint},
-    //         );
-    //         Minted::instance().set(&_for, &gauge_addr, total_mint);
-    //         self.emit(&GAUGECONLTROLLEREvent::Minted {
-    //             recipient: _for,
-    //             gauge: gauge_addr,
-    //             minted: total_mint,
-    //         });
-    //     }
-    // }
-    // fn mint(&mut self, gauge_addr: Key) {
-    //     self._mint_for(gauge_addr, self.get_caller())
-    // }
-    // fn mint_many(&mut self, gauge_addrs: Vec<Key>) {
-    //     for i in 0..(gauge_addrs.len() - 1) {
-    //         self._mint_for(gauge_addrs[i], self.get_caller())
-    //     }
-    // }
-    // fn mint_for(&mut self, gauge_addr: Key, _for: Key) {
-    //     let is_allowed = self.allowed_to_mint_for(self.get_caller(), _for);
-    //     if is_allowed == true {
-    //         self._mint_for(gauge_addr, _for)
-    //     }
-    // }
-
-    // fn toggle_approve_mint(&mut self, minting_user: Key) {
-    //     let is_allowed = self.allowed_to_mint_for(minting_user, self.get_caller());
-    //     AllowedToMintFor::instance().set(&minting_user, &self.get_caller(), !is_allowed);
-    // }
-
-    // fn allowed_to_mint_for(&mut self, owner: Key, spender: Key) -> bool {
-    //     AllowedToMintFor::instance().get(&owner, &spender)
-    // }
-    // fn minted(&mut self, owner: Key, spender: Key) -> U256 {
-    //     Minted::instance().get(&owner, &spender)
-    // }
-
+    fn time_total(&mut self) -> U256 {
+        data::time_total()
+    }
     fn token(&mut self) -> Key {
         data::token()
     }
     fn admin(&mut self) -> Key {
         data::admin()
     }
+    fn future_admin(&mut self) -> Key {
+        data::future_admin()
+    }
     fn voting_escrow(&mut self) -> Key {
         data::voting_escrow()
+    }
+    fn n_gauge_types(&mut self) -> U128 {
+        data::n_gauge_types()
     }
 
     fn emit(&mut self, gauge_controller_event: &GAUGECONLTROLLEREvent) {
