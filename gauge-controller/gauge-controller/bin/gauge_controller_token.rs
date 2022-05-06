@@ -335,6 +335,8 @@ fn n_gauge_types() {
     let ret: U128 = Token::default().n_gauge_types();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+
+#[no_mangle]
 fn add_type() {
     // @notice Add gauge type with name `_name` and weight `weight`
     // @param _name Name of gauge type
