@@ -11,8 +11,8 @@ use casper_contract::{
 use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
-use contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
+use contract_utils::{ContractContext, ContractStorage};
 
 pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Contract constructor

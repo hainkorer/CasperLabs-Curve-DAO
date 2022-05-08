@@ -14,8 +14,8 @@ use casper_contract::{
 use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
-use contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
+use contract_utils::{ContractContext, ContractStorage};
 
 /// @notice Votes have a weight depending on time, so that users are committed to the future of (whatever they are voting for)
 /// @dev Vote weight decays linearly over time. Lock time cannot be more than `MAXTIME` (4 years).
@@ -83,7 +83,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn only_admin(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::NotAdmin));
+            runtime::revert(ApiError::from(Error::AdminOnly));
         }
     }
 
@@ -818,7 +818,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
     }
 
-    fn emit(&mut self, voting_escrow_event: &VotingEscrowEvent) {
+    fn emit(&self, voting_escrow_event: &VotingEscrowEvent) {
         let mut events = Vec::new();
         let tmp = get_package_hash().to_formatted_string();
         let tmp: Vec<&str> = tmp.split("-").collect();

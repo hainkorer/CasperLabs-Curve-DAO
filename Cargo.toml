@@ -17,5 +17,9 @@ members = [
   # Fee Distributor 
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",
-  "fee-distributor/fee-distributor-tests"
+  "fee-distributor/fee-distributor-tests",
+  # Liquidity Gauge Reward
+  "liquidity-gauge-reward/liquidity-gauge-reward",
+  "liquidity-gauge-reward/liquidity-gauge-reward-crate",
+  "liquidity-gauge-reward/liquidity-gauge-reward-tests"
 ]

@@ -11,7 +11,7 @@ pub enum Error {
     ZeroFutureAdmin = 6,
     InvalidAdmin = 7,
     InvalidDecimals = 8,
-    NotAdmin = 10,
+    AdminOnly = 10,
     ZeroAddress = 11,
     SmartContractDepositorsNotAllowed = 12,
     NeedNonZeroValue = 13,
@@ -25,6 +25,11 @@ pub enum Error {
     CanOnlyIncreaseLockDuration = 21,
     TheLockDidntExpire = 22,
     InvalidBlockNumber = 23,
+    Unauthorized = 24,
+    KickNotAllowed = 25,
+    KickNotNeeded = 26,
+    NotApproved = 27,
+    AdminNotSet = 28,
 }
 
 impl From<Error> for ApiError {
