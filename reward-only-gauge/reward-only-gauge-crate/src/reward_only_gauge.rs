@@ -139,161 +139,161 @@ impl REWARDONLYGAUGEEvent {
 #[repr(u16)]
 pub enum Error {
     /// 65,536 for (UniswapV2 Core ERC20 EXPIRED)
-    UniswapV2CoreERC20EXPIRED = 0,
+    RewardOnlyGaugeEXPIRED = 0,
     /// 65,537 for (UniswapV2 Core ERC20 Signature Verification Failed)
-    UniswapV2CoreERC20SignatureVerificationFailed = 1,
+    RewardOnlyGaugeSignatureVerificationFailed = 1,
     /// 65,538 for (UniswapV2 Core ERC20 OverFlow1)
-    UniswapV2CoreERC20OverFlow1 = 2,
+    RewardOnlyGaugeOverFlow1 = 2,
     /// 65,539 for (UniswapV2 Core ERC20 OverFlow2)
-    UniswapV2CoreERC20OverFlow2 = 3,
+    RewardOnlyGaugeOverFlow2 = 3,
     /// 65,540 for (UniswapV2 Core ERC20 OverFlow3)
-    UniswapV2CoreERC20OverFlow3 = 4,
+    RewardOnlyGaugeOverFlow3 = 4,
     /// 65,541 for (UniswapV2 Core ERC20 OverFlow4)
-    UniswapV2CoreERC20OverFlow4 = 5,
+    RewardOnlyGaugeOverFlow4 = 5,
     /// 65,542 for (UniswapV2 Core ERC20 UnderFlow1)
-    UniswapV2CoreERC20UnderFlow1 = 6,
+    RewardOnlyGaugeUnderFlow1 = 6,
     /// 65,543 for (UniswapV2 Core ERC20 UnderFlow2)
-    UniswapV2CoreERC20UnderFlow2 = 7,
+    RewardOnlyGaugeUnderFlow2 = 7,
     /// 65,544 for (UniswapV2 Core ERC20 UnderFlow3)
-    UniswapV2CoreERC20UnderFlow3 = 8,
+    RewardOnlyGaugeUnderFlow3 = 8,
     /// 65,545 for (UniswapV2 Core ERC20 UnderFlow4)
-    UniswapV2CoreERC20UnderFlow4 = 9,
+    RewardOnlyGaugeUnderFlow4 = 9,
     /// 65,546 for (UniswapV2 Core ERC20 UnderFlow5)
-    UniswapV2CoreERC20UnderFlow5 = 10,
+    RewardOnlyGaugeUnderFlow5 = 10,
     // /// 65,538 for (Gauge Controller Address Zero1)
-    // GaugeControllerAddressZero1 = 2,
+    // RewardOnlyGaugeAddressZero1 = 2,
     // /// 65,539 for (Gauge Controller Address Zero2)
-    // GaugeControllerAddressZero2 = 3,
+    // RewardOnlyGaugeAddressZero2 = 3,
     // /// 65,540 for (Gauge Controller Only Admin1)
-    // GaugeControllerOnlyAdmin1 = 4,
+    // RewardOnlyGaugeOnlyAdmin1 = 4,
     // /// 65,541 for (Gauge Controller Only Admin2)
-    // GaugeControllerOnlyAdmin2 = 5,
+    // RewardOnlyGaugeOnlyAdmin2 = 5,
     // /// 65,542 for (Gauge Controller Admin Not Set)
-    // GaugeControllerAdminNotSet = 6,
+    // RewardOnlyGaugeAdminNotSet = 6,
     // /// 65,543 for (Gauge Controller Gauge Type Is Zero)
-    // GaugeControllerGaugeTypeIsZero = 7,
+    // RewardOnlyGaugeGaugeTypeIsZero = 7,
     // /// 65,544 for (Gauge Controller Not Admin1)
-    // GaugeControllerNotAdmin1 = 8,
+    // RewardOnlyGaugeNotAdmin1 = 8,
     // /// 65,545 for (Gauge Controller Not Admin2)
-    // GaugeControllerNotAdmin2 = 9,
+    // RewardOnlyGaugeNotAdmin2 = 9,
     // /// 65,546 for (Gauge Controller Not Admin3)
-    // GaugeControllerNotAdmin3 = 10,
+    // RewardOnlyGaugeNotAdmin3 = 10,
     // /// 65,547 for (Gauge Controller Not Admin3)
-    // GaugeControllerNotAdmin4 = 11,
+    // RewardOnlyGaugeNotAdmin4 = 11,
     // /// 65,548 for (Gauge Controller cannot add same gauge twice)
-    // GaugeControllerCannotAddSameGaugeTwice = 12,
+    // RewardOnlyGaugeCannotAddSameGaugeTwice = 12,
     // /// 65,549 for (Gauge Controller gauge type is greater than equal to zero and less than n_gauge_types)
-    // GaugeControllerGaugeType1 = 13,
+    // RewardOnlyGaugeGaugeType1 = 13,
     // /// 65,550 for (Gauge Controller Your token lock expires too soon)
-    // GaugeControllerTokenLockExpiresTooSoon = 14,
+    // RewardOnlyGaugeTokenLockExpiresTooSoon = 14,
     // /// 65,551 for (Gauge Controller You used all your voting power)
-    // GaugeControllerUsedAllYourVotingPower = 15,
+    // RewardOnlyGaugeUsedAllYourVotingPower = 15,
     // /// 65,552 for (Gauge Controller You Cannot vote so often)
-    // GaugeControllerCannotVoteSoOften = 16,
+    // RewardOnlyGaugeCannotVoteSoOften = 16,
     // /// 65,553 for (Gauge Controller Gauge not added)
-    // GaugeControllerGaugeNotAdded = 17,
+    // RewardOnlyGaugeGaugeNotAdded = 17,
     // /// 65,554 for (Gauge Controller Used too much power)
-    // GaugeControllerUsedTooMuchPower = 18,
+    // RewardOnlyGaugeUsedTooMuchPower = 18,
     // /// 65,555 for (Gauge Controller OverFlow1)
-    // GaugeControllerOverFlow1 = 19,
+    // RewardOnlyGaugeOverFlow1 = 19,
     // /// 65,556 for (Gauge Controller OverFlow2)
-    // GaugeControllerOverFlow2 = 20,
+    // RewardOnlyGaugeOverFlow2 = 20,
     // /// 65,557 for (Gauge Controller OverFlow3)
-    // GaugeControllerOverFlow3 = 21,
+    // RewardOnlyGaugeOverFlow3 = 21,
     // /// 65,558 for (Gauge Controller OverFlow4)
-    // GaugeControllerOverFlow4 = 22,
+    // RewardOnlyGaugeOverFlow4 = 22,
     // /// 65,559 for (Gauge Controller OverFlow5)
-    // GaugeControllerOverFlow5 = 23,
+    // RewardOnlyGaugeOverFlow5 = 23,
     // /// 65,560 for (Gauge Controller OverFlow6)
-    // GaugeControllerOverFlow6 = 24,
+    // RewardOnlyGaugeOverFlow6 = 24,
     // /// 65,561 for (Gauge Controller OverFlow7)
-    // GaugeControllerOverFlow7 = 25,
+    // RewardOnlyGaugeOverFlow7 = 25,
     // /// 65,562 for (Gauge Controller OverFlow8)
-    // GaugeControllerOverFlow8 = 26,
+    // RewardOnlyGaugeOverFlow8 = 26,
     // /// 65,563 for (Gauge Controller OverFlow9)
-    // GaugeControllerOverFlow9 = 27,
+    // RewardOnlyGaugeOverFlow9 = 27,
     // /// 65,564 for (Gauge Controller OverFlow10)
-    // GaugeControllerOverFlow10 = 28,
+    // RewardOnlyGaugeOverFlow10 = 28,
     // /// 65,565 for (Gauge Controller OverFlow11)
-    // GaugeControllerOverFlow11 = 29,
+    // RewardOnlyGaugeOverFlow11 = 29,
     // /// 65,566 for (Gauge Controller OverFlow12)
-    // GaugeControllerOverFlow12 = 30,
+    // RewardOnlyGaugeOverFlow12 = 30,
     // /// 65,567 for (Gauge Controller OverFlow13)
-    // GaugeControllerOverFlow13 = 31,
+    // RewardOnlyGaugeOverFlow13 = 31,
     // /// 65,568 for (Gauge Controller OverFlow14)
-    // GaugeControllerOverFlow14 = 32,
+    // RewardOnlyGaugeOverFlow14 = 32,
     // /// 65,569 for (Gauge Controller OverFlow15)
-    // GaugeControllerOverFlow15 = 33,
+    // RewardOnlyGaugeOverFlow15 = 33,
     // /// 65,570 for (Gauge Controller OverFlow16)
-    // GaugeControllerOverFlow16 = 34,
+    // RewardOnlyGaugeOverFlow16 = 34,
     // /// 65,571 for (Gauge Controller OverFlow17)
-    // GaugeControllerOverFlow17 = 35,
+    // RewardOnlyGaugeOverFlow17 = 35,
     // /// 65,572 for (Gauge Controller OverFlow18)
-    // GaugeControllerOverFlow18 = 36,
+    // RewardOnlyGaugeOverFlow18 = 36,
     // /// 65,573 for (Gauge Controller OverFlow19)
-    // GaugeControllerOverFlow19 = 37,
+    // RewardOnlyGaugeOverFlow19 = 37,
     // /// 65,574 for (Gauge Controller OverFlow20)
-    // GaugeControllerOverFlow20 = 38,
+    // RewardOnlyGaugeOverFlow20 = 38,
     // /// 65,575 for (Gauge Controller OverFlow21)
-    // GaugeControllerOverFlow21 = 39,
+    // RewardOnlyGaugeOverFlow21 = 39,
     // /// 65,576 for (Gauge Controller OverFlow22)
-    // GaugeControllerOverFlow22 = 40,
+    // RewardOnlyGaugeOverFlow22 = 40,
     // /// 65,577 for (Gauge Controller OverFlow23)
-    // GaugeControllerOverFlow23 = 41,
+    // RewardOnlyGaugeOverFlow23 = 41,
     // /// 65,578 for (Gauge Controller OverFlow24)
-    // GaugeControllerOverFlow24 = 42,
+    // RewardOnlyGaugeOverFlow24 = 42,
     // /// 65,579 for (Gauge Controller OverFlow25)
-    // GaugeControllerOverFlow25 = 43,
+    // RewardOnlyGaugeOverFlow25 = 43,
     // /// 65,580 for (Gauge Controller OverFlow26)
-    // GaugeControllerOverFlow26 = 44,
+    // RewardOnlyGaugeOverFlow26 = 44,
     // /// 65,581 for (Gauge Controller OverFlow27)
-    // GaugeControllerOverFlow27 = 45,
+    // RewardOnlyGaugeOverFlow27 = 45,
     // /// 65,582 for (Gauge Controller UnderFlow1)
-    // GaugeControllerUnderFlow1 = 46,
+    // RewardOnlyGaugeUnderFlow1 = 46,
     // /// 65,583 for (Gauge Controller UnderFlow2)
-    // GaugeControllerUnderFlow2 = 47,
+    // RewardOnlyGaugeUnderFlow2 = 47,
     // /// 65,584 for (Gauge Controller UnderFlow3)
-    // GaugeControllerUnderFlow3 = 48,
+    // RewardOnlyGaugeUnderFlow3 = 48,
     // /// 65,585 for (Gauge Controller UnderFlow4)
-    // GaugeControllerUnderFlow4 = 49,
+    // RewardOnlyGaugeUnderFlow4 = 49,
     // /// 65,586 for (Gauge Controller UnderFlow5)
-    // GaugeControllerUnderFlow5 = 50,
+    // RewardOnlyGaugeUnderFlow5 = 50,
     // /// 65,587 for (Gauge Controller UnderFlow6)
-    // GaugeControllerUnderFlow6 = 51,
+    // RewardOnlyGaugeUnderFlow6 = 51,
     // /// 65,588 for (Gauge Controller UnderFlow7)
-    // GaugeControllerUnderFlow7 = 52,
+    // RewardOnlyGaugeUnderFlow7 = 52,
     // /// 65,589 for (Gauge Controller UnderFlow8)
-    // GaugeControllerUnderFlow8 = 53,
+    // RewardOnlyGaugeUnderFlow8 = 53,
     // /// 65,590 for (Gauge Controller UnderFlow9)
-    // GaugeControllerUnderFlow9 = 54,
+    // RewardOnlyGaugeUnderFlow9 = 54,
     // /// 65,591 for (Gauge Controller UnderFlow10)
-    // GaugeControllerUnderFlow10 = 55,
+    // RewardOnlyGaugeUnderFlow10 = 55,
     // /// 65,592 for (Gauge Controller UnderFlow11)
-    // GaugeControllerUnderFlow11 = 56,
+    // RewardOnlyGaugeUnderFlow11 = 56,
     // /// 65,593 for (Gauge Controller UnderFlow12)
-    // GaugeControllerUnderFlow12 = 57,
+    // RewardOnlyGaugeUnderFlow12 = 57,
     // /// 65,594 for (Gauge Controller UnderFlow13)
-    // GaugeControllerUnderFlow13 = 58,
+    // RewardOnlyGaugeUnderFlow13 = 58,
     // /// 65,595 for (Gauge Controller UnderFlow14)
-    // GaugeControllerUnderFlow14 = 59,
+    // RewardOnlyGaugeUnderFlow14 = 59,
     // /// 65,596 for (Gauge Controller UnderFlow15)
-    // GaugeControllerUnderFlow15 = 60,
+    // RewardOnlyGaugeUnderFlow15 = 60,
     // /// 65,597 for (Gauge Controller UnderFlow16)
-    // GaugeControllerUnderFlow16 = 61,
+    // RewardOnlyGaugeUnderFlow16 = 61,
     // /// 65,598 for (Gauge Controller UnderFlow17)
-    // GaugeControllerUnderFlow17 = 62,
+    // RewardOnlyGaugeUnderFlow17 = 62,
     // /// 65,599 for (Gauge Controller UnderFlow18)
-    // GaugeControllerUnderFlow18 = 63,
+    // RewardOnlyGaugeUnderFlow18 = 63,
     // /// 65,600 for (Gauge Controller UnderFlow19)
-    // GaugeControllerUnderFlow19 = 64,
+    // RewardOnlyGaugeUnderFlow19 = 64,
     // /// 65,601 for (Gauge Controller UnderFlow20)
-    // GaugeControllerUnderFlow20 = 65,
+    // RewardOnlyGaugeUnderFlow20 = 65,
     // /// 65,602 for (Gauge Controller UnderFlow21)
-    // GaugeControllerUnderFlow21 = 66,
+    // RewardOnlyGaugeUnderFlow21 = 66,
     // /// 65,603 for (Gauge Controller UnderFlow22)
-    // GaugeControllerUnderFlow22 = 67,
+    // RewardOnlyGaugeUnderFlow22 = 67,
     // /// 65,604 for (Gauge Controller UnderFlow23)
-    // GaugeControllerUnderFlow23 = 68,
+    // RewardOnlyGaugeUnderFlow23 = 68,
 }
 
 impl From<Error> for ApiError {
@@ -407,7 +407,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         let spender_allowance: U256 = allowances.get(&owner, &spender);
         let new_allowance: U256 = spender_allowance
             .checked_add(amount)
-            .ok_or(Error::UniswapV2CoreERC20OverFlow1)
+            .ok_or(Error::RewardOnlyGaugeOverFlow1)
             .unwrap_or_revert();
 
         if owner != spender {
@@ -427,7 +427,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
 
         let new_allowance: U256 = spender_allowance
             .checked_sub(amount)
-            .ok_or(Error::UniswapV2CoreERC20UnderFlow1)
+            .ok_or(Error::RewardOnlyGaugeUnderFlow1)
             .unwrap_or_revert();
 
         if new_allowance >= 0.into() && new_allowance < spender_allowance && owner != spender {
@@ -445,7 +445,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             let spender_allowance: U256 = allowances.get(&owner, &self.get_caller());
             let new_allowance: U256 = spender_allowance
                 .checked_sub(amount)
-                .ok_or(Error::UniswapV2CoreERC20UnderFlow2)
+                .ok_or(Error::RewardOnlyGaugeUnderFlow2)
                 .unwrap_or_revert();
             if new_allowance >= 0.into()
                 && new_allowance < spender_allowance
@@ -475,14 +475,14 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             &sender,
             sender_balance
                 .checked_sub(amount)
-                .ok_or(Error::UniswapV2CoreERC20UnderFlow5)
+                .ok_or(Error::RewardOnlyGaugeUnderFlow5)
                 .unwrap_or_revert(),
         );
         balances.set(
             &recipient,
             recipient_balance
                 .checked_add(amount)
-                .ok_or(Error::UniswapV2CoreERC20OverFlow4)
+                .ok_or(Error::RewardOnlyGaugeOverFlow4)
                 .unwrap_or_revert(),
         );
         self.emit(&REWARDONLYGAUGEEvent::Transfer {
@@ -515,7 +515,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
     // fn commit_transfer_ownership(&mut self, addr: Key) {
     //     if self.get_caller() != self.admin() {
     //         //Gauge Controller Only Admin
-    //         runtime::revert(Error::GaugeControllerOnlyAdmin1);
+    //         runtime::revert(Error::RewardOnlyGaugeOnlyAdmin1);
     //     }
     //     data::set_future_admin(addr);
     //     self.emit(&REWARDONLYGAUGEEvent::CommitOwnership { admin: addr });
@@ -523,12 +523,12 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
     // fn apply_transfer_ownership(&mut self) {
     //     if self.get_caller() != self.admin() {
     //         //Gauge Controller Only Admin
-    //         runtime::revert(Error::GaugeControllerOnlyAdmin2);
+    //         runtime::revert(Error::RewardOnlyGaugeOnlyAdmin2);
     //     }
     //     let _admin = self.future_admin();
     //     if _admin == data::zero_address() {
     //         //Gauge Controller Admin Not Set
-    //         runtime::revert(Error::GaugeControllerAdminNotSet);
+    //         runtime::revert(Error::RewardOnlyGaugeAdminNotSet);
     //     }
     //     data::set_admin(_admin);
     //     self.emit(&REWARDONLYGAUGEEvent::ApplyOwnership { admin: _admin });
