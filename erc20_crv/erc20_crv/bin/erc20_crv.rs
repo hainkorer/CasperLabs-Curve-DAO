@@ -10,7 +10,7 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage, set_key};
+use contract_utils::{set_key, ContractContext, OnChainContractStorage};
 use erc20_crate::{self, ERC20};
 use erc20_crv::{self, ERC20CRV};
 
@@ -73,50 +73,48 @@ fn set_admin() {
 }
 #[no_mangle]
 fn start_epoch_time_write() {
-    let ret =  Erc20Crv::default().start_epoch_time_write();
+    let ret = Erc20Crv::default().start_epoch_time_write();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn start_epoch_time_write_js_client() {
-    let ret =  Erc20Crv::default().start_epoch_time_write();
-    set_key("result",ret);
+    let ret = Erc20Crv::default().start_epoch_time_write();
+    set_key("result", ret);
 }
 #[no_mangle]
 fn future_epoch_time_write() {
-    let ret =  Erc20Crv::default().future_epoch_time_write();
+    let ret = Erc20Crv::default().future_epoch_time_write();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-   
 }
 #[no_mangle]
 fn future_epoch_time_write_js_client() {
-    let ret =  Erc20Crv::default().future_epoch_time_write();
-    set_key("result",ret);
-   
+    let ret = Erc20Crv::default().future_epoch_time_write();
+    set_key("result", ret);
 }
 #[no_mangle]
 fn available_supply() {
-    let ret =  Erc20Crv::default().available_supply();
+    let ret = Erc20Crv::default().available_supply();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn available_supply_js_client() {
-    let ret =  Erc20Crv::default().available_supply();
-    set_key("result",ret);
+    let ret = Erc20Crv::default().available_supply();
+    set_key("result", ret);
 }
 
 #[no_mangle]
 fn mintable_in_timeframe() {
     let start: U256 = runtime::get_named_arg("start");
     let end: U256 = runtime::get_named_arg("end");
-    let ret =  Erc20Crv::default().mintable_in_timeframe(start,end);
+    let ret = Erc20Crv::default().mintable_in_timeframe(start, end);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn mintable_in_timeframe_js_client() {
     let start: U256 = runtime::get_named_arg("start");
     let end: U256 = runtime::get_named_arg("end");
-    let ret =  Erc20Crv::default().mintable_in_timeframe(start,end);
-    set_key("result",ret);
+    let ret = Erc20Crv::default().mintable_in_timeframe(start, end);
+    set_key("result", ret);
 }
 
 #[no_mangle]
@@ -127,15 +125,15 @@ fn update_mining_parameters() {
 fn mint_crv() {
     let to: Key = runtime::get_named_arg("to");
     let value: U256 = runtime::get_named_arg("value");
-    let ret =  Erc20Crv::default().mint_crv(to,value);
+    let ret = Erc20Crv::default().mint_crv(to, value);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn mint_crv_js_client() {
     let to: Key = runtime::get_named_arg("to");
     let value: U256 = runtime::get_named_arg("value");
-    let ret =  Erc20Crv::default().mint_crv(to,value);
-    set_key("result",ret);
+    let ret = Erc20Crv::default().mint_crv(to, value);
+    set_key("result", ret);
 }
 
 fn get_entry_points() -> EntryPoints {
@@ -189,7 +187,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-     entry_points.add_entry_point(EntryPoint::new(
+    entry_points.add_entry_point(EntryPoint::new(
         "start_epoch_time_write_js_client",
         vec![],
         <()>::cl_type(),
@@ -228,7 +226,7 @@ fn get_entry_points() -> EntryPoints {
         "mintable_in_timeframe",
         vec![
             Parameter::new("start", U256::cl_type()),
-            Parameter::new("end", U256::cl_type())
+            Parameter::new("end", U256::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -238,7 +236,7 @@ fn get_entry_points() -> EntryPoints {
         "mintable_in_timeframe_js_client",
         vec![
             Parameter::new("start", U256::cl_type()),
-            Parameter::new("end", U256::cl_type())
+            Parameter::new("end", U256::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -248,7 +246,7 @@ fn get_entry_points() -> EntryPoints {
         "mint_crv",
         vec![
             Parameter::new("to", Key::cl_type()),
-            Parameter::new("value", U256::cl_type())
+            Parameter::new("value", U256::cl_type()),
         ],
         bool::cl_type(),
         EntryPointAccess::Public,
@@ -258,13 +256,12 @@ fn get_entry_points() -> EntryPoints {
         "mint_crv_js_client",
         vec![
             Parameter::new("to", Key::cl_type()),
-            Parameter::new("value", U256::cl_type())
+            Parameter::new("value", U256::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-   
 
     entry_points
 }

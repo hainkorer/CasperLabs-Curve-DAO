@@ -2,7 +2,9 @@
 
 members = [
     "erc20_crv",
-    "erc20_crv_tests"
+    "erc20_crv_tests",
+    "session_code",
+    "common"
 ]
 
 [profile.release]

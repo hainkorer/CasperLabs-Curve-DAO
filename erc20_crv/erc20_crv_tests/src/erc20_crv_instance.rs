@@ -7,9 +7,6 @@ use test_env::{TestContract, TestEnv};
 pub struct ERC20CRVInstance(TestContract);
 
 impl ERC20CRVInstance {
-    pub fn contract_instance(contract: TestContract) -> ERC20CRVInstance {
-        ERC20CRVInstance(contract)
-    }
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
@@ -18,8 +15,8 @@ impl ERC20CRVInstance {
         symbol: String,
         decimal: u8,
         supply: U256,
-    ) -> TestContract {
-        TestContract::new(
+    ) -> ERC20CRVInstance {
+        ERC20CRVInstance(TestContract::new(
             env,
             "erc20_crv.wasm",
             contract_name,
@@ -30,24 +27,9 @@ impl ERC20CRVInstance {
                 "decimal" => decimal,
                 "supply" => supply,
             },
-        )
+            100000000
+        ))
     }
-    // pub fn proxy(
-    //     env: &TestEnv,
-    //     contract_name: &str,
-    //     sender: AccountHash,
-    //     erc20_crv: Key,
-    // ) -> TestContract {
-    //     TestContract::new(
-    //         env,
-    //         "erc20_crv_test.wasm",
-    //         contract_name,
-    //         sender,
-    //         runtime_args! {
-    //             "erc20_crv" => erc20_crv
-    //         },
-    //     )
-    // }
     pub fn set_minter(&self, sender: AccountHash, _minter: Key) {
         self.0.call_contract(
             sender,
@@ -55,6 +37,7 @@ impl ERC20CRVInstance {
             runtime_args! {
                 "_minter" => _minter
             },
+            0
         );
     }
     pub fn burn_caller(&self, sender: AccountHash, _value: U256) {
@@ -64,6 +47,7 @@ impl ERC20CRVInstance {
             runtime_args! {
                 "_value"=>_value
             },
+            0
         );
     }
     pub fn set_admin(&self, sender: AccountHash, admin: Key) {
@@ -73,64 +57,43 @@ impl ERC20CRVInstance {
             runtime_args! {
                 "admin"=>admin
             },
+            0
         );
     }
     pub fn update_mining_parameters(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "update_mining_parameters", runtime_args! {});
+            .call_contract(sender, "update_mining_parameters", runtime_args! {},1000000000);
     }
 
     pub fn start_epoch_time_write(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "start_epoch_time_write",
-            runtime_args! {
-            },
-        );
+        self.0
+            .call_contract(sender, "start_epoch_time_write", runtime_args! {},1000000000);
     }
     pub fn start_epoch_time_write_js_client(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "start_epoch_time_write_js_client",
-            runtime_args! {
-            },
-        );
+        self.0
+            .call_contract(sender, "start_epoch_time_write_js_client", runtime_args! {},1000000000);
     }
     pub fn future_epoch_time_write(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "future_epoch_time_write",
-            runtime_args! {
-            },
-        );
+        self.0
+            .call_contract(sender, "future_epoch_time_write", runtime_args! {},1000000000);
     }
     pub fn future_epoch_time_write_js_client(&self, sender: AccountHash) {
         self.0.call_contract(
             sender,
             "future_epoch_time_write_js_client",
-            runtime_args! {
-            },
+            runtime_args! {},1000000000
         );
+
     }
     pub fn available_supply(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "available_supply",
-            runtime_args! {
-            },
-        );
-
+        self.0
+            .call_contract(sender, "available_supply", runtime_args! {},1000000000);
     }
     pub fn available_supply_js_client(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "available_supply_js_client",
-            runtime_args! {
-            },
-        );
-
+        self.0
+            .call_contract(sender, "available_supply_js_client", runtime_args! {},1000000000);
     }
-    pub fn mintable_in_timeframe(&self, sender: AccountHash,start:U256,end:U256) {
+    pub fn mintable_in_timeframe(&self, sender: AccountHash, start: U256, end: U256) {
         self.0.call_contract(
             sender,
             "mintable_in_timeframe",
@@ -138,9 +101,10 @@ impl ERC20CRVInstance {
                 "start"=>start,
                 "end"=>end
             },
+            0
         );
     }
-    pub fn mintable_in_timeframe_js_client(&self, sender: AccountHash,start:U256,end:U256) {
+    pub fn mintable_in_timeframe_js_client(&self, sender: AccountHash, start: U256, end: U256) {
         self.0.call_contract(
             sender,
             "mintable_in_timeframe_js_client",
@@ -148,9 +112,10 @@ impl ERC20CRVInstance {
                 "start"=>start,
                 "end"=>end
             },
+            0
         );
     }
-    pub fn mint_crv(&self, sender: AccountHash,to:Key,value:U256) {
+    pub fn mint_crv(&self, sender: AccountHash, to: Key, value: U256) {
         self.0.call_contract(
             sender,
             "mint_crv",
@@ -158,9 +123,10 @@ impl ERC20CRVInstance {
                 "to"=>to,
                 "value"=>value
             },
+            1000000000
         );
     }
-    pub fn mint_crv_js_client(&self, sender: AccountHash,to:Key,value:U256) {
+    pub fn mint_crv_js_client(&self, sender: AccountHash, to: Key, value: U256) {
         self.0.call_contract(
             sender,
             "mint_crv_js_client",
@@ -168,15 +134,16 @@ impl ERC20CRVInstance {
                 "to"=>to,
                 "value"=>value
             },
+            1000000000
         );
     }
 
-    // Result methods
-    pub fn result<T: CLTyped + FromBytes>(&self) -> T {
-        self.0.query_named_key("result".to_string())
+    pub fn package_hash(&self) -> [u8; 32] {
+        self.0.package_hash()
     }
 
-    pub fn package_hash(&self) -> ContractPackageHash {
-        self.0.query_named_key("self_package_hash".to_string())
+    // Get stored key values
+    pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
+        self.0.query_named_key(key)
     }
 }

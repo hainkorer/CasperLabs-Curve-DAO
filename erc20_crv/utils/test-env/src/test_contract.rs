@@ -19,10 +19,11 @@ impl TestContract {
         name: &str,
         sender: AccountHash,
         mut args: RuntimeArgs,
+        time: u64,
     ) -> TestContract {
         let session_code = PathBuf::from(wasm);
         args.insert("contract_name", name).unwrap();
-        env.run(sender, DeploySource::Code(session_code), args);
+        env.run(sender, DeploySource::Code(session_code), args, time);
 
         TestContract {
             env: env.clone(),
@@ -57,11 +58,17 @@ impl TestContract {
             .query_account_named_key(self.contract_owner, &[key])
     }
 
-    pub fn call_contract(&self, sender: AccountHash, entry_point: &str, session_args: RuntimeArgs) {
+    pub fn call_contract(
+        &self,
+        sender: AccountHash,
+        entry_point: &str,
+        session_args: RuntimeArgs,
+        time: u64,
+    ) {
         let session_code = DeploySource::ByContractHash {
             hash: ContractHash::new(self.contract_hash()),
             method: entry_point.to_string(),
         };
-        self.env.run(sender, session_code, session_args);
+        self.env.run(sender, session_code, session_args, time);
     }
 }
