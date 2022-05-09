@@ -1,5 +1,5 @@
 [package]
-name = "minter-crate"
+name = "reward-only-gauge-proxy"
 version = "0.2.0"
 authors = ["Muhammad Adrees <muhammad.adrees@scytalelabs.com>"]
 edition = "2018"
@@ -8,6 +8,13 @@ edition = "2018"
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
 contract-utils = { path = "../../utils/contract-utils" }
-renvm-sig = "0.1.1"
-hex = { version = "0.4.3", default-features = false }
 cryptoxide = "0.3.3"
+hex = { version = "0.4.3", default-features = false }
+renvm-sig = "0.1.1 "
+
+[[bin]]
+name = "reward-only-gauge-proxy-token"
+path = "bin/reward_only_gauge_proxy_token.rs"
+bench = false
+doctest = false
+test = false

@@ -1,5 +1,5 @@
 [package]
-name = "minter-tests"
+name = "reward-only-gauge-tests"
 version = "0.2.1"
 authors = ["Muhammad Adrees <muhammad.adrees@scytalelabs.com>"]
 edition = "2018"
