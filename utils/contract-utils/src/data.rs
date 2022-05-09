@@ -7,7 +7,7 @@ use casper_contract::{
 };
 use casper_types::{
     bytesrepr::{FromBytes, ToBytes},
-    ApiError, CLTyped, Key, URef, U256,
+    ApiError, CLTyped, Key, URef,
 };
 
 pub struct Dict {

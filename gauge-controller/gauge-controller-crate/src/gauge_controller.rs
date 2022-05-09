@@ -103,90 +103,141 @@ impl GAUGECONLTROLLEREvent {
 
 #[repr(u16)]
 pub enum Error {
-    /// 65,537 for (Gauge Controller Address Zero1)
-    GaugeControllerAddressZero1 = 1,
-    /// 65,538 for (Gauge Controller Address Zero2)
-    GaugeControllerAddressZero2 = 2,
-    /// 65,539 for (Gauge Controller Only Admin1)
-    GaugeControllerOnlyAdmin1 = 3,
-    /// 65,540 for (Gauge Controller Only Admin2)
-    GaugeControllerOnlyAdmin2 = 4,
-    /// 65,541 for (Gauge Controller Admin Not Set)
-    GaugeControllerAdminNotSet = 5,
-    /// 65,542 for (Gauge Controller Gauge Type Is Zero)
-    GaugeControllerGaugeTypeIsZero = 6,
-    /// 65,543 for (Gauge Controller Not Admin1)
-    GaugeControllerNotAdmin1 = 7,
-    /// 65,544 for (Gauge Controller Not Admin2)
-    GaugeControllerNotAdmin2 = 8,
-    /// 65,545 for (Gauge Controller Not Admin3)
-    GaugeControllerNotAdmin3 = 9,
+    /// 65,538 for (Gauge Controller Address Zero1)
+    GaugeControllerAddressZero1 = 2,
+    /// 65,539 for (Gauge Controller Address Zero2)
+    GaugeControllerAddressZero2 = 3,
+    /// 65,540 for (Gauge Controller Only Admin1)
+    GaugeControllerOnlyAdmin1 = 4,
+    /// 65,541 for (Gauge Controller Only Admin2)
+    GaugeControllerOnlyAdmin2 = 5,
+    /// 65,542 for (Gauge Controller Admin Not Set)
+    GaugeControllerAdminNotSet = 6,
+    /// 65,543 for (Gauge Controller Gauge Type Is Zero)
+    GaugeControllerGaugeTypeIsZero = 7,
+    /// 65,544 for (Gauge Controller Not Admin1)
+    GaugeControllerNotAdmin1 = 8,
+    /// 65,545 for (Gauge Controller Not Admin2)
+    GaugeControllerNotAdmin2 = 9,
     /// 65,546 for (Gauge Controller Not Admin3)
-    GaugeControllerNotAdmin4 = 10,
-    /// 65,547 for (Gauge Controller cannot add same gauge twice)
-    GaugeControllerCannotAddSameGaugeTwice = 11,
-    /// 65,548 for (Gauge Controller gauge type is greater than equal to zero and less than n_gauge_types)
-    GaugeControllerGaugeType1 = 12,
-    /// 65,549 for (Gauge Controller Your token lock expires too soon)
-    GaugeControllerTokenLockExpiresTooSoon = 13,
-    /// 65,550 for (Gauge Controller You used all your voting power)
-    GaugeControllerUsedAllYourVotingPower = 14,
-    /// 65,551 for (Gauge Controller You Cannot vote so often)
-    GaugeControllerCannotVoteSoOften = 15,
-    /// 65,552 for (Gauge Controller Gauge not added)
-    GaugeControllerGaugeNotAdded = 16,
-    /// 65,552 for (Gauge Controller Used too much power)
-    GaugeControllerUsedTooMuchPower = 17,
-    GaugeControllerOverFlow1 = 18,
-    GaugeControllerOverFlow2 = 19,
-    GaugeControllerOverFlow3 = 20,
-    GaugeControllerOverFlow4 = 21,
-    GaugeControllerOverFlow5 = 22,
-    GaugeControllerOverFlow6 = 23,
-    GaugeControllerOverFlow7 = 24,
-    GaugeControllerOverFlow8 = 25,
-    GaugeControllerOverFlow9 = 26,
-    GaugeControllerOverFlow10 = 27,
-    GaugeControllerOverFlow11 = 28,
-    GaugeControllerOverFlow12 = 29,
-    GaugeControllerOverFlow13 = 30,
-    GaugeControllerOverFlow14 = 31,
-    GaugeControllerOverFlow15 = 32,
-    GaugeControllerOverFlow16 = 33,
-    GaugeControllerOverFlow17 = 34,
-    GaugeControllerOverFlow18 = 35,
-    GaugeControllerOverFlow19 = 36,
-    GaugeControllerOverFlow20 = 37,
-    GaugeControllerOverFlow21 = 38,
-    GaugeControllerOverFlow22 = 39,
-    GaugeControllerOverFlow23 = 40,
-    GaugeControllerOverFlow24 = 41,
-    GaugeControllerOverFlow25 = 42,
-    GaugeControllerOverFlow26 = 43,
-    GaugeControllerOverFlow27 = 44,
-    GaugeControllerUnderFlow1 = 45,
-    GaugeControllerUnderFlow2 = 46,
-    GaugeControllerUnderFlow3 = 47,
-    GaugeControllerUnderFlow4 = 48,
-    GaugeControllerUnderFlow5 = 49,
-    GaugeControllerUnderFlow6 = 50,
-    GaugeControllerUnderFlow7 = 51,
-    GaugeControllerUnderFlow8 = 52,
-    GaugeControllerUnderFlow9 = 53,
-    GaugeControllerUnderFlow10 = 54,
-    GaugeControllerUnderFlow11 = 55,
-    GaugeControllerUnderFlow12 = 56,
-    GaugeControllerUnderFlow13 = 57,
-    GaugeControllerUnderFlow14 = 58,
-    GaugeControllerUnderFlow15 = 59,
-    GaugeControllerUnderFlow16 = 60,
-    GaugeControllerUnderFlow17 = 61,
-    GaugeControllerUnderFlow18 = 62,
-    GaugeControllerUnderFlow19 = 63,
-    GaugeControllerUnderFlow20 = 64,
-    GaugeControllerUnderFlow21 = 65,
-    GaugeControllerUnderFlow22 = 66,
-    GaugeControllerUnderFlow23 = 67,
+    GaugeControllerNotAdmin3 = 10,
+    /// 65,547 for (Gauge Controller Not Admin3)
+    GaugeControllerNotAdmin4 = 11,
+    /// 65,548 for (Gauge Controller cannot add same gauge twice)
+    GaugeControllerCannotAddSameGaugeTwice = 12,
+    /// 65,549 for (Gauge Controller gauge type is greater than equal to zero and less than n_gauge_types)
+    GaugeControllerGaugeType1 = 13,
+    /// 65,550 for (Gauge Controller Your token lock expires too soon)
+    GaugeControllerTokenLockExpiresTooSoon = 14,
+    /// 65,551 for (Gauge Controller You used all your voting power)
+    GaugeControllerUsedAllYourVotingPower = 15,
+    /// 65,552 for (Gauge Controller You Cannot vote so often)
+    GaugeControllerCannotVoteSoOften = 16,
+    /// 65,553 for (Gauge Controller Gauge not added)
+    GaugeControllerGaugeNotAdded = 17,
+    /// 65,554 for (Gauge Controller Used too much power)
+    GaugeControllerUsedTooMuchPower = 18,
+    /// 65,555 for (Gauge Controller OverFlow1)
+    GaugeControllerOverFlow1 = 19,
+    /// 65,556 for (Gauge Controller OverFlow2)
+    GaugeControllerOverFlow2 = 20,
+    /// 65,557 for (Gauge Controller OverFlow3)
+    GaugeControllerOverFlow3 = 21,
+    /// 65,558 for (Gauge Controller OverFlow4)
+    GaugeControllerOverFlow4 = 22,
+    /// 65,559 for (Gauge Controller OverFlow5)
+    GaugeControllerOverFlow5 = 23,
+    /// 65,560 for (Gauge Controller OverFlow6)
+    GaugeControllerOverFlow6 = 24,
+    /// 65,561 for (Gauge Controller OverFlow7)
+    GaugeControllerOverFlow7 = 25,
+    /// 65,562 for (Gauge Controller OverFlow8)
+    GaugeControllerOverFlow8 = 26,
+    /// 65,563 for (Gauge Controller OverFlow9)
+    GaugeControllerOverFlow9 = 27,
+    /// 65,564 for (Gauge Controller OverFlow10)
+    GaugeControllerOverFlow10 = 28,
+    /// 65,565 for (Gauge Controller OverFlow11)
+    GaugeControllerOverFlow11 = 29,
+    /// 65,566 for (Gauge Controller OverFlow12)
+    GaugeControllerOverFlow12 = 30,
+    /// 65,567 for (Gauge Controller OverFlow13)
+    GaugeControllerOverFlow13 = 31,
+    /// 65,568 for (Gauge Controller OverFlow14)
+    GaugeControllerOverFlow14 = 32,
+    /// 65,569 for (Gauge Controller OverFlow15)
+    GaugeControllerOverFlow15 = 33,
+    /// 65,570 for (Gauge Controller OverFlow16)
+    GaugeControllerOverFlow16 = 34,
+    /// 65,571 for (Gauge Controller OverFlow17)
+    GaugeControllerOverFlow17 = 35,
+    /// 65,572 for (Gauge Controller OverFlow18)
+    GaugeControllerOverFlow18 = 36,
+    /// 65,573 for (Gauge Controller OverFlow19)
+    GaugeControllerOverFlow19 = 37,
+    /// 65,574 for (Gauge Controller OverFlow20)
+    GaugeControllerOverFlow20 = 38,
+    /// 65,575 for (Gauge Controller OverFlow21)
+    GaugeControllerOverFlow21 = 39,
+    /// 65,576 for (Gauge Controller OverFlow22)
+    GaugeControllerOverFlow22 = 40,
+    /// 65,577 for (Gauge Controller OverFlow23)
+    GaugeControllerOverFlow23 = 41,
+    /// 65,578 for (Gauge Controller OverFlow24)
+    GaugeControllerOverFlow24 = 42,
+    /// 65,579 for (Gauge Controller OverFlow25)
+    GaugeControllerOverFlow25 = 43,
+    /// 65,580 for (Gauge Controller OverFlow26)
+    GaugeControllerOverFlow26 = 44,
+    /// 65,581 for (Gauge Controller OverFlow27)
+    GaugeControllerOverFlow27 = 45,
+    /// 65,582 for (Gauge Controller UnderFlow1)
+    GaugeControllerUnderFlow1 = 46,
+    /// 65,583 for (Gauge Controller UnderFlow2)
+    GaugeControllerUnderFlow2 = 47,
+    /// 65,584 for (Gauge Controller UnderFlow3)
+    GaugeControllerUnderFlow3 = 48,
+    /// 65,585 for (Gauge Controller UnderFlow4)
+    GaugeControllerUnderFlow4 = 49,
+    /// 65,586 for (Gauge Controller UnderFlow5)
+    GaugeControllerUnderFlow5 = 50,
+    /// 65,587 for (Gauge Controller UnderFlow6)
+    GaugeControllerUnderFlow6 = 51,
+    /// 65,588 for (Gauge Controller UnderFlow7)
+    GaugeControllerUnderFlow7 = 52,
+    /// 65,589 for (Gauge Controller UnderFlow8)
+    GaugeControllerUnderFlow8 = 53,
+    /// 65,590 for (Gauge Controller UnderFlow9)
+    GaugeControllerUnderFlow9 = 54,
+    /// 65,591 for (Gauge Controller UnderFlow10)
+    GaugeControllerUnderFlow10 = 55,
+    /// 65,592 for (Gauge Controller UnderFlow11)
+    GaugeControllerUnderFlow11 = 56,
+    /// 65,593 for (Gauge Controller UnderFlow12)
+    GaugeControllerUnderFlow12 = 57,
+    /// 65,594 for (Gauge Controller UnderFlow13)
+    GaugeControllerUnderFlow13 = 58,
+    /// 65,595 for (Gauge Controller UnderFlow14)
+    GaugeControllerUnderFlow14 = 59,
+    /// 65,596 for (Gauge Controller UnderFlow15)
+    GaugeControllerUnderFlow15 = 60,
+    /// 65,597 for (Gauge Controller UnderFlow16)
+    GaugeControllerUnderFlow16 = 61,
+    /// 65,598 for (Gauge Controller UnderFlow17)
+    GaugeControllerUnderFlow17 = 62,
+    /// 65,599 for (Gauge Controller UnderFlow18)
+    GaugeControllerUnderFlow18 = 63,
+    /// 65,600 for (Gauge Controller UnderFlow19)
+    GaugeControllerUnderFlow19 = 64,
+    /// 65,601 for (Gauge Controller UnderFlow20)
+    GaugeControllerUnderFlow20 = 65,
+    /// 65,602 for (Gauge Controller UnderFlow21)
+    GaugeControllerUnderFlow21 = 66,
+    /// 65,603 for (Gauge Controller UnderFlow22)
+    GaugeControllerUnderFlow22 = 67,
+    /// 65,604 for (Gauge Controller UnderFlow23)
+    GaugeControllerUnderFlow23 = 68,
+
 }
 
 impl From<Error> for ApiError {

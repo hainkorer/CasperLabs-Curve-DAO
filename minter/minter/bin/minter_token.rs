@@ -34,6 +34,7 @@ impl Token {
         controller: Key,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
+        lock: u64,
     ) {
         MINTER::init(
             self,
@@ -41,6 +42,7 @@ impl Token {
             controller,
             Key::from(contract_hash),
             package_hash,
+            lock,
         );
     }
 }
@@ -51,8 +53,8 @@ fn constructor() {
     let controller: Key = runtime::get_named_arg("controller");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-
-    Token::default().constructor(token, controller, contract_hash, package_hash);
+    let lock: u64 = runtime::get_named_arg("lock");
+    Token::default().constructor(token, controller, contract_hash, package_hash,lock);
 }
 
 ///"""
@@ -150,13 +152,14 @@ fn call() {
         // Read arguments for the constructor call.
         let token: Key = runtime::get_named_arg("token");
         let controller: Key = runtime::get_named_arg("controller");
-
+        let lock: u64 = 0;
         // Prepare constructor args
         let constructor_args = runtime_args! {
             "token" => token,
             "controller" => controller,
             "contract_hash" => contract_hash,
-            "package_hash"=> package_hash
+            "package_hash"=> package_hash,
+            "lock"=>lock
 
         };
 
@@ -232,6 +235,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("controller", Key::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
+            Parameter::new("lock", u64::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),

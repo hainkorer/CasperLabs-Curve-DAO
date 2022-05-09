@@ -8,7 +8,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
-use contract_utils::{get_key, key_to_str, set_key, Dict};
+use contract_utils::{get_key, set_key, Dict};
 
 use crate::event::MINTEREvent;
 pub const MINTED_DICT: &str = "minted";
@@ -20,8 +20,7 @@ pub const CONTROLLER: &str = "controller";
 pub const REWARD_COUNT: &str = "reward_count";
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
-
-
+pub const LOCK: &str = "lock";
 
 pub struct Minted {
     dict: Dict,
@@ -71,7 +70,6 @@ impl AllowedToMintFor {
     }
 }
 
-
 pub fn name() -> String {
     get_key(NAME).unwrap_or_revert()
 }
@@ -111,6 +109,15 @@ pub fn set_hash(contract_hash: Key) {
 pub fn get_hash() -> Key {
     get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
 }
+
+pub fn set_lock(lock: u64) {
+    set_key(LOCK, lock);
+}
+
+pub fn get_lock() -> u64 {
+    get_key(LOCK).unwrap_or_revert()
+}
+
 pub fn set_package_hash(package_hash: ContractPackageHash) {
     set_key(CONTRACT_PACKAGE_HASH, package_hash);
 }

@@ -1,17 +1,11 @@
 use crate::alloc::string::ToString;
 use crate::data::{self, AllowedToMintFor, Minted};
 use alloc::collections::BTreeMap;
-use alloc::{format, string::String, vec::Vec};
+use alloc::{string::String, vec::Vec};
+use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
-use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{
-    runtime_args, system::mint::Error as MintError, ApiError, BlockTime, ContractHash,
-    ContractPackageHash, Key, RuntimeArgs, URef, U256,
-};
-use contract_utils::{set_key, ContractContext, ContractStorage};
-use cryptoxide::ed25519;
-use hex::encode;
-use renvm_sig::{hash_message, keccak256};
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use contract_utils::{ContractContext, ContractStorage};
 
 pub enum MINTEREvent {
     Minted {
@@ -38,6 +32,8 @@ impl MINTEREvent {
 pub enum Error {
     /// 65,536 for (Minter Gauge Is Not Added)
     MinterGaugeIsNotAdded = 0,
+    /// 65,537 for (Minter Gauge Locked)
+    MinterGaugeLocked1 = 1,
 }
 
 impl From<Error> for ApiError {
@@ -53,11 +49,13 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
         controller: Key,
         contract_hash: Key,
         package_hash: ContractPackageHash,
+        lock: u64,
     ) {
         data::set_token(token);
         data::set_controller(controller);
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
+        data::set_lock(lock);
         Minted::init();
         AllowedToMintFor::init();
     }
@@ -123,18 +121,39 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
         }
     }
     fn mint(&mut self, gauge_addr: Key) {
-        self._mint_for(gauge_addr, self.get_caller())
+        let lock = data::get_lock();
+        if lock != 0 {
+            //MinterGauge: Locked
+            runtime::revert(Error::MinterGaugeLocked1);
+        }
+        data::set_lock(1);
+        self._mint_for(gauge_addr, self.get_caller());
+        data::set_lock(0);
     }
     fn mint_many(&mut self, gauge_addrs: Vec<Key>) {
+        let lock = data::get_lock();
+        if lock != 0 {
+            //MinterGauge: Locked
+            runtime::revert(Error::MinterGaugeLocked1);
+        }
+        data::set_lock(1);
         for i in 0..(gauge_addrs.len() - 1) {
             self._mint_for(gauge_addrs[i], self.get_caller())
         }
+        data::set_lock(0);
     }
     fn mint_for(&mut self, gauge_addr: Key, _for: Key) {
+        let lock = data::get_lock();
+        if lock != 0 {
+            //MinterGauge: Locked
+            runtime::revert(Error::MinterGaugeLocked1);
+        }
+        data::set_lock(1);
         let is_allowed = self.allowed_to_mint_for(self.get_caller(), _for);
         if is_allowed == true {
             self._mint_for(gauge_addr, _for)
         }
+        data::set_lock(0);
     }
 
     fn toggle_approve_mint(&mut self, minting_user: Key) {
