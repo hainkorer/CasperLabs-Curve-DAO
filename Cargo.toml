@@ -1,0 +1,12 @@
+[workspace]
+
+members = [
+  # # Gauges
+  # "gauges/liquidity-gauge/liquidity-gauge",
+  # "gauges/liquidity-gauge/liquidity-gauge-crate",
+  # "gauges/liquidity-gauge/liquidity-gauge-tests",
+  # VotingEscrow
+  "voting-escrow/voting-escrow",
+  "voting-escrow/voting-escrow-crate",
+  "voting-escrow/voting-escrow-tests"
+]

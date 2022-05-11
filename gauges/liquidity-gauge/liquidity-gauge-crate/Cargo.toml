@@ -1,0 +1,10 @@
+[package]
+name = "liquidity-gauge-crate"
+version = "0.2.0"
+authors = ["Bassam Monib <bassam.munib@scytalelabs.com>"]
+edition = "2018"
+
+[dependencies]
+casper-contract = "=1.4.3"
+casper-types = "=1.4.6"
+contract-utils = { path = "../../../utils/contract-utils" }
