@@ -26,7 +26,7 @@ pub const REWARDS_RECEIVER_DICT: &str = "reward_receiver";
 pub const REWARD_INTEGRAL_DICT: &str = "reward_integral";
 pub const REWARD_INTEGRAL_FOR_DICT: &str = "reward_integral_for";
 pub const CLAIM_DATA_DICT: &str = "claim_data";
-pub const CLAIM_SIG_DICT: &str = "claim_sig";
+pub const CLAIM_SIG: &str = "claim_sig";
 
 pub const NAME: &str = "name";
 pub const SYMBOL: &str = "symbol";
@@ -42,6 +42,17 @@ pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const CLAIM_FREQUENCY: U256 = U256([3600, 0, 0, 0]);
 
+#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
+pub struct RewardData {
+    pub address: Key,
+    pub time_stamp: U256,
+}
+
+#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
+pub struct ClaimDataStruct {
+    pub claimable_amount: U256,
+    pub claimed_amount: U256,
+}
 pub struct Balances {
     dict: Dict,
 }
@@ -235,46 +246,15 @@ impl ClaimData {
         Dict::init(CLAIM_DATA_DICT)
     }
 
-    pub fn get(&self, user: &Key, claiming_address: &Key) -> U256 {
+    pub fn get(&self, user: &Key, claiming_address: &Key) -> ClaimDataStruct {
         self.dict
             .get_by_keys((user, claiming_address))
-            .unwrap_or_default()
+            .unwrap_or_revert()
     }
 
-    pub fn set(&self, user: &Key, claiming_address: &Key, claimed_amount: U256) {
+    pub fn set(&self, user: &Key, claiming_address: &Key, claimed_amount: ClaimDataStruct) {
         self.dict
             .set_by_keys((user, claiming_address), claimed_amount);
-    }
-}
-
-pub struct ClaimSig {
-    dict: Dict,
-    length: U256,
-}
-
-impl ClaimSig {
-    pub fn instance() -> ClaimSig {
-        ClaimSig {
-            dict: Dict::instance(CLAIM_SIG_DICT),
-            length: 0.into(),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(CLAIM_SIG_DICT)
-    }
-
-    pub fn get(&self, indx: &U256) -> Bytes {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_revert()
-    }
-
-    pub fn set(&self, indx: &U256, value: Bytes) {
-        self.dict.set(indx.to_string().as_str(), value);
-    }
-
-    pub fn push(&mut self, value: U256) {
-        self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
     }
 }
 
@@ -284,6 +264,14 @@ pub fn name() -> String {
 
 pub fn set_name(name: String) {
     set_key(NAME, name);
+}
+
+pub fn claim_sig() -> Bytes {
+    get_key(CLAIM_SIG).unwrap_or_revert()
+}
+
+pub fn set_claim_sig(claim_sig: Bytes) {
+    set_key(CLAIM_SIG, claim_sig);
 }
 
 pub fn symbol() -> String {
@@ -309,11 +297,11 @@ pub fn total_supply() -> U256 {
 pub fn set_total_supply(total_supply: U256) {
     set_key(TOTAL_SUPPLY, total_supply);
 }
-pub fn reward_data() -> U256 {
-    get_key(REWARD_DATA).unwrap_or_default()
+pub fn reward_data() -> RewardData {
+    get_key(REWARD_DATA).unwrap_or_revert()
 }
 
-pub fn set_reward_data(reward_data: U256) {
+pub fn set_reward_data(reward_data: RewardData) {
     set_key(REWARD_DATA, reward_data);
 }
 
@@ -720,12 +708,12 @@ pub fn set_reward_data(reward_data: U256) {
 //     }
 // }
 
-// pub fn zero_address() -> Key {
-//     Key::from_formatted_str(
-//         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-//     )
-//     .unwrap()
-// }
+pub fn zero_address() -> Key {
+    Key::from_formatted_str(
+        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+    )
+    .unwrap()
+}
 // pub fn time_total() -> U256 {
 //     get_key(TIME_TOTAL).unwrap_or_revert()
 // }
