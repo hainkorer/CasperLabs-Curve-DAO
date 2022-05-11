@@ -1,0 +1,6 @@
+[workspace]
+members = ["utils/*", "error-reporter"]
+
+[profile.release]
+codegen-units = 1
+lto = true
