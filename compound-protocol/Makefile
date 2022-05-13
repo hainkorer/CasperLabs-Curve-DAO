@@ -1,9 +1,11 @@
 prepare:
 	rustup target add wasm32-unknown-unknown
 
+# builds all compound protocol contracts
+# wasm-strips all wasms
 build-contract:
 	cd contract && cargo build --release --target wasm32-unknown-unknown
-	wasm-strip contract/target/wasm32-unknown-unknown/release/contract.wasm 2>/dev/null | true
+	chmod +x wasm-strip-cmd.sh && ./wasm-strip-cmd.sh
 
 test: build-contract
 	mkdir -p tests/wasm

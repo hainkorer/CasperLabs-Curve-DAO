@@ -1,5 +1,5 @@
 [workspace]
-members = ["utils/*", "error-reporter", "interest-rate-model"]
+members = ["utils/*", "interfaces/*"]
 
 [profile.release]
 codegen-units = 1
