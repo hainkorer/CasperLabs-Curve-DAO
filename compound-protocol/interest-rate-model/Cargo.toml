@@ -1,5 +1,5 @@
 [package]
-name = "error-reporter"
+name = "interest-rate-model"
 version = "0.1.0"
 edition = "2018"
 
@@ -8,3 +8,5 @@ edition = "2018"
 [dependencies]
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
+compound-protocol-utils = {path = "../utils/compound-protocol-utils"}
+contract-utils = {path = "../utils/contract-utils"}
