@@ -13,12 +13,9 @@ use casper_contract::{
 use casper_types::bytesrepr::Bytes;
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
-    U256,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
-// use reward_only_gauge_crate::data::{Point, VotedSlope};
-use reward_only_gauge_crate::data::ClaimDataStruct;
 use reward_only_gauge_crate::REWARDONLYGAUGE;
 
 #[derive(Default)]
@@ -38,6 +35,7 @@ impl Token {
         lp_token: Key,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
+        lock: u64,
     ) {
         REWARDONLYGAUGE::init(
             self,
@@ -45,6 +43,7 @@ impl Token {
             lp_token,
             Key::from(contract_hash),
             package_hash,
+            lock,
         );
     }
 }
@@ -55,8 +54,9 @@ fn constructor() {
     let lp_token: Key = runtime::get_named_arg("lp_token");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
+    let lock: u64 = runtime::get_named_arg("lock");
 
-    Token::default().constructor(admin, lp_token, contract_hash, package_hash);
+    Token::default().constructor(admin, lp_token, contract_hash, package_hash, lock);
 }
 
 #[no_mangle]
@@ -428,13 +428,14 @@ fn call() {
         // Read arguments for the constructor call.
         let admin: Key = runtime::get_named_arg("admin");
         let lp_token: Key = runtime::get_named_arg("lp_token");
-
+        let lock: u64 = 0;
         // Prepare constructor args
         let constructor_args = runtime_args! {
             "admin" => admin,
             "lp_token" => lp_token,
             "contract_hash" => contract_hash,
-            "package_hash"=> package_hash
+            "package_hash"=> package_hash,
+            "lock"=>lock
 
         };
 
@@ -506,10 +507,9 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "constructor",
         vec![
-            // Parameter::new("token", Key::cl_type()),
-            // Parameter::new("voting_escrow", Key::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
+            Parameter::new("lock", u64::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
