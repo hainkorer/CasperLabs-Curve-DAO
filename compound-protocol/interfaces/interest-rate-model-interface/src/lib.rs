@@ -5,15 +5,27 @@
 use casper_contract::contract_api::runtime;
 use casper_types::{runtime_args, ContractPackageHash, RuntimeArgs, U256};
 /// @notice Indicator that this is an InterestRateModel contract (for inspection)
-pub use compound_protocol_utils::{entrypoints, keys, runtime_arguments};
 use contract_utils::set_key;
 
+pub mod constants {
+    /// @notice Indicator that this is an InterestRateModel contract (for inspection)
+    /// @type bool
+    pub const IS_INTEREST_RATE_MODEL: &str = "is_interest_rate_model";
+
+    pub const RUNTIME_ARG_CASH: &str = "cash";
+    pub const RUNTIME_ARG_BORROWS: &str = "borrows";
+    pub const RUNTIME_ARG_RESERVES: &str = "reserves";
+    pub const RUNTIME_ARG_RESERVE_FACTOR_MANTISSA: &str = "reserve_factor_mantissa";
+
+    pub const ENTRYPOINT_GET_BORROW_RATE: &str = "get_borrow_rate";
+    pub const ENTRYPOINT_GET_SUPPLY_RATE: &str = "get_supply_rate";
+}
 /// Provides default implementation as an interface for InterestRateModel contract
 /// Must initialize() before use with default implementation, if implemented on a contract for non-default implementation
 pub trait InterestRateModel {
     /// @notice Initialized an Indicator that this is an InterestRateModel contract (for inspection)
     fn initialize(&self) {
-        set_key(keys::IS_INTEREST_RATE_MODEL, true);
+        set_key(constants::IS_INTEREST_RATE_MODEL, true);
     }
 
     /// @notice Calculates the current borrow interest rate per block
@@ -58,11 +70,11 @@ impl InterestRateModel for InterestRateModelInterface {
         runtime::call_versioned_contract(
             self.0,
             None,
-            entrypoints::GET_BORROW_RATE,
+            constants::ENTRYPOINT_GET_BORROW_RATE,
             runtime_args! {
-                runtime_arguments::CASH=>_cash,
-                runtime_arguments::BORROWS=>_borrows,
-                runtime_arguments::RESERVES=>_reserves
+                constants::RUNTIME_ARG_CASH=>_cash,
+                constants::RUNTIME_ARG_BORROWS=>_borrows,
+                constants::RUNTIME_ARG_RESERVES=>_reserves
             },
         )
     }
@@ -84,12 +96,12 @@ impl InterestRateModel for InterestRateModelInterface {
         runtime::call_versioned_contract(
             self.0,
             None,
-            entrypoints::GET_SUPPLY_RATE,
+            constants::ENTRYPOINT_GET_SUPPLY_RATE,
             runtime_args! {
-                runtime_arguments::CASH=>_cash,
-                runtime_arguments::BORROWS=>_borrows,
-                runtime_arguments::RESERVES=>_reserves,
-                runtime_arguments::RESERVE_FACTOR_MANTISSA => _reserve_factor_mantissa
+                constants::RUNTIME_ARG_CASH=>_cash,
+                constants::RUNTIME_ARG_BORROWS=>_borrows,
+                constants::RUNTIME_ARG_RESERVES=>_reserves,
+                constants::RUNTIME_ARG_RESERVE_FACTOR_MANTISSA => _reserve_factor_mantissa
             },
         )
     }
