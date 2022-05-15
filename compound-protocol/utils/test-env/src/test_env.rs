@@ -19,20 +19,14 @@ impl TestEnv {
         }
     }
 
-    pub fn run(
-        &self,
-        sender: AccountHash,
-        session_code: DeploySource,
-        session_args: RuntimeArgs,
-        time: u64,
-    ) {
+    pub fn run(&self, sender: AccountHash, session_code: DeploySource, session_args: RuntimeArgs) {
         deploy(
             &mut self.state.lock().unwrap().builder,
             &sender,
             &session_code,
             session_args,
             true,
-            Some(time),
+            None,
         )
     }
 

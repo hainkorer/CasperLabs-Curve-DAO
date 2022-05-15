@@ -6,7 +6,6 @@ use casper_types::{
 
 use crate::{utils::DeploySource, TestEnv};
 
-#[derive(Clone)]
 pub struct TestContract {
     env: TestEnv,
     name: String,
@@ -20,11 +19,10 @@ impl TestContract {
         name: &str,
         sender: AccountHash,
         mut args: RuntimeArgs,
-        time: u64,
     ) -> TestContract {
         let session_code = PathBuf::from(wasm);
         args.insert("contract_name", name).unwrap();
-        env.run(sender, DeploySource::Code(session_code), args, time);
+        env.run(sender, DeploySource::Code(session_code), args);
 
         TestContract {
             env: env.clone(),
@@ -59,17 +57,11 @@ impl TestContract {
             .query_account_named_key(self.contract_owner, &[key])
     }
 
-    pub fn call_contract(
-        &self,
-        sender: AccountHash,
-        entry_point: &str,
-        session_args: RuntimeArgs,
-        time: u64,
-    ) {
+    pub fn call_contract(&self, sender: AccountHash, entry_point: &str, session_args: RuntimeArgs) {
         let session_code = DeploySource::ByContractHash {
             hash: ContractHash::new(self.contract_hash()),
             method: entry_point.to_string(),
         };
-        self.env.run(sender, session_code, session_args, time);
+        self.env.run(sender, session_code, session_args);
     }
 }
