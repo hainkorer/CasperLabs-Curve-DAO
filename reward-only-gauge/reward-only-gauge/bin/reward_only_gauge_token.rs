@@ -198,7 +198,8 @@ fn commit_transfer_ownership() {
 fn transfer() {
     let _to: Key = runtime::get_named_arg("_to");
     let _value: U256 = runtime::get_named_arg("amount");
-    Token::default().transfer(_to, _value);
+    let ret: bool = Token::default().transfer(_to, _value);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 /// """
@@ -213,7 +214,8 @@ fn transfer_from() {
     let _from: Key = runtime::get_named_arg("_from");
     let _to: Key = runtime::get_named_arg("_to");
     let _value: U256 = runtime::get_named_arg("_value");
-    Token::default().transfer_from(_from, _to, _value);
+    let ret: bool = Token::default().transfer_from(_from, _to, _value);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 /// """
@@ -232,7 +234,8 @@ fn transfer_from() {
 fn approve() {
     let _spender: Key = runtime::get_named_arg("_spender");
     let _value: U256 = runtime::get_named_arg("_value");
-    Token::default().approve(_spender, _value);
+    let ret: bool = Token::default().approve(_spender, _value);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 /// """
@@ -247,7 +250,8 @@ fn approve() {
 fn increase_allowance() {
     let _spender: Key = runtime::get_named_arg("_spender");
     let _added_value: U256 = runtime::get_named_arg("_added_value");
-    Token::default().increase_allowance(_spender, _added_value);
+    let ret: bool = Token::default().increase_allowance(_spender, _added_value);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 /// """
@@ -263,7 +267,8 @@ fn decrease_allowance() {
     let _spender: Key = runtime::get_named_arg("spender");
     let _subtracted_value: U256 = runtime::get_named_arg("_subtracted_value");
 
-    Token::default().decrease_allowance(_spender, _subtracted_value);
+    let ret: bool = Token::default().decrease_allowance(_spender, _subtracted_value);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 /// """
@@ -507,6 +512,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "constructor",
         vec![
+            Parameter::new("admin", Key::cl_type()),
+            Parameter::new("lp_token", Key::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
             Parameter::new("lock", u64::cl_type()),
@@ -674,7 +681,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("_spender", Key::cl_type()),
             Parameter::new("_subtracted_value", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -684,7 +691,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("_spender", Key::cl_type()),
             Parameter::new("_added_value", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -694,7 +701,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("_spender", Key::cl_type()),
             Parameter::new("_value", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -704,7 +711,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("_to", Key::cl_type()),
             Parameter::new("_value", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -715,7 +722,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("_to", Key::cl_type()),
             Parameter::new("_value", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

@@ -15,6 +15,11 @@ members = [
   "reward-only-gauge/reward-only-gauge-crate",
   "reward-only-gauge/reward-only-gauge-proxy",
   "reward-only-gauge/reward-only-gauge-tests",
+  # REWARD ONLY GAUGE
+  "vesting-escrow/vesting-escrow",
+  "vesting-escrow/vesting-escrow-crate",
+  "vesting-escrow/vesting-escrow-proxy",
+  "vesting-escrow/vesting-escrow-tests",
 
   
 ]
