@@ -1,15 +1,15 @@
-# CasperLabs-LiquidNFT
+# CasperLabs-Curve-DAO
 
-Implementation of `Liquid Base`, `Liquid Helper` and `Liquid Locker` Contract for the CasperLabs platform.
+Implementation of `Minter`, `Reward Only Gauge`,`Vesting Escrow` and `Gauge Controller` Contract for the CasperLabs platform.
 
 ## Steps
 
-There are 3 contracts with 1 crate in this folder
+There are 4 contracts in this folder
 
-1. Liquid Base Crate
-2. Liquid Helper Contract
-3. Liquid Locker Contract
-4. ERC20 Contract
+1. Minter Crate
+2. Reward Only Gauge Contract
+3. Gauge Controller Contract
+4. Vesting Escrow Contract
 
 ## Table of contents
 
@@ -88,14 +88,16 @@ make prepare
 
 It's also recommended to have [wasm-strip](https://github.com/WebAssembly/wabt)
 available in your PATH to reduce the size of compiled Wasm.
-
+ 
 #### Build individual Smart Contract
 
 You can run this commands to build individual smart contracts.
 
 ```
-make build-contract-liquid-helper
-make build-contract-liquid-locker
+make build-contract-minter
+make build-contract-gauge-controller
+make build-contract-reward-only-gauge
+make build-contract-vesting-escrow
 ```
 
 #### Test individual Smart Contract
@@ -103,8 +105,10 @@ make build-contract-liquid-locker
 You can run this commands to build individual smart contracts.
 
 ```
-make test-liquid-helper
-make test-liquid-locker
+make test-minter
+make test-gauge-controller
+make test-reward-only-gauge
+make test-vesting-escrow
 ```
 
 #### Run ALL Smart Contracts
@@ -114,10 +118,10 @@ Run this command to build & test all smart contract.
 ```
 make all
 ```
+<!--
+### Deploying Reward Only Gauge contract manually
 
-### Deploying Liquid Helper contract manually
-
-If you need to deploy the `Liquid Helper` contract manually you need to pass some parameters. Following is the command to deploy the `Liquidity Helper contract`.
+If you need to deploy the `Reward Only Gauge` contract manually you need to pass some parameters. Following is the command to deploy the `Liquidity Helper contract`.
 
 ```bash
 sudo casper-client put-deploy \
@@ -277,9 +281,9 @@ Following is the table of parameters.
 
 This method **returns** `U256`.
 
-### Deploying Liquid Locker contract manually
+### Deploying Gauge Controller contract manually
 
-If you need to deploy the `Liquid Locker` contract manually you need to pass some parameters. Following is the command to deploy the `Liquidity Locker contract`.
+If you need to deploy the `Gauge Controller` contract manually you need to pass some parameters. Following is the command to deploy the `Liquidity Locker contract`.
 
 ```bash
 sudo casper-client put-deploy \
@@ -502,4 +506,4 @@ Following is the table of parameters.
 | token_amount   | U256 |
 | token_holder   | Key  |
 
-This method **returns** `(U256, U256)`.
+This method **returns** `(U256, U256)`. -->

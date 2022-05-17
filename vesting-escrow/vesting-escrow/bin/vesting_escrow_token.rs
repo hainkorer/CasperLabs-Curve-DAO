@@ -10,7 +10,6 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::bytesrepr::Bytes;
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
@@ -168,8 +167,9 @@ fn can_disable() {
 /// """
 
 #[no_mangle]
-fn accept_transfer_ownership() {
-    Token::default().accept_transfer_ownership();
+fn apply_transfer_ownership() {
+    let ret: bool = Token::default().apply_transfer_ownership();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 /// """
@@ -180,8 +180,113 @@ fn accept_transfer_ownership() {
 #[no_mangle]
 fn commit_transfer_ownership() {
     let addr: Key = runtime::get_named_arg("addr");
-    Token::default().commit_transfer_ownership(addr);
+    let ret: bool = Token::default().commit_transfer_ownership(addr);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+
+/// """
+/// @notice Disable the funding admin accounts
+/// """
+#[no_mangle]
+fn disable_fund_admins() {
+    Token::default().disable_fund_admins();
+}
+
+/// """
+/// @notice Disable the ability to call `toggle_disable`
+/// """
+#[no_mangle]
+fn disable_can_disable() {
+    Token::default().disable_can_disable();
+}
+
+/// """
+/// @notice Disable or re-enable a vested address's ability to claim tokens
+/// @dev When disabled, the address is only unable to claim tokens which are still
+///      locked at the time of this call. It is not possible to block the claim
+///      of tokens which have already vested.
+/// @param _recipient Address to disable or enable
+/// """
+#[no_mangle]
+fn toggle_disable() {
+    let _recipient: Key = runtime::get_named_arg("_recipient");
+    Token::default().toggle_disable(_recipient);
+}
+
+/// """
+/// @notice Get the total number of tokens which have vested, that are held
+///         by this contract
+/// """
+#[no_mangle]
+fn vested_supply() {
+    let ret: U256 = Token::default().vested_supply();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+/// """
+/// @notice Get the total number of tokens which are still locked
+///         (have not yet vested)
+/// """
+#[no_mangle]
+fn locked_supply() {
+    let ret: U256 = Token::default().locked_supply();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+/// """
+/// @notice Get the number of tokens which have vested for a given address
+/// @param _recipient address to check
+/// """
+#[no_mangle]
+fn vested_of() {
+    let _recipient: Key = runtime::get_named_arg("_recipient");
+    let ret: U256 = Token::default().vested_of(_recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+/// """
+/// @notice Get the number of unclaimed, vested tokens for a given address
+/// @param _recipient address to check
+/// """
+#[no_mangle]
+fn balance_of() {
+    let _recipient: Key = runtime::get_named_arg("_recipient");
+    let ret: U256 = Token::default().balance_of(_recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+/// """
+/// @notice Get the number of locked tokens for a given address
+/// @param _recipient address to check
+/// """
+#[no_mangle]
+fn locked_of() {
+    let _recipient: Key = runtime::get_named_arg("_recipient");
+    let ret: U256 = Token::default().locked_of(_recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+/// """
+/// @notice Transfer vestable tokens into the contract
+/// @dev Handled separate from `fund` to reduce transaction count when using funding admins
+/// @param _amount Number of tokens to transfer
+/// """
+#[no_mangle]
+fn add_tokens() {
+    let _amount: U256 = runtime::get_named_arg("_amount");
+    Token::default().add_tokens(_amount);
+}
+
+/// """
+/// @notice Vest tokens for multiple recipients
+/// @param _recipients List of addresses to fund
+/// @param _amounts Amount of vested tokens for each address
+/// """
+#[no_mangle]
+fn fund() {
+    let _recipients: Vec<String> = runtime::get_named_arg("_recipients");
+    let _amounts: Vec<U256> = runtime::get_named_arg("_amounts");
+    Token::default().fund(_recipients, _amounts);
+}
+
 #[no_mangle]
 fn call() {
     // Contract name must be same for all new versions of the contracts
@@ -325,6 +430,24 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
+        "add_tokens",
+        vec![Parameter::new("_amount", U256::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "fund",
+        vec![
+            Parameter::new("_recipients", CLType::List(Box::new(String::cl_type()))),
+            Parameter::new("_amounts", CLType::List(Box::new(U256::cl_type()))),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
         "disabled_at",
         vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
@@ -349,14 +472,14 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "commit_transfer_ownership",
         vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "accept_transfer_ownership",
+        "apply_transfer_ownership",
         vec![],
-        <()>::cl_type(),
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -407,6 +530,62 @@ fn get_entry_points() -> EntryPoints {
         "fund_admins_enabled",
         vec![],
         bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "disable_fund_admins",
+        vec![],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "disable_can_disable",
+        vec![],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "toggle_disable",
+        vec![Parameter::new("_recipient", Key::cl_type())],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "vested_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "locked_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "vested_of",
+        vec![Parameter::new("_recipient", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of",
+        vec![Parameter::new("_recipient", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "locked_of",
+        vec![Parameter::new("_recipient", Key::cl_type())],
+        U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

@@ -46,7 +46,7 @@ copy-wasm-file-vesting-escrow:
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter
 test-gauge-controller:
-	make build-contract-gauge-controller&& make copy-wasm-file-gauge-controller
+	make build-contract-gauge-controller && make copy-wasm-file-gauge-controller
 test-reward-only-gauge:
 	make build-contract-reward-only-gauge && make copy-wasm-file-reward-only-gauge
 test-vesting-escrow:
