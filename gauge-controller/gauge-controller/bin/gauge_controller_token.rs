@@ -474,35 +474,35 @@ fn get_entry_points() -> EntryPoints {
         "commit_transfer_ownership",
         vec![Parameter::new("addr", Key::cl_type())],
         <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "apply_transfer_ownership",
         vec![],
         <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "checkpoint",
         vec![],
         <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "checkpoint_gauge",
         vec![Parameter::new("addr", Key::cl_type())],
         <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "gauge_types",
         vec![Parameter::new("addr", Key::cl_type())],
         U128::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(

@@ -246,7 +246,7 @@ fn get_entry_points() -> EntryPoints {
         "mint",
         vec![Parameter::new("gauge_addr", Key::cl_type())],
         <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
@@ -256,7 +256,7 @@ fn get_entry_points() -> EntryPoints {
             CLType::List(Box::new(String::cl_type())),
         )],
         <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
@@ -266,14 +266,14 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("for", Key::cl_type()),
         ],
         <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "toggle_approve_mint",
         vec![Parameter::new("minting_user", Key::cl_type())],
         <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
@@ -283,7 +283,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("key1", Key::cl_type()),
         ],
         bool::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
@@ -293,7 +293,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("key1", Key::cl_type()),
         ],
         U256::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
 
