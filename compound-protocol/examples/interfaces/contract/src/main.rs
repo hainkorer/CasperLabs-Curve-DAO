@@ -71,7 +71,7 @@ impl interest_rate_model_interface::interface::InterestRateModel for Integration
 }
 
 impl IntegrationTests {
-    fn constructor(&self, package_hash: Key) {
+    fn constructor(&self, package_hash: ContractPackageHash) {
         set_key("package_hash", package_hash);
         self.initialize();
     }
@@ -81,7 +81,7 @@ impl IntegrationTests {
 fn constructor() {
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
 
-    IntegrationTests::default().constructor(Key::from(package_hash));
+    IntegrationTests::default().constructor(package_hash);
 }
 
 #[no_mangle]

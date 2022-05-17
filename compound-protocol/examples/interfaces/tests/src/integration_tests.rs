@@ -5,18 +5,21 @@ use test_env::{TestContract, TestEnv};
 
 use crate::integration_tests_instance::IntegrationTestInstance;
 
-pub fn deploy() -> (TestEnv, AcccountHash, TestContract) {
+pub fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
-
-    (
-        env,
-        owner,
-        IntegrationTestInstance::new(&env, "integration_test", owner),
-    )
+    let integration_tests = IntegrationTestInstance::new(&env, "integration_tests", owner);
+    (env, owner, integration_tests)
 }
 
 #[test]
 fn test_deploy() {
-    (_, _, _) = deploy();
+    let (_, _, integration_tests) = deploy();
+    let package_hash: ContractPackageHash = integration_tests.query_named_key(String::from("package_hash"));
+    let package_hash = Key::from(package_hash);
+    let _package_hash = Key::Hash(integration_tests.package_hash());
+    assert_eq!(_package_hash, package_hash);
 }
+
+#[test]
+fn test_
