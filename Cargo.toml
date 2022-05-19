@@ -1,0 +1,10 @@
+[workspace]
+
+members = [
+  # # Gauges
+  "gauges/liquidity-gauge/liquidity-gauge-v3",
+  "gauges/liquidity-gauge/liquidity-gauge-crate",
+  
+ 
+  
+]

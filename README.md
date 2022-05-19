@@ -1,1 +1,1 @@
-# CasperLabs-Curve-DAO
+# Curve - Casper Blockchain
