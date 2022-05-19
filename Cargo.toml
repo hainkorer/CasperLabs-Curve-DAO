@@ -1,0 +1,30 @@
+[workspace]
+members = [
+  # MINTER
+  "minter/minter",
+  "minter/minter-crate",
+  "minter/minter-proxy",
+  "minter/minter-tests",
+  # GAUGE CONTROLLER
+  "gauge-controller/gauge-controller",
+  "gauge-controller/gauge-controller-crate",
+  "gauge-controller/gauge-controller-proxy",
+  "gauge-controller/gauge-controller-tests",
+  # REWARD ONLY GAUGE
+  "reward-only-gauge/reward-only-gauge",
+  "reward-only-gauge/reward-only-gauge-crate",
+  "reward-only-gauge/reward-only-gauge-proxy",
+  "reward-only-gauge/reward-only-gauge-tests",
+  # VESTING ESCROW
+  "vesting-escrow/vesting-escrow",
+  "vesting-escrow/vesting-escrow-crate",
+  "vesting-escrow/vesting-escrow-proxy",
+  "vesting-escrow/vesting-escrow-tests",
+  # VESTING ESCROW FACTORY
+  "vesting-escrow-factory/vesting-escrow-factory",
+  "vesting-escrow-factory/vesting-escrow-factory-crate",
+  "vesting-escrow-factory/vesting-escrow-factory-proxy",
+  "vesting-escrow-factory/vesting-escrow-factory-tests",
+
+  
+]
