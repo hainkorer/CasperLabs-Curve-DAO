@@ -3,7 +3,6 @@
 
 #[macro_use]
 extern crate alloc;
-use alloc::vec::Vec;
 
 use alloc::{boxed::Box, collections::BTreeSet, format, string::String};
 use casper_contract::{
@@ -32,7 +31,6 @@ impl Token {
         &mut self,
         _target: Key,
         _admin: Key,
-        _vesting_escrow_simple_contract:Key,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
@@ -40,7 +38,6 @@ impl Token {
             self,
             _target,
             _admin,
-            _vesting_escrow_simple_contract,
             Key::from(contract_hash),
             package_hash,
         );
@@ -57,18 +54,10 @@ impl Token {
 fn constructor() {
     let _target: Key = runtime::get_named_arg::<Key>("_target");
     let _admin: Key = runtime::get_named_arg("_admin");
-    let _vesting_escrow_simple_contract: Key =
-        runtime::get_named_arg("_vesting_escrow_simple_contract");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
 
-    Token::default().constructor(
-        _target,
-        _admin,
-        _vesting_escrow_simple_contract,
-        contract_hash,
-        package_hash,
-    );
+    Token::default().constructor(_target, _admin, contract_hash, package_hash);
 }
 
 #[no_mangle]
@@ -110,6 +99,41 @@ fn commit_transfer_ownership() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
+/// """
+/// @notice Deploy a new vesting contract
+/// @dev Each contract holds tokens which vest for a single account. Tokens
+///         must be sent to this contract via the regular `ERC20.transfer` method
+///         prior to calling this method.
+/// @param _token Address of the ERC20 token being distributed
+/// @param _recipient Address to vest tokens for
+/// @param _amount Amount of tokens being vested for `_recipient`
+/// @param _can_disable Can admin disable recipient's ability to claim tokens?
+/// @param _vesting_duration Time period over which tokens are released
+/// @param _vesting_start Epoch time when tokens begin to vest
+/// """
+
+#[no_mangle]
+fn deploy_vesting_contract() {
+    let _token: Key = runtime::get_named_arg("_token");
+    let _recipient: Key = runtime::get_named_arg("_recipient");
+    let _amount: U256 = runtime::get_named_arg("_amount");
+    let _can_disable: bool = runtime::get_named_arg("_can_disable");
+    let _vesting_duration: U256 = runtime::get_named_arg("_vesting_duration");
+    let _vesting_start: Option<U256> = runtime::get_named_arg("_vesting_start");
+    let _vesting_escrow_simple_contract: Key =
+        runtime::get_named_arg("_vesting_escrow_simple_contract");
+    let ret: Key = Token::default().deploy_vesting_contract(
+        _token,
+        _recipient,
+        _amount,
+        _can_disable,
+        _vesting_duration,
+        _vesting_start,
+        _vesting_escrow_simple_contract,
+    );
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
 #[no_mangle]
 fn call() {
     // Contract name must be same for all new versions of the contracts
@@ -124,14 +148,11 @@ fn call() {
         // Read arguments for the constructor call.
         let _target: Key = runtime::get_named_arg("_target");
         let _admin: Key = runtime::get_named_arg("_admin");
-        let _vesting_escrow_simple_contract: Key =
-            runtime::get_named_arg("_vesting_escrow_simple_contract");
 
         // Prepare constructor args
         let constructor_args = runtime_args! {
             "_target" => _target,
             "_admin" => _admin,
-            "_vesting_escrow_simple_contract" => _vesting_escrow_simple_contract,
             "contract_hash" => contract_hash,
             "package_hash"=> package_hash
 
@@ -255,7 +276,21 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-  
+    entry_points.add_entry_point(EntryPoint::new(
+        "deploy_vesting_contract",
+        vec![
+            Parameter::new("_token", Key::cl_type()),
+            Parameter::new("_recipient", Key::cl_type()),
+            Parameter::new("_amount", U256::cl_type()),
+            Parameter::new("_can_disable", bool::cl_type()),
+            Parameter::new("_vesting_duration", U256::cl_type()),
+            Parameter::new("_vesting_start", CLType::Option(Box::new(U256::cl_type()))),
+            Parameter::new("_vesting_escrow_simple_contract", Key::cl_type()),
+        ],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
 
     entry_points
 }

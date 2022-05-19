@@ -1,5 +1,5 @@
 use crate::alloc::string::ToString;
-use crate::data::{self, account_zero_address, zero_address};
+use crate::data::{self, MIN_VESTING_DURATION};
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
@@ -68,17 +68,16 @@ pub enum Error {
     VestingEscrowOnlyAdmin2 = 24,
     /// 65,540 for (Vesting Escrow Only Admin3)
     VestingEscrowOnlyAdmin3 = 25,
-    /// 65,540 for (Vesting Escrow Only Admin4)
-    VestingEscrowOnlyAdmin4 = 26,
-    /// 65,540 for (Vesting Escrow Only Admin5)
-    VestingEscrowOnlyAdmin5 = 27,
+    /// 65,540 for (Vesting Escrow Duration Too Short)
+    VestingEscrowDurationTooShort = 26,
+    /// 65,540 for (Vesting Escrow Start Time Too Soon)
+    VestingEscrowStartTimeTooSoon = 27,
     /// 65,540 for (Vesting Escrow Only Admin6)
     VestingEscrowOnlyAdmin6 = 28,
     /// 65,540 for (Vesting Escrow Only Admin7)
     VestingEscrowOnlyAdmin7 = 29,
     /// 65,540 for (Vesting Escrow Admin Not Set)
     VestingEscrowAdminNotSet = 30,
-   
 }
 
 impl From<Error> for ApiError {
@@ -92,15 +91,74 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
         &mut self,
         _target: Key,
         _admin: Key,
-        _vesting_escrow_simple_contract: Key,
         contract_hash: Key,
         package_hash: ContractPackageHash,
     ) {
         data::set_target(_target);
         data::set_admin(_admin);
-        data::set_vesting_escrow_simple_contract(_vesting_escrow_simple_contract);
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
+    }
+
+    fn deploy_vesting_contract(
+        &mut self,
+        _token: Key,
+        _recipient: Key,
+        _amount: U256,
+        _can_disable: bool,
+        _vesting_duration: U256,
+        _vesting_start: Option<U256>,
+        _vesting_escrow_simple_contract: Key,
+    ) -> Key {
+        data::set_vesting_escrow_simple_contract(_vesting_escrow_simple_contract);
+        let vesting_start: U256;
+        if _vesting_start.is_some() {
+            vesting_start = _vesting_start.unwrap();
+        } else {
+            vesting_start = U256::from(u64::from(runtime::get_blocktime()));
+        }
+
+        if self.get_caller() != self.admin() {
+            //Vesting Escrow Only Admin
+            runtime::revert(Error::VestingEscrowOnlyAdmin3);
+        } else if vesting_start < U256::from(u64::from(runtime::get_blocktime())) {
+            //Vesting Escrow Start Time Too Soon
+            runtime::revert(Error::VestingEscrowStartTimeTooSoon);
+        } else if _vesting_duration < MIN_VESTING_DURATION {
+            //Vesting Escrow Duration Too Soon
+            runtime::revert(Error::VestingEscrowDurationTooShort);
+        } else {
+            let _contract: Key = _vesting_escrow_simple_contract;
+
+            let token_hash_add_array = match _token {
+                Key::Hash(package) => package,
+                _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+            };
+            let token_package_hash = ContractPackageHash::new(token_hash_add_array);
+            let _ret: bool = runtime::call_versioned_contract(
+                token_package_hash,
+                None,
+                "approve",
+                runtime_args! {"spender" =>  _contract,"value" => _amount},
+            );
+
+            let _contract_hash_add_array = match _contract {
+                Key::Hash(package) => package,
+                _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+            };
+            let _contract_package_hash = ContractPackageHash::new(_contract_hash_add_array);
+            let end_time = vesting_start
+                .checked_add(_vesting_duration)
+                .ok_or(Error::VestingEscrowOverFlow1)
+                .unwrap_or_revert();
+            let _ret: bool = runtime::call_versioned_contract(
+                _contract_package_hash,
+                None,
+                "initialize",
+                runtime_args! {"_token" => _token,"_recipient" =>  _recipient,"_amount" => _amount,"_vesting_start" => _vesting_start,"_end_time" => end_time,"_can_disable" => _can_disable},
+            );
+            return _contract;
+        }
     }
 
     fn commit_transfer_ownership(&mut self, addr: Key) -> bool {

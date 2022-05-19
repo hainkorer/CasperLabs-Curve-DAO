@@ -72,7 +72,7 @@ impl VESTINGESCROWFACTORYInstance {
         sender: AccountHash,
         _target: Key,
         _admin: Key,
-        _vesting_escrow_simple_contract: Key,
+        // _vesting_escrow_simple_contract: Key,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -82,7 +82,7 @@ impl VESTINGESCROWFACTORYInstance {
             runtime_args! {
                 "_target"=>_target,
                 "_admin"=>_admin,
-                "_vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
+                // "_vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
             },
             0,
         )
@@ -93,7 +93,7 @@ impl VESTINGESCROWFACTORYInstance {
         sender: AccountHash,
         _target: Key,
         _admin: Key,
-        _vesting_escrow_simple_contract: Key,
+        // _vesting_escrow_simple_contract: Key,
     ) {
         self.0.call_contract(
             sender,
@@ -101,7 +101,7 @@ impl VESTINGESCROWFACTORYInstance {
             runtime_args! {
                 "_target"=>_target,
                 "_admin"=>_admin,
-                "_vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
+                // "_vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
             },
             0,
         );

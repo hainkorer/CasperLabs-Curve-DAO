@@ -4,7 +4,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
-use contract_utils::{get_key, key_to_str, set_key, Dict};
+use contract_utils::{get_key, set_key};
 
 use crate::event::VESTINGESCROWFACTORYEvent;
 
@@ -19,6 +19,8 @@ pub const FUTURE_ADMIN: &str = "future_admin";
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
 pub const VESTING_ESCROW_SIMPLE_CONTRACT: &str = "vesting_escrow_simple_contract";
+
+pub const MIN_VESTING_DURATION: U256 = U256([56400 * 360, 0, 0, 0]);
 
 pub fn vesting_escrow_simple_contract() -> Key {
     get_key(VESTING_ESCROW_SIMPLE_CONTRACT).unwrap_or_revert()
@@ -68,54 +70,6 @@ pub fn future_admin() -> Key {
 pub fn set_future_admin(future_admin: Key) {
     set_key(FUTURE_ADMIN, future_admin);
 }
-
-// pub fn start_time() -> U256 {
-//     get_key(START_TIME).unwrap_or_revert()
-// }
-
-// pub fn set_start_time(value: U256) {
-//     set_key(START_TIME, value);
-// }
-
-// pub fn end_time() -> U256 {
-//     get_key(END_TIME).unwrap_or_revert()
-// }
-
-// pub fn set_end_time(value: U256) {
-//     set_key(END_TIME, value);
-// }
-
-// pub fn initial_locked_supply() -> U256 {
-//     get_key(INITIAL_LOCKED_SUPPLY).unwrap_or_revert()
-// }
-
-// pub fn set_initial_locked_supply(value: U256) {
-//     set_key(INITIAL_LOCKED_SUPPLY, value);
-// }
-
-// pub fn unallocated_supply() -> U256 {
-//     get_key(UNALLOCATED_SUPPLY).unwrap_or_revert()
-// }
-
-// pub fn set_unallocated_supply(value: U256) {
-//     set_key(UNALLOCATED_SUPPLY, value);
-// }
-
-// pub fn can_disable() -> bool {
-//     get_key(CAN_DISABLE).unwrap_or_revert()
-// }
-
-// pub fn set_can_disable(value: bool) {
-//     set_key(CAN_DISABLE, value);
-// }
-
-// pub fn fund_admins_enabled() -> bool {
-//     get_key(CAN_DISABLE).unwrap_or_revert()
-// }
-
-// pub fn set_fund_admins_enabled(value: bool) {
-//     set_key(CAN_DISABLE, value);
-// }
 
 pub fn set_hash(contract_hash: Key) {
     set_key(SELF_CONTRACT_HASH, contract_hash);

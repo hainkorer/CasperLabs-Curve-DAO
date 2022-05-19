@@ -1,4 +1,4 @@
-use casper_types::{account::AccountHash, Key, U256};
+use casper_types::{account::AccountHash, Key};
 use test_env::{TestContract, TestEnv};
 
 use crate::vesting_escrow_factory_instance::VESTINGESCROWFACTORYInstance;
@@ -33,7 +33,7 @@ fn deploy() -> (
         owner,
         Key::from(env.next_user()),
         Key::from(env.next_user()),
-        Key::Hash(_token.package_hash()),
+        // Key::Hash(_token.package_hash()),
     );
     // let test_contract: TestContract =
     //     VESTINGESCROWFACTORYInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
