@@ -1,0 +1,21 @@
+[package]
+name = "fee-distributor"
+version = "0.2.0"
+authors = ["Bassam Monib <bassam.munib@scytalelabs.com>"]
+edition = "2018"
+
+[dependencies]
+casper-contract = "1.4.4"
+casper-types = "1.5.0"
+contract-utils = { path = "../../utils/contract-utils" }
+fee-distributor-crate = { path = "../fee-distributor-crate" }
+
+[[bin]]
+name = "fee-distributor"
+path = "bin/fee_distributor.rs"
+bench = false
+doctest = false
+test = false
+
+[features]
+default = ["casper-contract/std", "casper-types/std"]

@@ -25,6 +25,27 @@ members = [
   "vesting-escrow-factory/vesting-escrow-factory-crate",
   "vesting-escrow-factory/vesting-escrow-factory-proxy",
   "vesting-escrow-factory/vesting-escrow-factory-tests",
+  # COMMON
+  "common",
+  # SESSION CODE
+  "session-code",
+  # ERC20
+  "erc20/erc20",
+  "erc20/erc20-crate",
+  "erc20/erc20-proxy",
+  "erc20/erc20-tests",
+  # VotingEscrow
+  "voting-escrow/voting-escrow",
+  "voting-escrow/voting-escrow-crate",
+  "voting-escrow/voting-escrow-tests",
+  # Fee Distributor 
+  "fee-distributor/fee-distributor",
+  "fee-distributor/fee-distributor-crate",
+  "fee-distributor/fee-distributor-tests",
+  # Liquidity Gauge Reward
+  "liquidity-gauge-reward/liquidity-gauge-reward",
+  "liquidity-gauge-reward/liquidity-gauge-reward-crate",
+  "liquidity-gauge-reward/liquidity-gauge-reward-tests"
 
   
 ]

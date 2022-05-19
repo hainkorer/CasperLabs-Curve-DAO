@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CasperLabs-Curve-DAO
 
 Implementation of `Minter`, `Reward Only Gauge`,`Vesting Escrow` and `Gauge Controller` Contract for the CasperLabs platform.
@@ -507,3 +508,10 @@ Following is the table of parameters.
 | token_holder   | Key  |
 
 This method **returns** `(U256, U256)`. -->
+=======
+# Curve - Casper Blockchain
+
+## Voting Escrow
+
+## Fee Distributor
+>>>>>>> 75f9884403e2743099656824031f692fc67d9be2

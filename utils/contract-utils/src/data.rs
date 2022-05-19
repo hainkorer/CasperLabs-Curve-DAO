@@ -1,4 +1,7 @@
-use alloc::string::{String, ToString};
+use alloc::{
+    string::{String, ToString},
+    vec::Vec,
+};
 use core::convert::TryInto;
 
 use casper_contract::{
@@ -9,7 +12,9 @@ use casper_types::{
     bytesrepr::{FromBytes, ToBytes},
     ApiError, CLTyped, Key, URef,
 };
+use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 
+#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Dict {
     uref: URef,
 }
