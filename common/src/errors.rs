@@ -30,6 +30,16 @@ pub enum Error {
     KickNotNeeded = 26,
     NotApproved = 27,
     AdminNotSet = 28,
+    InvalidMinter = 29,
+    OnlyMinterAllowed = 30,
+    AdminOnly = 31,
+    TooSoon = 32,
+    ZeroAddress = 33,
+    MinterOnly = 34,
+    ExceedsAllowableMint = 35,
+    StartGreaterThanEnd = 36,
+    TooFarInFuture = 37,
+    CurrRateLessThanInitRate = 39,
 }
 
 impl From<Error> for ApiError {
