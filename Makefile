@@ -89,7 +89,7 @@ copy-wasm-file-liquidity-gauge-reward:
 	cp ${root_directory}${wasm_src_path}*.wasm ${wasm_dest_liquidity_gauge_reward_path}
 
 copy-wasm-file-erc20-crv:
-	cp target/wasm32-unknown-unknown/release/*.wasm erc20_crv_tests/wasm
+	cp target/wasm32-unknown-unknown/release/*.wasm erc20-crv/erc20_crv_tests/wasm
 
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter
