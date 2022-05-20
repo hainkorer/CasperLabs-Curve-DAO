@@ -19,14 +19,14 @@ pub const RATE_DENOMINATOR: U256 = U256([10000000000000000000, 0, 0, 0]); //10^1
 pub const INFLATION_DELAY: U256 = U256([86400, 0, 0, 0]);
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
-    match runtime::get_key(RESULT) {
+    match runtime::get_key(RESULT1) {
         Some(key) => {
             let key_ref = key.try_into().unwrap_or_revert();
             storage::write(key_ref, value);
         }
         None => {
             let key = storage::new_uref(value).into();
-            runtime::put_key(RESULT, key);
+            runtime::put_key(RESULT1, key);
         }
     }
 }
@@ -63,10 +63,10 @@ pub fn set_minter(minter: Key) {
     set_key(MINTER, minter);
 }
 pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or_revert()
+    get_key(ADMIN1).unwrap_or_revert()
 }
 pub fn set_admin(admin: Key) {
-    set_key(ADMIN, admin);
+    set_key(ADMIN1, admin);
 }
 pub fn get_mining_epoch() -> U128 {
     get_key(MINING_EPOCH).unwrap_or_revert()

@@ -303,6 +303,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "casper_types_derive"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1185d558597a7985e936c1e312810e46d3904888b298635f78370b729055fa28"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "cc"
 version = "1.0.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -335,7 +346,7 @@ dependencies = [
 
 [[package]]
 name = "common"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
@@ -347,6 +358,7 @@ version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "casper_types_derive",
  "hex",
 ]
 
@@ -591,6 +603,62 @@ dependencies = [
 ]
 
 [[package]]
+name = "erc20"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "erc20-crate",
+]
+
+[[package]]
+name = "erc20-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "erc20-crv-session-code"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+]
+
+[[package]]
+name = "erc20-proxy"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "erc20-tests"
+version = "0.2.1"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
 name = "erc20_crate"
 version = "0.2.0"
 dependencies = [
@@ -604,7 +672,7 @@ dependencies = [
 
 [[package]]
 name = "erc20_crv"
-version = "0.2.0"
+version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
@@ -647,6 +715,44 @@ dependencies = [
 ]
 
 [[package]]
+name = "fee-distributor"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "fee-distributor-crate",
+]
+
+[[package]]
+name = "fee-distributor-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "common",
+ "contract-utils",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "fee-distributor-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "fee-distributor-crate",
+ "hex",
+ "test-env",
+]
+
+[[package]]
 name = "ff"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -668,6 +774,54 @@ name = "funty"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fed34cd105917e91daa4da6b3728c47b068749d6a62c59811f06ed2ac71d9da7"
+
+[[package]]
+name = "gauge-controller"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "gauge-controller-crate",
+]
+
+[[package]]
+name = "gauge-controller-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "gauge-controller-proxy"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "gauge-controller-tests"
+version = "0.2.1"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
 
 [[package]]
 name = "generic-array"
@@ -906,6 +1060,44 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fb9b38af92608140b86b693604b9ffcc5824240a484d1ecd4795bacb2fe88f3"
 
 [[package]]
+name = "liquidity-gauge-reward"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "liquidity-gauge-reward-crate",
+]
+
+[[package]]
+name = "liquidity-gauge-reward-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "common",
+ "contract-utils",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "liquidity-gauge-reward-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "hex",
+ "liquidity-gauge-reward-crate",
+ "test-env",
+]
+
+[[package]]
 name = "lmdb"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -955,6 +1147,53 @@ name = "memory_units"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8452105ba047068f40ff7093dd1d9da90898e63dd61736462e9cdda6a90ad3c3"
+
+[[package]]
+name = "minter"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "minter-crate",
+]
+
+[[package]]
+name = "minter-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "minter-proxy"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "minter-tests"
+version = "0.2.1"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
 
 [[package]]
 name = "num"
@@ -1308,6 +1547,54 @@ dependencies = [
 ]
 
 [[package]]
+name = "reward-only-gauge"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "reward-only-gauge-crate",
+]
+
+[[package]]
+name = "reward-only-gauge-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "reward-only-gauge-proxy"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "reward-only-gauge-tests"
+version = "0.2.1"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
 name = "rustc-hex"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1409,7 +1696,7 @@ dependencies = [
 
 [[package]]
 name = "session-code"
-version = "0.2.0"
+version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
@@ -1664,6 +1951,140 @@ name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+[[package]]
+name = "vesting-escrow"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "vesting-escrow-crate",
+]
+
+[[package]]
+name = "vesting-escrow-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "vesting-escrow-factory"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "vesting-escrow-factory-crate",
+]
+
+[[package]]
+name = "vesting-escrow-factory-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "vesting-escrow-factory-proxy"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "vesting-escrow-factory-tests"
+version = "0.2.1"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
+name = "vesting-escrow-proxy"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "vesting-escrow-tests"
+version = "0.2.1"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
+name = "voting-escrow"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "voting-escrow-crate",
+]
+
+[[package]]
+name = "voting-escrow-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "common",
+ "contract-utils",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "voting-escrow-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "hex",
+ "test-env",
+ "voting-escrow-crate",
+]
 
 [[package]]
 name = "wait-timeout"

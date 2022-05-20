@@ -57,7 +57,7 @@ fn test_start_epoch_time_write() {
     let addr: Key = Key::Account(env.next_user());
     TestContract::new(
         &env,
-        "session-code.wasm",
+        "erc20-crv-session-code.wasm",
         "SessionCode",
         owner,
         runtime_args! {
@@ -75,7 +75,7 @@ fn test_start_epoch_time_write() {
 fn test_start_epoch_time_write_js_client() {
     let (env, owner, contract) = deploy();
     contract.start_epoch_time_write_js_client(owner);
-    let ret: U256 = contract.key_value(RESULT.to_string());
+    let ret: U256 = contract.key_value(RESULT1.to_string());
     assert_eq!(ret, 100086400.into());
    
 }
@@ -86,7 +86,7 @@ fn test_future_epoch_time_write() {
     let addr: Key = Key::Account(env.next_user());
     TestContract::new(
         &env,
-        "session-code.wasm",
+        "erc20-crv-session-code.wasm",
         "SessionCode",
         owner,
         runtime_args! {
@@ -104,7 +104,7 @@ fn test_future_epoch_time_write() {
 fn test_future_epoch_time_write_js_client() {
     let (env, owner, contract) = deploy();
     contract.future_epoch_time_write_js_client(owner);
-    let ret: U256 = contract.key_value(RESULT.to_string());
+    let ret: U256 = contract.key_value(RESULT1.to_string());
    
     assert_eq!(ret, 131622400.into());
 }
@@ -114,7 +114,7 @@ fn test_available_supply() {
 
     TestContract::new(
         &env,
-        "session-code.wasm",
+        "erc20-crv-session-code.wasm",
         "SessionCode",
         owner,
         runtime_args! {
@@ -131,7 +131,7 @@ fn test_available_supply() {
 fn test_available_supply_js_client() {
     let (env, owner, contract) = deploy();
     contract.available_supply_js_client(owner);
-    let ret: U256 = contract.key_value(RESULT.to_string());
+    let ret: U256 = contract.key_value(RESULT1.to_string());
     println!("{:}", ret);
     //assert_eq!(ret,130303030300.into());
 }
@@ -141,7 +141,7 @@ fn test_mintable_in_timeframe() {
 
     TestContract::new(
         &env,
-        "session-code.wasm",
+        "erc20-crv-session-code.wasm",
         "SessionCode",
         owner,
         runtime_args! {
@@ -160,7 +160,7 @@ fn test_mintable_in_timeframe_js_client() {
     let start_arg: U256=10.into();
     let end_arg: U256=100.into();
     contract.mintable_in_timeframe_js_client(owner,start_arg,end_arg);
-  let ret:U256= contract.key_value(RESULT.to_string());
+  let ret:U256= contract.key_value(RESULT1.to_string());
   assert_eq!(ret,0.into());
 
 }
@@ -171,7 +171,7 @@ fn test_mint_crv() {
     let value: U256=10.into();
     TestContract::new(
         &env,
-        "session-code.wasm",
+        "erc20-crv-session-code.wasm",
         "SessionCode",
         owner,
         runtime_args! {
@@ -192,6 +192,6 @@ fn test_mint_crv_js_client() {
     let to: Key=Key::Account(owner);
     let value: U256=10.into();
     contract.mint_crv_js_client(owner,to,value);
-    let ret: bool = contract.key_value(RESULT.to_string());
+    let ret: bool = contract.key_value(RESULT1.to_string());
     assert_eq!(ret,true);
 }

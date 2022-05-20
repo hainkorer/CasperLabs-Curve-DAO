@@ -45,8 +45,8 @@ members = [
   # Liquidity Gauge Reward
   "liquidity-gauge-reward/liquidity-gauge-reward",
   "liquidity-gauge-reward/liquidity-gauge-reward-crate",
-  "liquidity-gauge-reward/liquidity-gauge-reward-tests"
-  
+  "liquidity-gauge-reward/liquidity-gauge-reward-tests",
+
   "erc20_crv",
   "erc20_crv_tests",
   "session_code",

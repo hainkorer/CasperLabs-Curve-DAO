@@ -36,12 +36,12 @@ build-contract-fee-distributor:
 	cargo build --release -p fee-distributor --target wasm32-unknown-unknown
 build-contract-liquidity-gauge-reward:
 	cargo build --release -p liquidity-gauge-reward --target wasm32-unknown-unknown
-build-contract:
+build-contract-erc20-crv:
 	cargo build --release -p erc20_crv --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/erc20_crv.wasm 2>/dev/null | true
-build-session-code:
-	cargo build --release -p session-code --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/session-code.wasm 2>/dev/null | true
+build-erc20-crv-session-code:
+	cargo build --release -p erc20-crv-session-code --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/erc20-crv-session-code.wasm 2>/dev/null | true
 
 
 
@@ -62,7 +62,7 @@ test-only-fee-distributor:
 	cargo test -p fee-distributor-tests
 test-only-liquidity-gauge-reward:
 	cargo test -p liquidity-gauge-reward-tests
-test-only:
+test-only-erc20-crv:
 	cargo test -p erc20_crv_tests -- --nocapture
 
 
@@ -88,7 +88,7 @@ copy-wasm-file-fee-distributor:
 copy-wasm-file-liquidity-gauge-reward:
 	cp ${root_directory}${wasm_src_path}*.wasm ${wasm_dest_liquidity_gauge_reward_path}
 
-copy-wasm-file-to-test:
+copy-wasm-file-erc20-crv:
 	cp target/wasm32-unknown-unknown/release/*.wasm erc20_crv_tests/wasm
 
 test-minter:
@@ -107,7 +107,8 @@ test-fee-distributor:
 	make build-session-code && make build-contract-fee-distributor && make copy-wasm-file-fee-distributor && make test-only-fee-distributor
 test-liquidity-gauge-reward:
 	make build-session-code && make build-contract-liquidity-gauge-reward && make copy-wasm-file-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
-test: build-contract build-session-code  copy-wasm-file-to-test test-only
+test-erc20-crv: 
+	make build-contract-erc20-crv && make build-erc20-crv-session-code && make copy-wasm-file-erc20-crv && make test-only-erc20-crv
 
 all:
 	make test-minter && make test-only-minter
@@ -116,6 +117,7 @@ all:
 	make test-vesting-escrow && make test-only-vesting-escrow
 	make test-vesting-escrow-factory && make test-only-vesting-escrow-factory
 	make test-voting-escrow && make test-fee-distributor && make test-liquidity-gauge-reward
+	make test-erc20-crv
 
 
 

@@ -1,5 +1,5 @@
 [package]
-name = "session-code"
+name = "erc20-crv-session-code"
 version = "0.2.0"
 edition = "2018"
 
@@ -10,7 +10,7 @@ common = { path = "../common" }
 
 
 [[bin]]
-name = "session-code"
+name = "erc20-crv-session-code"
 path = "bin/main.rs"
 bench = false
 doctest = false
