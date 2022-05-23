@@ -1,0 +1,10 @@
+[workspace]
+
+members = [
+    "curve-token-v1/curve-token-v1",
+    "curve-token-v1/curve-token-v1-tests"
+]
+
+[profile.release]
+codegen-units = 1
+lto = true
