@@ -24,6 +24,7 @@ impl VESTINGESCROWSIMPLEInstance {
             runtime_args! {
                 "token"=>token
             },
+            0,
         )
     }
     pub fn proxy(
@@ -40,6 +41,7 @@ impl VESTINGESCROWSIMPLEInstance {
             runtime_args! {
                 "vesting_escrow_simple" => vesting_escrow_simple
             },
+            0,
         )
     }
     pub fn initialize(
@@ -65,6 +67,7 @@ impl VESTINGESCROWSIMPLEInstance {
                 "end_time"=>end_time,
                 "can_disable"=>can_disable
             },
+            0,
         );
     }
     pub fn toggle_disable(&self, sender: AccountHash, recipient: Key) {
@@ -74,15 +77,16 @@ impl VESTINGESCROWSIMPLEInstance {
             runtime_args! {
                 "recipient" => recipient
             },
+            0,
         );
     }
     pub fn disable_can_disable(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "disable_can_disable", runtime_args! {});
+            .call_contract(sender, "disable_can_disable", runtime_args! {}, 0);
     }
     pub fn vested_supply(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "vested_supply", runtime_args! {});
+            .call_contract(sender, "vested_supply", runtime_args! {}, 0);
     }
     pub fn vested_of(&self, sender: AccountHash, recipient: Key) {
         self.0.call_contract(
@@ -91,11 +95,12 @@ impl VESTINGESCROWSIMPLEInstance {
             runtime_args! {
                 "recipient" => recipient
             },
+            0,
         );
     }
     pub fn locked_supply(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "locked_supply", runtime_args! {});
+            .call_contract(sender, "locked_supply", runtime_args! {}, 0);
     }
     pub fn balance_of_vest(&self, sender: AccountHash, recipient: Key) {
         self.0.call_contract(
@@ -104,6 +109,7 @@ impl VESTINGESCROWSIMPLEInstance {
             runtime_args! {
                 "recipient" => recipient
             },
+            0,
         );
     }
     pub fn commit_transfer_ownership(&self, sender: AccountHash, addr: Key) {
@@ -113,12 +119,17 @@ impl VESTINGESCROWSIMPLEInstance {
             runtime_args! {
                 "addr" => addr
             },
+            0,
         );
     }
 
     pub fn apply_transfer_ownership(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "apply_transfer_ownership", runtime_args! {});
+        self.0.call_contract(
+            sender,
+            "apply_transfer_ownership",
+            runtime_args! {},
+            0,
+        );
     }
     pub fn claim(&self, sender: AccountHash, addr: Key) {
         self.0.call_contract(
@@ -127,6 +138,7 @@ impl VESTINGESCROWSIMPLEInstance {
             runtime_args! {
                 "addr" => addr
             },
+            0,
         );
     }
 

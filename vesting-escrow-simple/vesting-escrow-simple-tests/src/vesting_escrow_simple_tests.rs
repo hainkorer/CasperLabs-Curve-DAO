@@ -17,6 +17,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
             "decimals" => 9 as u8,
             "initial_supply" => U256::from(TEN_E_NINE*1000)
         },
+        0,
     )
 }
 fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
@@ -44,11 +45,13 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
         owner,
         "mint",
         runtime_args! {"to" => to , "amount" => amount},
+        0,
     );
     erc20.call_contract(
         owner,
         "approve",
         runtime_args! {"spender" => to , "amount" => amount},
+        0,
     );
 
     (env, owner, contract, proxy)

@@ -128,6 +128,7 @@ all:
 	make test-vesting-escrow-factory && make test-only-vesting-escrow-factory
 	make test-voting-escrow && make test-fee-distributor && make test-liquidity-gauge-reward
 	make test-erc20-crv
+	make test
 
 
 

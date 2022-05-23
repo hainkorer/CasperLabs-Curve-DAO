@@ -424,6 +424,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "curve-token-utils"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "contract-utils",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
 name = "curve25519-dalek"
 version = "3.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -664,8 +676,10 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "casper_types_derive",
  "contract-utils",
  "cryptoxide",
+ "curve-token-utils",
  "hex",
  "renvm-sig",
 ]
@@ -2042,6 +2056,33 @@ dependencies = [
  "blake2",
  "casper-contract",
  "casper-engine-test-support",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
+name = "vesting_escrow_simple"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "erc20_crate",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "vesting_escrow_simple_tests"
+version = "0.2.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-execution-engine",
+ "casper-hashing",
  "casper-types",
  "contract-utils",
  "hex",
