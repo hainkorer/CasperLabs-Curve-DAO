@@ -1097,6 +1097,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "liquidity-gauge-reward-session-code"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+]
+
+[[package]]
 name = "liquidity-gauge-reward-tests"
 version = "0.1.0"
 dependencies = [
@@ -1108,6 +1117,44 @@ dependencies = [
  "contract-utils",
  "hex",
  "liquidity-gauge-reward-crate",
+ "test-env",
+]
+
+[[package]]
+name = "liquidity-gauge-reward-wrapper"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "liquidity-gauge-reward-wrapper-crate",
+]
+
+[[package]]
+name = "liquidity-gauge-reward-wrapper-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "common",
+ "contract-utils",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "liquidity-gauge-reward-wrapper-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "hex",
+ "liquidity-gauge-reward-wrapper-crate",
  "test-env",
 ]
 

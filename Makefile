@@ -13,6 +13,8 @@ wasm_src_path = target/wasm32-unknown-unknown/release/
 wasm_dest_voting_escrow_path = ./voting-escrow/voting-escrow-tests/wasm/
 wasm_dest_fee_distributor_path = ./fee-distributor/fee-distributor-tests/wasm/
 wasm_dest_liquidity_gauge_reward_path = ./liquidity-gauge-reward/liquidity-gauge-reward-tests/wasm/
+wasm_dest_erc20_path = ./erc20/erc20-tests/wasm/
+wasm_dest_liquidity_gauge_reward_wrapper_path = ./liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests/wasm/
 
 
 prepare:
@@ -20,6 +22,10 @@ prepare:
 
 build-session-code:
 	cargo build --release -p session-code --target wasm32-unknown-unknown
+build-liquidity-gauge-reward-session-code:
+	cargo build --release -p liquidity-gauge-reward-session-code --target wasm32-unknown-unknown	
+build-contract-erc20:
+	cargo build --release -p erc20 -p erc20-proxy --target wasm32-unknown-unknown
 build-contract-minter:
 	cargo build --release -p minter -p minter-proxy --target wasm32-unknown-unknown
 build-contract-gauge-controller:
@@ -42,9 +48,11 @@ build-contract-erc20-crv:
 build-erc20-crv-session-code:
 	cargo build --release -p erc20-crv-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/erc20-crv-session-code.wasm 2>/dev/null | true
-build-contract:
+build-contract-vesting-escrow-simple:
 	cargo build --release -p vesting_escrow_simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
+build-contract-liquidity-gauge-reward-wrapper:
+	cargo build --release -p liquidity-gauge-reward-wrapper --target wasm32-unknown-unknown
 
 
 
@@ -68,8 +76,12 @@ test-only-liquidity-gauge-reward:
 	cargo test -p liquidity-gauge-reward-tests
 test-only-erc20-crv:
 	cargo test -p erc20_crv_tests -- --nocapture
-test-only:
+test-only-vesting-escrow-simple:
 	cargo test -p vesting_escrow_simple_tests -- --nocapture
+test-only-erc20:
+	cargo test -p erc20-tests	
+test-only-liquidity-gauge-reward-wrapper:
+	cargo test -p liquidity-gauge-reward-wrapper-tests
 
 
 
@@ -94,6 +106,14 @@ copy-wasm-file-fee-distributor:
 	cp ${root_directory}${wasm_src_path}*.wasm ${wasm_dest_fee_distributor_path}
 copy-wasm-file-liquidity-gauge-reward:
 	cp ${root_directory}${wasm_src_path}*.wasm ${wasm_dest_liquidity_gauge_reward_path}
+copy-wasm-file-erc20:
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${wasm_dest_erc20_path}
+	cp ${root_directory}${wasm_src_path}erc20-proxy-token.wasm ${wasm_dest_erc20_path}
+copy-wasm-file-liquidity-gauge-reward-wrapper:
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
+	cp ${root_directory}${wasm_src_path}liquidity-gauge-reward-wrapper.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
+	cp ${root_directory}${wasm_src_path}session-code.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
+	cp ${root_directory}${wasm_src_path}minter-token.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
 
 copy-wasm-file-erc20-crv:
 	cp target/wasm32-unknown-unknown/release/*.wasm erc20-crv/erc20_crv_tests/wasm
@@ -111,24 +131,31 @@ test-vesting-escrow:
 test-vesting-escrow-factory:
 	make build-contract-vesting-escrow-factory && make copy-wasm-file-vesting-escrow-factory
 test-voting-escrow:
-	make build-session-code && make build-contract-voting-escrow && make copy-wasm-file-voting-escrow && make test-only-voting-escrow
+	make build-session-code && make build-contract-voting-escrow && make copy-wasm-file-voting-escrow
 test-fee-distributor:
-	make build-session-code && make build-contract-fee-distributor && make copy-wasm-file-fee-distributor && make test-only-fee-distributor
+	make build-session-code && make build-contract-fee-distributor && make copy-wasm-file-fee-distributor 
 test-liquidity-gauge-reward:
-	make build-session-code && make build-contract-liquidity-gauge-reward && make copy-wasm-file-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
+	make build-session-code && make build-contract-liquidity-gauge-reward && make copy-wasm-file-liquidity-gauge-reward 
 test-erc20-crv: 
-	make build-contract-erc20-crv && make build-erc20-crv-session-code && make copy-wasm-file-erc20-crv && make test-only-erc20-crv
-test: build-contract copy-wasm-file-to-test test-only
-
+	make build-contract-erc20-crv && make build-erc20-crv-session-code && make copy-wasm-file-erc20-crv
+test-vesting-escrow-simple: 
+	make build-contract-vesting-escrow-simple && make copy-wasm-file-to-test 
+test-liquidity-gauge-reward-wrapper:
+	make build-liquidity-gauge-reward-session-code && make build-contract-erc20 && make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper
+test-erc20:
+	make build-contract-erc20 && make copy-wasm-file-erc20 && make test-only-erc20
 all:
 	make test-minter && make test-only-minter
 	make test-gauge-controller && make test-only-gauge-controller
 	make test-reward-only-gauge && make test-only-reward-only-gauge
 	make test-vesting-escrow && make test-only-vesting-escrow
 	make test-vesting-escrow-factory && make test-only-vesting-escrow-factory
-	make test-voting-escrow && make test-fee-distributor && make test-liquidity-gauge-reward
-	make test-erc20-crv
-	make test
+	make test-voting-escrow && make test-only-voting-escrow
+	make test-fee-distributor && make test-only-fee-distributor
+	make test-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
+	make test-erc20-crv && make test-only-erc20-crv
+	make test-vesting-escrow-simple && make test-only-vesting-escrow-simple
+	make test-erc20 && make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
 
 
 

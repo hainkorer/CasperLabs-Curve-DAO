@@ -40,6 +40,12 @@ pub enum Error {
     StartGreaterThanEnd = 36,
     TooFarInFuture = 37,
     CurrRateLessThanInitRate = 39,
+    RewardWrapperUnauthorized = 40,
+    RewardWrapperNotApproved = 41,
+    RewardWrapperIsLocked = 42,
+    RewardWrapperAdminOnly = 43,
+    RewardWrapperAdminNotSet = 44,
+    RewardWrapperZeroAddress = 45,
 }
 
 impl From<Error> for ApiError {
