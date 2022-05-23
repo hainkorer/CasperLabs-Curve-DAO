@@ -51,7 +51,10 @@ members = [
   "erc20-crv/erc20_crv_tests",
   "erc20-crv/session_code",
   
-  "common"
+  "common",
+
+    "vesting-escrow-simple/vesting-escrow-simple",
+    "vesting-escrow-simple/vesting-escrow-simple-tests",
 ]
 
 [profile.release]

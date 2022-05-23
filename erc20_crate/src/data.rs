@@ -9,6 +9,7 @@ use casper_contract::{
 };
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
 use contract_utils::{get_key, key_to_str, set_key, Dict};
+use curve_token_utils::commons::key_names::*;
 
 use crate::event::ERC20Event;
 
@@ -97,7 +98,6 @@ impl Allowances {
         self.dict.set_by_keys((owner, spender), value);
     }
 }
-
 pub fn name() -> String {
     get_key(NAME).unwrap_or_revert()
 }
