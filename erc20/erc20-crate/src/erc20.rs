@@ -171,25 +171,27 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn transfer_from(&mut self, owner: Key, recipient: Key, amount: U256) -> Result<(), u32> {
-        let ret: Result<(), u32> = self.make_transfer(owner, recipient, amount);
-        if ret.is_ok() {
-            let allowances = Allowances::instance();
-            let spender_allowance: U256 = allowances.get(&owner, &self.get_caller());
-            let new_allowance: U256 = spender_allowance
-                .checked_sub(amount)
-                .ok_or(Error::UniswapV2CoreERC20UnderFlow2)
-                .unwrap_or_revert();
-            if new_allowance >= 0.into()
-                && new_allowance < spender_allowance
-                && owner != self.get_caller()
-            {
-                self._approve(owner, self.get_caller(), new_allowance);
-                return Ok(());
-            } else {
-                return Err(4);
+        if owner != recipient && amount != 0.into() {
+            let ret: Result<(), u32> = self.make_transfer(owner, recipient, amount);
+            if ret.is_ok() {
+                let allowances = Allowances::instance();
+                let spender_allowance: U256 = allowances.get(&owner, &self.get_caller());
+                let new_allowance: U256 = spender_allowance
+                    .checked_sub(amount)
+                    .ok_or(Error::UniswapV2CoreERC20UnderFlow2)
+                    .unwrap_or_revert();
+                if new_allowance >= 0.into()
+                    && new_allowance < spender_allowance
+                    && owner != self.get_caller()
+                {
+                    self._approve(owner, self.get_caller(), new_allowance);
+                    return Ok(());
+                } else {
+                    return Err(4);
+                }
             }
         }
-        ret
+        Ok(())
     }
 
     /// This function is to get signer and verify if it is equal
@@ -365,36 +367,31 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn make_transfer(&mut self, sender: Key, recipient: Key, amount: U256) -> Result<(), u32> {
-        if sender == recipient {
-            return Err(4); // Same sender recipient error
+        if sender != recipient && amount != 0.into() {
+            let balances: Balances = Balances::instance();
+            let sender_balance: U256 = balances.get(&sender);
+            let recipient_balance: U256 = balances.get(&recipient);
+            balances.set(
+                &sender,
+                sender_balance
+                    .checked_sub(amount)
+                    .ok_or(Error::UniswapV2CoreERC20UnderFlow5)
+                    .unwrap_or_revert(),
+            );
+            balances.set(
+                &recipient,
+                recipient_balance
+                    .checked_add(amount)
+                    .ok_or(Error::UniswapV2CoreERC20OverFlow4)
+                    .unwrap_or_revert(),
+            );
+            self.emit(&ERC20Event::Transfer {
+                from: sender,
+                to: recipient,
+                value: amount,
+            });
         }
 
-        if amount.is_zero() {
-            return Err(5); // Amount to transfer is 0
-        }
-
-        let balances: Balances = Balances::instance();
-        let sender_balance: U256 = balances.get(&sender);
-        let recipient_balance: U256 = balances.get(&recipient);
-        balances.set(
-            &sender,
-            sender_balance
-                .checked_sub(amount)
-                .ok_or(Error::UniswapV2CoreERC20UnderFlow5)
-                .unwrap_or_revert(),
-        );
-        balances.set(
-            &recipient,
-            recipient_balance
-                .checked_add(amount)
-                .ok_or(Error::UniswapV2CoreERC20OverFlow4)
-                .unwrap_or_revert(),
-        );
-        self.emit(&ERC20Event::Transfer {
-            from: sender,
-            to: recipient,
-            value: amount,
-        });
         Ok(())
     }
 
