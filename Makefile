@@ -59,6 +59,9 @@ build-contract-curve-token-v1:
 build-contract-curve-token-v2:
 	cargo build --release -p curve_token_v2 --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v2.wasm 2>/dev/null | true
+build-contract-curve-token-v3:
+	cargo build --release -p curve_token_v3 --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v3.wasm 2>/dev/null | true
 
 
 
@@ -92,6 +95,8 @@ test-only-curve-token-v1:
 	cargo test -p curve_token_v1_tests -- --nocapture
 test-only-curve-token-v2:
 	cargo test -p curve_token_v2_tests -- --nocapture
+test-only-curve-token-v3:
+	cargo test -p curve_token_v3_tests -- --nocapture
 	
 
 
@@ -135,6 +140,8 @@ copy-wasm-file-curve-token-v1:
 	cp target/wasm32-unknown-unknown/release/*.wasm curve-token-v1/curve-token-v1-tests/wasm
 copy-wasm-file-curve-token-v2:
 	cp target/wasm32-unknown-unknown/release/*.wasm curve-token-v2/curve-token-v2-tests/wasm
+copy-wasm-file-curve-token-v3:
+	cp target/wasm32-unknown-unknown/release/*.wasm curve-token-v3/curve-token-v3-tests/wasm
 
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter
@@ -164,6 +171,8 @@ test-curve-token-v1:
 	make build-contract-curve-token-v1 && make copy-wasm-file-curve-token-v1
 test-curve-token-v2: 
 	make build-contract-curve-token-v2 && make copy-wasm-file-curve-token-v2
+test-curve-token-v3: 
+	make build-contract-curve-token-v3 && make copy-wasm-file-curve-token-v3
 
 all:
 	make test-erc20 && make test-only-erc20
@@ -180,6 +189,7 @@ all:
 	make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
 	make test-curve-token-v1 && make test-only-curve-token-v1
 	make test-curve-token-v2 && make test-only-curve-token-v2
+	make test-curve-token-v3 && make test-only-curve-token-v3
 
 
 
@@ -196,6 +206,7 @@ clean:
 	rm -rf ${wasm_dest_liquidity_gauge_reward_path}*.wasm
 	rm -rf curve_token_v1_tests/wasm/*.wasm
 	rm -rf curve_token_v2_tests/wasm/*.wasm
+	rm -rf curve_token_v3_tests/wasm/*.wasm
 
 	rm -rf erc20_crv_tests/wasm/*.wasm
 	rm -rf Cargo.lock

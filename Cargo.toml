@@ -68,7 +68,9 @@ members = [
   "curve-token-v1/curve-token-v1",
   "curve-token-v1/curve-token-v1-tests",
   "curve-token-v2/curve-token-v2",
-    "curve-token-v2/curve-token-v2-tests"
+  "curve-token-v2/curve-token-v2-tests",
+  "curve-token-v3/curve-token-v3",
+  "curve-token-v3/curve-token-v3-tests"
 ]
 
 [profile.release]
