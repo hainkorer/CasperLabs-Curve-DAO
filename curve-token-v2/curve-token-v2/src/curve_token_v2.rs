@@ -1,19 +1,19 @@
 use crate::data;
 use alloc::{
+    collections::BTreeMap,
     string::{String, ToString},
-    vec::Vec, collections::BTreeMap,
+    vec::Vec,
 };
-use casper_contract::{contract_api::{runtime, storage}, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, U256, URef};
+use casper_contract::{
+    contract_api::{runtime, storage},
+    unwrap_or_revert::UnwrapOrRevert,
+};
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
 use erc20_crate::{self, data as erc20_data, ERC20};
 
 pub enum CurveTokenV2Event {
-    Transfer_crv2 {
-        from: Key,
-        to: Key,
-        value: U256,
-    },
+    Transfer_crv2 { from: Key, to: Key, value: U256 },
 }
 
 impl CurveTokenV2Event {
@@ -29,12 +29,11 @@ impl CurveTokenV2Event {
     }
 }
 
-
 #[repr(u16)]
 pub enum Error {
     InvalidMinter = 0,
     OnlyMinterAllowed = 1,
-    ZeroAddressNotAllowed=2
+    ZeroAddressNotAllowed = 2,
 }
 
 impl From<Error> for ApiError {
@@ -47,7 +46,7 @@ pub trait CURVETOKENV2<Storage: ContractStorage>:
     ContractContext<Storage> + ERC20<Storage>
 {
     fn init(
-        &self,
+        &mut self,
         name: String,
         symbol: String,
         decimal: u8,
@@ -65,12 +64,13 @@ pub trait CURVETOKENV2<Storage: ContractStorage>:
             name,
             symbol,
             decimal,
+            0.into(),
             "".to_string(),
             "".to_string(),
             data::get_hash(),
             data::get_package_hash(),
         );
-        erc20_data::Balances::instance().set(&self.get_caller(),data::get_init_supply());
+        erc20_data::Balances::instance().set(&self.get_caller(), data::get_init_supply());
         erc20_data::set_total_supply(data::get_init_supply());
         data::set_minter(self.get_caller());
         self.curve_token_v2_emit(&CurveTokenV2Event::Transfer_crv2 {
@@ -80,11 +80,11 @@ pub trait CURVETOKENV2<Storage: ContractStorage>:
         });
     }
 
-    fn mint_crv2(&self,_to:Key,_value:U256){
-        if !(self.get_caller()==data::get_minter()){
+    fn mint_crv2(&mut self, _to: Key, _value: U256) {
+        if !(self.get_caller() == data::get_minter()) {
             runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
         }
-        if !(_to!=data::ZERO_ADDRESS()){
+        if !(_to != data::ZERO_ADDRESS()) {
             runtime::revert(ApiError::from(Error::ZeroAddressNotAllowed));
         }
         ERC20::mint(self, _to, _value);
@@ -95,7 +95,7 @@ pub trait CURVETOKENV2<Storage: ContractStorage>:
         }
         data::set_minter(_minter);
     }
-    fn burn_from(&self, _to: Key, _value: U256) {
+    fn burn_from(&mut self, _to: Key, _value: U256) {
         if !(self.get_caller() == data::get_minter()) {
             runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
         }

@@ -30,6 +30,7 @@ impl CURVETOKENV2Instance {
                 "decimal" => decimal,
                 "supply" => supply,
             },
+            0,
         )
     }
     pub fn proxy(
@@ -44,6 +45,7 @@ impl CURVETOKENV2Instance {
             contract_name,
             sender,
             runtime_args! {"curve_token_v2"=>curve_token_v2},
+            0,
         ))
     }
     pub fn mint_crv2(&self, sender: AccountHash, _to: Key,_value:U256) {
@@ -54,6 +56,7 @@ impl CURVETOKENV2Instance {
                 "_to" => _to,
                 "_value"=>_value
             },
+            0,
         );
     }
     pub fn set_minter(&self, sender: AccountHash, _minter: Key) {
@@ -63,6 +66,7 @@ impl CURVETOKENV2Instance {
             runtime_args! {
                 "_minter" => _minter
             },
+            0,
         );
     }
     pub fn burn_from(&self, sender: AccountHash, _to: Key, _value: U256) {
@@ -74,6 +78,7 @@ impl CURVETOKENV2Instance {
                 "_value"=>_value
 
             },
+            0,
         );
     }
     pub fn set_name(&self, sender: AccountHash, _name: String, _symbol: String) {
@@ -84,6 +89,7 @@ impl CURVETOKENV2Instance {
                 "_name"=>_name,
                 "_symbol"=>_symbol
             },
+            0,
         );
     }
 
