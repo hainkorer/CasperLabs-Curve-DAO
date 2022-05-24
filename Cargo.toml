@@ -66,7 +66,9 @@ members = [
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-session-code",
 
   "curve-token-v1/curve-token-v1",
-  "curve-token-v1/curve-token-v1-tests"
+  "curve-token-v1/curve-token-v1-tests",
+  "curve-token-v2/curve-token-v2",
+    "curve-token-v2/curve-token-v2-tests"
 ]
 
 [profile.release]
