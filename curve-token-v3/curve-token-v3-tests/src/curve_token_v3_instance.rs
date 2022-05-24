@@ -25,6 +25,7 @@ impl CURVETOKENV3Instance {
                 "name" => name,
                 "symbol" => symbol,
             },
+            0,
         )
     }
     pub fn proxy(
@@ -39,9 +40,10 @@ impl CURVETOKENV3Instance {
             contract_name,
             sender,
             runtime_args! {"curve_token_v3"=>curve_token_v3},
+            0,
         ))
     }
-    pub fn mint_crv3(&self, sender: AccountHash, _to: Key,_value:U256) {
+    pub fn mint_crv3(&self, sender: AccountHash, _to: Key, _value: U256) {
         self.0.call_contract(
             sender,
             "mint_crv3",
@@ -49,6 +51,7 @@ impl CURVETOKENV3Instance {
                 "_to" => _to,
                 "_value"=>_value
             },
+            0,
         );
     }
     pub fn set_minter(&self, sender: AccountHash, _minter: Key) {
@@ -58,6 +61,7 @@ impl CURVETOKENV3Instance {
             runtime_args! {
                 "_minter" => _minter
             },
+            0,
         );
     }
     pub fn burn_from(&self, sender: AccountHash, _to: Key, _value: U256) {
@@ -69,6 +73,7 @@ impl CURVETOKENV3Instance {
                 "_value"=>_value
 
             },
+            0,
         );
     }
 
@@ -80,6 +85,7 @@ impl CURVETOKENV3Instance {
                 "_name"=>_name,
                 "_symbol"=>_symbol
             },
+            0,
         );
     }
 

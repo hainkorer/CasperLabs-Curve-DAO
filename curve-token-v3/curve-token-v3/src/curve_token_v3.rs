@@ -1,19 +1,19 @@
 use crate::data;
 use alloc::{
+    collections::BTreeMap,
     string::{String, ToString},
-    vec::Vec, collections::BTreeMap,
+    vec::Vec,
 };
-use casper_contract::{contract_api::{runtime, storage}, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, U256, URef};
+use casper_contract::{
+    contract_api::{runtime, storage},
+    unwrap_or_revert::UnwrapOrRevert,
+};
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
 use erc20_crate::{self, data as erc20_data, ERC20};
 
 pub enum CurveTokenV3Event {
-    Transfer_crv3 {
-        from: Key,
-        to: Key,
-        value: U256,
-    },
+    Transfer_crv3 { from: Key, to: Key, value: U256 },
 }
 
 impl CurveTokenV3Event {
@@ -44,7 +44,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>:
     ContractContext<Storage> + ERC20<Storage>
 {
     fn init(
-        &self,
+        &mut self,
         name: String,
         symbol: String,
         contract_hash: Key,
@@ -58,6 +58,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>:
             name,
             symbol,
             9.into(),
+            0.into(),
             "".to_string(),
             "".to_string(),
             data::get_hash(),
@@ -72,25 +73,25 @@ pub trait CURVETOKENV3<Storage: ContractStorage>:
             value: 0.into(),
         });
     }
-    fn mint_crv3(&self,_to:Key,_value:U256){
-        if !(self.get_caller()==data::minter()){
+    fn mint_crv3(&mut self, _to: Key, _value: U256) {
+        if !(self.get_caller() == data::minter()) {
             runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
         }
         ERC20::mint(self, _to, _value);
     }
-    fn set_minter(&self, _minter: Key) {
+    fn set_minter(&mut self, _minter: Key) {
         if !(self.get_caller() == data::minter()) {
             runtime::revert(ApiError::from(Error::InvalidMinter));
         }
         data::set_minter(_minter);
     }
-    fn burn_from(&self, _to: Key, _value: U256) {
+    fn burn_from(&mut self, _to: Key, _value: U256) {
         if !(self.get_caller() == data::minter()) {
             runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
         }
         ERC20::burn(self, _to, _value);
     }
-    fn set_name(&self, _name: String, _symbol: String) {
+    fn set_name(&mut self, _name: String, _symbol: String) {
         if !(data::minter() == self.get_caller()) {
             runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
         }
