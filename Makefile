@@ -53,6 +53,9 @@ build-contract-vesting-escrow-simple:
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward-wrapper:
 	cargo build --release -p liquidity-gauge-reward-wrapper --target wasm32-unknown-unknown
+build-contract-curve-token-v1:
+	cargo build --release -p curve_token_v1 --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v1.wasm 2>/dev/null | true
 
 
 
@@ -82,6 +85,8 @@ test-only-erc20:
 	cargo test -p erc20-tests	
 test-only-liquidity-gauge-reward-wrapper:
 	cargo test -p liquidity-gauge-reward-wrapper-tests
+test-only-curve-token-v1:
+	cargo test -p curve_token_v1_tests -- --nocapture
 
 
 
@@ -118,8 +123,10 @@ copy-wasm-file-liquidity-gauge-reward-wrapper:
 
 copy-wasm-file-erc20-crv:
 	cp target/wasm32-unknown-unknown/release/*.wasm erc20-crv/erc20_crv_tests/wasm
-copy-wasm-file-to-test:
+copy-wasm-file-vesting-escrow-simple:
 	cp target/wasm32-unknown-unknown/release/*.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm
+copy-wasm-file-curve-token-v1:
+	cp target/wasm32-unknown-unknown/release/*.wasm curve-token-v1/curve-token-v1-tests/wasm
 
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter
@@ -140,12 +147,17 @@ test-liquidity-gauge-reward:
 test-erc20-crv: 
 	make build-contract-erc20-crv && make build-erc20-crv-session-code && make copy-wasm-file-erc20-crv
 test-vesting-escrow-simple: 
-	make build-contract-vesting-escrow-simple && make copy-wasm-file-to-test 
+	make build-contract-vesting-escrow-simple && make copy-wasm-file-vesting-escrow-simple 
 test-liquidity-gauge-reward-wrapper:
-	make build-liquidity-gauge-reward-wrapper-session-code && make build-contract-erc20 && make build-contract-minter && make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper
+	make build-liquidity-gauge-reward-wrapper-session-code && make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper
 test-erc20:
-	make build-contract-erc20 && make copy-wasm-file-erc20 && make test-only-erc20
+	make build-contract-erc20 && make copy-wasm-file-erc20
+test-curve-token-v1: 
+	make build-contract-curve-token-v1 && make copy-wasm-file-curve-token-v1
+
 all:
+	make test-erc20 && make test-only-erc20
+	make test-erc20-crv && make test-only-erc20-crv
 	make test-minter && make test-only-minter
 	make test-gauge-controller && make test-only-gauge-controller
 	make test-reward-only-gauge && make test-only-reward-only-gauge
@@ -154,9 +166,9 @@ all:
 	make test-voting-escrow && make test-only-voting-escrow
 	make test-fee-distributor && make test-only-fee-distributor
 	make test-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
-	make test-erc20-crv && make test-only-erc20-crv
 	make test-vesting-escrow-simple && make test-only-vesting-escrow-simple
-	make test-erc20 && make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
+	make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
+	make test-curve-token-v1 && make test-only-curve-token-v1
 
 
 
@@ -171,6 +183,7 @@ clean:
 	rm -rf ${wasm_dest_fee_distributor_path}*.wasm
 	rm -rf ${wasm_dest_voting_escrow_path}*.wasm
 	rm -rf ${wasm_dest_liquidity_gauge_reward_path}*.wasm
+	rm -rf curve_token_v1_tests/wasm/*.wasm
 
 	rm -rf erc20_crv_tests/wasm/*.wasm
 	rm -rf Cargo.lock

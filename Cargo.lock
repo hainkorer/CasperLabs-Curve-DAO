@@ -449,6 +449,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "curve_token_v1"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "erc20_crate",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "curve_token_v1_tests"
+version = "0.2.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-execution-engine",
+ "casper-hashing",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
 name = "darling"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
