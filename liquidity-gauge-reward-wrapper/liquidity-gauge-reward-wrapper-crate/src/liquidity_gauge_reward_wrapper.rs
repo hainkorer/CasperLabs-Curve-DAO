@@ -24,7 +24,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     fn init(
         &self,
         name: String,
-        symbol:String,
+        symbol: String,
         gauge: Key,
         admin: Key,
         contract_hash: ContractHash,
@@ -77,368 +77,237 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         RewardIntegralFor::init();
         CrvIntegralFor::init();
         ClaimableCrv::init();
-        ClaimedRewards::init();
+        ClaimableRewards::init();
         ApprovedToDeposit::init();
         set_contract_hash(contract_hash);
         set_package_hash(package_hash);
     }
-
-    /// @notice Calculate limits which depend on the amount of CRV token per-user. Effectively it calculates working balances to apply amplification of CRV production by CRV
-    /// @param addr User address
-    /// @param l User's amount of liquidity (LP tokens)
-    /// @param L Total amount of liquidity (LP tokens)
-    #[allow(non_snake_case)]
-    fn _update_liquidity_limit(&self, addr: Key, l: U256, L: U256) {
-        // To be called after totalSupply is updated
-        // let voting_escrow: Key = get_voting_escrow();
-
-        // LIQUIDITYGAUGEREWARDWRAPPER::emit(
-        //     self,
-        //     &LiquidityGaugeRewardWrapperEvent::UpdateLiquidityLimit {
-        //         user: addr,
-        //         original_balance: l,
-        //         original_supply: L,
-        //         working_balance: lim,
-        //         working_supply,
-        //     },
-        // );
-    }
-
-    #[allow(non_snake_case)]
-    fn _checkpoint_rewards(&self, addr: Key, claim_rewards: bool) {
-        // Update reward integrals (no gauge weights involved: easy)
-        // let rewarded_token: Key = get_rewarded_token();
-        // let mut d_reward: U256 = 0.into();
-        // if claim_rewards {
-        //     d_reward = runtime::call_versioned_contract(
-        //         rewarded_token.into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "balance_of",
-        //         runtime_args! {
-        //             "owner" => Key::from(get_package_hash())
-        //         },
-        //     );
-        //     let () = runtime::call_versioned_contract(
-        //         get_reward_contract().into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "get_reward",
-        //         runtime_args! {},
-        //     );
-        //     let _d_reward: U256 = runtime::call_versioned_contract(
-        //         rewarded_token.into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "balance_of",
-        //         runtime_args! {
-        //             "owner" => Key::from(get_package_hash())
-        //         },
-        //     );
-        //     d_reward = _d_reward.checked_sub(d_reward).unwrap_or_revert();
-        // }
-
-        // let user_balance: U256 = BalanceOf::instance().get(&addr);
-        // let total_balance: U256 = get_total_supply();
-        // let mut dI: U256 = 0.into();
-        // if total_balance > 0.into() {
-        //     dI = U256::from(10)
-        //         .pow(18.into())
-        //         .checked_mul(d_reward)
-        //         .unwrap_or_revert()
-        //         .checked_div(total_balance)
-        //         .unwrap_or_revert();
-        // }
-        // let I: U256 = get_reward_integral().checked_add(dI).unwrap_or_revert();
-        // set_reward_integral(I);
-        // RewardsFor::instance().set(
-        //     &addr,
-        //     RewardsFor::instance()
-        //         .get(&addr)
-        //         .checked_add(
-        //             user_balance
-        //                 .checked_mul(
-        //                     I.checked_sub(RewardIntegralFor::instance().get(&addr))
-        //                         .unwrap_or_revert(),
-        //                 )
-        //                 .unwrap_or_revert()
-        //                 .checked_div(10.into())
-        //                 .unwrap_or_revert()
-        //                 .pow(18.into()),
-        //         )
-        //         .unwrap_or_revert(),
-        // );
-        // RewardIntegralFor::instance().set(&addr, I);
-    }
-
-    /// @notice Checkpoint for a user
-    /// @param addr User address
     fn _checkpoint(&self, addr: Key) {
-        // let token: Key = get_crv_token();
-        // let controller: Key = get_controller();
-        // let mut period: U128 = get_period();
-        // let period_time: U256 = PeriodTimestamp::instance().get(&period.as_u128().into());
-        // let mut integrate_inv_supply: U256 =
-        //     IntegrateInvSupply::instance().get(&period.as_u128().into());
-        // let mut rate: U256 = get_inflation_rate();
-        // let mut new_rate: U256 = rate;
-        // let prev_future_epoch: U256 = get_future_epoch_time();
-        // if prev_future_epoch >= period_time {
-        //     set_future_epoch_time(runtime::call_versioned_contract(
-        //         token.into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "future_epoch_time_write",
-        //         runtime_args! {},
-        //     ));
-        //     new_rate = runtime::call_versioned_contract(
-        //         token.into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "rate",
-        //         runtime_args! {},
-        //     );
-        //     set_inflation_rate(new_rate);
-        // }
-        // let () = runtime::call_versioned_contract(
-        //     controller.into_hash().unwrap_or_revert().into(),
-        //     None,
-        //     "checkpoint_gauge",
-        //     runtime_args! {
-        //         "addr" => Key::from(get_package_hash())
-        //     },
-        // );
-        // let working_balance: U256 = WorkingBalances::instance().get(&addr);
-        // let working_supply: U256 = get_working_supply();
-        // if get_is_killed() {
-        //     rate = 0.into(); // Stop distributing inflation as soon as killed
-        // }
-        // //     # Update integral of 1/supply
-        // if U256::from(u64::from(get_blocktime())) > period_time {
-        //     let mut prev_week_time: U256 = period_time;
-        //     let mut week_time: U256 = U256::min(
-        //         (period_time.checked_add(WEEK).unwrap_or_revert())
-        //             .checked_div(WEEK)
-        //             .unwrap_or_revert()
-        //             .checked_mul(WEEK)
-        //             .unwrap_or_revert(),
-        //         U256::from(u64::from(get_blocktime())),
-        //     );
-        //     for _ in 0..500 {
-        //         let dt: U256 = week_time.checked_sub(prev_week_time).unwrap_or_revert();
-        //         let w: U256 = runtime::call_versioned_contract(
-        //             controller.into_hash().unwrap_or_revert().into(),
-        //             None,
-        //             "gauge_relative_weight",
-        //             runtime_args! {
-        //                 "addr" => Key::from(get_package_hash()),
-        //                 "time" => prev_week_time.checked_div(WEEK).unwrap_or_revert().checked_mul(WEEK).unwrap_or_revert()
-        //             },
-        //         );
-        //         if working_supply > 0.into() {
-        //             if prev_future_epoch >= prev_week_time && prev_future_epoch < week_time {
-        //                 // If we went across one or multiple epochs, apply the rate
-        //                 // of the first epoch until it ends, and then the rate of
-        //                 // the last epoch.
-        //                 // If more than one epoch is crossed - the gauge gets less,
-        //                 // but that'd meen it wasn't called for more than 1 year
-        //                 integrate_inv_supply = integrate_inv_supply
-        //                     .checked_add(
-        //                         rate.checked_mul(w)
-        //                             .unwrap_or_revert()
-        //                             .checked_mul(
-        //                                 prev_future_epoch
-        //                                     .checked_sub(prev_week_time)
-        //                                     .unwrap_or_revert(),
-        //                             )
-        //                             .unwrap_or_revert()
-        //                             .checked_div(working_supply)
-        //                             .unwrap_or_revert(),
-        //                     )
-        //                     .unwrap_or_revert();
-        //                 rate = new_rate;
-        //                 integrate_inv_supply = integrate_inv_supply
-        //                     .checked_add(
-        //                         rate.checked_mul(w)
-        //                             .unwrap_or_revert()
-        //                             .checked_mul(
-        //                                 week_time.checked_sub(prev_future_epoch).unwrap_or_revert(),
-        //                             )
-        //                             .unwrap_or_revert()
-        //                             .checked_div(working_supply)
-        //                             .unwrap_or_revert(),
-        //                     )
-        //                     .unwrap_or_revert();
-        //             } else {
-        //                 integrate_inv_supply = integrate_inv_supply
-        //                     .checked_add(
-        //                         rate.checked_mul(w)
-        //                             .unwrap_or_revert()
-        //                             .checked_mul(dt)
-        //                             .unwrap_or_revert()
-        //                             .checked_div(working_supply)
-        //                             .unwrap_or_revert(),
-        //                     )
-        //                     .unwrap_or_revert();
-        //             }
-        //             // On precisions of the calculation
-        //             //  rate ~= 10e18
-        //             //  last_weight > 0.01 * 1e18 = 1e16 (if pool weight is 1%)
-        //             //  _working_supply ~= TVL * 1e18 ~= 1e26 ($100M for example)
-        //             //  The largest loss is at dt = 1
-        //             //  Loss is 1e-9 - acceptable
-        //         }
-        //         if week_time == U256::from(u64::from(get_blocktime())) {
-        //             break;
-        //         }
-        //         prev_week_time = week_time;
-        //         week_time = U256::min(
-        //             week_time.checked_add(WEEK).unwrap_or_revert(),
-        //             U256::from(u64::from(get_blocktime())),
-        //         )
-        //     }
-        // }
-        // period = period.checked_add(1.into()).unwrap_or_revert();
-        // set_period(period);
-        // PeriodTimestamp::instance().set(
-        //     &period.as_u128().into(),
-        //     U256::from(u64::from(get_blocktime())),
-        // );
-        // IntegrateInvSupply::instance().set(&period.as_u128().into(), integrate_inv_supply);
-        // // Update user-specific integrals
-        // IntegrateFraction::instance().set(
-        //     &addr,
-        //     IntegrateFraction::instance()
-        //         .get(&addr)
-        //         .checked_add(
-        //             working_balance
-        //                 .checked_mul(
-        //                     integrate_inv_supply
-        //                         .checked_sub(IntegrateInvSupplyOf::instance().get(&addr))
-        //                         .unwrap_or_revert(),
-        //                 )
-        //                 .unwrap_or_revert()
-        //                 .checked_div(10.into())
-        //                 .unwrap_or_revert()
-        //                 .pow(18.into()),
-        //         )
-        //         .unwrap_or_revert(),
-        // );
-        // IntegrateInvSupplyOf::instance().set(&addr, integrate_inv_supply);
-        // IntegrateCheckpointOf::instance().set(&addr, U256::from(u64::from(get_blocktime())));
-        // self._checkpoint_rewards(addr, claim_rewards);
+        let gauge: Key = get_gauge();
+        let mut token: Key = get_crv_token();
+        let total_balance: U256 = get_total_supply();
+        let mut d_reward: U256 = runtime::call_versioned_contract(
+            token.into_hash().unwrap_or_revert().into(),
+            None,
+            "balance_of",
+            runtime_args! {
+                "owner" => self.get_caller()
+            },
+        );
+        let () = runtime::call_versioned_contract(
+            get_minter().into_hash().unwrap_or_revert().into(),
+            None,
+            "mint",
+            runtime_args! {
+                "gauge_addr" => gauge
+            },
+        );
+        let mut d_reward_updated: U256 = runtime::call_versioned_contract(
+            token.into_hash().unwrap_or_revert().into(),
+            None,
+            "balance_of",
+            runtime_args! {
+                "owner" => self.get_caller()
+            },
+        );
+        d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
+        let mut di: U256 = 0.into();
+        if total_balance > 0.into() {
+            di = U256::from(TEN_E_NINE)
+                .checked_mul(d_reward)
+                .unwrap_or_revert()
+                .checked_div(total_balance)
+                .unwrap_or_revert();
+        }
+        let mut i: U256 = get_crv_integral().checked_add(di).unwrap_or_revert();
+        set_crv_integral(i);
+        let balance_of: U256 = BalanceOf::instance().get(&addr);
+        let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
+        ClaimableCrv::instance().set(
+            &addr,
+            ClaimableCrv::instance()
+                .get(&addr)
+                .checked_add(balance_of)
+                .unwrap_or_revert()
+                .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert())
+                .unwrap_or_revert()
+                .checked_div(U256::from(TEN_E_NINE))
+                .unwrap_or_revert(),
+        );
+        CrvIntegralFor::instance().set(&addr, i);
+        token = get_rewarded_token();
+        d_reward = runtime::call_versioned_contract(
+            token.into_hash().unwrap_or_revert().into(),
+            None,
+            "balance_of",
+            runtime_args! {
+                "owner" => self.get_caller()
+            },
+        );
+        let () = runtime::call_versioned_contract(
+            gauge.into_hash().unwrap_or_revert().into(),
+            None,
+            "claim_rewards",
+            runtime_args! {},
+        );
+        d_reward_updated = runtime::call_versioned_contract(
+            token.into_hash().unwrap_or_revert().into(),
+            None,
+            "balance_of",
+            runtime_args! {
+                "owner" => self.get_caller()
+            },
+        );
+        d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
+        if total_balance > 0.into() {
+            di = U256::from(TEN_E_NINE)
+                .checked_mul(d_reward)
+                .unwrap_or_revert()
+                .checked_div(total_balance)
+                .unwrap_or_revert();
+        }
+        i = get_reward_integral().checked_add(di).unwrap_or_revert();
+        set_reward_integral(i);
+        let reward_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
+        ClaimableRewards::instance().set(
+            &addr,
+            ClaimableRewards::instance()
+                .get(&addr)
+                .checked_add(balance_of)
+                .unwrap_or_revert()
+                .checked_mul(i.checked_sub(reward_integral_for).unwrap_or_revert())
+                .unwrap_or_revert()
+                .checked_div(U256::from(TEN_E_NINE))
+                .unwrap_or_revert(),
+        );
+        RewardIntegralFor::instance().set(&addr, i);
     }
-
     // @notice Record a checkpoint for `addr`
     // @param addr User address
     // @return bool success
     fn user_checkpoint(&self, addr: Key) -> bool {
-        // if !((self.get_caller() == addr) || (self.get_caller() == get_minter())) {
-        //     runtime::revert(ApiError::from(Error::Unauthorized));
-        // }
-        // self._checkpoint(addr, get_is_claiming_rewards());
-        // self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
-        true
+        if !((self.get_caller() == addr) || (self.get_caller() == get_minter())) {
+            runtime::revert(ApiError::from(Error::RewardWrapperUnauthorized));
+        }
+        self._checkpoint(addr);
+        return true;
     }
 
     // @notice Get the number of claimable tokens per user
     // @dev This function should be manually changed to "view" in the ABI
     // @return uint256 number of claimable tokens per user
     fn claimable_tokens(&self, addr: Key) -> U256 {
-        self._checkpoint(addr);
-        // //IntegrateFraction::instance()
-        //     .get(&addr)
-        //     .checked_sub(runtime::call_versioned_contract(
-        //         get_minter().into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "minted",
-        //         runtime_args! {
-        //             "user" => addr,
-        //             "gauge" => Key::from(get_package_hash())
-        //         },
-        //     ))
-        //     .unwrap_or_revert()
-        0.into()
+        let d_reward: U256 = runtime::call_versioned_contract(
+            get_gauge().into_hash().unwrap_or_revert().into(),
+            None,
+            "claimable_tokens",
+            runtime_args! {},
+        );
+        let total_balance: U256 = get_total_supply();
+        let mut di: U256 = 0.into();
+        if total_balance > 0.into() {
+            di = U256::from(TEN_E_NINE)
+                .checked_mul(d_reward)
+                .unwrap_or_revert()
+                .checked_div(total_balance)
+                .unwrap_or_revert();
+        }
+        let i: U256 = get_crv_integral().checked_add(di).unwrap_or_revert();
+        let balance_of: U256 = BalanceOf::instance().get(&addr);
+        let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
+        let claimable_crv: U256 = ClaimableCrv::instance().get(&addr);
+        return claimable_crv
+            .checked_add(balance_of)
+            .unwrap_or_revert()
+            .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert())
+            .unwrap_or_revert()
+            .checked_div(U256::from(TEN_E_NINE))
+            .unwrap_or_revert();
     }
 
-    // @notice Get the number of claimable reward tokens for a user
-    // @param addr Account to get reward amount for
-    // @return uint256 Claimable reward token amount
+    // @notice Get the number of claimable reward tokens per user
+    // @dev This function should be manually changed to "view" in the ABI
+    // @return uint256 number of claimable tokens per user
     #[allow(non_snake_case)]
     fn claimable_reward(&self, addr: Key) -> U256 {
-        // let d_reward: U256 = runtime::call_versioned_contract(
-        //     get_reward_contract().into_hash().unwrap_or_revert().into(),
-        //     None,
-        //     "earned",
-        //     runtime_args! {
-        //         "addr" => Key::from(get_package_hash())
-        //     },
-        // );
-        // let user_balance: U256 = BalanceOf::instance().get(&addr);
-        // let total_balance: U256 = get_total_supply();
-        // let mut dI: U256 = 0.into();
-        // if total_balance > 0.into() {
-        //     dI = U256::from(10)
-        //         .pow(18.into())
-        //         .checked_mul(d_reward)
-        //         .unwrap_or_revert()
-        //         .checked_div(total_balance)
-        //         .unwrap_or_revert();
-        // }
-        // let I: U256 = get_reward_integral().checked_add(dI).unwrap_or_revert();
-        // RewardsFor::instance()
-        //     .get(&addr)
-        //     .checked_add(user_balance)
-        //     .unwrap_or_revert()
-        //     .checked_mul(I - RewardIntegralFor::instance().get(&addr))
-        //     .unwrap_or_revert()
-        //     .checked_div(10.into())
-        //     .unwrap_or_revert()
-        //     .pow(18.into())
-        0.into()
+        let gauge: Key = get_gauge();
+        let claimable_reward: U256 = runtime::call_versioned_contract(
+            gauge.into_hash().unwrap_or_revert().into(),
+            None,
+            "claimable_reward",
+            runtime_args! {
+                "addr" => Key::from(get_package_hash())
+            },
+        );
+        let claimed_rewards_for: U256 = runtime::call_versioned_contract(
+            gauge.into_hash().unwrap_or_revert().into(),
+            None,
+            "claimed_rewards_for",
+            runtime_args! {
+                "addr" => Key::from(get_package_hash())
+            },
+        );
+        let d_reward: U256 = claimable_reward
+            .checked_sub(claimed_rewards_for)
+            .unwrap_or_revert();
+        let total_balance: U256 = get_total_supply();
+        let mut di: U256 = 0.into();
+        if total_balance > 0.into() {
+            di = U256::from(TEN_E_NINE)
+                .checked_mul(d_reward)
+                .unwrap_or_revert()
+                .checked_div(total_balance)
+                .unwrap_or_revert();
+        }
+        let i: U256 = get_reward_integral().checked_add(di).unwrap_or_revert();
+        let balance_of: U256 = BalanceOf::instance().get(&addr);
+        let reward_integral_for: U256 = RewardIntegralFor::instance().get(&addr);
+        let claimable_rewards: U256 = ClaimableRewards::instance().get(&addr);
+        return claimable_rewards
+            .checked_add(balance_of)
+            .unwrap_or_revert()
+            .checked_mul(i.checked_sub(reward_integral_for).unwrap_or_revert())
+            .unwrap_or_revert()
+            .checked_div(U256::from(TEN_E_NINE))
+            .unwrap_or_revert();
     }
 
     /// @notice Kick `addr` for abusing their boost
     /// @dev Only if either they had another voting event, or their voting escrow lock expired
     /// @param addr Address to kick
-    fn kick(&self, addr: Key) {
-        // let voting_escrow: Key = get_voting_escrow();
-        // let t_last: U256 = IntegrateCheckpointOf::instance().get(&addr);
-        // let ret: U256 = runtime::call_versioned_contract(
-        //     voting_escrow.into_hash().unwrap_or_revert().into(),
-        //     None,
-        //     "user_point_epoch",
-        //     runtime_args! {
-        //         "addr" => addr
-        //     },
-        // );
-        // let t_ve: U256 = runtime::call_versioned_contract(
-        //     voting_escrow.into_hash().unwrap_or_revert().into(),
-        //     None,
-        //     "user_point_history__ts",
-        //     runtime_args! {
-        //         "addr" => addr,
-        //         "epoch" => ret
-        //     },
-        // );
-        // let balance: U256 = BalanceOf::instance().get(&addr);
-        // let ret: U256 = runtime::call_versioned_contract(
-        //     get_voting_escrow().into_hash().unwrap_or_revert().into(),
-        //     None,
-        //     "balance_of",
-        //     runtime_args! {
-        //         "owner" => addr
-        //     },
-        // );
-        // if !(ret == 0.into() || t_ve > t_last) {
-        //     runtime::revert(ApiError::from(Error::KickNotAllowed));
-        // }
-        // if !(WorkingBalances::instance().get(&addr)
-        //     > balance
-        //         .checked_mul(TOKENLESS_PRODUCTION)
-        //         .unwrap_or_revert()
-        //         .checked_div(100.into())
-        //         .unwrap_or_revert())
-        // {
-        //     runtime::revert(ApiError::from(Error::KickNotNeeded));
-        // }
-        // self._checkpoint(addr, get_is_claiming_rewards());
-        // self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
+    fn claim_tokens(&self, addr: Key) {
+        if get_lock() {
+            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked));
+        }
+        set_lock(true);
+        self._checkpoint(addr);
+        let ret: Result<(), u32> = runtime::call_versioned_contract(
+            get_crv_token().into_hash().unwrap_or_revert().into(),
+            None,
+            "transfer",
+            runtime_args! {
+                "recipient" => addr,
+                "amount" => ClaimableCrv::instance().get(&addr)
+            },
+        );
+        if ret.is_err() {
+            runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
+        }
+        let ret: Result<(), u32> = runtime::call_versioned_contract(
+            get_rewarded_token().into_hash().unwrap_or_revert().into(),
+            None,
+            "transfer",
+            runtime_args! {
+                "recipient" => addr,
+                "amount" => ClaimableRewards::instance().get(&addr)
+            },
+        );
+        if ret.is_err() {
+            runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
+        }
+        ClaimableCrv::instance().set(&addr, 0.into());
+        ClaimableRewards::instance().set(&addr, 0.into());
+        set_lock(false);
     }
 
     // @notice Set whether `addr` can deposit tokens for `self.get_caller()`
@@ -456,99 +325,195 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             runtime::revert(ApiError::from(Error::RewardWrapperIsLocked));
         }
         set_lock(true);
-        // if addr != self.get_caller() {
-        //     if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
-        //         runtime::revert(ApiError::from(Error::NotApproved));
-        //     }
-        // }
-        // self._checkpoint(addr, true);
-        // if value != 0.into() {
-        //     let balance: U256 = BalanceOf::instance()
-        //         .get(&addr)
-        //         .checked_add(value)
-        //         .unwrap_or_revert();
-        //     let supply: U256 = get_total_supply().checked_add(value).unwrap_or_revert();
-        //     BalanceOf::instance().set(&addr, balance);
-        //     set_total_supply(supply);
-        //     self._update_liquidity_limit(addr, balance, supply);
-        //     let ret: Result<(), u32> = runtime::call_versioned_contract(
-        //         get_lp_token().into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "transfer_from",
-        //         runtime_args! {
-        //             "owner" => self.get_caller(),
-        //             "recipient" => Key::from(get_package_hash()),
-        //             "amount" => value
-        //         },
-        //     );
-        //     if ret.is_err() {
-        //         runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-        //     }
-        //     let () = runtime::call_versioned_contract(
-        //         get_reward_contract().into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "stake",
-        //         runtime_args! {
-        //             "amount" => value
-        //         },
-        //     );
-        // }
-        // LIQUIDITYGAUGEREWARDWRAPPER::emit(
-        //     self,
-        //     &LiquidityGaugeRewardWrapperEvent::Deposit {
-        //         provider: addr,
-        //         value,
-        //     },
-        // );
+        if get_is_killed() {
+            runtime::revert(ApiError::from(Error::RewardWrapperIsKilled));
+        }
+        if addr != self.get_caller() {
+            if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
+                runtime::revert(ApiError::from(Error::RewardWrapperNotApproved));
+            }
+        }
+        self._checkpoint(addr);
+        if value != 0.into() {
+            let balance: U256 = BalanceOf::instance()
+                .get(&addr)
+                .checked_add(value)
+                .unwrap_or_revert();
+            let supply: U256 = get_total_supply().checked_add(value).unwrap_or_revert();
+            BalanceOf::instance().set(&addr, balance);
+            set_total_supply(supply);
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                get_lp_token().into_hash().unwrap_or_revert().into(),
+                None,
+                "transfer_from",
+                runtime_args! {
+                    "owner" => self.get_caller(),
+                    "recipient" => Key::from(get_package_hash()),
+                    "amount" => value
+                },
+            );
+            if ret.is_err() {
+                runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
+            }
+            let () = runtime::call_versioned_contract(
+                get_gauge().into_hash().unwrap_or_revert().into(),
+                None,
+                "deposit",
+                runtime_args! {
+                    "value" => value
+                },
+            );
+        }
+        LIQUIDITYGAUGEREWARDWRAPPER::emit(
+            self,
+            &LiquidityGaugeRewardWrapperEvent::Deposit {
+                provider: addr,
+                value,
+            },
+        );
+        LIQUIDITYGAUGEREWARDWRAPPER::emit(
+            self,
+            &LiquidityGaugeRewardWrapperEvent::Transfer {
+                from: zero_address(),
+                to: addr,
+                value,
+            },
+        );
         set_lock(false);
     }
 
     /// @notice Withdraw `_value` LP tokens
     /// @param _value Number of tokens to withdraw
-    fn withdraw(&self, value: U256, claim_rewards: bool) {
+    fn withdraw(&self, value: U256) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::RewardWrapperIsLocked));
         }
         set_lock(true);
-        // self._checkpoint(self.get_caller());
-        // let balance: U256 = BalanceOf::instance()
-        //     .get(&self.get_caller())
-        //     .checked_sub(value)
-        //     .unwrap_or_revert();
-        // let supply: U256 = get_total_supply().checked_sub(value).unwrap_or_revert();
-        // BalanceOf::instance().set(&self.get_caller(), balance);
-        // set_total_supply(supply);
-        // self._update_liquidity_limit(self.get_caller(), balance, supply);
-        // if value > 0.into() {
-        //     let () = runtime::call_versioned_contract(
-        //         get_reward_contract().into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "withdraw",
-        //         runtime_args! {
-        //             "amount" => value
-        //         },
-        //     );
-        //     let ret: Result<(), u32> = runtime::call_versioned_contract(
-        //         get_lp_token().into_hash().unwrap_or_revert().into(),
-        //         None,
-        //         "transfer",
-        //         runtime_args! {
-        //             "recipient" => self.get_caller(),
-        //             "amount" => value
-        //         },
-        //     );
-        //     if ret.is_err() {
-        //         runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-        //     }
-        // }
-        // LIQUIDITYGAUGEREWARDWRAPPER::emit(
-        //     self,
-        //     &LiquidityGaugeRewardWrapperEvent::Withdraw {
-        //         provider: self.get_caller(),
-        //         value,
-        //     },
-        // );
+        self._checkpoint(self.get_caller());
+        if value != 0.into() {
+            let balance: U256 = BalanceOf::instance()
+                .get(&self.get_caller())
+                .checked_sub(value)
+                .unwrap_or_revert();
+            let supply: U256 = get_total_supply().checked_sub(value).unwrap_or_revert();
+            BalanceOf::instance().set(&self.get_caller(), balance);
+            set_total_supply(supply);
+            let () = runtime::call_versioned_contract(
+                get_gauge().into_hash().unwrap_or_revert().into(),
+                None,
+                "withdraw",
+                runtime_args! {
+                    "value" => value,
+                    "claim_rewards" => true
+                },
+            );
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                get_lp_token().into_hash().unwrap_or_revert().into(),
+                None,
+                "transfer",
+                runtime_args! {
+                    "recipient" => self.get_caller(),
+                    "amount" => value
+                },
+            );
+            if ret.is_err() {
+                runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
+            }
+        }
+        LIQUIDITYGAUGEREWARDWRAPPER::emit(
+            self,
+            &LiquidityGaugeRewardWrapperEvent::Withdraw {
+                provider: self.get_caller(),
+                value,
+            },
+        );
+        LIQUIDITYGAUGEREWARDWRAPPER::emit(
+            self,
+            &LiquidityGaugeRewardWrapperEvent::Transfer {
+                from: self.get_caller(),
+                to: zero_address(),
+                value,
+            },
+        );
         set_lock(false);
+    }
+    // @dev Function to check the amount of tokens that an owner allowed to a spender.
+    // @param _owner The address which owns the funds.
+    // @param _spender The address which will spend the funds.
+    // @return An uint256 specifying the amount of tokens still available for the spender.
+    fn allowance(&self, owner: Key, spender: Key) -> U256 {
+        Allowances::instance().get(&owner, &spender)
+    }
+    fn _transfer(&self, owner: Key, recipient: Key, amount: U256) {
+        if get_is_killed() {
+            runtime::revert(ApiError::from(Error::RewardWrapperIsKilled));
+        }
+        self._checkpoint(owner);
+        self._checkpoint(recipient);
+        if amount != 0.into() {
+            let balance_owner: U256 = BalanceOf::instance()
+                .get(&owner)
+                .checked_sub(amount)
+                .unwrap_or_revert();
+            BalanceOf::instance().set(&owner, balance_owner);
+            let balance_recipient: U256 = BalanceOf::instance()
+                .get(&recipient)
+                .checked_add(amount)
+                .unwrap_or_revert();
+
+            BalanceOf::instance().set(&recipient, balance_recipient);
+        }
+        LIQUIDITYGAUGEREWARDWRAPPER::emit(
+            self,
+            &LiquidityGaugeRewardWrapperEvent::Transfer {
+                from: owner,
+                to: recipient,
+                value: amount,
+            },
+        );
+    }
+    // @dev Transfer token for a specified address
+    // @param _to The address to transfer to.
+    // @param _value The amount to be transferred.
+    fn transfer(&mut self, recipient: Key, amount: U256) -> Result<(), u32> {
+        self._transfer(self.get_caller(), recipient, amount);
+        return Ok(());
+    }
+    // @dev Transfer tokens from one address to another.
+    // @param _from address The address which you want to send tokens from
+    // @param _to address The address which you want to transfer to
+    // @param _value uint256 the amount of tokens to be transferred
+    fn transfer_from(&mut self, owner: Key, recipient: Key, amount: U256) -> Result<(), u32> {
+        let allowance: U256 = Allowances::instance().get(&owner, &self.get_caller());
+        if allowance != U256::MAX {
+            Allowances::instance().set(
+                &owner,
+                &self.get_caller(),
+                allowance.checked_sub(amount).unwrap_or_revert(),
+            );
+        }
+        self._transfer(owner, recipient, amount);
+        return Ok(());
+    }
+    // @notice Approve the passed address to transfer the specified amount of
+    //  tokens on behalf of msg.sender
+    //  @dev Beware that changing an allowance via this method brings the risk
+    //  that someone may use both the old and new allowance by unfortunate
+    //  transaction ordering. This may be mitigated with the use of
+    //  {increaseAllowance} and {decreaseAllowance}.
+    //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+    // @param _spender The address which will transfer the funds
+    // @param _value The amount of tokens that may be transferred
+    fn approve(&self,spender: Key,amount: U256){
+        Allowances::instance().set(&self.get_caller(), &spender, amount);
+        LIQUIDITYGAUGEREWARDWRAPPER::emit(
+            self,
+            &LiquidityGaugeRewardWrapperEvent::Approval {
+                owner: self.get_caller(),
+                spender: spender,
+                value: amount,
+            },
+        );
     }
     // @notice Increase the allowance granted to `_spender` by the caller
     // @dev This is alternative to {approve} that can be used as a mitigation for
@@ -556,14 +521,21 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     // @param _spender The address which will transfer the funds
     // @param _added_value The amount of to increase the allowance
     // @return Result on success
-    fn increase_allowance(&mut self,spender:Key,amount:U256) -> Result<(), u32>{
-        let allowance:U256 = Allowances::instance().get(&self.get_caller(),&spender).checked_add(amount).unwrap_or_revert();
-        Allowances::instance().set(&self.get_caller(),&spender,allowance);
+    fn increase_allowance(&mut self, spender: Key, amount: U256) -> Result<(), u32> {
+        let allowance: U256 = Allowances::instance()
+            .get(&self.get_caller(), &spender)
+            .checked_add(amount)
+            .unwrap_or_revert();
+        Allowances::instance().set(&self.get_caller(), &spender, allowance);
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,
-            &LiquidityGaugeRewardWrapperEvent::Approval { owner: self.get_caller(),spender:spender,value:allowance },
+            &LiquidityGaugeRewardWrapperEvent::Approval {
+                owner: self.get_caller(),
+                spender: spender,
+                value: allowance,
+            },
         );
-        return Ok(())
+        return Ok(());
     }
     // @notice Decrease the allowance granted to `_spender` by the caller
     // @dev This is alternative to {approve} that can be used as a mitigation for
@@ -571,14 +543,21 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     // @param _spender The address which will transfer the funds
     // @param _subtracted_value The amount of to decrease the allowance
     // @return Result on success
-    fn decrease_allowance(&mut self,spender:Key,amount:U256) -> Result<(), u32>{
-        let allowance:U256 = Allowances::instance().get(&self.get_caller(),&spender).checked_sub(amount).unwrap_or_revert();
-        Allowances::instance().set(&self.get_caller(),&spender,allowance);
+    fn decrease_allowance(&mut self, spender: Key, amount: U256) -> Result<(), u32> {
+        let allowance: U256 = Allowances::instance()
+            .get(&self.get_caller(), &spender)
+            .checked_sub(amount)
+            .unwrap_or_revert();
+        Allowances::instance().set(&self.get_caller(), &spender, allowance);
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,
-            &LiquidityGaugeRewardWrapperEvent::Approval { owner: self.get_caller(),spender:spender,value:allowance },
+            &LiquidityGaugeRewardWrapperEvent::Approval {
+                owner: self.get_caller(),
+                spender: spender,
+                value: allowance,
+            },
         );
-        return Ok(())
+        return Ok(());
     }
     fn kill_me(&self) {
         if !(self.get_caller() == get_admin()) {
@@ -664,7 +643,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
-            LiquidityGaugeRewardWrapperEvent::Transfer { from,to,value } => {
+            LiquidityGaugeRewardWrapperEvent::Transfer { from, to, value } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package_hash);
                 event.insert(
@@ -676,7 +655,11 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 event.insert("value", value.to_string());
                 events.push(event);
             }
-            LiquidityGaugeRewardWrapperEvent::Approval { owner,spender,value } => {
+            LiquidityGaugeRewardWrapperEvent::Approval {
+                owner,
+                spender,
+                value,
+            } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package_hash);
                 event.insert(

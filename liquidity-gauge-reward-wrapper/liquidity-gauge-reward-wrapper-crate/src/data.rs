@@ -9,6 +9,7 @@ use casper_types::{
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use contract_utils::{get_key, set_key, Dict};
 
+pub const TEN_E_NINE: u128 = 1000000000;
 pub const MINTER: &str = "minter";
 pub const CRV_TOKEN: &str = "crv_token";
 pub const REWARDED_TOKEN: &str = "rewarded_token";
@@ -194,21 +195,21 @@ impl CrvIntegralFor {
     }
 }
 
-pub const CLAIMED_REWARDS: &str = "claimed_rewards";
+pub const CLAIMABLE_REWARDS: &str = "claimable_rewards";
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
-pub struct ClaimedRewards {
+pub struct ClaimableRewards {
     dict: Dict,
 }
 
-impl ClaimedRewards {
-    pub fn instance() -> ClaimedRewards {
-        ClaimedRewards {
-            dict: Dict::instance(CLAIMED_REWARDS),
+impl ClaimableRewards {
+    pub fn instance() -> ClaimableRewards {
+        ClaimableRewards {
+            dict: Dict::instance(CLAIMABLE_REWARDS),
         }
     }
 
     pub fn init() {
-        Dict::init(CLAIMED_REWARDS)
+        Dict::init(CLAIMABLE_REWARDS)
     }
 
     pub fn get(&self, key: &Key) -> U256 {

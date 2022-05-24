@@ -1,5 +1,5 @@
 [package]
-name = "liquidity-gauge-reward-session-code"
+name = "liquidity-gauge-reward-wrapper-session-code"
 version = "0.1.0"
 edition = "2018"
 
@@ -9,7 +9,7 @@ casper-types = "1.5.0"
 common = {path = "../../common"}
 
 [[bin]]
-name = "liquidity-gauge-reward-session-code"
+name = "liquidity-gauge-reward-wrapper-session-code"
 path = "bin/main.rs"
 bench = false
 doctest = false
