@@ -22,8 +22,8 @@ prepare:
 
 build-session-code:
 	cargo build --release -p session-code --target wasm32-unknown-unknown
-build-liquidity-gauge-reward-session-code:
-	cargo build --release -p liquidity-gauge-reward-session-code --target wasm32-unknown-unknown	
+build-liquidity-gauge-reward-wrapper-session-code:
+	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown	
 build-contract-erc20:
 	cargo build --release -p erc20 -p erc20-proxy --target wasm32-unknown-unknown
 build-contract-minter:
@@ -112,8 +112,9 @@ copy-wasm-file-erc20:
 copy-wasm-file-liquidity-gauge-reward-wrapper:
 	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
 	cp ${root_directory}${wasm_src_path}liquidity-gauge-reward-wrapper.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
-	cp ${root_directory}${wasm_src_path}session-code.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
+	cp ${root_directory}${wasm_src_path}liquidity-gauge-reward-wrapper-session-code.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
 	cp ${root_directory}${wasm_src_path}minter-token.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
+	cp ${root_directory}${wasm_src_path}liquidity-gauge-reward.wasm ${wasm_dest_liquidity_gauge_reward_wrapper_path}
 
 copy-wasm-file-erc20-crv:
 	cp target/wasm32-unknown-unknown/release/*.wasm erc20-crv/erc20_crv_tests/wasm
@@ -141,7 +142,7 @@ test-erc20-crv:
 test-vesting-escrow-simple: 
 	make build-contract-vesting-escrow-simple && make copy-wasm-file-to-test 
 test-liquidity-gauge-reward-wrapper:
-	make build-liquidity-gauge-reward-session-code && make build-contract-erc20 && make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper
+	make build-liquidity-gauge-reward-wrapper-session-code && make build-contract-erc20 && make build-contract-minter && make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper
 test-erc20:
 	make build-contract-erc20 && make copy-wasm-file-erc20 && make test-only-erc20
 all:

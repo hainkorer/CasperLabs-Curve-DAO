@@ -46,6 +46,7 @@ pub enum Error {
     RewardWrapperAdminOnly = 43,
     RewardWrapperAdminNotSet = 44,
     RewardWrapperZeroAddress = 45,
+    RewardWrapperIsKilled = 46
 }
 
 impl From<Error> for ApiError {
