@@ -1,34 +1,23 @@
+use crate::event::VESTINGESCROWFACTORYEvent;
 use alloc::{collections::BTreeMap, string::ToString, vec::Vec};
 use casper_contract::{
     contract_api::{runtime::get_call_stack, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
+use common::keys::*;
 use contract_utils::{get_key, set_key};
 
-use crate::event::VESTINGESCROWFACTORYEvent;
 
-pub const INITIAL_LOCKED_DICT: &str = "initial_locked";
-pub const TOTAL_CLAIMED_DICT: &str = "total_claimed";
-pub const DISABLED_AT_DICT: &str = "disabled_at";
-pub const FUND_ADMINS_DICT: &str = "fund_admins";
-
-pub const TARGET: &str = "target";
-pub const ADMIN: &str = "admin";
-pub const FUTURE_ADMIN: &str = "future_admin";
-pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
-pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
-pub const VESTING_ESCROW_SIMPLE_CONTRACT: &str = "vesting_escrow_simple_contract";
-
-pub const MIN_VESTING_DURATION: U256 = U256([56400 * 360, 0, 0, 0]);
+pub const VESTING_ESCROW_FACTORY_MIN_VESTING_DURATION: U256 = U256([56400 * 360, 0, 0, 0]);
 
 pub fn vesting_escrow_simple_contract() -> Key {
-    get_key(VESTING_ESCROW_SIMPLE_CONTRACT).unwrap_or_revert()
+    get_key(VESTING_ESCROW_FACTORY_VESTING_ESCROW_SIMPLE_CONTRACT).unwrap_or_revert()
 }
 
 pub fn set_vesting_escrow_simple_contract(vesting_escrow_simple_contract: Key) {
     set_key(
-        VESTING_ESCROW_SIMPLE_CONTRACT,
+        VESTING_ESCROW_FACTORY_VESTING_ESCROW_SIMPLE_CONTRACT,
         vesting_escrow_simple_contract,
     );
 }
@@ -48,42 +37,42 @@ pub fn account_zero_address() -> Key {
 }
 
 pub fn admin() -> Key {
-    get_key(ADMIN).unwrap_or_revert()
+    get_key(VESTING_ESCROW_FACTORY_ADMIN).unwrap_or_revert()
 }
 
 pub fn set_admin(admin: Key) {
-    set_key(ADMIN, admin);
+    set_key(VESTING_ESCROW_FACTORY_ADMIN, admin);
 }
 
 pub fn target() -> Key {
-    get_key(TARGET).unwrap_or_revert()
+    get_key(VESTING_ESCROW_FACTORY_TARGET).unwrap_or_revert()
 }
 
 pub fn set_target(value: Key) {
-    set_key(TARGET, value);
+    set_key(VESTING_ESCROW_FACTORY_TARGET, value);
 }
 
 pub fn future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or_revert()
+    get_key(VESTING_ESCROW_FACTORY_FUTURE_ADMIN).unwrap_or_revert()
 }
 
 pub fn set_future_admin(future_admin: Key) {
-    set_key(FUTURE_ADMIN, future_admin);
+    set_key(VESTING_ESCROW_FACTORY_FUTURE_ADMIN, future_admin);
 }
 
 pub fn set_hash(contract_hash: Key) {
-    set_key(SELF_CONTRACT_HASH, contract_hash);
+    set_key(VESTING_ESCROW_FACTORY_SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_hash() -> Key {
-    get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
+    get_key(VESTING_ESCROW_FACTORY_SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(CONTRACT_PACKAGE_HASH, package_hash);
+    set_key(VESTING_ESCROW_FACTORY_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(CONTRACT_PACKAGE_HASH).unwrap_or_revert()
+    get_key(VESTING_ESCROW_FACTORY_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
 }
 
 pub fn contract_package_hash() -> ContractPackageHash {
@@ -109,7 +98,10 @@ pub fn emit(event: &VESTINGESCROWFACTORYEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(
+                    VESTING_ESCROW_FACTORY_CONTRACT_PACKAGE_HASH,
+                    package.to_string(),
+                );
                 param.insert(
                     "event_type",
                     "vesting_escrow_factory_mint_remove_one".to_string(),
@@ -122,7 +114,10 @@ pub fn emit(event: &VESTINGESCROWFACTORYEvent) {
         VESTINGESCROWFACTORYEvent::Burn { owner, token_ids } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(
+                    VESTING_ESCROW_FACTORY_CONTRACT_PACKAGE_HASH,
+                    package.to_string(),
+                );
                 param.insert(
                     "event_type",
                     "vesting_escrow_factory_burn_remove_one".to_string(),
@@ -139,7 +134,10 @@ pub fn emit(event: &VESTINGESCROWFACTORYEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(
+                    VESTING_ESCROW_FACTORY_CONTRACT_PACKAGE_HASH,
+                    package.to_string(),
+                );
                 param.insert(
                     "event_type",
                     "vesting_escrow_factory_approve_token".to_string(),
@@ -157,7 +155,10 @@ pub fn emit(event: &VESTINGESCROWFACTORYEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(
+                    VESTING_ESCROW_FACTORY_CONTRACT_PACKAGE_HASH,
+                    package.to_string(),
+                );
                 param.insert(
                     "event_type",
                     "vesting_escrow_factory_transfer_token".to_string(),
@@ -170,7 +171,10 @@ pub fn emit(event: &VESTINGESCROWFACTORYEvent) {
         }
         VESTINGESCROWFACTORYEvent::MetadataUpdate { token_id } => {
             let mut param = BTreeMap::new();
-            param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+            param.insert(
+                VESTING_ESCROW_FACTORY_CONTRACT_PACKAGE_HASH,
+                package.to_string(),
+            );
             param.insert(
                 "event_type",
                 "vesting_escrow_factory_metadata_update".to_string(),

@@ -58,7 +58,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         set_start_time(U256::from(1));
         set_end_time(U256::from(5));
         set_can_disable(true);
-        InitialLocked::instance().set(&ZERO_ADDRESS(), U256::from(100));
+        InitialLocked::instance().set(&zero_address(), U256::from(100));
         set_initial_locked_supply(U256::from(100));
     }
     fn initialize(
@@ -71,7 +71,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         end_time: U256,
         can_disable: bool,
     ) -> bool {
-        if !(get_admin() == ZERO_ADDRESS()) {
+        if !(get_admin() == zero_address()) {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleOnlyInitializeOnce));
         }
         set_token(token);
@@ -109,10 +109,10 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         }
         let mut is_disabled: bool = false;
         let blocktime: u64 = runtime::get_blocktime().into();
-        if (DisableddAt::instance().get(&recipient) == 0.into()) {
+        if DisableddAt::instance().get(&recipient) == 0.into() {
             is_disabled = true;
         }
-        if (is_disabled == true) {
+        if is_disabled == true {
             DisableddAt::instance().set(&recipient, U256::from(blocktime))
         } else {
             DisableddAt::instance().set(&recipient, U256::from(0))
@@ -132,7 +132,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let start: U256 = get_start_time();
         let end: U256 = get_end_time();
         let locked: U256 = InitialLocked::instance().get(&recipient);
-        if (time < start) {
+        if time < start {
             return 0.into();
         }
         let ans: U256 = locked
@@ -148,7 +148,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let locked: U256 = get_initial_locked_supply();
         let temp_blocktime: u64 = runtime::get_blocktime().into();
         let blocktime: U256 = U256::from(temp_blocktime);
-        if (blocktime < start) {
+        if blocktime < start {
             return 0.into();
         }
         let ans: U256 = locked
@@ -206,7 +206,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         set_lock(true);
         let mut t: U256 = DisableddAt::instance().get(&addr);
         let blocktime: U256 = 1000.into();
-        if (t == U256::from(0)) {
+        if t == U256::from(0) {
             t = U256::from(blocktime);
         }
         let _total_vested_of: U256 = self._total_vested_of(addr, t);
@@ -242,7 +242,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         //     runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly4));
         // }
         let mut _admin: Key = get_future_admin();
-        if !(_admin != ZERO_ADDRESS()) {
+        if !(_admin != zero_address()) {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminNotSet));
         }
         set_admin(_admin);

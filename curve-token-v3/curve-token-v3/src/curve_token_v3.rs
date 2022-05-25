@@ -59,7 +59,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>:
         erc20_data::Balances::instance().set(&self.get_caller(), 1000.into());
         data::set_minter(self.get_caller());
         self.curve_token_v3_emit(&CurveTokenV3Event::Transfer_crv3 {
-            from: data::ZERO_ADDRESS(),
+            from: data::zero_address(),
             to: self.get_caller(),
             value: 0.into(),
         });

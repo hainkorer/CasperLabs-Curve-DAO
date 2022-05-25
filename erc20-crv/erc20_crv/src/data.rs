@@ -19,83 +19,83 @@ pub const RATE_DENOMINATOR: U256 = U256([10000000000000000000, 0, 0, 0]); //10^1
 pub const INFLATION_DELAY: U256 = U256([86400, 0, 0, 0]);
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
-    match runtime::get_key(RESULT1) {
+    match runtime::get_key(ERC20_CRV_RESULT) {
         Some(key) => {
             let key_ref = key.try_into().unwrap_or_revert();
             storage::write(key_ref, value);
         }
         None => {
             let key = storage::new_uref(value).into();
-            runtime::put_key(RESULT1, key);
+            runtime::put_key(ERC20_CRV_RESULT, key);
         }
     }
 }
 
 pub fn set_start_epoch_time(start_epoch_time: U256) {
-    set_key(START_EPOCH_TIME, start_epoch_time);
+    set_key(ERC20_CRV_START_EPOCH_TIME, start_epoch_time);
 }
 pub fn get_start_epoch_time() -> U256 {
-    get_key(START_EPOCH_TIME).unwrap_or_revert()
+    get_key(ERC20_CRV_START_EPOCH_TIME).unwrap_or_revert()
 }
 pub fn set_rate(rate: U256) {
-    set_key(RATE, rate);
+    set_key(ERC20_CRV_RATE, rate);
 }
 pub fn get_rate() -> U256 {
-    get_key(RATE).unwrap_or_revert()
+    get_key(ERC20_CRV_RATE).unwrap_or_revert()
 }
 pub fn set_start_epoch_supply(start_epoch_supply: U256) {
-    set_key(START_EPOCH_SUPPLY, start_epoch_supply);
+    set_key(ERC20_CRV_START_EPOCH_SUPPLY, start_epoch_supply);
 }
 pub fn get_start_epoch_supply() -> U256 {
-    get_key(START_EPOCH_SUPPLY).unwrap_or_revert()
+    get_key(ERC20_CRV_START_EPOCH_SUPPLY).unwrap_or_revert()
 }
 pub fn get_init_supply() -> U256 {
-    get_key(INIT_SUPPLY).unwrap_or_revert()
+    get_key(ERC20_CRV_INIT_SUPPLY).unwrap_or_revert()
 }
 
 pub fn set_init_supply(init_supply: U256) {
-    set_key(INIT_SUPPLY, init_supply);
+    set_key(ERC20_CRV_INIT_SUPPLY, init_supply);
 }
 pub fn get_minter() -> Key {
-    get_key(MINTER).unwrap_or_revert()
+    get_key(ERC20_CRV_MINTER).unwrap_or_revert()
 }
 pub fn set_minter(minter: Key) {
-    set_key(MINTER, minter);
+    set_key(ERC20_CRV_MINTER, minter);
 }
 pub fn get_admin() -> Key {
-    get_key(ADMIN1).unwrap_or_revert()
+    get_key(ERC20_CRV_ADMIN).unwrap_or_revert()
 }
 pub fn set_admin(admin: Key) {
-    set_key(ADMIN1, admin);
+    set_key(ERC20_CRV_ADMIN, admin);
 }
 pub fn get_mining_epoch() -> U128 {
-    get_key(MINING_EPOCH).unwrap_or_revert()
+    get_key(ERC20_CRV_MINING_EPOCH).unwrap_or_revert()
 }
 pub fn set_mining_epoch(mining_epoch: U128) {
-    set_key(MINING_EPOCH, mining_epoch.to_string());
+    set_key(ERC20_CRV_MINING_EPOCH, mining_epoch.to_string());
 }
 pub fn get_is_updated() -> bool {
-    get_key(IS_UPDATED).unwrap_or_revert()
+    get_key(ERC20_CRV_IS_UPDATED).unwrap_or_revert()
 }
 pub fn set_is_updated(is_updated: bool) {
-    set_key(IS_UPDATED, is_updated.to_string());
+    set_key(ERC20_CRV_IS_UPDATED, is_updated.to_string());
 }
 
-pub fn ZERO_ADDRESS() -> Key {
+pub fn zero_address() -> Key {
     Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap()
 }
 pub fn set_hash(contract_hash: Key) {
-    set_key(SELF_CONTRACT_HASH, contract_hash);
+    set_key(ERC20_CRV_SELF_CONTRACT_HASH, contract_hash);
 }
 pub fn get_hash() -> Key {
-    get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
+    get_key(ERC20_CRV_SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(SELF_PACKAGE_HASH, package_hash);
+    set_key(ERC20_CRV_SELF_PACKAGE_HASH, package_hash);
 }
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(SELF_PACKAGE_HASH).unwrap_or_revert()
+    get_key(ERC20_CRV_SELF_PACKAGE_HASH).unwrap_or_revert()
 }

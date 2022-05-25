@@ -96,7 +96,7 @@ fn test_ve_for_at_js_client() {
     let user: Key = Key::Account(env.next_user());
     let timestamp: U256 = 123.into();
     instance.ve_for_at_js_client(owner, user, timestamp);
-    let ret: U256 = instance.key_value(RESULT.to_string());
+    let ret: U256 = instance.key_value(FEE_DISTRIBUTOR_RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default ve value");
 }
 
@@ -131,7 +131,7 @@ fn test_claim_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
     instance.claim_js_client(owner, addr);
-    let ret: U256 = instance.key_value(RESULT.to_string());
+    let ret: U256 = instance.key_value(FEE_DISTRIBUTOR_RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default claim value");
 }
 
@@ -166,7 +166,7 @@ fn test_claim_many_js_client() {
     receivers.push(Key::Account(env.next_user()));
     receivers.push(Key::Account(env.next_user()));
     instance.claim_many_js_client(owner, receivers);
-    let ret: bool = instance.key_value(RESULT.to_string());
+    let ret: bool = instance.key_value(FEE_DISTRIBUTOR_RESULT.to_string());
     assert_eq!(ret, true, "Claim should come true");
 }
 
@@ -195,7 +195,7 @@ fn test_burn_js_client() {
     let (_, owner, instance, erc20) = deploy();
     let coin: Key = Key::Hash(erc20.package_hash());
     instance.burn_js_client(owner, coin);
-    let ret: bool = instance.key_value(RESULT.to_string());
+    let ret: bool = instance.key_value(FEE_DISTRIBUTOR_RESULT.to_string());
     assert_eq!(ret, true, "Burn should come true");
 }
 
@@ -278,6 +278,6 @@ fn test_recover_balance_js_client() {
         0,
     );
     instance.recover_balance_js_client(owner, coin);
-    let ret: bool = instance.key_value(RESULT.to_string());
+    let ret: bool = instance.key_value(FEE_DISTRIBUTOR_RESULT.to_string());
     assert_eq!(ret, true, "Balance recovered should be true");
 }

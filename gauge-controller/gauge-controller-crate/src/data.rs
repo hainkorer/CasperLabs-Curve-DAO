@@ -1,3 +1,4 @@
+use crate::event::GAUGECONLTROLLEREvent;
 use alloc::{
     collections::BTreeMap,
     string::{String, ToString},
@@ -12,42 +13,12 @@ use casper_types::{
     U256,
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
+use common::keys::*;
 use contract_utils::{get_key, key_and_value_to_str, key_to_str, set_key, values_to_str, Dict};
 
-use crate::event::GAUGECONLTROLLEREvent;
-
-pub const GAUGE_TYPE_NAMES_DICT: &str = "gauge_type_names";
-pub const GAUGE_TYPES_DICT: &str = "gauge_types_";
-pub const VOTE_USER_SLOPES_DICT: &str = "vote_user_slopes";
-pub const VOTE_USER_POWER_DICT: &str = "vote_user_power";
-pub const LAST_USER_VOTE_DICT: &str = "last_user_vote";
-pub const POINTS_WEIGHT_DICT: &str = "points_weight";
-pub const CHANGES_WEIGHT_DICT: &str = "changes_weight";
-pub const TIME_WEIGHT_DICT: &str = "time_weight";
-pub const GAUGES_DICT: &str = "gauges";
-pub const TIME_SUM_DICT: &str = "time_sum";
-pub const POINTS_SUM_DICT: &str = "points_sum";
-pub const CHANGES_SUM_DICT: &str = "changes_sum";
-pub const POINTS_TOTAL_DICT: &str = "points_total";
-pub const POINTS_TYPE_WEIGHT_DICT: &str = "points_type_weight";
-pub const TIME_TYPE_WEIGHT_DICT: &str = "time_type_weight";
-
-pub const OWNER: &str = "owner";
-pub const ADMIN: &str = "admin";
-pub const FUTURE_ADMIN: &str = "future_admin";
-pub const TIME_TOTAL: &str = "time_total";
-pub const TOKEN: &str = "token";
-pub const VOTING_ESCROW: &str = "voting_escrow";
-pub const REWARD_COUNT: &str = "reward_count";
-pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
-pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
-pub const N_GAUGE_TYPES: &str = "n_gauge_types";
-pub const N_GAUGES: &str = "n_gauges";
-pub const LAST_USER_VOTE: &str = "last_user_vote";
-
-pub const WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
-pub const WEIGHT_VOTE_DELAY: U256 = U256([864000, 0, 0, 0]);
-pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
+pub const GAUGE_CONTROLLER_WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
+pub const GAUGE_CONTROLLER_WEIGHT_VOTE_DELAY: U256 = U256([864000, 0, 0, 0]);
+pub const GAUGE_CONTROLLER_MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Point {
@@ -69,12 +40,12 @@ pub struct GaugeTypeNames {
 impl GaugeTypeNames {
     pub fn instance() -> GaugeTypeNames {
         GaugeTypeNames {
-            dict: Dict::instance(GAUGE_TYPE_NAMES_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_GAUGE_TYPE_NAMES_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(GAUGE_TYPE_NAMES_DICT)
+        Dict::init(GAUGE_CONTROLLER_GAUGE_TYPE_NAMES_DICT)
     }
 
     pub fn get(&self, key: &U128) -> String {
@@ -93,12 +64,12 @@ pub struct GaugeTypes_ {
 impl GaugeTypes_ {
     pub fn instance() -> GaugeTypes_ {
         GaugeTypes_ {
-            dict: Dict::instance(GAUGE_TYPES_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_GAUGE_TYPES_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(GAUGE_TYPES_DICT)
+        Dict::init(GAUGE_CONTROLLER_GAUGE_TYPES_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U128 {
@@ -117,12 +88,12 @@ pub struct VoteUserSlopes {
 impl VoteUserSlopes {
     pub fn instance() -> VoteUserSlopes {
         VoteUserSlopes {
-            dict: Dict::instance(VOTE_USER_SLOPES_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_VOTE_USER_SLOPES_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(VOTE_USER_SLOPES_DICT)
+        Dict::init(GAUGE_CONTROLLER_VOTE_USER_SLOPES_DICT)
     }
 
     pub fn get(&self, owner: &Key, spender: &Key) -> VotedSlope {
@@ -141,12 +112,12 @@ pub struct VoteUserPower {
 impl VoteUserPower {
     pub fn instance() -> VoteUserPower {
         VoteUserPower {
-            dict: Dict::instance(VOTE_USER_POWER_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_VOTE_USER_POWER_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(VOTE_USER_POWER_DICT)
+        Dict::init(GAUGE_CONTROLLER_VOTE_USER_POWER_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U256 {
@@ -165,12 +136,12 @@ pub struct LastUserVote {
 impl LastUserVote {
     pub fn instance() -> LastUserVote {
         LastUserVote {
-            dict: Dict::instance(LAST_USER_VOTE_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_LAST_USER_VOTE_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(LAST_USER_VOTE_DICT)
+        Dict::init(GAUGE_CONTROLLER_LAST_USER_VOTE_DICT)
     }
 
     pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
@@ -189,12 +160,12 @@ pub struct PointsWeight {
 impl PointsWeight {
     pub fn instance() -> PointsWeight {
         PointsWeight {
-            dict: Dict::instance(POINTS_WEIGHT_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_POINTS_WEIGHT_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(POINTS_WEIGHT_DICT)
+        Dict::init(GAUGE_CONTROLLER_POINTS_WEIGHT_DICT)
     }
 
     pub fn get(&self, key: &Key, _key: &U256) -> Point {
@@ -215,12 +186,12 @@ pub struct ChangesWeight {
 impl ChangesWeight {
     pub fn instance() -> ChangesWeight {
         ChangesWeight {
-            dict: Dict::instance(CHANGES_WEIGHT_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_CHANGES_WEIGHT_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(CHANGES_WEIGHT_DICT)
+        Dict::init(GAUGE_CONTROLLER_CHANGES_WEIGHT_DICT)
     }
 
     pub fn get(&self, key: &Key, _key: &U256) -> U256 {
@@ -241,12 +212,12 @@ pub struct TimeWeight {
 impl TimeWeight {
     pub fn instance() -> TimeWeight {
         TimeWeight {
-            dict: Dict::instance(TIME_WEIGHT_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_TIME_WEIGHT_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(TIME_WEIGHT_DICT)
+        Dict::init(GAUGE_CONTROLLER_TIME_WEIGHT_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U256 {
@@ -265,13 +236,13 @@ pub struct Gauges {
 impl Gauges {
     pub fn instance() -> Gauges {
         Gauges {
-            dict: Dict::instance(GAUGES_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_GAUGES_DICT),
             length: 0.into(),
         }
     }
 
     pub fn init() {
-        Dict::init(GAUGES_DICT)
+        Dict::init(GAUGE_CONTROLLER_GAUGES_DICT)
     }
 
     pub fn get(&self, indx: &U256) -> Key {
@@ -296,13 +267,13 @@ pub struct TimeSum {
 impl TimeSum {
     pub fn instance() -> TimeSum {
         TimeSum {
-            dict: Dict::instance(TIME_SUM_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_TIME_SUM_DICT),
             length: 0.into(),
         }
     }
 
     pub fn init() {
-        Dict::init(TIME_SUM_DICT)
+        Dict::init(GAUGE_CONTROLLER_TIME_SUM_DICT)
     }
 
     pub fn get(&self, indx: &U256) -> U256 {
@@ -326,12 +297,12 @@ pub struct PointsSum {
 impl PointsSum {
     pub fn instance() -> PointsSum {
         PointsSum {
-            dict: Dict::instance(POINTS_SUM_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_POINTS_SUM_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(POINTS_SUM_DICT)
+        Dict::init(GAUGE_CONTROLLER_POINTS_SUM_DICT)
     }
 
     pub fn get(&self, key: &U128, _key: &U256) -> Point {
@@ -352,12 +323,12 @@ pub struct ChangeSum {
 impl ChangeSum {
     pub fn instance() -> ChangeSum {
         ChangeSum {
-            dict: Dict::instance(CHANGES_SUM_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_CHANGES_SUM_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(CHANGES_SUM_DICT)
+        Dict::init(GAUGE_CONTROLLER_CHANGES_SUM_DICT)
     }
 
     pub fn get(&self, key: &U128, _key: &U256) -> U256 {
@@ -378,12 +349,12 @@ pub struct PointsTotal {
 impl PointsTotal {
     pub fn instance() -> PointsTotal {
         PointsTotal {
-            dict: Dict::instance(POINTS_TOTAL_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_POINTS_TOTAL_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(POINTS_TOTAL_DICT)
+        Dict::init(GAUGE_CONTROLLER_POINTS_TOTAL_DICT)
     }
 
     pub fn get(&self, key: &U256) -> U256 {
@@ -402,12 +373,12 @@ pub struct PointsTypeWeight {
 impl PointsTypeWeight {
     pub fn instance() -> PointsTypeWeight {
         PointsTypeWeight {
-            dict: Dict::instance(POINTS_TYPE_WEIGHT_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_POINTS_TYPE_WEIGHT_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(POINTS_TYPE_WEIGHT_DICT)
+        Dict::init(GAUGE_CONTROLLER_POINTS_TYPE_WEIGHT_DICT)
     }
 
     pub fn get(&self, key: &U128, _key: &U256) -> U256 {
@@ -429,13 +400,13 @@ pub struct TimeTypeWeight {
 impl TimeTypeWeight {
     pub fn instance() -> TimeTypeWeight {
         TimeTypeWeight {
-            dict: Dict::instance(TIME_TYPE_WEIGHT_DICT),
+            dict: Dict::instance(GAUGE_CONTROLLER_TIME_TYPE_WEIGHT_DICT),
             length: 0.into(),
         }
     }
 
     pub fn init() {
-        Dict::init(TIME_TYPE_WEIGHT_DICT)
+        Dict::init(GAUGE_CONTROLLER_TIME_TYPE_WEIGHT_DICT)
     }
 
     pub fn get(&self, indx: &U256) -> U256 {
@@ -459,89 +430,89 @@ pub fn zero_address() -> Key {
     .unwrap()
 }
 pub fn time_total() -> U256 {
-    get_key(TIME_TOTAL).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_TIME_TOTAL).unwrap_or_revert()
 }
 
 pub fn set_time_total(time_total: U256) {
-    set_key(TIME_TOTAL, time_total);
+    set_key(GAUGE_CONTROLLER_TIME_TOTAL, time_total);
 }
 
 pub fn owner() -> Key {
-    get_key(OWNER).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_OWNER).unwrap_or_revert()
 }
 
 pub fn set_owner(owner: Key) {
-    set_key(OWNER, owner);
+    set_key(GAUGE_CONTROLLER_OWNER, owner);
 }
 
 pub fn admin() -> Key {
-    get_key(ADMIN).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_ADMIN).unwrap_or_revert()
 }
 
 pub fn set_admin(admin: Key) {
-    set_key(ADMIN, admin);
+    set_key(GAUGE_CONTROLLER_ADMIN, admin);
 }
 
 pub fn future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_FUTURE_ADMIN).unwrap_or_revert()
 }
 
 pub fn set_future_admin(future_admin: Key) {
-    set_key(FUTURE_ADMIN, future_admin);
+    set_key(GAUGE_CONTROLLER_FUTURE_ADMIN, future_admin);
 }
 
 pub fn token() -> Key {
-    get_key(TOKEN).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_TOKEN).unwrap_or_revert()
 }
 
 pub fn set_token(token: Key) {
-    set_key(TOKEN, token);
+    set_key(GAUGE_CONTROLLER_TOKEN, token);
 }
 
 pub fn n_gauge_types() -> U128 {
-    get_key(N_GAUGE_TYPES).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_N_GAUGE_TYPES).unwrap_or_revert()
 }
 
 pub fn set_n_gauge_types(n_gauge_types: U128) {
-    set_key(N_GAUGE_TYPES, n_gauge_types);
+    set_key(GAUGE_CONTROLLER_N_GAUGE_TYPES, n_gauge_types);
 }
 pub fn n_gauges() -> U128 {
-    get_key(N_GAUGES).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_N_GAUGES).unwrap_or_revert()
 }
 
 pub fn set_n_gauges(n_gauges: U128) {
-    set_key(N_GAUGES, n_gauges);
+    set_key(GAUGE_CONTROLLER_N_GAUGES, n_gauges);
 }
 
 pub fn voting_escrow() -> Key {
-    get_key(VOTING_ESCROW).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_VOTING_ESCROW).unwrap_or_revert()
 }
 
 pub fn set_voting_escrow(voting_escrow: Key) {
-    set_key(VOTING_ESCROW, voting_escrow);
+    set_key(GAUGE_CONTROLLER_VOTING_ESCROW, voting_escrow);
 }
 
 pub fn reward_count() -> U256 {
-    get_key(REWARD_COUNT).unwrap_or_default()
+    get_key(GAUGE_CONTROLLER_REWARD_COUNT).unwrap_or_default()
 }
 
 pub fn set_reward_count(reward_count: U256) {
-    set_key(REWARD_COUNT, reward_count);
+    set_key(GAUGE_CONTROLLER_REWARD_COUNT, reward_count);
 }
 
 pub fn set_hash(contract_hash: Key) {
-    set_key(SELF_CONTRACT_HASH, contract_hash);
+    set_key(GAUGE_CONTROLLER_SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_hash() -> Key {
-    get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(CONTRACT_PACKAGE_HASH, package_hash);
+    set_key(GAUGE_CONTROLLER_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(CONTRACT_PACKAGE_HASH).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
 }
 
 pub fn contract_package_hash() -> ContractPackageHash {
@@ -567,7 +538,7 @@ pub fn emit(event: &GAUGECONLTROLLEREvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(GAUGE_CONTROLLER_CONTRACT_PACKAGE_HASH, package.to_string());
                 param.insert("event_type", "gauge_controller_mint_remove_one".to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -577,7 +548,7 @@ pub fn emit(event: &GAUGECONLTROLLEREvent) {
         GAUGECONLTROLLEREvent::Burn { owner, token_ids } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(GAUGE_CONTROLLER_CONTRACT_PACKAGE_HASH, package.to_string());
                 param.insert("event_type", "gauge_controller_burn_remove_one".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -591,7 +562,7 @@ pub fn emit(event: &GAUGECONLTROLLEREvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(GAUGE_CONTROLLER_CONTRACT_PACKAGE_HASH, package.to_string());
                 param.insert("event_type", "gauge_controller_approve_token".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("spender", spender.to_string());
@@ -606,7 +577,7 @@ pub fn emit(event: &GAUGECONLTROLLEREvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(GAUGE_CONTROLLER_CONTRACT_PACKAGE_HASH, package.to_string());
                 param.insert("event_type", "gauge_controller_transfer_token".to_string());
                 param.insert("sender", sender.to_string());
                 param.insert("recipient", recipient.to_string());
@@ -616,7 +587,7 @@ pub fn emit(event: &GAUGECONLTROLLEREvent) {
         }
         GAUGECONLTROLLEREvent::MetadataUpdate { token_id } => {
             let mut param = BTreeMap::new();
-            param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+            param.insert(GAUGE_CONTROLLER_CONTRACT_PACKAGE_HASH, package.to_string());
             param.insert("event_type", "gauge_controller_metadata_update".to_string());
             param.insert("token_id", token_id.to_string());
             events.push(param);

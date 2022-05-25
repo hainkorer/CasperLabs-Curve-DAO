@@ -7,8 +7,8 @@ use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
-use contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
+use contract_utils::{ContractContext, ContractStorage};
 pub enum VESTINGESCROWEvent {
     Fund { recipient: Key, amount: U256 },
     Claim { recipient: Key, claimed: U256 },
@@ -39,7 +39,6 @@ impl VESTINGESCROWEvent {
     }
 }
 
-
 pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(
         &mut self,
@@ -66,9 +65,11 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         FundAdmins::init();
         let mut _fund_admins_enabled: bool = false;
         let mut fund_admins: Vec<Key> = Vec::new();
+        assert_eq!(_fund_admins.len(), 4);
         for i in 0..(_fund_admins.len()) {
             fund_admins.push(Key::from_formatted_str(&_fund_admins[i]).unwrap());
         }
+        assert_eq!(fund_admins.len(), 4);
         for i in 0..(fund_admins.len()) {
             if fund_admins[i] != account_zero_address() {
                 FundAdmins::instance().set(&fund_admins[i], true);

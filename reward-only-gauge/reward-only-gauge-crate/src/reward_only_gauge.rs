@@ -1,8 +1,7 @@
 use crate::alloc::string::ToString;
 use crate::data::{
     self, account_zero_address, zero_address, Allowances, Balances, ClaimData, ClaimDataStruct,
-    RewardBalances, RewardData, RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver,
-    CLAIM_FREQUENCY, MAX_REWARDS,
+    RewardBalances, RewardData, RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver, REWARD_ONLY_GAUGE_MAX_REWARDS, REWARD_ONLY_GAUGE_CLAIM_FREQUENCY,
 };
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
@@ -524,7 +523,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         let mut reward_data = self.reward_data();
         reward_data.address = _reward_contract;
         data::set_claim_sig(_claim_sig);
-        for i in 0..(MAX_REWARDS.as_usize()) {
+        for i in 0..(REWARD_ONLY_GAUGE_MAX_REWARDS.as_usize()) {
             let current_token = self.reward_tokens(i.into());
             let new_token: Key = reward_tokens[i];
 
@@ -582,7 +581,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             && reward_data.address != zero_address()
             && reward_data.time_stamp != 0.into()
             && U256::from(u64::from(runtime::get_blocktime()))
-                > (reward_data.time_stamp + U256::from(CLAIM_FREQUENCY.as_u128()))
+                > (reward_data.time_stamp + U256::from(REWARD_ONLY_GAUGE_CLAIM_FREQUENCY.as_u128()))
         {
             let reward_contract = reward_data.address;
 

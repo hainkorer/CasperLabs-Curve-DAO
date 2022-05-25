@@ -97,7 +97,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
 
         data::set_minter(self.get_caller());
         self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
-            from: data::ZERO_ADDRESS(),
+            from: data::zero_address(),
             to: self.get_caller(),
             value: data::get_init_supply(),
         });
@@ -214,7 +214,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         if !(self.get_caller() == data::get_minter()) {
             runtime::revert(ApiError::from(Error::Erc20CRVMinterOnly));
         }
-        if !(to != data::ZERO_ADDRESS()) {
+        if !(to != data::zero_address()) {
             runtime::revert(ApiError::from(Error::Erc20CRVZeroAddress));
         }
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -236,7 +236,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         erc20_data::Balances::instance()
             .set(&to, existing_balance.checked_add(value).unwrap_or_revert());
         self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
-            from: data::ZERO_ADDRESS(),
+            from: data::zero_address(),
             to: to,
             value: value,
         });

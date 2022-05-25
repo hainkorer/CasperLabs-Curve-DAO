@@ -62,7 +62,7 @@ pub trait CURVETOKENV1<Storage: ContractStorage>:
         erc20_data::set_total_supply(data::get_init_supply());
         data::set_minter(self.get_caller());
         self.curve_token_v1_emit(&CurveTokenV1Event::Transfer_crv1 {
-            from: data::ZERO_ADDRESS(),
+            from: data::zero_address(),
             to: self.get_caller(),
             value: data::get_init_supply(),
         });
@@ -71,7 +71,7 @@ pub trait CURVETOKENV1<Storage: ContractStorage>:
         if !(self.get_caller() == data::get_minter()) {
             runtime::revert(ApiError::from(Error::CurveTokenV1OnlyMinterAllowed1));
         }
-        if !(_to != data::ZERO_ADDRESS()) {
+        if !(_to != data::zero_address()) {
             runtime::revert(ApiError::from(Error::CurveTokenV1ZeroAddressNotAllowed));
         }
         ERC20::mint(self, _to, _value);

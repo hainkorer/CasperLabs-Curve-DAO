@@ -15,6 +15,7 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use common::errors::*;
+use common::keys::*;
 use contract_utils::{ContractContext, ContractStorage};
 
 /// @notice Votes have a weight depending on time, so that users are committed to the future of (whatever they are voting for)
@@ -147,7 +148,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             {
                 u_old.slope = old_locked
                     .amount
-                    .checked_div(MAXTIME.as_u128().into())
+                    .checked_div(VOTING_ESCROW_MAXTIME.as_u128().into())
                     .unwrap_or_revert();
                 u_old.bias = u_old
                     .slope
@@ -166,7 +167,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             {
                 u_new.slope = new_locked
                     .amount
-                    .checked_div(MAXTIME.as_u128().into())
+                    .checked_div(VOTING_ESCROW_MAXTIME.as_u128().into())
                     .unwrap_or_revert();
                 u_new.bias = u_new
                     .slope
@@ -215,14 +216,14 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         //  If last point is already recorded in this block, slope=0
         //  But that's ok b/c we know the block in such case
         let mut t_i: U256 = last_checkpoint
-            .checked_div(WEEK)
+            .checked_div(VOTING_ESCROW_WEEK)
             .unwrap_or_revert()
-            .checked_mul(WEEK)
+            .checked_mul(VOTING_ESCROW_WEEK)
             .unwrap_or_revert();
         for _ in 0..255 {
             // Hopefully it won't happen that this won't get used in 5 years!
             // If it does, users will be able to withdraw but vote weight will be broken
-            t_i = t_i.checked_add(WEEK).unwrap_or_revert();
+            t_i = t_i.checked_add(VOTING_ESCROW_WEEK).unwrap_or_revert();
             let mut d_slope: U128 = 0.into();
             if t_i > U256::from(u64::from(get_blocktime())) {
                 t_i = U256::from(u64::from(get_blocktime()));
@@ -260,7 +261,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 .unwrap_or_revert()
                 .checked_mul(t_i.checked_sub(initial_last_point.ts).unwrap_or_revert())
                 .unwrap_or_revert()
-                .checked_div(MULTIPLIER.as_u128().into())
+                .checked_div(VOTING_ESCROW_MULTIPLIER.as_u128().into())
                 .unwrap_or_revert();
             epoch = epoch.checked_add(1.into()).unwrap_or_revert();
             if t_i == U256::from(u64::from(get_blocktime())) {
@@ -424,7 +425,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             value,
             0.into(),
             Locked::instance().get(&addr),
-            DEPOSIT_FOR_TYPE,
+            VOTING_ESCROW_DEPOSIT_FOR_TYPE,
         );
         set_lock(false);
     }
@@ -438,9 +439,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         set_lock(true);
         let unlock_time: U256 = unlock_time
-            .checked_div(WEEK)
+            .checked_div(VOTING_ESCROW_WEEK)
             .unwrap_or_revert()
-            .checked_mul(WEEK)
+            .checked_mul(VOTING_ESCROW_WEEK)
             .unwrap_or_revert(); // Locktime is rounded down to weeks
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
         if !(value > 0.into()) {
@@ -456,7 +457,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         if !(unlock_time
             <= U256::from(u64::from(get_blocktime()))
-                .checked_add(MAXTIME)
+                .checked_add(VOTING_ESCROW_MAXTIME)
                 .unwrap_or_revert())
         {
             runtime::revert(ApiError::from(Error::VotingEscrowVotingLockCanBe4YearsMax1));
@@ -466,7 +467,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             value,
             unlock_time,
             locked,
-            CREATE_LOCK_TYPE,
+            VOTING_ESCROW_CREATE_LOCK_TYPE,
         );
         set_lock(false);
     }
@@ -495,7 +496,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             value,
             0.into(),
             locked,
-            INCREASE_LOCK_AMOUNT,
+            VOTING_ESCROW_INCREASE_LOCK_AMOUNT,
         );
         set_lock(false);
     }
@@ -509,9 +510,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(true);
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
         let unlock_time: U256 = unlock_time
-            .checked_div(WEEK)
+            .checked_div(VOTING_ESCROW_WEEK)
             .unwrap_or_revert()
-            .checked_mul(WEEK)
+            .checked_mul(VOTING_ESCROW_WEEK)
             .unwrap_or_revert(); // Locktime is rounded down to weeks
         if !(locked.end > U256::from(u64::from(get_blocktime()))) {
             runtime::revert(ApiError::from(Error::VotingEscrowLockExpired));
@@ -526,7 +527,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         if !(unlock_time
             <= U256::from(u64::from(get_blocktime()))
-                .checked_add(MAXTIME)
+                .checked_add(VOTING_ESCROW_MAXTIME)
                 .unwrap_or_revert())
         {
             runtime::revert(ApiError::from(Error::VotingEscrowVotingLockCanBe4YearsMax2));
@@ -536,7 +537,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             0.into(),
             unlock_time,
             locked,
-            INCREASE_UNLOCK_TIME,
+            VOTING_ESCROW_INCREASE_UNLOCK_TIME,
         );
         set_lock(false);
     }
@@ -741,12 +742,12 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let mut last_point: Point = point;
         let mut t_i: U256 = last_point
             .ts
-            .checked_div(WEEK)
+            .checked_div(VOTING_ESCROW_WEEK)
             .unwrap_or_revert()
-            .checked_mul(WEEK)
+            .checked_mul(VOTING_ESCROW_WEEK)
             .unwrap_or_revert();
         for _ in 0..255 {
-            t_i = t_i.checked_add(WEEK).unwrap_or_revert();
+            t_i = t_i.checked_add(VOTING_ESCROW_WEEK).unwrap_or_revert();
             let mut d_slope: U128 = 0.into();
             if t_i > t {
                 t_i = t;

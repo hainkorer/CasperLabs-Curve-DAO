@@ -1,36 +1,12 @@
-use alloc::{
-    collections::BTreeMap,
-    string::{ToString},
-    vec::Vec,
-};
+use crate::event::VESTINGESCROWEvent;
+use alloc::{collections::BTreeMap, string::ToString, vec::Vec};
 use casper_contract::{
     contract_api::{runtime::get_call_stack, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{
-    system::CallStackElement, ContractPackageHash, Key, URef, U256,
-};
+use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
+use common::keys::*;
 use contract_utils::{get_key, key_to_str, set_key, Dict};
-
-use crate::event::VESTINGESCROWEvent;
-
-pub const INITIAL_LOCKED_DICT: &str = "initial_locked";
-pub const TOTAL_CLAIMED_DICT: &str = "total_claimed";
-pub const DISABLED_AT_DICT: &str = "disabled_at";
-pub const FUND_ADMINS_DICT: &str = "fund_admins";
-
-pub const TOKEN: &str = "token";
-pub const ADMIN: &str = "admin";
-pub const FUTURE_ADMIN: &str = "future_admin";
-pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
-pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
-pub const LOCK: &str = "lock";
-pub const START_TIME: &str = "start_time";
-pub const END_TIME: &str = "end_time";
-pub const INITIAL_LOCKED_SUPPLY: &str = "initial_locked_supply";
-pub const UNALLOCATED_SUPPLY: &str = "unallocated_supply";
-pub const CAN_DISABLE: &str = "can_disable";
-pub const FUND_ADMINS_FUNDS: &str = "fund_admins_enabled";
 
 pub struct FundAdmins {
     dict: Dict,
@@ -39,12 +15,12 @@ pub struct FundAdmins {
 impl FundAdmins {
     pub fn instance() -> FundAdmins {
         FundAdmins {
-            dict: Dict::instance(FUND_ADMINS_DICT),
+            dict: Dict::instance(VESTING_ESCROW_FUND_ADMINS_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(FUND_ADMINS_DICT)
+        Dict::init(VESTING_ESCROW_FUND_ADMINS_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> bool {
@@ -63,12 +39,12 @@ pub struct DisabledAt {
 impl DisabledAt {
     pub fn instance() -> DisabledAt {
         DisabledAt {
-            dict: Dict::instance(DISABLED_AT_DICT),
+            dict: Dict::instance(VESTING_ESCROW_DISABLED_AT_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(DISABLED_AT_DICT)
+        Dict::init(VESTING_ESCROW_DISABLED_AT_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U256 {
@@ -87,12 +63,12 @@ pub struct TotalClaimed {
 impl TotalClaimed {
     pub fn instance() -> TotalClaimed {
         TotalClaimed {
-            dict: Dict::instance(TOTAL_CLAIMED_DICT),
+            dict: Dict::instance(VESTING_ESCROW_TOTAL_CLAIMED_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(TOTAL_CLAIMED_DICT)
+        Dict::init(VESTING_ESCROW_TOTAL_CLAIMED_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U256 {
@@ -111,12 +87,12 @@ pub struct InitialLocked {
 impl InitialLocked {
     pub fn instance() -> InitialLocked {
         InitialLocked {
-            dict: Dict::instance(INITIAL_LOCKED_DICT),
+            dict: Dict::instance(VESTING_ESCROW_INITIAL_LOCKED_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(INITIAL_LOCKED_DICT)
+        Dict::init(VESTING_ESCROW_INITIAL_LOCKED_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U256 {
@@ -129,16 +105,17 @@ impl InitialLocked {
 }
 
 pub fn set_lock(lock: u64) {
-    set_key(LOCK, lock);
+    set_key(VESTING_ESCROW_LOCK, lock);
 }
 
 pub fn get_lock() -> u64 {
-    get_key(LOCK).unwrap_or_revert()
+    get_key(VESTING_ESCROW_LOCK).unwrap_or_revert()
 }
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "_hash-0000000000000000000000000000000000000000000000000000000000000000"
+            .into(),
     )
     .unwrap()
 }
@@ -151,90 +128,90 @@ pub fn account_zero_address() -> Key {
 }
 
 pub fn admin() -> Key {
-    get_key(ADMIN).unwrap_or_revert()
+    get_key(VESTING_ESCROW_ADMIN).unwrap_or_revert()
 }
 
 pub fn set_admin(admin: Key) {
-    set_key(ADMIN, admin);
+    set_key(VESTING_ESCROW_ADMIN, admin);
 }
 
 pub fn token() -> Key {
-    get_key(TOKEN).unwrap_or_revert()
+    get_key(VESTING_ESCROW_TOKEN).unwrap_or_revert()
 }
 
 pub fn set_token(value: Key) {
-    set_key(TOKEN, value);
+    set_key(VESTING_ESCROW_TOKEN, value);
 }
 
 pub fn future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or_revert()
+    get_key(VESTING_ESCROW_FUTURE_ADMIN).unwrap_or_revert()
 }
 
 pub fn set_future_admin(future_admin: Key) {
-    set_key(FUTURE_ADMIN, future_admin);
+    set_key(VESTING_ESCROW_FUTURE_ADMIN, future_admin);
 }
 
 pub fn start_time() -> U256 {
-    get_key(START_TIME).unwrap_or_revert()
+    get_key(VESTING_ESCROW_START_TIME).unwrap_or_revert()
 }
 
 pub fn set_start_time(value: U256) {
-    set_key(START_TIME, value);
+    set_key(VESTING_ESCROW_START_TIME, value);
 }
 
 pub fn end_time() -> U256 {
-    get_key(END_TIME).unwrap_or_revert()
+    get_key(VESTING_ESCROW_END_TIME).unwrap_or_revert()
 }
 
 pub fn set_end_time(value: U256) {
-    set_key(END_TIME, value);
+    set_key(VESTING_ESCROW_END_TIME, value);
 }
 
 pub fn initial_locked_supply() -> U256 {
-    get_key(INITIAL_LOCKED_SUPPLY).unwrap_or_revert()
+    get_key(VESTING_ESCROW_INITIAL_LOCKED_SUPPLY).unwrap_or_revert()
 }
 
 pub fn set_initial_locked_supply(value: U256) {
-    set_key(INITIAL_LOCKED_SUPPLY, value);
+    set_key(VESTING_ESCROW_INITIAL_LOCKED_SUPPLY, value);
 }
 
 pub fn unallocated_supply() -> U256 {
-    get_key(UNALLOCATED_SUPPLY).unwrap_or_revert()
+    get_key(VESTING_ESCROW_UNALLOCATED_SUPPLY).unwrap_or_revert()
 }
 
 pub fn set_unallocated_supply(value: U256) {
-    set_key(UNALLOCATED_SUPPLY, value);
+    set_key(VESTING_ESCROW_UNALLOCATED_SUPPLY, value);
 }
 
 pub fn can_disable() -> bool {
-    get_key(CAN_DISABLE).unwrap_or_revert()
+    get_key(VESTING_ESCROW_CAN_DISABLE).unwrap_or_revert()
 }
 
 pub fn set_can_disable(value: bool) {
-    set_key(CAN_DISABLE, value);
+    set_key(VESTING_ESCROW_CAN_DISABLE, value);
 }
 
 pub fn fund_admins_enabled() -> bool {
-    get_key(CAN_DISABLE).unwrap_or_revert()
+    get_key(VESTING_ESCROW_CAN_DISABLE).unwrap_or_revert()
 }
 
 pub fn set_fund_admins_enabled(value: bool) {
-    set_key(CAN_DISABLE, value);
+    set_key(VESTING_ESCROW_CAN_DISABLE, value);
 }
 
 pub fn set_hash(contract_hash: Key) {
-    set_key(SELF_CONTRACT_HASH, contract_hash);
+    set_key(VESTING_ESCROW_SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_hash() -> Key {
-    get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
+    get_key(VESTING_ESCROW_SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(CONTRACT_PACKAGE_HASH, package_hash);
+    set_key(VESTING_ESCROW_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(CONTRACT_PACKAGE_HASH).unwrap_or_revert()
+    get_key(VESTING_ESCROW_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
 }
 
 pub fn contract_package_hash() -> ContractPackageHash {
@@ -260,8 +237,11 @@ pub fn emit(event: &VESTINGESCROWEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "vesting_escrow_mint_remove_one".to_string());
+                param.insert(VESTING_ESCROW_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(
+                    "event_type",
+                    "vesting_escrow_vesting_escrow_mint_remove_one".to_string(),
+                );
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
@@ -270,8 +250,11 @@ pub fn emit(event: &VESTINGESCROWEvent) {
         VESTINGESCROWEvent::Burn { owner, token_ids } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "vesting_escrow_burn_remove_one".to_string());
+                param.insert(VESTING_ESCROW_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(
+                    "event_type",
+                    "vesting_escrow_vesting_escrow_burn_remove_one".to_string(),
+                );
                 param.insert("owner", owner.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
@@ -284,8 +267,11 @@ pub fn emit(event: &VESTINGESCROWEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "vesting_escrow_approve_token".to_string());
+                param.insert(VESTING_ESCROW_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(
+                    "event_type",
+                    "vesting_escrow_vesting_escrow_approve_token".to_string(),
+                );
                 param.insert("owner", owner.to_string());
                 param.insert("spender", spender.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -299,8 +285,11 @@ pub fn emit(event: &VESTINGESCROWEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "vesting_escrow_transfer_token".to_string());
+                param.insert(VESTING_ESCROW_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(
+                    "event_type",
+                    "vesting_escrow_vesting_escrow_transfer_token".to_string(),
+                );
                 param.insert("sender", sender.to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -309,8 +298,11 @@ pub fn emit(event: &VESTINGESCROWEvent) {
         }
         VESTINGESCROWEvent::MetadataUpdate { token_id } => {
             let mut param = BTreeMap::new();
-            param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-            param.insert("event_type", "vesting_escrow_metadata_update".to_string());
+            param.insert(VESTING_ESCROW_CONTRACT_PACKAGE_HASH, package.to_string());
+            param.insert(
+                "event_type",
+                "vesting_escrow_vesting_escrow_metadata_update".to_string(),
+            );
             param.insert("token_id", token_id.to_string());
             events.push(param);
         }

@@ -113,7 +113,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
-            di = U256::from(TEN_E_NINE)
+            di = U256::from(REWARD_WRAPPER_TEN_E_NINE)
                 .checked_mul(d_reward)
                 .unwrap_or_revert()
                 .checked_div(total_balance)
@@ -131,7 +131,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 .unwrap_or_revert()
                 .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert())
                 .unwrap_or_revert()
-                .checked_div(U256::from(TEN_E_NINE))
+                .checked_div(U256::from(REWARD_WRAPPER_TEN_E_NINE))
                 .unwrap_or_revert(),
         );
         CrvIntegralFor::instance().set(&addr, i);
@@ -160,7 +160,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         );
         d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
         if total_balance > 0.into() {
-            di = U256::from(TEN_E_NINE)
+            di = U256::from(REWARD_WRAPPER_TEN_E_NINE)
                 .checked_mul(d_reward)
                 .unwrap_or_revert()
                 .checked_div(total_balance)
@@ -177,7 +177,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 .unwrap_or_revert()
                 .checked_mul(i.checked_sub(reward_integral_for).unwrap_or_revert())
                 .unwrap_or_revert()
-                .checked_div(U256::from(TEN_E_NINE))
+                .checked_div(U256::from(REWARD_WRAPPER_TEN_E_NINE))
                 .unwrap_or_revert(),
         );
         RewardIntegralFor::instance().set(&addr, i);
@@ -206,7 +206,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
-            di = U256::from(TEN_E_NINE)
+            di = U256::from(REWARD_WRAPPER_TEN_E_NINE)
                 .checked_mul(d_reward)
                 .unwrap_or_revert()
                 .checked_div(total_balance)
@@ -221,7 +221,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             .unwrap_or_revert()
             .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert())
             .unwrap_or_revert()
-            .checked_div(U256::from(TEN_E_NINE))
+            .checked_div(U256::from(REWARD_WRAPPER_TEN_E_NINE))
             .unwrap_or_revert();
     }
 
@@ -253,7 +253,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
-            di = U256::from(TEN_E_NINE)
+            di = U256::from(REWARD_WRAPPER_TEN_E_NINE)
                 .checked_mul(d_reward)
                 .unwrap_or_revert()
                 .checked_div(total_balance)
@@ -268,7 +268,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             .unwrap_or_revert()
             .checked_mul(i.checked_sub(reward_integral_for).unwrap_or_revert())
             .unwrap_or_revert()
-            .checked_div(U256::from(TEN_E_NINE))
+            .checked_div(U256::from(REWARD_WRAPPER_TEN_E_NINE))
             .unwrap_or_revert();
     }
 

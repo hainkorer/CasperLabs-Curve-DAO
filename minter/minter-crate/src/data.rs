@@ -1,3 +1,4 @@
+use crate::event::MINTEREvent;
 use alloc::{
     collections::BTreeMap,
     string::{String, ToString},
@@ -8,19 +9,8 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
+use common::keys::*;
 use contract_utils::{get_key, set_key, Dict};
-
-use crate::event::MINTEREvent;
-pub const MINTED_DICT: &str = "minted";
-pub const ALLOWED_TO_MINT_FOR_DICT: &str = "allowed_to_mint_for";
-
-pub const NAME: &str = "name";
-pub const TOKEN: &str = "token";
-pub const CONTROLLER: &str = "controller";
-pub const REWARD_COUNT: &str = "reward_count";
-pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
-pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
-pub const LOCK: &str = "lock";
 
 pub struct Minted {
     dict: Dict,
@@ -29,12 +19,12 @@ pub struct Minted {
 impl Minted {
     pub fn instance() -> Minted {
         Minted {
-            dict: Dict::instance(MINTED_DICT),
+            dict: Dict::instance(MINTER_MINTED_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(MINTED_DICT)
+        Dict::init(MINTER_MINTED_DICT)
     }
 
     pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
@@ -53,12 +43,12 @@ pub struct AllowedToMintFor {
 impl AllowedToMintFor {
     pub fn instance() -> AllowedToMintFor {
         AllowedToMintFor {
-            dict: Dict::instance(ALLOWED_TO_MINT_FOR_DICT),
+            dict: Dict::instance(MINTER_ALLOWED_TO_MINT_FOR_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(ALLOWED_TO_MINT_FOR_DICT)
+        Dict::init(MINTER_ALLOWED_TO_MINT_FOR_DICT)
     }
 
     pub fn get(&self, owner: &Key, spender: &Key) -> bool {
@@ -71,59 +61,59 @@ impl AllowedToMintFor {
 }
 
 pub fn name() -> String {
-    get_key(NAME).unwrap_or_revert()
+    get_key(MINTER_NAME).unwrap_or_revert()
 }
 
 pub fn set_name(name: String) {
-    set_key(NAME, name);
+    set_key(MINTER_NAME, name);
 }
 
 pub fn token() -> Key {
-    get_key(TOKEN).unwrap_or_revert()
+    get_key(MINTER_TOKEN).unwrap_or_revert()
 }
 
 pub fn set_token(token: Key) {
-    set_key(TOKEN, token);
+    set_key(MINTER_TOKEN, token);
 }
 
 pub fn controller() -> Key {
-    get_key(CONTROLLER).unwrap_or_revert()
+    get_key(MINTER_CONTROLLER).unwrap_or_revert()
 }
 
 pub fn set_controller(controller: Key) {
-    set_key(CONTROLLER, controller);
+    set_key(MINTER_CONTROLLER, controller);
 }
 
 pub fn reward_count() -> U256 {
-    get_key(REWARD_COUNT).unwrap_or_default()
+    get_key(MINTER_REWARD_COUNT).unwrap_or_default()
 }
 
 pub fn set_reward_count(reward_count: U256) {
-    set_key(REWARD_COUNT, reward_count);
+    set_key(MINTER_REWARD_COUNT, reward_count);
 }
 
 pub fn set_hash(contract_hash: Key) {
-    set_key(SELF_CONTRACT_HASH, contract_hash);
+    set_key(MINTER_SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_hash() -> Key {
-    get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
+    get_key(MINTER_SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 
 pub fn set_lock(lock: u64) {
-    set_key(LOCK, lock);
+    set_key(MINTER_LOCK, lock);
 }
 
 pub fn get_lock() -> u64 {
-    get_key(LOCK).unwrap_or_revert()
+    get_key(MINTER_LOCK).unwrap_or_revert()
 }
 
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(CONTRACT_PACKAGE_HASH, package_hash);
+    set_key(MINTER_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(CONTRACT_PACKAGE_HASH).unwrap_or_revert()
+    get_key(MINTER_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
 }
 
 pub fn contract_package_hash() -> ContractPackageHash {
@@ -149,7 +139,7 @@ pub fn emit(event: &MINTEREvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(MINTER_CONTRACT_PACKAGE_HASH, package.to_string());
                 param.insert("event_type", "minter_mint_remove_one".to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -159,7 +149,7 @@ pub fn emit(event: &MINTEREvent) {
         MINTEREvent::Burn { owner, token_ids } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(MINTER_CONTRACT_PACKAGE_HASH, package.to_string());
                 param.insert("event_type", "minter_burn_remove_one".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -173,7 +163,7 @@ pub fn emit(event: &MINTEREvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(MINTER_CONTRACT_PACKAGE_HASH, package.to_string());
                 param.insert("event_type", "minter_approve_token".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("spender", spender.to_string());
@@ -188,7 +178,7 @@ pub fn emit(event: &MINTEREvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(MINTER_CONTRACT_PACKAGE_HASH, package.to_string());
                 param.insert("event_type", "minter_transfer_token".to_string());
                 param.insert("sender", sender.to_string());
                 param.insert("recipient", recipient.to_string());
@@ -198,7 +188,7 @@ pub fn emit(event: &MINTEREvent) {
         }
         MINTEREvent::MetadataUpdate { token_id } => {
             let mut param = BTreeMap::new();
-            param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
+            param.insert(MINTER_CONTRACT_PACKAGE_HASH, package.to_string());
             param.insert("event_type", "minter_metadata_update".to_string());
             param.insert("token_id", token_id.to_string());
             events.push(param);
