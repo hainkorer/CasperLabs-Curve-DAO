@@ -32,13 +32,13 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         package_hash: ContractPackageHash,
     ) {
         if !(lp_addr != zero_address()) {
-            runtime::revert(ApiError::from(Error::ZeroAddress));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardZeroAddress1));
         }
         if !(minter != zero_address()) {
-            runtime::revert(ApiError::from(Error::ZeroAddress));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardZeroAddress2));
         }
         if !(reward_contract != zero_address()) {
-            runtime::revert(ApiError::from(Error::ZeroAddress));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardZeroAddress3));
         }
         set_lp_token(lp_addr);
         set_minter(minter);
@@ -390,7 +390,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     // @return bool success
     fn user_checkpoint(&self, addr: Key) -> bool {
         if !((self.get_caller() == addr) || (self.get_caller() == get_minter())) {
-            runtime::revert(ApiError::from(Error::Unauthorized));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardUnauthorized));
         }
         self._checkpoint(addr, get_is_claiming_rewards());
         self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
@@ -485,7 +485,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             },
         );
         if !(ret == 0.into() || t_ve > t_last) {
-            runtime::revert(ApiError::from(Error::KickNotAllowed));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardKickNotAllowed1));
         }
         if !(WorkingBalances::instance().get(&addr)
             > balance
@@ -494,7 +494,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                 .checked_div(100.into())
                 .unwrap_or_revert())
         {
-            runtime::revert(ApiError::from(Error::KickNotNeeded));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardKickNotNeeded2));
         }
         self._checkpoint(addr, get_is_claiming_rewards());
         self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
@@ -512,12 +512,12 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     /// @param addr Address to deposit for
     fn deposit(&self, value: U256, addr: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardIsLocked1));
         }
         set_lock(true);
         if addr != self.get_caller() {
             if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
-                runtime::revert(ApiError::from(Error::NotApproved));
+                runtime::revert(ApiError::from(Error::LiquidityGaugeRewardNotApproved));
             }
         }
         self._checkpoint(addr, true);
@@ -566,7 +566,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     /// @param _value Number of tokens to withdraw
     fn withdraw(&self, value: U256, claim_rewards: bool) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardIsLocked2));
         }
         set_lock(true);
         self._checkpoint(self.get_caller(), claim_rewards);
@@ -612,7 +612,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
 
     fn claim_rewards(&self, addr: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardIsLocked3));
         }
         set_lock(true);
         self._checkpoint_rewards(addr, true);
@@ -639,7 +639,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
 
     fn kill_me(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminOnly1));
         }
         set_is_killed(!get_is_killed());
     }
@@ -648,7 +648,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     /// @param addr Address to have ownership transferred to
     fn commit_transfer_ownership(&self, addr: Key) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminOnly2));
         }
         set_future_admin(addr);
         LIQUIDITYGAUGEREWARD::emit(
@@ -660,11 +660,11 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     /// @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminOnly3));
         }
         let admin: Key = get_future_admin();
         if !(admin != zero_address()) {
-            runtime::revert(ApiError::from(Error::AdminNotSet));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminNotSet));
         }
         set_admin(admin);
         LIQUIDITYGAUGEREWARD::emit(self, &LiquidityGaugeRewardEvent::ApplyOwnership { admin });
@@ -673,7 +673,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     /// @notice Switch claiming rewards on/off. This is to prevent a malicious rewards contract from preventing CRV claiming
     fn toggle_external_rewards_claim(&self, val: bool) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminOnly4));
         }
         set_is_claiming_rewards(val);
     }

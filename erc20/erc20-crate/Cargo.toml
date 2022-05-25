@@ -5,6 +5,7 @@ authors = ["Bassam Monib <bassam.munib@scytalelabs.com>"]
 edition = "2018"
 
 [dependencies]
+common = { path = "../../common" }
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
 contract-utils = { path = "../../utils/contract-utils" }

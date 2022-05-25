@@ -152,7 +152,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         .checked_add(TOKEN_CHECKPOINT_DEADLINE)
                         .unwrap_or_revert())))
         {
-            runtime::revert(ApiError::from(Error::InvalidTokenCheckpointUpdate))
+            runtime::revert(ApiError::from(Error::FeeDistributorInvalidTokenCheckpointUpdate))
         }
         self._checkpoint_token();
     }
@@ -477,11 +477,11 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return uint256 Amount of fees claimed in the call
     fn claim(&self, addr: Key /*self.get_caller()*/) -> U256 {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::FeeDistributorIsLocked1));
         }
         set_lock(true);
         if get_is_killed() {
-            runtime::revert(ApiError::from(Error::Killed));
+            runtime::revert(ApiError::from(Error::FeeDistributorKilled1));
         }
         if U256::from(u64::from(get_blocktime())) >= get_time_cursor() {
             self._checkpoint_total_supply();
@@ -534,11 +534,11 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return bool success
     fn claim_many(&self, receivers: Vec<Key>) -> bool {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::FeeDistributorIsLocked2));
         }
         set_lock(true);
         if get_is_killed() {
-            runtime::revert(ApiError::from(Error::Killed));
+            runtime::revert(ApiError::from(Error::FeeDistributorKilled2));
         }
         if U256::from(u64::from(get_blocktime())) >= get_time_cursor() {
             self._checkpoint_total_supply();
@@ -598,10 +598,10 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return bool success
     fn burn(&self, coin: Key) -> bool {
         if !(coin == get_token()) {
-            runtime::revert(ApiError::from(Error::InvalidCoin));
+            runtime::revert(ApiError::from(Error::FeeDistributorInvalidCoin1));
         }
         if get_is_killed() {
-            runtime::revert(ApiError::from(Error::Killed));
+            runtime::revert(ApiError::from(Error::FeeDistributorKilled3));
         }
         let amount: U256 = runtime::call_versioned_contract(
             coin.into_hash().unwrap_or_revert().into(),
@@ -641,7 +641,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _addr New admin address
     fn commit_admin(&self, addr: Key) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::AccessDenied));
+            runtime::revert(ApiError::from(Error::FeeDistributorAccessDenied));
         }
         set_future_admin(addr);
         FEEDISTRIBUTOR::emit(self, &FeeDistributorEvent::CommitAdmin { admin: addr });
@@ -650,10 +650,10 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Apply transfer of ownership
     fn apply_admin(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::InvalidAdmin));
+            runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin1));
         }
         if !(get_future_admin() != zero_address()) {
-            runtime::revert(ApiError::from(Error::ZeroFutureAdmin));
+            runtime::revert(ApiError::from(Error::FeeDistributorZeroFutureAdmin));
         }
         let future_admin: Key = get_future_admin();
         set_admin(future_admin);
@@ -668,7 +668,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Toggle permission for checkpointing by any account
     fn toggle_allow_checkpoint_token(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::InvalidAdmin));
+            runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin2));
         }
         let flag: bool = !get_can_checkpoint_token();
         set_can_checkpoint_token(flag);
@@ -683,7 +683,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     ///     and blocks the ability to claim or burn. The contract cannot be unkilled.
     fn kill_me(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::InvalidAdmin));
+            runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin3));
         }
         set_is_killed(true);
         let token: Key = get_token();
@@ -715,10 +715,10 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return bool success
     fn recover_balance(&self, coin: Key) -> bool {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::InvalidAdmin));
+            runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin4));
         }
         if !(coin == get_token()) {
-            runtime::revert(ApiError::from(Error::InvalidCoin));
+            runtime::revert(ApiError::from(Error::FeeDistributorInvalidCoin2));
         }
         let amount: U256 = runtime::call_versioned_contract(
             coin.into_hash().unwrap_or_revert().into(),

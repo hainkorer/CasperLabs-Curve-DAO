@@ -6,7 +6,7 @@ mod erc20;
 pub mod event;
 
 pub use contract_utils;
-pub use erc20::{Error, ERC20};
+pub use erc20::{ERC20};
 
 use alloc::{collections::BTreeMap, string::String};
 use casper_types::U256;

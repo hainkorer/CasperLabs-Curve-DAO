@@ -8,6 +8,7 @@ use casper_types::{
     system::mint::Error as MintError, ApiError, BlockTime, ContractHash, ContractPackageHash, Key,
     URef, U256,
 };
+use common::errors::*;
 use contract_utils::{set_key, ContractContext, ContractStorage};
 use cryptoxide::ed25519;
 use hex::encode;
@@ -41,38 +42,6 @@ impl ERC20Event {
             } => "erc20_transfer",
         }
         .to_string()
-    }
-}
-
-#[repr(u16)]
-pub enum Error {
-    /// 65,536 for (UniswapV2 Core ERC20 EXPIRED)
-    UniswapV2CoreERC20EXPIRED = 0,
-    /// 65,537 for (UniswapV2 Core ERC20 Signature Verification Failed)
-    UniswapV2CoreERC20SignatureVerificationFailed = 1,
-    /// 65,538 for (UniswapV2 Core ERC20 OverFlow1)
-    UniswapV2CoreERC20OverFlow1 = 2,
-    /// 65,539 for (UniswapV2 Core ERC20 OverFlow2)
-    UniswapV2CoreERC20OverFlow2 = 3,
-    /// 65,540 for (UniswapV2 Core ERC20 OverFlow3)
-    UniswapV2CoreERC20OverFlow3 = 4,
-    /// 65,541 for (UniswapV2 Core ERC20 OverFlow4)
-    UniswapV2CoreERC20OverFlow4 = 5,
-    /// 65,542 for (UniswapV2 Core ERC20 UnderFlow1)
-    UniswapV2CoreERC20UnderFlow1 = 6,
-    /// 65,543 for (UniswapV2 Core ERC20 UnderFlow2)
-    UniswapV2CoreERC20UnderFlow2 = 7,
-    /// 65,544 for (UniswapV2 Core ERC20 UnderFlow3)
-    UniswapV2CoreERC20UnderFlow3 = 8,
-    /// 65,545 for (UniswapV2 Core ERC20 UnderFlow4)
-    UniswapV2CoreERC20UnderFlow4 = 9,
-    /// 65,546 for (UniswapV2 Core ERC20 UnderFlow5)
-    UniswapV2CoreERC20UnderFlow5 = 10,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
     }
 }
 

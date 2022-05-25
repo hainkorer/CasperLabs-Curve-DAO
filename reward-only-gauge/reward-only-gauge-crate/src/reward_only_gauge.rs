@@ -11,6 +11,7 @@ use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::bytesrepr::Bytes;
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
+use common::errors::*;
 
 pub enum REWARDONLYGAUGEEvent {
     Withdraw {
@@ -67,65 +68,6 @@ impl REWARDONLYGAUGEEvent {
     }
 }
 
-#[repr(u16)]
-pub enum Error {
-    /// 65,538 for (Reward Only Gauge OverFlow1)
-    RewardOnlyGaugeOverFlow1 = 0,
-    /// 65,539 for (Reward Only Gauge OverFlow2)
-    RewardOnlyGaugeOverFlow2 = 1,
-    /// 65,540 for (Reward Only Gauge OverFlow3)
-    RewardOnlyGaugeOverFlow3 = 2,
-    /// 65,541 for (Reward Only Gauge OverFlow4)
-    RewardOnlyGaugeOverFlow4 = 3,
-    /// 65,541 for (Reward Only Gauge OverFlow5)
-    RewardOnlyGaugeOverFlow5 = 4,
-    /// 65,541 for (Reward Only Gauge OverFlow6)
-    RewardOnlyGaugeOverFlow6 = 5,
-    /// 65,541 for (Reward Only Gauge OverFlow7)
-    RewardOnlyGaugeOverFlow7 = 6,
-    /// 65,542 for (Reward Only Gauge UnderFlow1)
-    RewardOnlyGaugeUnderFlow1 = 7,
-    /// 65,543 for (Reward Only Gauge UnderFlow2)
-    RewardOnlyGaugeUnderFlow2 = 8,
-    /// 65,544 for (Reward Only Gauge UnderFlow3)
-    RewardOnlyGaugeUnderFlow3 = 9,
-    /// 65,545 for (Reward Only Gauge UnderFlow4)
-    RewardOnlyGaugeUnderFlow4 = 10,
-    /// 65,546 for (Reward Only Gauge UnderFlow5)
-    RewardOnlyGaugeUnderFlow5 = 12,
-    /// 65,546 for (Reward Only Gauge UnderFlow6)
-    RewardOnlyGaugeUnderFlow6 = 13,
-    /// 65,546 for (Reward Only Gauge UnderFlow7)
-    RewardOnlyGaugeUnderFlow7 = 14,
-    /// 65,546 for (Reward Only Gauge UnderFlow8)
-    RewardOnlyGaugeUnderFlow8 = 15,
-    /// 65,546 for (Reward Only Gauge UnderFlow9)
-    RewardOnlyGaugeUnderFlow9 = 16,
-    /// 65,540 for (Reward Only Gauge Only Admin1)
-    RewardOnlyGaugeOnlyAdmin1 = 17,
-    /// 65,540 for (Reward Only Gauge Only Admin2)
-    RewardOnlyGaugeOnlyAdmin2 = 18,
-    /// 65,540 for (Reward Only Gauge Only Future Admin)
-    RewardOnlyGaugeOnlyFutureAdmin = 19,
-    /// 65,540 for (Reward Only Gauge Cannot Redirect When Claiming For Another User)
-    RewardOnlyGaugeCannotRedirectWhenClaimingForAnotherUser = 20,
-    /// 65,540 for (Reward Only Gauge Value Is Zero)
-    RewardOnlyGaugeValueIsZero1 = 21,
-    /// 65,540 for (Reward Only Gauge Value Is Zero)
-    RewardOnlyGaugeValueIsZero2 = 22,
-    /// 65,540 for (Reward Only Gauge Reward Token Is Zero)
-    RewardOnlyGaugeRewardTokenIsZeroAddress = 23,
-    /// 65,540 for (Reward Only Gauge Cannot Modify Existing Reward Token)
-    RewardOnlyGaugeCannotModifyExistingRewardToken = 24,
-    /// 65,540 for (Reward Only Gauge Receiver Is Zero Address)
-    RewardOnlyGaugeLocked1 = 25,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
-    }
-}
 
 pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
     /// """

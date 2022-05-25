@@ -2,11 +2,11 @@
 extern crate alloc;
 
 pub mod data;
-mod vesting_escrow;
 pub mod event;
+mod vesting_escrow;
 
 pub use contract_utils;
-pub use vesting_escrow::{Error, VESTINGESCROW};
+pub use vesting_escrow::VESTINGESCROW;
 
 use alloc::{collections::BTreeMap, string::String};
 use casper_types::U256;

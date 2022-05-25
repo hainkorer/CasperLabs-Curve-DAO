@@ -2,11 +2,11 @@
 extern crate alloc;
 
 pub mod data;
-mod minter;
 pub mod event;
+mod minter;
 
 pub use contract_utils;
-pub use minter::{Error, MINTER};
+pub use minter::MINTER;
 
 use alloc::{collections::BTreeMap, string::String};
 use casper_types::U256;

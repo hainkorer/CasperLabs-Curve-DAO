@@ -2,11 +2,11 @@
 extern crate alloc;
 
 pub mod data;
-mod reward_only_gauge;
 pub mod event;
+mod reward_only_gauge;
 
 pub use contract_utils;
-pub use reward_only_gauge::{Error, REWARDONLYGAUGE};
+pub use reward_only_gauge::REWARDONLYGAUGE;
 
 use alloc::{collections::BTreeMap, string::String};
 use casper_types::U256;

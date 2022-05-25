@@ -9,6 +9,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
 use erc20_crate::{self, data as erc20_data, ERC20};
 
@@ -26,19 +27,6 @@ impl CurveTokenV1Event {
             } => "Transfer_crv1",
         }
         .to_string()
-    }
-}
-
-#[repr(u16)]
-pub enum Error {
-    InvalidMinter = 0,
-    OnlyMinterAllowed = 1,
-    ZeroAddressNotAllowed = 2,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
     }
 }
 
@@ -81,28 +69,28 @@ pub trait CURVETOKENV1<Storage: ContractStorage>:
     }
     fn mint_crv1(&mut self, _to: Key, _value: U256) {
         if !(self.get_caller() == data::get_minter()) {
-            runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
+            runtime::revert(ApiError::from(Error::CurveTokenV1OnlyMinterAllowed1));
         }
         if !(_to != data::ZERO_ADDRESS()) {
-            runtime::revert(ApiError::from(Error::ZeroAddressNotAllowed));
+            runtime::revert(ApiError::from(Error::CurveTokenV1ZeroAddressNotAllowed));
         }
         ERC20::mint(self, _to, _value);
     }
     fn set_minter(&mut self, _minter: Key) {
         if !(self.get_caller() == _minter) {
-            runtime::revert(ApiError::from(Error::InvalidMinter));
+            runtime::revert(ApiError::from(Error::CurveTokenV1InvalidMinter));
         }
         data::set_minter(_minter);
     }
     fn burn_caller(&mut self, _value: U256) {
         if !(self.get_caller() == data::get_minter()) {
-            runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
+            runtime::revert(ApiError::from(Error::CurveTokenV1OnlyMinterAllowed2));
         }
         ERC20::burn(self, self.get_caller(), _value);
     }
     fn burn_from(&mut self, _to: Key, _value: U256) {
         if !(self.get_caller() == data::get_minter()) {
-            runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
+            runtime::revert(ApiError::from(Error::CurveTokenV1OnlyMinterAllowed3));
         }
         ERC20::burn(self, _to, _value);
     }

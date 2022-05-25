@@ -6,7 +6,7 @@ use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
-
+use common::errors::*;
 pub enum VESTINGESCROWFACTORYEvent {
     CommitOwnership { admin: Key },
     ApplyOwnership { admin: Key },
@@ -22,69 +22,6 @@ impl VESTINGESCROWFACTORYEvent {
     }
 }
 
-#[repr(u16)]
-pub enum Error {
-    /// 65,538 for (Vesting Escrow OverFlow1)
-    VestingEscrowOverFlow1 = 0,
-    /// 65,539 for (Vesting Escrow OverFlow2)
-    VestingEscrowOverFlow2 = 1,
-    /// 65,540 for (Vesting Escrow OverFlow3)
-    VestingEscrowOverFlow3 = 2,
-    /// 65,541 for (Vesting Escrow OverFlow4)
-    VestingEscrowOverFlow4 = 3,
-    /// 65,541 for (Vesting Escrow OverFlow5)
-    VestingEscrowOverFlow5 = 4,
-    /// 65,542 for (Vesting Escrow UnderFlow1)
-    VestingEscrowUnderFlow1 = 7,
-    /// 65,543 for (Vesting Escrow UnderFlow2)
-    VestingEscrowUnderFlow2 = 8,
-    /// 65,544 for (Vesting Escrow UnderFlow3)
-    VestingEscrowUnderFlow3 = 9,
-    /// 65,545 for (Vesting Escrow UnderFlow4)
-    VestingEscrowUnderFlow4 = 10,
-    /// 65,546 for (Vesting Escrow UnderFlow5)
-    VestingEscrowUnderFlow5 = 12,
-    /// 65,546 for (Vesting Escrow UnderFlow6)
-    VestingEscrowUnderFlow6 = 13,
-    /// 65,546 for (Vesting Escrow UnderFlow7)
-    VestingEscrowUnderFlow7 = 15,
-    /// 65,546 for (Vesting Escrow UnderFlow8)
-    VestingEscrowUnderFlow8 = 16,
-    /// 65,546 for (Vesting Escrow UnderFlow9)
-    VestingEscrowUnderFlow9 = 17,
-    /// 65,546 for (Vesting Escrow UnderFlow10)
-    VestingEscrowUnderFlow10 = 18,
-    /// 65,546 for (Vesting Escrow UnderFlow11)
-    VestingEscrowUnderFlow11 = 19,
-    /// 65,546 for (Vesting Escrow UnderFlow12)
-    VestingEscrowUnderFlow12 = 20,
-    /// 65,546 for (Vesting Escrow UnderFlow13)
-    VestingEscrowUnderFlow13 = 21,
-    /// 65,546 for (Vesting Escrow Cannot Disable)
-    VestingEscrowCannotDisable = 22,
-    /// 65,540 for (Vesting Escrow Only Admin1)
-    VestingEscrowOnlyAdmin1 = 23,
-    /// 65,540 for (Vesting Escrow Only Admin2)
-    VestingEscrowOnlyAdmin2 = 24,
-    /// 65,540 for (Vesting Escrow Only Admin3)
-    VestingEscrowOnlyAdmin3 = 25,
-    /// 65,540 for (Vesting Escrow Duration Too Short)
-    VestingEscrowDurationTooShort = 26,
-    /// 65,540 for (Vesting Escrow Start Time Too Soon)
-    VestingEscrowStartTimeTooSoon = 27,
-    /// 65,540 for (Vesting Escrow Only Admin6)
-    VestingEscrowOnlyAdmin6 = 28,
-    /// 65,540 for (Vesting Escrow Only Admin7)
-    VestingEscrowOnlyAdmin7 = 29,
-    /// 65,540 for (Vesting Escrow Admin Not Set)
-    VestingEscrowAdminNotSet = 30,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
-    }
-}
 
 pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(
@@ -120,13 +57,13 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
 
         if self.get_caller() != self.admin() {
             //Vesting Escrow Only Admin
-            runtime::revert(Error::VestingEscrowOnlyAdmin3);
+            runtime::revert(Error::VestingEscrowFactoryOnlyAdmin3);
         } else if vesting_start < U256::from(u64::from(runtime::get_blocktime())) {
             //Vesting Escrow Start Time Too Soon
-            runtime::revert(Error::VestingEscrowStartTimeTooSoon);
+            runtime::revert(Error::VestingEscrowFactoryStartTimeTooSoon);
         } else if _vesting_duration < MIN_VESTING_DURATION {
             //Vesting Escrow Duration Too Soon
-            runtime::revert(Error::VestingEscrowDurationTooShort);
+            runtime::revert(Error::VestingEscrowFactoryDurationTooShort);
         } else {
             let _contract: Key = _vesting_escrow_simple_contract;
 
@@ -149,7 +86,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             let _contract_package_hash = ContractPackageHash::new(_contract_hash_add_array);
             let end_time = vesting_start
                 .checked_add(_vesting_duration)
-                .ok_or(Error::VestingEscrowOverFlow1)
+                .ok_or(Error::VestingEscrowFactoryOverFlow1)
                 .unwrap_or_revert();
             let _ret: bool = runtime::call_versioned_contract(
                 _contract_package_hash,
@@ -164,7 +101,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
     fn commit_transfer_ownership(&mut self, addr: Key) -> bool {
         if self.get_caller() != self.admin() {
             //Vesting Escrow Only Admin
-            runtime::revert(Error::VestingEscrowOnlyAdmin1);
+            runtime::revert(Error::VestingEscrowFactoryOnlyAdmin1);
         }
         data::set_future_admin(addr);
         self.emit(&VESTINGESCROWFACTORYEvent::CommitOwnership { admin: addr });
@@ -174,12 +111,12 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
     fn apply_transfer_ownership(&mut self) -> bool {
         if self.get_caller() != self.admin() {
             //Vesting Escrow Only Admin
-            runtime::revert(Error::VestingEscrowOnlyAdmin2);
+            runtime::revert(Error::VestingEscrowFactoryOnlyAdmin2);
         }
         let _admin = self.future_admin();
         if _admin == data::zero_address() {
             //Vesting Escrow Admin Not Set
-            runtime::revert(Error::VestingEscrowAdminNotSet);
+            runtime::revert(Error::VestingEscrowFactoryAdminNotSet);
         }
         data::set_admin(_admin);
         self.emit(&VESTINGESCROWFACTORYEvent::ApplyOwnership { admin: _admin });

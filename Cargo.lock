@@ -454,6 +454,7 @@ version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "common",
  "contract-utils",
  "erc20_crate",
  "hex",
@@ -481,6 +482,7 @@ version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "common",
  "contract-utils",
  "erc20_crate",
  "hex",
@@ -508,6 +510,7 @@ version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "common",
  "contract-utils",
  "erc20_crate",
  "hex",
@@ -711,6 +714,7 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "common",
  "contract-utils",
  "cryptoxide",
  "hex",
@@ -758,6 +762,7 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casper_types_derive",
+ "common",
  "contract-utils",
  "cryptoxide",
  "curve-token-utils",
@@ -887,6 +892,7 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casper_types_derive",
+ "common",
  "contract-utils",
  "cryptoxide",
  "hex",
@@ -1306,6 +1312,7 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "common",
  "contract-utils",
  "cryptoxide",
  "hex",
@@ -1705,6 +1712,7 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casper_types_derive",
+ "common",
  "contract-utils",
  "cryptoxide",
  "hex",
@@ -2117,6 +2125,7 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casper_types_derive",
+ "common",
  "contract-utils",
  "cryptoxide",
  "hex",
@@ -2140,6 +2149,7 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casper_types_derive",
+ "common",
  "contract-utils",
  "cryptoxide",
  "hex",
@@ -2202,6 +2212,7 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
+ "common",
  "contract-utils",
  "erc20_crate",
  "hex",

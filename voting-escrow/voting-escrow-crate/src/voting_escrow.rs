@@ -70,7 +70,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         );
         let decimals: U256 = decimals.into();
         if !(decimals <= 255.into()) {
-            runtime::revert(ApiError::from(Error::InvalidDecimals))
+            runtime::revert(ApiError::from(Error::VotingEscrowInvalidDecimals))
         }
 
         set_decimals(decimals);
@@ -83,7 +83,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn only_admin(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
+            runtime::revert(ApiError::from(Error::VotingEscrowAdminOnly));
         }
     }
 
@@ -100,7 +100,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         self.only_admin();
         let admin: Key = get_future_admin();
         if !(admin != zero_address()) {
-            runtime::revert(ApiError::from(Error::ZeroAddress));
+            runtime::revert(ApiError::from(Error::VotingEscrowZeroAddress));
         }
         set_admin(admin);
         VOTINGESCROW::emit(self, &VotingEscrowEvent::ApplyOwnership { admin });
@@ -404,18 +404,20 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _value Amount to add to user's lock
     fn deposit_for(&mut self, addr: Key, value: U256) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::VotingEscrowIsLocked1));
         }
         set_lock(true);
         let locked: LockedBalance = Locked::instance().get(&addr);
         if !(value > 0.into()) {
-            runtime::revert(ApiError::from(Error::NeedNonZeroValue));
+            runtime::revert(ApiError::from(Error::VotingEscrowNeedNonZeroValue1));
         }
         if !(locked.amount > 0.into()) {
-            runtime::revert(ApiError::from(Error::NoExistingLockFound));
+            runtime::revert(ApiError::from(Error::VotingEscrowNoExistingLockFound1));
         }
         if !(locked.end > U256::from(u64::from(get_blocktime()))) {
-            runtime::revert(ApiError::from(Error::CannotAddToExpiredLockWithdraw));
+            runtime::revert(ApiError::from(
+                Error::VotingEscrowCannotAddToExpiredLockWithdraw1,
+            ));
         }
         self._deposit_for(
             addr,
@@ -432,7 +434,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _unlock_time Epoch time when tokens unlock, rounded down to whole weeks
     fn create_lock(&mut self, value: U256, unlock_time: U256) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::VotingEscrowIsLocked2));
         }
         set_lock(true);
         let unlock_time: U256 = unlock_time
@@ -442,20 +444,22 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             .unwrap_or_revert(); // Locktime is rounded down to weeks
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
         if !(value > 0.into()) {
-            runtime::revert(ApiError::from(Error::NeedNonZeroValue));
+            runtime::revert(ApiError::from(Error::VotingEscrowNeedNonZeroValue2));
         }
         if !(locked.amount == 0.into()) {
-            runtime::revert(ApiError::from(Error::WithdrawOldTokensFirst));
+            runtime::revert(ApiError::from(Error::VotingEscrowWithdrawOldTokensFirst));
         }
         if !(unlock_time > U256::from(u64::from(get_blocktime()))) {
-            runtime::revert(ApiError::from(Error::CanOnlyLockUntilTimeInTheFuture));
+            runtime::revert(ApiError::from(
+                Error::VotingEscrowCanOnlyLockUntilTimeInTheFuture,
+            ));
         }
         if !(unlock_time
             <= U256::from(u64::from(get_blocktime()))
                 .checked_add(MAXTIME)
                 .unwrap_or_revert())
         {
-            runtime::revert(ApiError::from(Error::VotingLockCanBe4YearsMax));
+            runtime::revert(ApiError::from(Error::VotingEscrowVotingLockCanBe4YearsMax1));
         }
         self._deposit_for(
             self.get_caller(),
@@ -471,18 +475,20 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _value Amount of tokens to deposit and add to the lock
     fn increase_amount(&mut self, value: U256) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::VotingEscrowIsLocked3));
         }
         set_lock(true);
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
         if !(value > 0.into()) {
-            runtime::revert(ApiError::from(Error::NeedNonZeroValue));
+            runtime::revert(ApiError::from(Error::VotingEscrowNeedNonZeroValue3));
         }
         if !(locked.amount > 0.into()) {
-            runtime::revert(ApiError::from(Error::NoExistingLockFound));
+            runtime::revert(ApiError::from(Error::VotingEscrowNoExistingLockFound2));
         }
         if !(locked.end > U256::from(u64::from(get_blocktime()))) {
-            runtime::revert(ApiError::from(Error::CannotAddToExpiredLockWithdraw));
+            runtime::revert(ApiError::from(
+                Error::VotingEscrowCannotAddToExpiredLockWithdraw2,
+            ));
         }
         self._deposit_for(
             self.get_caller(),
@@ -498,7 +504,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _unlock_time New epoch time for unlocking
     fn increase_unlock_time(&mut self, unlock_time: U256) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::VotingEscrowIsLocked4));
         }
         set_lock(true);
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
@@ -508,20 +514,22 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             .checked_mul(WEEK)
             .unwrap_or_revert(); // Locktime is rounded down to weeks
         if !(locked.end > U256::from(u64::from(get_blocktime()))) {
-            runtime::revert(ApiError::from(Error::LockExpired));
+            runtime::revert(ApiError::from(Error::VotingEscrowLockExpired));
         }
         if !(locked.amount > 0.into()) {
-            runtime::revert(ApiError::from(Error::NothingIsLocked));
+            runtime::revert(ApiError::from(Error::VotingEscrowNothingIsLocked));
         }
         if !(unlock_time > locked.end) {
-            runtime::revert(ApiError::from(Error::CanOnlyIncreaseLockDuration));
+            runtime::revert(ApiError::from(
+                Error::VotingEscrowCanOnlyIncreaseLockDuration,
+            ));
         }
         if !(unlock_time
             <= U256::from(u64::from(get_blocktime()))
                 .checked_add(MAXTIME)
                 .unwrap_or_revert())
         {
-            runtime::revert(ApiError::from(Error::VotingLockCanBe4YearsMax));
+            runtime::revert(ApiError::from(Error::VotingEscrowVotingLockCanBe4YearsMax2));
         }
         self._deposit_for(
             self.get_caller(),
@@ -538,7 +546,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn withdraw(&mut self) {
         let mut locked: LockedBalance = Locked::instance().get(&self.get_caller());
         if !(U256::from(u64::from(get_blocktime())) >= locked.end) {
-            runtime::revert(ApiError::from(Error::TheLockDidntExpire));
+            runtime::revert(ApiError::from(Error::VotingEscrowTheLockDidntExpire));
         }
         let value: U256 = locked.amount.as_u128().into();
         let old_locked: LockedBalance = locked;
@@ -652,7 +660,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn balance_of_at(&self, addr: Key, block: U256) -> U256 {
         // Copying and pasting totalSupply code because Vyper cannot pass by reference yet
         // if !(block <= block.number) {
-        //     runtime::revert(ApiError::from(Error::InvalidBlockNumber));
+        //     runtime::revert(ApiError::from(Error::VotingEscrowInvalidBlockNumber));
         // }
         // Binary search
         let mut min: U256 = 0.into();

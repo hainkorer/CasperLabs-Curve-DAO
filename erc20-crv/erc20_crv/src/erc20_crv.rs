@@ -127,7 +127,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         //adminlet prev_mining_epoch: U128= data::get_mining_epoch();
         //  data::set_mining_epoch(prev_mining_epoch.checked_add(1.into()).unwrap_or_revert());
         data::set_is_updated(true);
-        if (rate == 0.into()) {
+        if rate == 0.into() {
             rate = data::INITIAL_RATE;
         } else {
             start_epoch_supply = start_epoch_supply
@@ -158,7 +158,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 .checked_add(data::RATE_REDUCTION_TIME)
                 .unwrap_or_revert())
         {
-            runtime::revert(ApiError::from(Error::TooSoon));
+            runtime::revert(ApiError::from(Error::Erc20CRVTooSoon));
         }
         self._update_mining_parameters();
     }
@@ -166,10 +166,10 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         let start_epoch_time = data::get_start_epoch_time();
         // let blocktime: u64 = runtime::get_blocktime().into();
         let blocktime: U256 = 1000000000.into();
-        if (U256::from(blocktime)
+        if U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert())
+                .unwrap_or_revert()
         {
             self._update_mining_parameters();
             data::get_start_epoch_time()
@@ -181,10 +181,10 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         let mut start_epoch_time = data::get_start_epoch_time();
         //let blocktime: u64 = runtime::get_blocktime().into();
         let blocktime: U256 = 1000000000.into();
-        if (U256::from(blocktime)
+        if U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert())
+                .unwrap_or_revert()
         {
             self._update_mining_parameters();
             data::get_start_epoch_time()
@@ -212,16 +212,16 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
     }
     fn mint_crv(&self, to: Key, value: U256) -> bool {
         if !(self.get_caller() == data::get_minter()) {
-            runtime::revert(ApiError::from(Error::MinterOnly));
+            runtime::revert(ApiError::from(Error::Erc20CRVMinterOnly));
         }
         if !(to != data::ZERO_ADDRESS()) {
-            runtime::revert(ApiError::from(Error::ZeroAddress));
+            runtime::revert(ApiError::from(Error::Erc20CRVZeroAddress));
         }
         let blocktime: u64 = runtime::get_blocktime().into();
-        if (U256::from(blocktime)
+        if U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert())
+                .unwrap_or_revert()
         {
             self._update_mining_parameters();
         }
@@ -229,7 +229,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             .checked_add(value)
             .unwrap_or_revert();
         // if !(total_supply <= self.available_supply()) {
-        //     runtime::revert(ApiError::from(Error::ExceedsAllowableMint));
+        //     runtime::revert(ApiError::from(Error::Erc20CRVExceedsAllowableMint));
         // }
         erc20_data::set_total_supply(total_supply);
         let existing_balance: U256 = erc20_data::Balances::instance().get(&to);
@@ -246,41 +246,41 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
 
     fn set_minter(&self, _minter: Key) {
         if !(self.get_caller() == _minter) {
-            runtime::revert(ApiError::from(Error::InvalidMinter));
+            runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
         }
         data::set_minter(_minter);
         self.erc20_crv_emit(&ERC20CRV_EVENT::SetMinter { minter: _minter });
     }
     fn set_name(&self, _name: String, _symbol: String) {
         if !(data::get_minter() == self.get_caller()) {
-            runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
+            runtime::revert(ApiError::from(Error::Erc20CRVOnlyMinterAllowed1));
         }
         erc20_data::set_name(_name);
         erc20_data::set_symbol(_symbol);
     }
     fn burn_caller(&mut self, _value: U256) {
         if !(self.get_caller() == data::get_minter()) {
-            runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
+            runtime::revert(ApiError::from(Error::Erc20CRVOnlyMinterAllowed2));
         }
         ERC20::burn(self, self.get_caller(), _value);
     }
     fn set_admin(&self, admin: Key) {
         if !(self.get_caller() == admin) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
+            runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly));
         }
         data::set_admin(admin);
     }
     fn mintable_in_timeframe(&self, start: U256, end: U256) -> U256 {
         if !(start <= end) {
-            runtime::revert(ApiError::from(Error::StartGreaterThanEnd));
+            runtime::revert(ApiError::from(Error::Erc20CRVStartGreaterThanEnd));
         }
         let mut to_mint: U256 = 0.into();
         let mut current_epoch_time: U256 = data::get_start_epoch_time();
         let mut current_rate: U256 = data::get_rate();
-        if (end
+        if end
             > current_epoch_time
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert())
+                .unwrap_or_revert()
         {
             current_epoch_time = current_epoch_time
                 .checked_add(data::RATE_REDUCTION_TIME)
@@ -298,36 +298,36 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 .checked_add(data::RATE_REDUCTION_TIME)
                 .unwrap_or_revert())
         {
-            runtime::revert(ApiError::from(Error::TooFarInFuture));
+            runtime::revert(ApiError::from(Error::Erc20CRVTooFarInFuture));
         }
         let mut current_end: U256;
         let mut current_start: U256;
 
         for i in 0..999 {
-            if (end >= current_epoch_time) {
+            if end >= current_epoch_time {
                 current_end = end;
-                if (current_end
+                if current_end
                     > current_epoch_time
                         .checked_add(data::RATE_REDUCTION_TIME)
-                        .unwrap_or_revert())
+                        .unwrap_or_revert()
                 {
                     current_end = current_epoch_time
                         .checked_add(data::RATE_REDUCTION_TIME)
                         .unwrap_or_revert();
                 }
                 current_start = start;
-                if (current_start
+                if current_start
                     >= current_epoch_time
                         .checked_add(data::RATE_REDUCTION_TIME)
-                        .unwrap_or_revert())
+                        .unwrap_or_revert()
                 {
                     break;
-                } else if (current_start < current_epoch_time) {
+                } else if current_start < current_epoch_time {
                     current_start = current_epoch_time;
                 }
                 let sub_ce_cs: U256 = current_end.checked_sub(current_start).unwrap_or_revert();
                 to_mint = to_mint.checked_mul(sub_ce_cs).unwrap_or_revert();
-                if (start >= current_epoch_time) {
+                if start >= current_epoch_time {
                     break;
                 }
             }
@@ -342,7 +342,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 )
                 .unwrap_or_revert();
             if !(current_rate <= data::INITIAL_RATE) {
-                runtime::revert(ApiError::from(Error::CurrRateLessThanInitRate));
+                runtime::revert(ApiError::from(Error::Erc20CRVCurrRateLessThanInitRate));
             }
         }
         to_mint

@@ -6,7 +6,7 @@ use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
-
+use common::errors::*;
 pub enum MINTEREvent {
     Minted {
         recipient: Key,
@@ -25,20 +25,6 @@ impl MINTEREvent {
             } => "minted",
         }
         .to_string()
-    }
-}
-
-#[repr(u16)]
-pub enum Error {
-    /// 65,536 for (Minter Gauge Is Not Added)
-    MinterGaugeIsNotAdded = 0,
-    /// 65,537 for (Minter Gauge Locked)
-    MinterGaugeLocked1 = 1,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
     }
 }
 
@@ -76,7 +62,7 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
 
         if ret <= U256::from(0) {
             //dev: gauge is not added
-            runtime::revert(Error::MinterGaugeIsNotAdded);
+            runtime::revert(Error::MinterIsNotAdded);
         }
 
         let gauge_addr_hash_add_array = match gauge_addr {
@@ -123,8 +109,8 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
     fn mint(&mut self, gauge_addr: Key) {
         let lock = data::get_lock();
         if lock != 0 {
-            //MinterGauge: Locked
-            runtime::revert(Error::MinterGaugeLocked1);
+            //Minter: Locked
+            runtime::revert(Error::MinterLocked1);
         }
         data::set_lock(1);
         self._mint_for(gauge_addr, self.get_caller());
@@ -133,8 +119,8 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
     fn mint_many(&mut self, gauge_addrs: Vec<Key>) {
         let lock = data::get_lock();
         if lock != 0 {
-            //MinterGauge: Locked
-            runtime::revert(Error::MinterGaugeLocked1);
+            //Minter: Locked
+            runtime::revert(Error::MinterLocked2);
         }
         data::set_lock(1);
         for i in 0..(gauge_addrs.len() - 1) {
@@ -145,8 +131,8 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
     fn mint_for(&mut self, gauge_addr: Key, _for: Key) {
         let lock = data::get_lock();
         if lock != 0 {
-            //MinterGauge: Locked
-            runtime::revert(Error::MinterGaugeLocked1);
+            //Minter: Locked
+            runtime::revert(Error::MinterLocked3);
         }
         data::set_lock(1);
         let is_allowed = self.allowed_to_mint_for(self.get_caller(), _for);

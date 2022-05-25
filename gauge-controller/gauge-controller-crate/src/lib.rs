@@ -2,11 +2,11 @@
 extern crate alloc;
 
 pub mod data;
-mod gauge_controller;
 pub mod event;
+mod gauge_controller;
 
 pub use contract_utils;
-pub use gauge_controller::{Error, GAUGECONLTROLLER};
+pub use gauge_controller::GAUGECONLTROLLER;
 
 use alloc::{collections::BTreeMap, string::String};
 use casper_types::U256;

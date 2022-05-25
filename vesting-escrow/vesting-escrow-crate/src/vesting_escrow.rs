@@ -8,7 +8,7 @@ use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
-
+use common::errors::*;
 pub enum VESTINGESCROWEvent {
     Fund { recipient: Key, amount: U256 },
     Claim { recipient: Key, claimed: U256 },
@@ -39,75 +39,6 @@ impl VESTINGESCROWEvent {
     }
 }
 
-#[repr(u16)]
-pub enum Error {
-    /// 65,538 for (Vesting Escrow OverFlow1)
-    VestingEscrowOverFlow1 = 0,
-    /// 65,539 for (Vesting Escrow OverFlow2)
-    VestingEscrowOverFlow2 = 1,
-    /// 65,540 for (Vesting Escrow OverFlow3)
-    VestingEscrowOverFlow3 = 2,
-    /// 65,541 for (Vesting Escrow OverFlow4)
-    VestingEscrowOverFlow4 = 3,
-    /// 65,541 for (Vesting Escrow OverFlow5)
-    VestingEscrowOverFlow5 = 4,
-    /// 65,542 for (Vesting Escrow UnderFlow1)
-    VestingEscrowUnderFlow1 = 7,
-    /// 65,543 for (Vesting Escrow UnderFlow2)
-    VestingEscrowUnderFlow2 = 8,
-    /// 65,544 for (Vesting Escrow UnderFlow3)
-    VestingEscrowUnderFlow3 = 9,
-    /// 65,545 for (Vesting Escrow UnderFlow4)
-    VestingEscrowUnderFlow4 = 10,
-    /// 65,546 for (Vesting Escrow UnderFlow5)
-    VestingEscrowUnderFlow5 = 12,
-    /// 65,546 for (Vesting Escrow UnderFlow6)
-    VestingEscrowUnderFlow6 = 13,
-    /// 65,546 for (Vesting Escrow UnderFlow7)
-    VestingEscrowUnderFlow7 = 15,
-    /// 65,546 for (Vesting Escrow UnderFlow8)
-    VestingEscrowUnderFlow8 = 16,
-    /// 65,546 for (Vesting Escrow UnderFlow9)
-    VestingEscrowUnderFlow9 = 17,
-    /// 65,546 for (Vesting Escrow UnderFlow10)
-    VestingEscrowUnderFlow10 = 18,
-    /// 65,546 for (Vesting Escrow UnderFlow11)
-    VestingEscrowUnderFlow11 = 19,
-    /// 65,546 for (Vesting Escrow UnderFlow12)
-    VestingEscrowUnderFlow12 = 20,
-    /// 65,546 for (Vesting Escrow UnderFlow13)
-    VestingEscrowUnderFlow13 = 21,
-    /// 65,546 for (Vesting Escrow Cannot Disable)
-    VestingEscrowCannotDisable = 22,
-    /// 65,540 for (Vesting Escrow Only Admin1)
-    VestingEscrowOnlyAdmin1 = 23,
-    /// 65,540 for (Vesting Escrow Only Admin2)
-    VestingEscrowOnlyAdmin2 = 24,
-    /// 65,540 for (Vesting Escrow Only Admin3)
-    VestingEscrowOnlyAdmin3 = 25,
-    /// 65,540 for (Vesting Escrow Only Admin4)
-    VestingEscrowOnlyAdmin4 = 26,
-    /// 65,540 for (Vesting Escrow Only Admin5)
-    VestingEscrowOnlyAdmin5 = 27,
-    /// 65,540 for (Vesting Escrow Only Admin6)
-    VestingEscrowOnlyAdmin6 = 28,
-    /// 65,540 for (Vesting Escrow Only Admin7)
-    VestingEscrowOnlyAdmin7 = 29,
-    /// 65,540 for (Vesting Escrow Admin Not Set)
-    VestingEscrowAdminNotSet = 30,
-    /// 65,540 for (Vesting Escrow Locked)
-    VestingEscrowLocked1 = 31,
-    /// 65,540 for (Vesting Escrow Locked)
-    VestingEscrowLocked2 = 32,
-    /// 65,540 for (Vesting Escrow Fund Admin Disabled)
-    VestingEscrowFundAdminsDisabled = 33,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
-    }
-}
 
 pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(

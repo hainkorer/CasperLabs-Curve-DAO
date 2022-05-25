@@ -9,22 +9,9 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
 
-#[repr(u16)]
-pub enum Error {
-    OnlyInitializeOnce = 0,
-    AdminOnly = 1,
-    CannotDisable = 2,
-    AdminNotSet = 3,
-    IsLocked = 4,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
-    }
-}
 pub enum VESTINGESCROWSIMPLE_EVENT {
     Fund { recipient: Key, amount: U256 },
     Claim { recipient: Key, claimed: U256 },
@@ -85,7 +72,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         can_disable: bool,
     ) -> bool {
         if !(get_admin() == ZERO_ADDRESS()) {
-            runtime::revert(ApiError::from(Error::OnlyInitializeOnce));
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleOnlyInitializeOnce));
         }
         set_token(token);
         set_admin(admin);
@@ -115,10 +102,10 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     }
     fn toggle_disable(&self, recipient: Key) {
         if !(get_admin() == self.get_caller()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly1));
         }
         if !(get_can_disable()) {
-            runtime::revert(ApiError::from(Error::CannotDisable));
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleCannotDisable));
         }
         let mut is_disabled: bool = false;
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -137,7 +124,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     }
     fn disable_can_disable(&self) {
         if !(get_admin() == self.get_caller()) {
-            runtime::revert(ApiError::from(Error::AdminOnly));
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly2));
         }
         set_can_disable(false);
     }
@@ -203,7 +190,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     }
     fn commit_transfer_ownership(&self, addr: Key) -> bool {
         // if !(get_admin() == self.get_caller()) {
-        //     runtime::revert(ApiError::from(Error::AdminOnly));
+        //     runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly3));
         // }
         set_future_admin(addr);
         self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::CommitOwnership {
@@ -214,7 +201,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     }
     fn claim(&self, addr: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleIsLocked));
         }
         set_lock(true);
         let mut t: U256 = DisableddAt::instance().get(&addr);
@@ -252,11 +239,11 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
 
     fn apply_transfer_ownership(&self) -> bool {
         // if !(self.get_caller() == get_admin()) {
-        //     runtime::revert(ApiError::from(Error::AdminOnly));
+        //     runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly4));
         // }
         let mut _admin: Key = get_future_admin();
         if !(_admin != ZERO_ADDRESS()) {
-            runtime::revert(ApiError::from(Error::AdminNotSet));
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminNotSet));
         }
         set_admin(_admin);
         self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::ApplyOwnership {

@@ -11,6 +11,8 @@ use casper_contract::{
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use contract_utils::{ContractContext, ContractStorage};
 use erc20_crate::{self, data as erc20_data, ERC20};
+use common::errors::*;
+
 
 pub enum CurveTokenV3Event {
     Transfer_crv3 { from: Key, to: Key, value: U256 },
@@ -26,17 +28,6 @@ impl CurveTokenV3Event {
             } => "Transfer_crv3",
         }
         .to_string()
-    }
-}
-#[repr(u16)]
-pub enum Error {
-    InvalidMinter = 0,
-    OnlyMinterAllowed = 1,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
     }
 }
 
@@ -75,25 +66,25 @@ pub trait CURVETOKENV3<Storage: ContractStorage>:
     }
     fn mint_crv3(&mut self, _to: Key, _value: U256) {
         if !(self.get_caller() == data::minter()) {
-            runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
+            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed1));
         }
         ERC20::mint(self, _to, _value);
     }
     fn set_minter(&mut self, _minter: Key) {
         if !(self.get_caller() == data::minter()) {
-            runtime::revert(ApiError::from(Error::InvalidMinter));
+            runtime::revert(ApiError::from(Error::CurveTokenV3InvalidMinter));
         }
         data::set_minter(_minter);
     }
     fn burn_from(&mut self, _to: Key, _value: U256) {
         if !(self.get_caller() == data::minter()) {
-            runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
+            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed2));
         }
         ERC20::burn(self, _to, _value);
     }
     fn set_name(&mut self, _name: String, _symbol: String) {
         if !(data::minter() == self.get_caller()) {
-            runtime::revert(ApiError::from(Error::OnlyMinterAllowed));
+            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed3));
         }
         erc20_data::set_name(_name);
         erc20_data::set_symbol(_symbol);
