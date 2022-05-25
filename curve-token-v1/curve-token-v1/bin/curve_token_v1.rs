@@ -62,7 +62,7 @@ fn constructor() {
 fn mint_crv1() {
     let _to: Key = runtime::get_named_arg("_to");
     let _value: U256 = runtime::get_named_arg("_value");
-    CurveTokenV1::default().mint_crv1(_to,_value);
+    CurveTokenV1::default().mint_crv1(_to, _value);
 }
 #[no_mangle]
 fn set_minter() {
@@ -97,13 +97,12 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
-   
+
     entry_points.add_entry_point(EntryPoint::new(
         "mint_crv1",
         vec![
             Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type())
-
+            Parameter::new("_value", U256::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

@@ -27,7 +27,7 @@ impl ERC20CRVInstance {
                 "decimal" => decimal,
                 "supply" => supply,
             },
-            100000000
+            100000000,
         ))
     }
     pub fn set_minter(&self, sender: AccountHash, _minter: Key) {
@@ -37,7 +37,7 @@ impl ERC20CRVInstance {
             runtime_args! {
                 "_minter" => _minter
             },
-            0
+            0,
         );
     }
     pub fn burn_caller(&self, sender: AccountHash, _value: U256) {
@@ -47,7 +47,7 @@ impl ERC20CRVInstance {
             runtime_args! {
                 "_value"=>_value
             },
-            0
+            0,
         );
     }
     pub fn set_admin(&self, sender: AccountHash, admin: Key) {
@@ -57,41 +57,61 @@ impl ERC20CRVInstance {
             runtime_args! {
                 "admin"=>admin
             },
-            0
+            0,
         );
     }
     pub fn update_mining_parameters(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "update_mining_parameters", runtime_args! {},1000000000);
+        self.0.call_contract(
+            sender,
+            "update_mining_parameters",
+            runtime_args! {},
+            1000000000,
+        );
     }
 
     pub fn start_epoch_time_write(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "start_epoch_time_write", runtime_args! {},1000000000);
+        self.0.call_contract(
+            sender,
+            "start_epoch_time_write",
+            runtime_args! {},
+            1000000000,
+        );
     }
     pub fn start_epoch_time_write_js_client(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "start_epoch_time_write_js_client", runtime_args! {},1000000000);
+        self.0.call_contract(
+            sender,
+            "start_epoch_time_write_js_client",
+            runtime_args! {},
+            1000000000,
+        );
     }
     pub fn future_epoch_time_write(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "future_epoch_time_write", runtime_args! {},1000000000);
+        self.0.call_contract(
+            sender,
+            "future_epoch_time_write",
+            runtime_args! {},
+            1000000000,
+        );
     }
     pub fn future_epoch_time_write_js_client(&self, sender: AccountHash) {
         self.0.call_contract(
             sender,
             "future_epoch_time_write_js_client",
-            runtime_args! {},1000000000
+            runtime_args! {},
+            1000000000,
         );
-
     }
     pub fn available_supply(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "available_supply", runtime_args! {},1000000000);
+            .call_contract(sender, "available_supply", runtime_args! {}, 1000000000);
     }
     pub fn available_supply_js_client(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "available_supply_js_client", runtime_args! {},1000000000);
+        self.0.call_contract(
+            sender,
+            "available_supply_js_client",
+            runtime_args! {},
+            1000000000,
+        );
     }
     pub fn mintable_in_timeframe(&self, sender: AccountHash, start: U256, end: U256) {
         self.0.call_contract(
@@ -101,7 +121,7 @@ impl ERC20CRVInstance {
                 "start"=>start,
                 "end"=>end
             },
-            0
+            0,
         );
     }
     pub fn mintable_in_timeframe_js_client(&self, sender: AccountHash, start: U256, end: U256) {
@@ -112,7 +132,7 @@ impl ERC20CRVInstance {
                 "start"=>start,
                 "end"=>end
             },
-            0
+            0,
         );
     }
     pub fn mint_crv(&self, sender: AccountHash, to: Key, value: U256) {
@@ -123,7 +143,7 @@ impl ERC20CRVInstance {
                 "to"=>to,
                 "value"=>value
             },
-            1000000000
+            1000000000,
         );
     }
     pub fn mint_crv_js_client(&self, sender: AccountHash, to: Key, value: U256) {
@@ -134,7 +154,7 @@ impl ERC20CRVInstance {
                 "to"=>to,
                 "value"=>value
             },
-            1000000000
+            1000000000,
         );
     }
 

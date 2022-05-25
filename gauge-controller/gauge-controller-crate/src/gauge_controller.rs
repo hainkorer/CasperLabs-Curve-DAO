@@ -237,7 +237,6 @@ pub enum Error {
     GaugeControllerUnderFlow22 = 67,
     /// 65,604 for (Gauge Controller UnderFlow23)
     GaugeControllerUnderFlow23 = 68,
-
 }
 
 impl From<Error> for ApiError {

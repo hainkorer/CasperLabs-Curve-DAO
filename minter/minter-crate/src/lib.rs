@@ -2,8 +2,8 @@
 extern crate alloc;
 
 pub mod data;
-mod minter;
 pub mod event;
+mod minter;
 
 pub use contract_utils;
 pub use minter::{Error, MINTER};

@@ -70,7 +70,14 @@ members = [
   "curve-token-v2/curve-token-v2",
   "curve-token-v2/curve-token-v2-tests",
   "curve-token-v3/curve-token-v3",
-  "curve-token-v3/curve-token-v3-tests"
+  "curve-token-v3/curve-token-v3-tests",
+
+  #Liquidity Gauge Wrapper
+  "liquidity-gauge-wrapper/liquidity-gauge-wrapper",
+  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-crate",
+  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests",
+  # SESSION CODE
+  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-session-code",
 ]
 
 [profile.release]

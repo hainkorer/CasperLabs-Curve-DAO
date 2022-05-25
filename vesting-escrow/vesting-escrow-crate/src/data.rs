@@ -1,15 +1,9 @@
-use alloc::{
-    collections::BTreeMap,
-    string::{ToString},
-    vec::Vec,
-};
+use alloc::{collections::BTreeMap, string::ToString, vec::Vec};
 use casper_contract::{
     contract_api::{runtime::get_call_stack, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{
-    system::CallStackElement, ContractPackageHash, Key, URef, U256,
-};
+use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
 use contract_utils::{get_key, key_to_str, set_key, Dict};
 
 use crate::event::VESTINGESCROWEvent;

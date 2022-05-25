@@ -504,7 +504,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     // @param _spender The address which will transfer the funds
     // @param _value The amount of tokens that may be transferred
-    fn approve(&self,spender: Key,amount: U256){
+    fn approve(&self, spender: Key, amount: U256) {
         Allowances::instance().set(&self.get_caller(), &spender, amount);
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,

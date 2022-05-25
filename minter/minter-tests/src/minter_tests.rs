@@ -14,13 +14,8 @@ fn deploy() -> (
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let token: TestContract = MINTERInstance::new(
-        &env,
-        NAME,
-        owner,
-        Key::from(owner),
-        Key::from(owner),
-    );
+    let token: TestContract =
+        MINTERInstance::new(&env, NAME, owner, Key::from(owner), Key::from(owner));
     // let test_contract: TestContract =
     //     MINTERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
     // let test_contract2: TestContract =

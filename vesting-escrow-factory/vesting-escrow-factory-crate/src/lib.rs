@@ -2,8 +2,8 @@
 extern crate alloc;
 
 pub mod data;
-mod vesting_escrow_factory;
 pub mod event;
+mod vesting_escrow_factory;
 
 pub use contract_utils;
 pub use vesting_escrow_factory::{Error, VESTINGESCROWFACTORY};

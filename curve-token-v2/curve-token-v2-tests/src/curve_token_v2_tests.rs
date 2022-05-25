@@ -37,7 +37,7 @@ fn mint_crv2() {
     )
     .unwrap();
     let _value_arg: U256 = 100000.into();
-    contract.mint_crv2(owner,_to_arg, _value_arg);
+    contract.mint_crv2(owner, _to_arg, _value_arg);
 }
 #[test]
 fn set_minter() {

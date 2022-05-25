@@ -32,7 +32,8 @@ fn constructor() {
 
 #[no_mangle]
 fn transfer() {
-    let gauge_controller_address: ContractHash = mappings::get_key(&mappings::gauge_controller_key());
+    let gauge_controller_address: ContractHash =
+        mappings::get_key(&mappings::gauge_controller_key());
 
     let recipient: Key = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
@@ -48,7 +49,8 @@ fn transfer() {
 
 #[no_mangle]
 fn approve() {
-    let gauge_controller_address: ContractHash = mappings::get_key(&mappings::gauge_controller_key());
+    let gauge_controller_address: ContractHash =
+        mappings::get_key(&mappings::gauge_controller_key());
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
     let args: RuntimeArgs = runtime_args! {
@@ -61,7 +63,8 @@ fn approve() {
 
 #[no_mangle]
 fn allowance() {
-    let gauge_controller_address: ContractHash = mappings::get_key(&mappings::gauge_controller_key());
+    let gauge_controller_address: ContractHash =
+        mappings::get_key(&mappings::gauge_controller_key());
     let owner: Key = runtime::get_named_arg("owner");
     let spender: Key = runtime::get_named_arg("spender");
     let args: RuntimeArgs = runtime_args! {
@@ -75,7 +78,8 @@ fn allowance() {
 
 #[no_mangle]
 fn transfer_from() {
-    let gauge_controller_address: ContractHash = mappings::get_key(&mappings::gauge_controller_key());
+    let gauge_controller_address: ContractHash =
+        mappings::get_key(&mappings::gauge_controller_key());
 
     let owner: Key = runtime::get_named_arg("owner");
     let recipient: Key = runtime::get_named_arg("recipient");
@@ -87,13 +91,15 @@ fn transfer_from() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(gauge_controller_address, "transfer_from", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(gauge_controller_address, "transfer_from", args);
     mappings::set_key(&mappings::transfer_from_key(), ret);
 }
 
 #[no_mangle]
 fn increase_allowance() {
-    let gauge_controller_address: ContractHash = mappings::get_key(&mappings::gauge_controller_key());
+    let gauge_controller_address: ContractHash =
+        mappings::get_key(&mappings::gauge_controller_key());
 
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
@@ -102,13 +108,15 @@ fn increase_allowance() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(gauge_controller_address, "increase_allowance", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(gauge_controller_address, "increase_allowance", args);
     mappings::set_key(&mappings::increase_allowance_key(), ret);
 }
 
 #[no_mangle]
 fn decrease_allowance() {
-    let gauge_controller_address: ContractHash = mappings::get_key(&mappings::gauge_controller_key());
+    let gauge_controller_address: ContractHash =
+        mappings::get_key(&mappings::gauge_controller_key());
 
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
@@ -117,7 +125,8 @@ fn decrease_allowance() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(gauge_controller_address, "decrease_allowance", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(gauge_controller_address, "decrease_allowance", args);
     mappings::set_key(&mappings::decrease_allowance_key(), ret);
 }
 

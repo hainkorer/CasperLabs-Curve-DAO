@@ -124,12 +124,8 @@ impl VESTINGESCROWSIMPLEInstance {
     }
 
     pub fn apply_transfer_ownership(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "apply_transfer_ownership",
-            runtime_args! {},
-            0,
-        );
+        self.0
+            .call_contract(sender, "apply_transfer_ownership", runtime_args! {}, 0);
     }
     pub fn claim(&self, sender: AccountHash, addr: Key) {
         self.0.call_contract(
