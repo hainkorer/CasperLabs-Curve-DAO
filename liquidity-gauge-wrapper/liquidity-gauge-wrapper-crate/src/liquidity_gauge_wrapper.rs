@@ -269,7 +269,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @param addr Address to kick
     fn claim_tokens(&self, addr: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked));
+            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked1));
         }
         set_lock(true);
         self._checkpoint(addr);
@@ -313,11 +313,11 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @param addr Address to deposit for
     fn deposit(&self, value: U256, addr: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked));
+            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked2));
         }
         set_lock(true);
         if get_is_killed() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsKilled));
+            runtime::revert(ApiError::from(Error::RewardWrapperIsKilled1));
         }
         if addr != self.get_caller() {
             if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
@@ -377,7 +377,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @param _value Number of tokens to withdraw
     fn withdraw(&self, value: U256) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked));
+            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked3));
         }
         set_lock(true);
         self._checkpoint(self.get_caller());
@@ -437,7 +437,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     }
     fn _transfer(&self, owner: Key, recipient: Key, amount: U256) {
         if get_is_killed() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsKilled));
+            runtime::revert(ApiError::from(Error::RewardWrapperIsKilled2));
         }
         self._checkpoint(owner);
         self._checkpoint(recipient);
@@ -552,7 +552,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     }
     fn kill_me(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly));
+            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly1));
         }
         set_is_killed(!get_is_killed());
     }
@@ -561,7 +561,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @param addr Address to have ownership transferred to
     fn commit_transfer_ownership(&self, addr: Key) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly));
+            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly2));
         }
         set_future_admin(addr);
         LIQUIDITYGAUGEWRAPPER::emit(
@@ -573,7 +573,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly));
+            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly3));
         }
         let admin: Key = get_future_admin();
         if !(admin != zero_address()) {

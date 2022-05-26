@@ -115,17 +115,22 @@ copy-wasm-file-gauge-controller:
 	cp ${src_target}/gauge-controller-token.wasm ${gauge_controller_des_wasm}
 	cp ${src_target}/gauge-controller-proxy-token.wasm ${gauge_controller_des_wasm}
 copy-wasm-file-reward-only-gauge:
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${src_target}/reward-only-gauge-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${src_target}/reward-only-gauge-proxy-token.wasm ${reward_only_gauge_des_wasm}
 copy-wasm-file-vesting-escrow:
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${vesting_escrow_des_wasm}
 	cp ${src_target}/vesting-escrow-token.wasm ${vesting_escrow_des_wasm}
 	cp ${src_target}/vesting-escrow-proxy-token.wasm ${vesting_escrow_des_wasm}
 copy-wasm-file-vesting-escrow-factory:
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${src_target}/vesting-escrow-factory-token.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${src_target}/vesting-escrow-factory-proxy-token.wasm ${vesting_escrow_factory_des_wasm}
 copy-wasm-file-voting-escrow:
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${wasm_dest_voting_escrow_path}
 	cp ${root_directory}${wasm_src_path}*.wasm ${wasm_dest_voting_escrow_path}
 copy-wasm-file-fee-distributor:
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${wasm_dest_fee_distributor_path}
 	cp ${root_directory}${wasm_src_path}*.wasm ${wasm_dest_fee_distributor_path}
 copy-wasm-file-liquidity-gauge-reward:
 	cp ${root_directory}${wasm_src_path}*.wasm ${wasm_dest_liquidity_gauge_reward_path}
