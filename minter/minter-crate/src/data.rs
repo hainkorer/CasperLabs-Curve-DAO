@@ -1,9 +1,5 @@
 use crate::event::MINTEREvent;
-use alloc::{
-    collections::BTreeMap,
-    string::{String, ToString},
-    vec::Vec,
-};
+use alloc::{collections::BTreeMap, string::ToString, vec::Vec};
 use casper_contract::{
     contract_api::{runtime::get_call_stack, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -58,14 +54,6 @@ impl AllowedToMintFor {
     pub fn set(&self, owner: &Key, spender: &Key, value: bool) {
         self.dict.set_by_keys((owner, spender), value);
     }
-}
-
-pub fn name() -> String {
-    get_key(MINTER_NAME).unwrap_or_revert()
-}
-
-pub fn set_name(name: String) {
-    set_key(MINTER_NAME, name);
 }
 
 pub fn token() -> Key {
