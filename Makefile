@@ -199,21 +199,21 @@ test-curve-token-v3:
 	make build-contract-curve-token-v3 && make copy-wasm-file-curve-token-v3
 
 all:
-	# make test-erc20 && make test-only-erc20
-	# make test-erc20-crv && make test-only-erc20-crv
+	make test-erc20 && make test-only-erc20
+	make test-erc20-crv && make test-only-erc20-crv
 	make test-minter && make test-only-minter
-	# make test-gauge-controller && make test-only-gauge-controller
-	# make test-reward-only-gauge && make test-only-reward-only-gauge
-	# make test-vesting-escrow && make test-only-vesting-escrow
-	# make test-vesting-escrow-factory && make test-only-vesting-escrow-factory
-	# make test-voting-escrow && make test-only-voting-escrow
-	# make test-fee-distributor && make test-only-fee-distributor
-	# make test-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
-	# make test-vesting-escrow-simple && make test-only-vesting-escrow-simple
-	# make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
-	# make test-curve-token-v1 && make test-only-curve-token-v1
-	# make test-curve-token-v2 && make test-only-curve-token-v2
-	# make test-curve-token-v3 && make test-only-curve-token-v3
+	make test-gauge-controller && make test-only-gauge-controller
+	make test-reward-only-gauge && make test-only-reward-only-gauge
+	make test-vesting-escrow && make test-only-vesting-escrow
+	make test-vesting-escrow-factory && make test-only-vesting-escrow-factory
+	make test-voting-escrow && make test-only-voting-escrow
+	make test-fee-distributor && make test-only-fee-distributor
+	make test-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
+	make test-vesting-escrow-simple && make test-only-vesting-escrow-simple
+	make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
+	make test-curve-token-v1 && make test-only-curve-token-v1
+	make test-curve-token-v2 && make test-only-curve-token-v2
+	make test-curve-token-v3 && make test-only-curve-token-v3
 
 
 
