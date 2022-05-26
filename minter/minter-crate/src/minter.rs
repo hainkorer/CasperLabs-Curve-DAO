@@ -4,9 +4,11 @@ use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
-use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
-use contract_utils::{ContractContext, ContractStorage};
+use casper_types::{
+    runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
+};
 use common::errors::*;
+use contract_utils::{ContractContext, ContractStorage};
 pub enum MINTEREvent {
     Minted {
         recipient: Key,
@@ -53,14 +55,14 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let controller_package_hash = ContractPackageHash::new(controller_hash_add_array);
-        let ret: U256 = runtime::call_versioned_contract(
+        let ret: U128 = runtime::call_versioned_contract(
             controller_package_hash,
             None,
             "gauge_types",
-            runtime_args! {"gauge_addr" => gauge_addr},
+            runtime_args! {"addr" => gauge_addr},
         );
 
-        if ret <= U256::from(0) {
+        if ret <= 0.into() {
             //dev: gauge is not added
             runtime::revert(Error::MinterIsNotAdded);
         }
@@ -70,17 +72,17 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let gauge_addr_package_hash = ContractPackageHash::new(gauge_addr_hash_add_array);
-        let _ret: () = runtime::call_versioned_contract(
+        let _ret: bool = runtime::call_versioned_contract(
             gauge_addr_package_hash,
             None,
             "user_checkpoint",
-            runtime_args! {"_for" => _for},
+            runtime_args! {"addr" => _for},
         );
         let total_mint: U256 = runtime::call_versioned_contract(
             gauge_addr_package_hash,
             None,
             "integrate_fraction",
-            runtime_args! {"_for" => _for},
+            runtime_args! {"addr" => _for},
         );
 
         let minted = self.minted(_for, gauge_addr);

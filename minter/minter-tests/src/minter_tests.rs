@@ -1,255 +1,114 @@
-use casper_types::{account::AccountHash, Key, U256};
+use casper_types::{account::AccountHash, Key};
 use test_env::{TestContract, TestEnv};
 
 use crate::minter_instance::MINTERInstance;
 
 const NAME: &str = "MINTER";
+const TOKEN_NAME: &str = "ERC20";
+const TOKEN_SYMBOL: &str = "ERC";
+const DECIMALS: u8 = 8;
+const INIT_TOTAL_SUPPLY: u64 = 0;
 
 fn deploy() -> (
     TestEnv,
     MINTERInstance,
     AccountHash,
-    // MINTERInstance,
-    // MINTERInstance,
+    TestContract,
+    TestContract,
+    TestContract,
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let token: TestContract =
-        MINTERInstance::new(&env, NAME, owner, Key::from(owner), Key::from(owner));
+    let _token: TestContract = MINTERInstance::deploy_erc20(
+        &env,
+        owner,
+        TOKEN_NAME,
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+
+    let voting_escrow = MINTERInstance::deploy_voting_escrow(
+        &env,
+        "Voting Escrow",
+        owner,
+        Key::Hash(_token.package_hash()),
+        "VotingEscrow".into(),
+        "VE".into(),
+        "1".into(),
+    );
+    let gauge_controller: TestContract = MINTERInstance::deploy_gauge_controller(
+        &env,
+        "gauge_controller",
+        owner,
+        Key::Hash(_token.package_hash()),
+        Key::Hash(voting_escrow.package_hash()),
+    );
+
+    let minter: TestContract = MINTERInstance::new(
+        &env,
+        NAME,
+        owner,
+        Key::Hash(_token.package_hash()),
+        Key::Hash(gauge_controller.package_hash()),
+    );
     // let test_contract: TestContract =
     //     MINTERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
     // let test_contract2: TestContract =
     //     MINTERInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
     (
         env,
-        MINTERInstance::instance(token),
+        MINTERInstance::instance(minter),
         owner,
-        // MINTERInstance::instance(test_contract),
-        // MINTERInstance::instance(test_contract2),
+        _token,
+        voting_escrow,
+        gauge_controller, // MINTERInstance::instance(test_contract),
+                          // MINTERInstance::instance(test_contract2),
     )
 }
 
 #[test]
 fn test_deploy() {
-    let (env, token, owner) = deploy();
-    let user = env.next_user();
-    // assert_eq!(token.name(), NAME);
-    // assert_eq!(token.symbol(), SYMBOL);
-    // // assert_eq!(token.meta(), meta::contract_meta());
-    // assert_eq!(
-    //     token.total_supply(),
-    //     (INIT_TOTAL_SUPPLY + INIT_TOTAL_SUPPLY).into()
-    // );
-    // assert_eq!(token.decimals(), DECIMALS);
-    // assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-    // assert_eq!(token.balance_of(user), 0.into());
-    // assert_eq!(token.allowance(owner, user), 0.into());
-    // assert_eq!(token.allowance(user, owner), 0.into());
+    let (env, minter, _owner, token, _voting_escrow, gauge_controller) = deploy();
+    let _user = env.next_user();
+    assert_eq!(minter.token(), Key::Hash(token.package_hash()));
+    assert_eq!(
+        minter.controller(),
+        Key::Hash(gauge_controller.package_hash())
+    );
 }
 
-// #[test]
-// fn test_minter_approve() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     token.approve(owner, user, amount);
-//     assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-//     assert_eq!(token.balance_of(user), 0.into());
-//     assert_eq!(token.allowance(owner, user), amount);
-//     assert_eq!(token.allowance(user, owner), 0.into());
-// }
+#[test]
+fn test_minter_mint() {
+    let (env, minter, owner, token, _voting_escrow, _gauge_controller) = deploy();
+    let _user = env.next_user();
 
-// #[test]
-// fn test_minter_mint() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     token.mint(owner, user, amount);
-//     assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-//     assert_eq!(token.balance_of(user), amount);
-//     assert_eq!(token.balance_of(user), 10.into());
-// }
+    // minter.mint(owner, Key::Hash(token.package_hash()));
+}
 
-// #[test]
-// fn test_minter_burn() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     assert_eq!(token.balance_of(owner), U256::from(INIT_TOTAL_SUPPLY));
-//     token.burn(owner, owner, amount);
-//     assert_eq!(
-//         token.balance_of(owner),
-//         U256::from(INIT_TOTAL_SUPPLY) - amount
-//     );
-//     assert_eq!(token.balance_of(user), 0.into());
-// }
+#[test]
+fn test_minter_mint_many() {
+    let (_env, minter, owner, token, _voting_escrow, _gauge_controller) = deploy();
+    let gauge_addrs: Vec<String> = vec![
+        Key::Hash(token.package_hash()).to_formatted_string(),
+        Key::Hash(token.package_hash()).to_formatted_string(),
+        Key::Hash(token.package_hash()).to_formatted_string(),
+        Key::Hash(token.package_hash()).to_formatted_string(),
+        Key::Hash(token.package_hash()).to_formatted_string(),
+    ];
+    // minter.mint_many(owner, gauge_addrs);
+}
 
-// #[test]
-// fn test_minter_transfer() {
-//     let (env, token, owner, proxy, _proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let user = env.next_user();
-//     let amount: U256 = 100.into();
+#[test]
+fn test_minter_mint_for() {
+    let (_env, minter, owner, token, _voting_escrow, _gauge_controller) = deploy();
 
-//     // TRASNFER CALL IN PROXY USES:- runtime::call_contract() so transfer is being done from proxy to a recipient
+    // minter.mint_for(owner, Key::Hash(token.package_hash()), Key::from(owner));
+}
 
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, amount);
+#[test]
+fn test_minter_toggle_approve_mint() {
+    let (_env, minter, owner, token, _voting_escrow, _gauge_controller) = deploy();
 
-//     assert_eq!(token.balance_of(package_hash), amount);
-//     assert_eq!(token.balance_of(user), U256::from(0));
-
-//     // // Transfering to user from the proxy contract
-//     proxy.transfer(owner, user, amount);
-
-//     assert_eq!(token.balance_of(package_hash), U256::from(0));
-//     assert_eq!(token.balance_of(user), amount);
-
-//     let ret: Result<(), u32> = proxy.transfer_result();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
-
-// #[test]
-// #[should_panic]
-// fn test_minter_transfer_with_same_sender_and_recipient() {
-//     let (env, token, owner, proxy, _proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let user = env.next_user();
-//     let amount: U256 = 100.into();
-
-//     // TRASNFER CALL IN PROXY USES:- runtime::call_contract() so transfer is being done from proxy to a recipient
-
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, amount);
-
-//     assert_eq!(token.balance_of(package_hash), amount);
-//     assert_eq!(token.balance_of(user), U256::from(0));
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     // Transfering to user from the proxy contract
-//     proxy.transfer(owner, package_hash, amount);
-
-//     assert_eq!(token.balance_of(package_hash), U256::from(100));
-
-//     assert_eq!(token.balance_of(owner), U256::from(1000));
-
-//     let ret: Result<(), u32> = proxy.transfer_result();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
-
-// #[test]
-// fn test_minter_transfer_from() {
-//     let (env, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let recipient = env.next_user();
-//     let user = env.next_user();
-//     let mint_amount = 100.into();
-//     let allowance = 10.into();
-//     let amount: U256 = 1.into();
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, mint_amount);
-
-//     proxy.approve(owner, package_hash2, allowance);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 10.into());
-
-//     proxy2.transfer_from(owner, package_hash.into(), user.into(), amount);
-
-//     assert_eq!(token.nonce(owner), 0.into());
-//     assert_eq!(token.nonce(recipient), 0.into());
-//     assert_eq!(token.balance_of(owner), 1000.into());
-//     assert_eq!(token.balance_of(user), amount);
-
-//     let ret: Result<(), u32> = proxy2.transfer_from_result();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
-
-// #[test]
-// #[should_panic]
-// fn test_minter_transfer_from_too_much() {
-//     let (env, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let user = env.next_user();
-//     let mint_amount = 100.into();
-//     let allowance = 10.into();
-//     let amount: U256 = 12.into();
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, mint_amount);
-
-//     proxy.approve(owner, package_hash2, allowance);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 10.into());
-
-//     proxy2.transfer_from(owner, package_hash.into(), user.into(), amount);
-// }
-
-// #[test]
-// fn test_minter_increase_allowance() {
-//     let (_, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let amount: U256 = 100.into();
-
-//     proxy.increase_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 100.into());
-
-//     proxy.increase_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 200.into());
-
-//     let ret: Result<(), u32> = proxy.increase_allowance_res();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
-//     }
-// }
-
-// #[test]
-// fn test_minter_decrease_allowance() {
-//     let (_, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let amount: U256 = 100.into();
-
-//     proxy.increase_allowance(owner, package_hash2, amount + amount);
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 200.into());
-
-//     proxy.decrease_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 100.into());
-
-//     let ret: Result<(), u32> = proxy.decrease_allowance_res();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Decrease Allowance Failed ERROR:{}", e),
-//     }
-// }
+    minter.toggle_approve_mint(owner, Key::Hash(token.package_hash()));
+}
