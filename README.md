@@ -1,15 +1,28 @@
 # CasperLabs-Curve-DAO
 
-Implementation of `Minter`, `Reward Only Gauge`,`Vesting Escrow` and `Gauge Controller` Contract for the CasperLabs platform.
+Implementation of `Curve Token V1`.`Curve Token v2`, `Curve Token v3`,`ERC20 CRV`,`Fee Distributor`,`Gauge Controller`,`Liquidity Gauge Reward`,`Liquidity Gauge Reward Wrapper`,`Minter`,`Reward Only Gauge`,`Vesting Erscrow`, `Vesting Escrow Simple`,`Vesting Escrow Factory` and `Voting Escrow` Contract for the CasperLabs platform.
 
 ## Steps
 
 There are 4 contracts in this folder
 
-1. Minter Crate
-2. Reward Only Gauge Contract
-3. Gauge Controller Contract
-4. Vesting Escrow Contract
+1. `Curve Token V1`
+2. `Curve Token v2`
+3. `Curve Token v3`
+4. `ERC20 CRV`
+5. `Fee Distributor`
+6. `Gauge Controller`
+7. `Liquidity Gauge Reward`
+8. `Liquidity Gauge Reward Wrapper`
+9. `Minter`
+10. `Reward Only Gauge`
+11. `Vesting Erscrow` 
+12. `Vesting Escrow Simple`
+13. `Vesting Escrow Factory` 
+14. `Voting Escrow`
+
+## Error Code List
+  https://docs.google.com/spreadsheets/d/1Rzh1LERQyGiGpHB3djlT1Tk0LNQ18q_eLBWFDPm2bNc/edit#gid=4667616
 
 ## Table of contents
 
