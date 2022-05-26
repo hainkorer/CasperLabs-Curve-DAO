@@ -87,7 +87,8 @@ fn transfer_from() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(vesting_escrow_address, "transfer_from", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(vesting_escrow_address, "transfer_from", args);
     mappings::set_key(&mappings::transfer_from_key(), ret);
 }
 
@@ -102,7 +103,8 @@ fn increase_allowance() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(vesting_escrow_address, "increase_allowance", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(vesting_escrow_address, "increase_allowance", args);
     mappings::set_key(&mappings::increase_allowance_key(), ret);
 }
 
@@ -117,7 +119,8 @@ fn decrease_allowance() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(vesting_escrow_address, "decrease_allowance", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(vesting_escrow_address, "decrease_allowance", args);
     mappings::set_key(&mappings::decrease_allowance_key(), ret);
 }
 

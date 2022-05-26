@@ -48,7 +48,7 @@ impl CURVETOKENV2Instance {
             0,
         ))
     }
-    pub fn mint_crv2(&self, sender: AccountHash, _to: Key,_value:U256) {
+    pub fn mint_crv2(&self, sender: AccountHash, _to: Key, _value: U256) {
         self.0.call_contract(
             sender,
             "mint_crv2",

@@ -54,7 +54,7 @@ fn constructor() {
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     let lock: u64 = runtime::get_named_arg("lock");
-    Token::default().constructor(token, controller, contract_hash, package_hash,lock);
+    Token::default().constructor(token, controller, contract_hash, package_hash, lock);
 }
 
 ///"""

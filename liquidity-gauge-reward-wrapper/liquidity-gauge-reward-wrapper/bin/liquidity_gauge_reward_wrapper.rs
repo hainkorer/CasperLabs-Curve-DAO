@@ -129,23 +129,23 @@ fn withdraw() {
 fn allowance() {
     let owner: Key = runtime::get_named_arg("owner");
     let spender: Key = runtime::get_named_arg("recipient");
-    let ret = LiquidityGaugeRewardWrapper::default().allowance(owner,spender);
+    let ret = LiquidityGaugeRewardWrapper::default().allowance(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn transfer() {
-   let recipient: Key = runtime::get_named_arg("recipient");
-   let amount: U256 = runtime::get_named_arg("amount");
-   let ret = LiquidityGaugeRewardWrapper::default().transfer(recipient, amount);
-   runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = LiquidityGaugeRewardWrapper::default().transfer(recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn transfer_from() {
-   let owner: Key = runtime::get_named_arg("owner");
-   let recipient: Key = runtime::get_named_arg("recipient");
-   let amount: U256 = runtime::get_named_arg("amount");
-   let ret = LiquidityGaugeRewardWrapper::default().transfer_from(owner, recipient, amount);
-   runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = LiquidityGaugeRewardWrapper::default().transfer_from(owner, recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn approve() {

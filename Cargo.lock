@@ -1122,9 +1122,9 @@ dependencies = [
 
 [[package]]
 name = "keccak"
-version = "0.1.0"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67c21572b4949434e4fc1e1978b99c5f77064153c59d998bf13ecd96fb5ecba7"
+checksum = "f9b7d56ba4a8344d6be9729995e6b06f928af29998cdf79fe390cbf6b1fee838"
 
 [[package]]
 name = "lazy_static"
@@ -1242,6 +1242,53 @@ dependencies = [
  "contract-utils",
  "hex",
  "liquidity-gauge-reward-wrapper-crate",
+ "test-env",
+]
+
+[[package]]
+name = "liquidity-gauge-wrapper"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "liquidity-gauge-wrapper-crate",
+]
+
+[[package]]
+name = "liquidity-gauge-wrapper-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "casper_types_derive",
+ "common",
+ "contract-utils",
+ "hex",
+ "renvm-sig",
+]
+
+[[package]]
+name = "liquidity-gauge-wrapper-session-code"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+]
+
+[[package]]
+name = "liquidity-gauge-wrapper-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "hex",
+ "liquidity-gauge-wrapper-crate",
  "test-env",
 ]
 

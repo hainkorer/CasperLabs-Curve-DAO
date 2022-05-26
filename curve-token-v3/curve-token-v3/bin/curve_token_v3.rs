@@ -49,7 +49,7 @@ fn constructor() {
 fn mint_crv3() {
     let _to: Key = runtime::get_named_arg("_to");
     let _value: U256 = runtime::get_named_arg("_value");
-    CurveTokenV3::default().mint_crv3(_to,_value);
+    CurveTokenV3::default().mint_crv3(_to, _value);
 }
 #[no_mangle]
 fn set_minter() {
@@ -86,8 +86,7 @@ fn get_entry_points() -> EntryPoints {
         "mint_crv3",
         vec![
             Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type())
-
+            Parameter::new("_value", U256::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

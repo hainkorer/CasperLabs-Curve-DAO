@@ -9,7 +9,7 @@ use crate::curve_token_v1_instance::CURVETOKENV1Instance;
 fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
-   
+
     let contract = CURVETOKENV1Instance::new(
         &env,
         "CURVETOKENV1",
@@ -19,15 +19,13 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         u8::from(9 as u8),
         1000000000.into(),
     );
-    
+
     (env, owner, contract)
 }
 
 #[test]
 fn test_deploy() {
     let (_, _, _) = deploy();
-   
-    
 }
 
 #[test]
@@ -39,7 +37,7 @@ fn mint_crv1() {
     )
     .unwrap();
     let _value_arg: U256 = 100000.into();
-    contract.mint_crv1(owner,_to_arg, _value_arg);
+    contract.mint_crv1(owner, _to_arg, _value_arg);
 }
 #[test]
 fn set_minter() {

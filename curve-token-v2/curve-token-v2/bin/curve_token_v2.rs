@@ -61,7 +61,7 @@ fn constructor() {
 fn mint_crv2() {
     let _to: Key = runtime::get_named_arg("_to");
     let _value: U256 = runtime::get_named_arg("_value");
-    CurveTokenV2::default().mint_crv2(_to,_value);
+    CurveTokenV2::default().mint_crv2(_to, _value);
 }
 #[no_mangle]
 fn set_minter() {
@@ -100,8 +100,7 @@ fn get_entry_points() -> EntryPoints {
         "mint_crv2",
         vec![
             Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type())
-
+            Parameter::new("_value", U256::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -179,7 +178,7 @@ fn call() {
             .unwrap_or_revert();
 
         // Store contract in the account's named keys.
-        
+
         runtime::put_key(
             &format!("{}_package_hash", contract_name),
             package_hash.into(),
