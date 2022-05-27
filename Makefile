@@ -166,7 +166,7 @@ copy-wasm-file-curve-token-v3:
 	cp target/wasm32-unknown-unknown/release/*.wasm curve-token-v3/curve-token-v3-tests/wasm
 
 test-minter:
-	make build-contract-minter && make copy-wasm-file-minter
+	make build-contract-gauge-controller && make build-contract-minter && make copy-wasm-file-minter
 test-gauge-controller:
 	make build-contract-gauge-controller && make copy-wasm-file-gauge-controller
 test-reward-only-gauge:
@@ -211,6 +211,7 @@ all:
 	make test-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
 	make test-vesting-escrow-simple && make test-only-vesting-escrow-simple
 	make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
+	make test-liquidity-gauge-wrapper && make test-only-liquidity-gauge-wrapper
 	make test-curve-token-v1 && make test-only-curve-token-v1
 	make test-curve-token-v2 && make test-only-curve-token-v2
 	make test-curve-token-v3 && make test-only-curve-token-v3
