@@ -8,10 +8,7 @@ use casper_contract::{
     contract_api::{runtime::get_call_stack, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{
-    bytesrepr::ToBytes, system::CallStackElement, CLTyped, ContractPackageHash, Key, URef, U128,
-    U256,
-};
+use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U128, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;
 use contract_utils::{get_key, key_and_value_to_str, key_to_str, set_key, values_to_str, Dict};
@@ -246,7 +243,13 @@ impl Gauges {
     }
 
     pub fn get(&self, indx: &U256) -> Key {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_revert()
+        match self.dict.get(indx.to_string().as_str()) {
+            Some(owner) => owner,
+            None => Key::from_formatted_str(
+                "hash-0000000000000000000000000000000000000000000000000000000000000000",
+            )
+            .unwrap(),
+        }
     }
 
     pub fn set(&self, indx: &U256, value: Key) {
@@ -429,6 +432,12 @@ pub fn zero_address() -> Key {
     )
     .unwrap()
 }
+pub fn account_zero_address() -> Key {
+    Key::from_formatted_str(
+        "account-hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+    )
+    .unwrap()
+}
 pub fn time_total() -> U256 {
     get_key(GAUGE_CONTROLLER_TIME_TOTAL).unwrap_or_revert()
 }
@@ -438,7 +447,13 @@ pub fn set_time_total(time_total: U256) {
 }
 
 pub fn owner() -> Key {
-    get_key(GAUGE_CONTROLLER_OWNER).unwrap_or_revert()
+    match get_key(GAUGE_CONTROLLER_OWNER) {
+        Some(owner) => owner,
+        None => Key::from_formatted_str(
+            "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .unwrap(),
+    }
 }
 
 pub fn set_owner(owner: Key) {
@@ -446,7 +461,13 @@ pub fn set_owner(owner: Key) {
 }
 
 pub fn admin() -> Key {
-    get_key(GAUGE_CONTROLLER_ADMIN).unwrap_or_revert()
+    match get_key(GAUGE_CONTROLLER_ADMIN) {
+        Some(admin) => admin,
+        None => Key::from_formatted_str(
+            "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .unwrap(),
+    }
 }
 
 pub fn set_admin(admin: Key) {
@@ -454,7 +475,13 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn future_admin() -> Key {
-    get_key(GAUGE_CONTROLLER_FUTURE_ADMIN).unwrap_or_revert()
+    match get_key(GAUGE_CONTROLLER_FUTURE_ADMIN) {
+        Some(future_admin) => future_admin,
+        None => Key::from_formatted_str(
+            "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .unwrap(),
+    }
 }
 
 pub fn set_future_admin(future_admin: Key) {
@@ -462,7 +489,13 @@ pub fn set_future_admin(future_admin: Key) {
 }
 
 pub fn token() -> Key {
-    get_key(GAUGE_CONTROLLER_TOKEN).unwrap_or_revert()
+    match get_key(GAUGE_CONTROLLER_TOKEN) {
+        Some(token) => token,
+        None => Key::from_formatted_str(
+            "hash-0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .unwrap(),
+    }
 }
 
 pub fn set_token(token: Key) {
@@ -470,14 +503,14 @@ pub fn set_token(token: Key) {
 }
 
 pub fn n_gauge_types() -> U128 {
-    get_key(GAUGE_CONTROLLER_N_GAUGE_TYPES).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_N_GAUGE_TYPES).unwrap_or_default()
 }
 
 pub fn set_n_gauge_types(n_gauge_types: U128) {
     set_key(GAUGE_CONTROLLER_N_GAUGE_TYPES, n_gauge_types);
 }
 pub fn n_gauges() -> U128 {
-    get_key(GAUGE_CONTROLLER_N_GAUGES).unwrap_or_revert()
+    get_key(GAUGE_CONTROLLER_N_GAUGES).unwrap_or_default()
 }
 
 pub fn set_n_gauges(n_gauges: U128) {
@@ -485,7 +518,13 @@ pub fn set_n_gauges(n_gauges: U128) {
 }
 
 pub fn voting_escrow() -> Key {
-    get_key(GAUGE_CONTROLLER_VOTING_ESCROW).unwrap_or_revert()
+    match get_key(GAUGE_CONTROLLER_VOTING_ESCROW) {
+        Some(voting_escrow) => voting_escrow,
+        None => Key::from_formatted_str(
+            "hash-0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .unwrap(),
+    }
 }
 
 pub fn set_voting_escrow(voting_escrow: Key) {

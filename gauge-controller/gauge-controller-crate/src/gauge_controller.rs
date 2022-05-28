@@ -1,9 +1,9 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, ChangeSum, ChangesWeight, GaugeTypeNames, GaugeTypes_, Gauges, LastUserVote, Point,
-    PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum, TimeTypeWeight, TimeWeight,
-    VoteUserPower, VoteUserSlopes, VotedSlope, GAUGE_CONTROLLER_MULTIPLIER, GAUGE_CONTROLLER_WEEK,
-    GAUGE_CONTROLLER_WEIGHT_VOTE_DELAY,
+    self, account_zero_address, ChangeSum, ChangesWeight, GaugeTypeNames, GaugeTypes_, Gauges,
+    LastUserVote, Point, PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum,
+    TimeTypeWeight, TimeWeight, VoteUserPower, VoteUserSlopes, VotedSlope,
+    GAUGE_CONTROLLER_MULTIPLIER, GAUGE_CONTROLLER_WEEK, GAUGE_CONTROLLER_WEIGHT_VOTE_DELAY,
 };
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
@@ -160,7 +160,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::GaugeControllerOnlyAdmin2);
         }
         let _admin = self.future_admin();
-        if _admin == data::zero_address() {
+        if _admin == data::zero_address() || _admin == data::account_zero_address() {
             //Gauge Controller Admin Not Set
             runtime::revert(Error::GaugeControllerAdminNotSet);
         }
@@ -672,18 +672,18 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         };
         let escrow_package_hash = ContractPackageHash::new(escrow_package_hash_add_array);
 
-        let slope: U256 = runtime::call_versioned_contract(
+        let slope: U128 = runtime::call_versioned_contract(
             escrow_package_hash,
             None,
             "get_last_user_slope",
-            runtime_args! {"msg.sender" => self.get_caller()},
+            runtime_args! {"addr" => self.get_caller()},
         );
 
         let lock_end: U256 = runtime::call_versioned_contract(
             escrow_package_hash,
             None,
-            "locked__end",
-            runtime_args! {"msg.sender" => self.get_caller()},
+            "locked_end",
+            runtime_args! {"addr" => self.get_caller()},
         );
 
         let _n_gauges: U128 = data::n_gauges();
@@ -722,7 +722,8 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                         }
                         let old_bias: U256 = old_slope.slope * old_dt;
                         let new_slope: VotedSlope = VotedSlope {
-                            slope: slope * (_user_weight / U256::from(100000)),
+                            slope: U256::from(slope.as_u128())
+                                * (_user_weight / U256::from(100000)),
                             end: lock_end,
                             power: _user_weight,
                         };
