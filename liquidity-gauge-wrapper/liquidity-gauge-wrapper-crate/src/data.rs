@@ -1,35 +1,11 @@
-use alloc::{
-    string::{String, ToString},
-    vec::Vec,
-};
+use alloc::{string::String, vec::Vec};
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
-use casper_types::{
-    bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U128, U256,
-};
+use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
+use common::keys::*;
 use contract_utils::{get_key, set_key, Dict};
 
 pub const TEN_E_NINE: u128 = 1000000000;
-pub const MINTER: &str = "minter";
-pub const CRV_TOKEN: &str = "crv_token";
-pub const LP_TOKEN: &str = "lp_token";
-pub const GAUGE: &str = "gauge";
-
-pub const TOTAL_SUPPLY: &str = "total_supply";
-pub const NAME: &str = "name";
-pub const SYMBOL: &str = "symbol";
-pub const DECIMALS: &str = "decimals";
-
-pub const CRV_INTEGRAL: &str = "crv_integral";
-
-pub const ADMIN: &str = "admin";
-pub const FUTURE_ADMIN: &str = "future_admin";
-pub const IS_KILLED: &str = "is_killed";
-
-pub const LOCK: &str = "lock";
-pub const CONTRACT_HASH: &str = "contract_hash";
-pub const PACKAGE_HASH: &str = "package_hash";
-pub const RESULT: &str = "result";
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str(
@@ -269,19 +245,19 @@ pub fn set_lock(lock: bool) {
 }
 
 pub fn get_contract_hash() -> ContractHash {
-    get_key(CONTRACT_HASH).unwrap_or_default()
+    get_key(SELF_CONTRACT_HASH).unwrap_or_default()
 }
 
 pub fn set_contract_hash(contract_hash: ContractHash) {
-    set_key(CONTRACT_HASH, contract_hash);
+    set_key(SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(PACKAGE_HASH).unwrap_or_default()
+    get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_default()
 }
 
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(PACKAGE_HASH, package_hash);
+    set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn js_ret<T: CLTyped + ToBytes>(ret: T) {

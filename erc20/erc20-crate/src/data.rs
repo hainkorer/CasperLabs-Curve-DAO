@@ -1,3 +1,4 @@
+use crate::event::ERC20Event;
 use alloc::{
     collections::BTreeMap,
     string::{String, ToString},
@@ -8,23 +9,8 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
+use common::keys::*;
 use contract_utils::{get_key, key_to_str, set_key, Dict};
-
-use crate::event::ERC20Event;
-
-const BALANCES_DICT: &str = "balances";
-pub const NONCES_DICT: &str = "nonces";
-pub const ALLOWANCES_DICT: &str = "allowances";
-
-pub const NAME: &str = "name";
-// pub const META: &str = "meta";
-pub const SYMBOL: &str = "symbol";
-pub const DECIMALS: &str = "decimals";
-pub const TOTAL_SUPPLY: &str = "total_supply";
-pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
-pub const DOMAIN_SEPARATOR: &str = "domain_separator";
-pub const PERMIT_TYPE_HASH: &str = "permit_type_hash";
-pub const CONTRACT_PACKAGE_HASH: &str = "contract_package_hash";
 
 pub struct Balances {
     dict: Dict,
@@ -153,11 +139,11 @@ pub fn get_hash() -> Key {
     get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(CONTRACT_PACKAGE_HASH, package_hash);
+    set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(CONTRACT_PACKAGE_HASH).unwrap_or_revert()
+    get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
 }
 
 pub fn contract_package_hash() -> ContractPackageHash {
@@ -183,8 +169,8 @@ pub fn emit(event: &ERC20Event) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "erc20_mint_remove_one".to_string());
+                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(EVENT_TYPE, "erc20_mint_remove_one".to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
@@ -193,8 +179,8 @@ pub fn emit(event: &ERC20Event) {
         ERC20Event::Burn { owner, token_ids } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "erc20_burn_remove_one".to_string());
+                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(EVENT_TYPE, "erc20_burn_remove_one".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
@@ -207,8 +193,8 @@ pub fn emit(event: &ERC20Event) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "erc20_approve_token".to_string());
+                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(EVENT_TYPE, "erc20_approve_token".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("spender", spender.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -222,8 +208,8 @@ pub fn emit(event: &ERC20Event) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert("event_type", "erc20_transfer_token".to_string());
+                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(EVENT_TYPE, "erc20_transfer_token".to_string());
                 param.insert("sender", sender.to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -232,8 +218,8 @@ pub fn emit(event: &ERC20Event) {
         }
         ERC20Event::MetadataUpdate { token_id } => {
             let mut param = BTreeMap::new();
-            param.insert(CONTRACT_PACKAGE_HASH, package.to_string());
-            param.insert("event_type", "erc20_metadata_update".to_string());
+            param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+            param.insert(EVENT_TYPE, "erc20_metadata_update".to_string());
             param.insert("token_id", token_id.to_string());
             events.push(param);
         }

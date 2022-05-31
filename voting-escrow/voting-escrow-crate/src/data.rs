@@ -10,13 +10,13 @@ use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;
 use contract_utils::{get_key, key_and_value_to_str, set_key, Dict};
 
-pub const VOTING_ESCROW_DEPOSIT_FOR_TYPE: U128 = U128([0, 0]);
-pub const VOTING_ESCROW_CREATE_LOCK_TYPE: U128 = U128([1, 0]);
-pub const VOTING_ESCROW_INCREASE_LOCK_AMOUNT: U128 = U128([2, 0]);
-pub const VOTING_ESCROW_INCREASE_UNLOCK_TIME: U128 = U128([3, 0]);
-pub const VOTING_ESCROW_WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
-pub const VOTING_ESCROW_MAXTIME: U256 = U256([126144000, 0, 0, 0]); // 4 years
-pub const VOTING_ESCROW_MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
+pub const DEPOSIT_FOR_TYPE: U128 = U128([0, 0]);
+pub const CREATE_LOCK_TYPE: U128 = U128([1, 0]);
+pub const INCREASE_LOCK_AMOUNT: U128 = U128([2, 0]);
+pub const INCREASE_UNLOCK_TIME: U128 = U128([3, 0]);
+pub const WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
+pub const MAXTIME: U256 = U256([126144000, 0, 0, 0]); // 4 years
+pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str(
@@ -42,7 +42,7 @@ pub struct LockedBalance {
     pub end: U256,
 }
 
-pub const VOTING_ESCROW_LOCKED: &str = "voting_escrow_locked";
+pub const LOCKED: &str = "locked";
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct Locked {
     dict: Dict,
@@ -51,12 +51,12 @@ pub struct Locked {
 impl Locked {
     pub fn instance() -> Locked {
         Locked {
-            dict: Dict::instance(VOTING_ESCROW_LOCKED),
+            dict: Dict::instance(LOCKED),
         }
     }
 
     pub fn init() {
-        Dict::init(VOTING_ESCROW_LOCKED)
+        Dict::init(LOCKED)
     }
 
     pub fn get(&self, key: &Key) -> LockedBalance {
@@ -68,7 +68,7 @@ impl Locked {
     }
 }
 
-pub const VOTING_ESCROW_USER_POINT_HISTORY: &str = "voting_escrow_user_point_history";
+pub const USER_POINT_HISTORY: &str = "user_point_history";
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct UserPointHistory {
     dict: Dict,
@@ -77,12 +77,12 @@ pub struct UserPointHistory {
 impl UserPointHistory {
     pub fn instance() -> UserPointHistory {
         UserPointHistory {
-            dict: Dict::instance(VOTING_ESCROW_USER_POINT_HISTORY),
+            dict: Dict::instance(USER_POINT_HISTORY),
         }
     }
 
     pub fn init() {
-        Dict::init(VOTING_ESCROW_USER_POINT_HISTORY)
+        Dict::init(USER_POINT_HISTORY)
     }
 
     pub fn get(&self, key: &Key, _key: &U256) -> Point {
@@ -96,7 +96,7 @@ impl UserPointHistory {
     }
 }
 
-pub const VOTING_ESCROW_USER_POINT_EPOCH: &str = "voting_escrow_user_point_epoch";
+pub const USER_POINT_EPOCH: &str = "user_point_epoch";
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct UserPointEpoch {
     dict: Dict,
@@ -105,12 +105,12 @@ pub struct UserPointEpoch {
 impl UserPointEpoch {
     pub fn instance() -> UserPointEpoch {
         UserPointEpoch {
-            dict: Dict::instance(VOTING_ESCROW_USER_POINT_EPOCH),
+            dict: Dict::instance(USER_POINT_EPOCH),
         }
     }
 
     pub fn init() {
-        Dict::init(VOTING_ESCROW_USER_POINT_EPOCH)
+        Dict::init(USER_POINT_EPOCH)
     }
 
     pub fn get(&self, key: &Key) -> U256 {
@@ -122,7 +122,7 @@ impl UserPointEpoch {
     }
 }
 
-pub const VOTING_ESCROW_SLOPE_CHANGES: &str = "voting_escrow_slope_changes";
+pub const SLOPE_CHANGES: &str = "slope_changes";
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct SlopeChanges {
     dict: Dict,
@@ -131,12 +131,12 @@ pub struct SlopeChanges {
 impl SlopeChanges {
     pub fn instance() -> SlopeChanges {
         SlopeChanges {
-            dict: Dict::instance(VOTING_ESCROW_SLOPE_CHANGES),
+            dict: Dict::instance(SLOPE_CHANGES),
         }
     }
 
     pub fn init() {
-        Dict::init(VOTING_ESCROW_SLOPE_CHANGES)
+        Dict::init(SLOPE_CHANGES)
     }
 
     pub fn get(&self, key: &U256) -> U128 {
@@ -148,7 +148,7 @@ impl SlopeChanges {
     }
 }
 
-pub const VOTING_ESCROW_POINT_HISTORY: &str = "voting_escrow_point_history";
+pub const POINT_HISTORY: &str = "point_history";
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct PointHistory {
     dict: Dict,
@@ -158,13 +158,13 @@ pub struct PointHistory {
 impl PointHistory {
     pub fn instance() -> PointHistory {
         PointHistory {
-            dict: Dict::instance(VOTING_ESCROW_POINT_HISTORY),
+            dict: Dict::instance(POINT_HISTORY),
             length: 0.into(),
         }
     }
 
     pub fn init() {
-        Dict::init(VOTING_ESCROW_POINT_HISTORY)
+        Dict::init(POINT_HISTORY)
     }
 
     pub fn get(&self, indx: &U256) -> Point {
@@ -182,117 +182,117 @@ impl PointHistory {
 }
 
 pub fn get_token() -> Key {
-    get_key(VOTING_ESCROW_TOKEN).unwrap_or(zero_address())
+    get_key(TOKEN).unwrap_or(zero_address())
 }
 
 pub fn set_token(token: Key) {
-    set_key(VOTING_ESCROW_TOKEN, token);
+    set_key(TOKEN, token);
 }
 
 pub fn get_supply() -> U256 {
-    get_key(VOTING_ESCROW_SUPPLY).unwrap_or_default()
+    get_key(SUPPLY).unwrap_or_default()
 }
 
 pub fn set_supply(supply: U256) {
-    set_key(VOTING_ESCROW_SUPPLY, supply);
+    set_key(SUPPLY, supply);
 }
 
 pub fn get_admin() -> Key {
-    get_key(VOTING_ESCROW_ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or(zero_address())
 }
 
 pub fn set_admin(admin: Key) {
-    set_key(VOTING_ESCROW_ADMIN, admin);
+    set_key(ADMIN, admin);
 }
 
 pub fn get_future_admin() -> Key {
-    get_key(VOTING_ESCROW_FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
 }
 
 pub fn set_future_admin(future_admin: Key) {
-    set_key(VOTING_ESCROW_FUTURE_ADMIN, future_admin);
+    set_key(FUTURE_ADMIN, future_admin);
 }
 
 pub fn get_controller() -> Key {
-    get_key(VOTING_ESCROW_CONTROLLER).unwrap_or(zero_address())
+    get_key(CONTROLLER).unwrap_or(zero_address())
 }
 
 pub fn set_controller(controller: Key) {
-    set_key(VOTING_ESCROW_CONTROLLER, controller);
+    set_key(CONTROLLER, controller);
 }
 
 pub fn get_transfers_enabled() -> bool {
-    get_key(VOTING_ESCROW_TRANSFERS_ENABLED).unwrap_or_default()
+    get_key(TRANSFERS_ENABLED).unwrap_or_default()
 }
 
 pub fn set_transfers_enabled(transfers_enabled: bool) {
-    set_key(VOTING_ESCROW_TRANSFERS_ENABLED, transfers_enabled);
+    set_key(TRANSFERS_ENABLED, transfers_enabled);
 }
 
 pub fn get_name() -> String {
-    get_key(VOTING_ESCROW_NAME).unwrap_or_default()
+    get_key(NAME).unwrap_or_default()
 }
 
 pub fn set_name(name: String) {
-    set_key(VOTING_ESCROW_NAME, name);
+    set_key(NAME, name);
 }
 
 pub fn get_symbol() -> String {
-    get_key(VOTING_ESCROW_SYMBOL).unwrap_or_default()
+    get_key(SYMBOL).unwrap_or_default()
 }
 
 pub fn set_symbol(symbol: String) {
-    set_key(VOTING_ESCROW_SYMBOL, symbol);
+    set_key(SYMBOL, symbol);
 }
 
 pub fn get_version() -> String {
-    get_key(VOTING_ESCROW_VERSION).unwrap_or_default()
+    get_key(VERSION).unwrap_or_default()
 }
 
 pub fn set_version(version: String) {
-    set_key(VOTING_ESCROW_VERSION, version);
+    set_key(VERSION, version);
 }
 
 pub fn get_decimals() -> U256 {
-    get_key(VOTING_ESCROW_DECIMALS).unwrap_or_default()
+    get_key(DECIMALS).unwrap_or_default()
 }
 
 pub fn set_decimals(decimals: U256) {
-    set_key(VOTING_ESCROW_DECIMALS, decimals);
+    set_key(DECIMALS, decimals);
 }
 
 pub fn get_epoch() -> U256 {
-    get_key(VOTING_ESCROW_EPOCH).unwrap_or_default()
+    get_key(EPOCH).unwrap_or_default()
 }
 
 pub fn set_epoch(epoch: U256) {
-    set_key(VOTING_ESCROW_EPOCH, epoch);
+    set_key(EPOCH, epoch);
 }
 
 pub fn get_lock() -> bool {
-    get_key(VOTING_ESCROW_LOCK).unwrap_or_default()
+    get_key(LOCK).unwrap_or_default()
 }
 
 pub fn set_lock(lock: bool) {
-    set_key(VOTING_ESCROW_LOCK, lock);
+    set_key(LOCK, lock);
 }
 
 pub fn get_contract_hash() -> ContractHash {
-    get_key(VOTING_ESCROW_CONTRACT_HASH).unwrap_or_default()
+    get_key(SELF_CONTRACT_HASH).unwrap_or_default()
 }
 
 pub fn set_contract_hash(contract_hash: ContractHash) {
-    set_key(VOTING_ESCROW_CONTRACT_HASH, contract_hash);
+    set_key(SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(VOTING_ESCROW_PACKAGE_HASH).unwrap_or_default()
+    get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_default()
 }
 
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(VOTING_ESCROW_PACKAGE_HASH, package_hash);
+    set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn js_ret<T: CLTyped + ToBytes>(ret: T) {
-    set_key(VOTING_ESCROW_RESULT, ret);
+    set_key(RESULT, ret);
 }

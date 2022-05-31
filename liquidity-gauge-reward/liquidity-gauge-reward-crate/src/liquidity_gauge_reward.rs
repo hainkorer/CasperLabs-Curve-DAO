@@ -40,6 +40,19 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         if !(reward_contract != zero_address()) {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardZeroAddress3));
         }
+
+        ApprovedToDeposit::init();
+        BalanceOf::init();
+        WorkingBalances::init();
+        PeriodTimestamp::init();
+        IntegrateInvSupply::init();
+        IntegrateInvSupplyOf::init();
+        IntegrateCheckpointOf::init();
+        IntegrateFraction::init();
+        RewardIntegralFor::init();
+        RewardsFor::init();
+        ClaimedRewardsFor::init();
+
         set_lp_token(lp_addr);
         set_minter(minter);
         let crv_addr: Key = runtime::call_versioned_contract(
@@ -116,7 +129,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             runtime_args! {},
         );
         let mut lim: U256 = l
-            .checked_mul(LIQUIDITY_GAUGE_REWARD_TOKENLESS_PRODUCTION)
+            .checked_mul(TOKENLESS_PRODUCTION)
             .unwrap_or_revert()
             .checked_div(100.into())
             .unwrap_or_revert();
@@ -124,7 +137,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             && (U256::from(u64::from(get_blocktime()))
                 > PeriodTimestamp::instance()
                     .get(&0.into())
-                    .checked_add(LIQUIDITY_GAUGE_REWARD_BOOST_WARMUP)
+                    .checked_add(BOOST_WARMUP)
                     .unwrap_or_revert())
         {
             lim = lim
@@ -135,7 +148,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                         .unwrap_or_revert()
                         .checked_mul(
                             U256::from(100)
-                                .checked_sub(LIQUIDITY_GAUGE_REWARD_TOKENLESS_PRODUCTION)
+                                .checked_sub(TOKENLESS_PRODUCTION)
                                 .unwrap_or_revert(),
                         )
                         .unwrap_or_revert()
@@ -273,13 +286,11 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         if U256::from(u64::from(get_blocktime())) > period_time {
             let mut prev_week_time: U256 = period_time;
             let mut week_time: U256 = U256::min(
-                (period_time
-                    .checked_add(LIQUIDITY_GAUGE_REWARD_WEEK)
-                    .unwrap_or_revert())
-                .checked_div(LIQUIDITY_GAUGE_REWARD_WEEK)
-                .unwrap_or_revert()
-                .checked_mul(LIQUIDITY_GAUGE_REWARD_WEEK)
-                .unwrap_or_revert(),
+                (period_time.checked_add(WEEK).unwrap_or_revert())
+                    .checked_div(WEEK)
+                    .unwrap_or_revert()
+                    .checked_mul(WEEK)
+                    .unwrap_or_revert(),
                 U256::from(u64::from(get_blocktime())),
             );
             for _ in 0..500 {
@@ -290,7 +301,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                     "gauge_relative_weight",
                     runtime_args! {
                         "addr" => Key::from(get_package_hash()),
-                        "time" => prev_week_time.checked_div(LIQUIDITY_GAUGE_REWARD_WEEK).unwrap_or_revert().checked_mul(LIQUIDITY_GAUGE_REWARD_WEEK).unwrap_or_revert()
+                        "time" => prev_week_time.checked_div(WEEK).unwrap_or_revert().checked_mul(WEEK).unwrap_or_revert()
                     },
                 );
                 if working_supply > 0.into() {
@@ -351,9 +362,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                 }
                 prev_week_time = week_time;
                 week_time = U256::min(
-                    week_time
-                        .checked_add(LIQUIDITY_GAUGE_REWARD_WEEK)
-                        .unwrap_or_revert(),
+                    week_time.checked_add(WEEK).unwrap_or_revert(),
                     U256::from(u64::from(get_blocktime())),
                 )
             }
@@ -493,7 +502,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         }
         if !(WorkingBalances::instance().get(&addr)
             > balance
-                .checked_mul(LIQUIDITY_GAUGE_REWARD_TOKENLESS_PRODUCTION)
+                .checked_mul(TOKENLESS_PRODUCTION)
                 .unwrap_or_revert()
                 .checked_div(100.into())
                 .unwrap_or_revert())

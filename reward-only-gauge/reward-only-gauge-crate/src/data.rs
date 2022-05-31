@@ -15,8 +15,8 @@ use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;
 use contract_utils::{get_key, key_to_str, set_key, Dict};
 
-pub const REWARD_ONLY_GAUGE_MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
-pub const REWARD_ONLY_GAUGE_CLAIM_FREQUENCY: U256 = U256([3600, 0, 0, 0]);
+pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
+pub const CLAIM_FREQUENCY: U256 = U256([3600, 0, 0, 0]);
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
 pub struct RewardData {
@@ -36,12 +36,12 @@ pub struct Balances {
 impl Balances {
     pub fn instance() -> Balances {
         Balances {
-            dict: Dict::instance(REWARD_ONLY_GAUGE_BALANCES_DICT),
+            dict: Dict::instance(BALANCES_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(REWARD_ONLY_GAUGE_BALANCES_DICT)
+        Dict::init(BALANCES_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U256 {
@@ -60,12 +60,12 @@ pub struct Allowances {
 impl Allowances {
     pub fn instance() -> Allowances {
         Allowances {
-            dict: Dict::instance(REWARD_ONLY_GAUGE_ALLOWANCES_DICT),
+            dict: Dict::instance(ALLOWANCES_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(REWARD_ONLY_GAUGE_ALLOWANCES_DICT)
+        Dict::init(ALLOWANCES_DICT)
     }
 
     pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
@@ -85,13 +85,13 @@ pub struct RewardTokens {
 impl RewardTokens {
     pub fn instance() -> RewardTokens {
         RewardTokens {
-            dict: Dict::instance(REWARD_ONLY_GAUGE_REWARD_TOKENS_DICT),
+            dict: Dict::instance(REWARD_TOKENS_DICT),
             length: 0.into(),
         }
     }
 
     pub fn init() {
-        Dict::init(REWARD_ONLY_GAUGE_REWARD_TOKENS_DICT)
+        Dict::init(REWARD_TOKENS_DICT)
     }
 
     pub fn get(&self, indx: &U256) -> Key {
@@ -115,12 +115,12 @@ pub struct RewardBalances {
 impl RewardBalances {
     pub fn instance() -> RewardBalances {
         RewardBalances {
-            dict: Dict::instance(REWARD_ONLY_GAUGE_REWARD_BALANCES_DICT),
+            dict: Dict::instance(REWARD_BALANCES_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(REWARD_ONLY_GAUGE_REWARD_BALANCES_DICT)
+        Dict::init(REWARD_BALANCES_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U256 {
@@ -139,12 +139,12 @@ pub struct RewardsReceiver {
 impl RewardsReceiver {
     pub fn instance() -> RewardsReceiver {
         RewardsReceiver {
-            dict: Dict::instance(REWARD_ONLY_GAUGE_REWARDS_RECEIVER_DICT),
+            dict: Dict::instance(REWARDS_RECEIVER_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(REWARD_ONLY_GAUGE_REWARDS_RECEIVER_DICT)
+        Dict::init(REWARDS_RECEIVER_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> Key {
@@ -163,12 +163,12 @@ pub struct RewardIntegral {
 impl RewardIntegral {
     pub fn instance() -> RewardIntegral {
         RewardIntegral {
-            dict: Dict::instance(REWARD_ONLY_GAUGE_REWARD_INTEGRAL_DICT),
+            dict: Dict::instance(REWARD_INTEGRAL_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(REWARD_ONLY_GAUGE_REWARD_INTEGRAL_DICT)
+        Dict::init(REWARD_INTEGRAL_DICT)
     }
 
     pub fn get(&self, owner: &Key) -> U256 {
@@ -187,12 +187,12 @@ pub struct RewardIntegralFor {
 impl RewardIntegralFor {
     pub fn instance() -> RewardIntegralFor {
         RewardIntegralFor {
-            dict: Dict::instance(REWARD_ONLY_GAUGE_REWARD_INTEGRAL_FOR_DICT),
+            dict: Dict::instance(REWARD_INTEGRAL_FOR_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(REWARD_ONLY_GAUGE_REWARD_INTEGRAL_FOR_DICT)
+        Dict::init(REWARD_INTEGRAL_FOR_DICT)
     }
 
     pub fn get(&self, reward_token: &Key, claiming_address: &Key) -> U256 {
@@ -214,12 +214,12 @@ pub struct ClaimData {
 impl ClaimData {
     pub fn instance() -> ClaimData {
         ClaimData {
-            dict: Dict::instance(REWARD_ONLY_GAUGE_CLAIM_DATA_DICT),
+            dict: Dict::instance(CLAIM_DATA_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(REWARD_ONLY_GAUGE_CLAIM_DATA_DICT)
+        Dict::init(CLAIM_DATA_DICT)
     }
 
     pub fn get(&self, user: &Key, claiming_address: &Key) -> ClaimDataStruct {
@@ -235,58 +235,58 @@ impl ClaimData {
 }
 
 pub fn set_lock(lock: u64) {
-    set_key(REWARD_ONLY_GAUGE_LOCK, lock);
+    set_key(LOCK, lock);
 }
 
 pub fn get_lock() -> u64 {
-    get_key(REWARD_ONLY_GAUGE_LOCK).unwrap_or_revert()
+    get_key(LOCK).unwrap_or_revert()
 }
 
 pub fn name() -> String {
-    get_key(REWARD_ONLY_GAUGE_NAME).unwrap_or_revert()
+    get_key(NAME).unwrap_or_revert()
 }
 
 pub fn set_name(name: String) {
-    set_key(REWARD_ONLY_GAUGE_NAME, name);
+    set_key(NAME, name);
 }
 
 pub fn claim_sig() -> Bytes {
-    get_key(REWARD_ONLY_GAUGE_CLAIM_SIG).unwrap_or_revert()
+    get_key(CLAIM_SIG).unwrap_or_revert()
 }
 
 pub fn set_claim_sig(claim_sig: Bytes) {
-    set_key(REWARD_ONLY_GAUGE_CLAIM_SIG, claim_sig);
+    set_key(CLAIM_SIG, claim_sig);
 }
 
 pub fn symbol() -> String {
-    get_key(REWARD_ONLY_GAUGE_SYMBOL).unwrap_or_revert()
+    get_key(SYMBOL).unwrap_or_revert()
 }
 
 pub fn set_symbol(symbol: String) {
-    set_key(REWARD_ONLY_GAUGE_SYMBOL, symbol);
+    set_key(SYMBOL, symbol);
 }
 
 pub fn decimals() -> u8 {
-    get_key(REWARD_ONLY_GAUGE_DECIMALS).unwrap_or_revert()
+    get_key(DECIMALS).unwrap_or_revert()
 }
 
 pub fn set_decimals(decimals: u8) {
-    set_key(REWARD_ONLY_GAUGE_DECIMALS, decimals);
+    set_key(DECIMALS, decimals);
 }
 
 pub fn total_supply() -> U256 {
-    get_key(REWARD_ONLY_GAUGE_TOTAL_SUPPLY).unwrap_or_default()
+    get_key(TOTAL_SUPPLY).unwrap_or_default()
 }
 
 pub fn set_total_supply(total_supply: U256) {
-    set_key(REWARD_ONLY_GAUGE_TOTAL_SUPPLY, total_supply);
+    set_key(TOTAL_SUPPLY, total_supply);
 }
 pub fn reward_data() -> RewardData {
-    get_key(REWARD_ONLY_GAUGE_REWARD_DATA).unwrap_or_revert()
+    get_key(REWARD_DATA).unwrap_or_revert()
 }
 
 pub fn set_reward_data(reward_data: RewardData) {
-    set_key(REWARD_ONLY_GAUGE_REWARD_DATA, reward_data);
+    set_key(REWARD_DATA, reward_data);
 }
 
 pub fn zero_address() -> Key {
@@ -304,41 +304,41 @@ pub fn account_zero_address() -> Key {
 }
 
 pub fn admin() -> Key {
-    get_key(REWARD_ONLY_GAUGE_ADMIN).unwrap_or_revert()
+    get_key(ADMIN).unwrap_or_revert()
 }
 
 pub fn set_admin(admin: Key) {
-    set_key(REWARD_ONLY_GAUGE_ADMIN, admin);
+    set_key(ADMIN, admin);
 }
 pub fn lp_token() -> Key {
-    get_key(REWARD_ONLY_GAUGE_LP_TOKEN).unwrap_or_revert()
+    get_key(LP_TOKEN).unwrap_or_revert()
 }
 
 pub fn set_lp_token(admin: Key) {
-    set_key(REWARD_ONLY_GAUGE_LP_TOKEN, admin);
+    set_key(LP_TOKEN, admin);
 }
 
 pub fn future_admin() -> Key {
-    get_key(REWARD_ONLY_GAUGE_FUTURE_ADMIN).unwrap_or_revert()
+    get_key(FUTURE_ADMIN).unwrap_or_revert()
 }
 
 pub fn set_future_admin(future_admin: Key) {
-    set_key(REWARD_ONLY_GAUGE_FUTURE_ADMIN, future_admin);
+    set_key(FUTURE_ADMIN, future_admin);
 }
 
 pub fn set_hash(contract_hash: Key) {
-    set_key(REWARD_ONLY_GAUGE_SELF_CONTRACT_HASH, contract_hash);
+    set_key(SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_hash() -> Key {
-    get_key(REWARD_ONLY_GAUGE_SELF_CONTRACT_HASH).unwrap_or_revert()
+    get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(REWARD_ONLY_GAUGE_CONTRACT_PACKAGE_HASH, package_hash);
+    set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(REWARD_ONLY_GAUGE_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
+    get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
 }
 
 pub fn contract_package_hash() -> ContractPackageHash {
@@ -364,11 +364,8 @@ pub fn emit(event: &REWARDONLYGAUGEEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(REWARD_ONLY_GAUGE_CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert(
-                    "reward_only_gauge_event_type",
-                    "reward_only_gauge_reward_only_gauge_mint_remove_one".to_string(),
-                );
+                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(EVENT_TYPE, "mint_remove_one".to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
@@ -377,11 +374,8 @@ pub fn emit(event: &REWARDONLYGAUGEEvent) {
         REWARDONLYGAUGEEvent::Burn { owner, token_ids } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(REWARD_ONLY_GAUGE_CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert(
-                    "reward_only_gauge_event_type",
-                    "reward_only_gauge_reward_only_gauge_burn_remove_one".to_string(),
-                );
+                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(EVENT_TYPE, "burn_remove_one".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("token_id", token_id.to_string());
                 events.push(param);
@@ -394,11 +388,8 @@ pub fn emit(event: &REWARDONLYGAUGEEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(REWARD_ONLY_GAUGE_CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert(
-                    "event_type",
-                    "reward_only_gauge_reward_only_gauge_approve_token".to_string(),
-                );
+                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(EVENT_TYPE, "approve_token".to_string());
                 param.insert("owner", owner.to_string());
                 param.insert("spender", spender.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -412,11 +403,8 @@ pub fn emit(event: &REWARDONLYGAUGEEvent) {
         } => {
             for token_id in token_ids {
                 let mut param = BTreeMap::new();
-                param.insert(REWARD_ONLY_GAUGE_CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert(
-                    "event_type",
-                    "reward_only_gauge_reward_only_gauge_transfer_token".to_string(),
-                );
+                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+                param.insert(EVENT_TYPE, "transfer_token".to_string());
                 param.insert("sender", sender.to_string());
                 param.insert("recipient", recipient.to_string());
                 param.insert("token_id", token_id.to_string());
@@ -425,11 +413,8 @@ pub fn emit(event: &REWARDONLYGAUGEEvent) {
         }
         REWARDONLYGAUGEEvent::MetadataUpdate { token_id } => {
             let mut param = BTreeMap::new();
-            param.insert(REWARD_ONLY_GAUGE_CONTRACT_PACKAGE_HASH, package.to_string());
-            param.insert(
-                "reward_only_gauge_event_type",
-                "reward_only_gauge_reward_only_gauge_metadata_update".to_string(),
-            );
+            param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
+            param.insert(EVENT_TYPE, "metadata_update".to_string());
             param.insert("token_id", token_id.to_string());
             events.push(param);
         }

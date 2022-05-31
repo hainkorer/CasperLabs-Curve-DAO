@@ -3,191 +3,41 @@ use casper_types::{
 };
 use test_env::{TestContract, TestEnv};
 
-pub struct VOTINGESCROWInstance(TestContract);
+pub struct LIQUIDITYGAUGEREWARDInstance(TestContract);
 
-impl VOTINGESCROWInstance {
+impl LIQUIDITYGAUGEREWARDInstance {
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
-        token_addr: Key,
-        name: String,
-        symbol: String,
-        version: String,
-    ) -> VOTINGESCROWInstance {
-        VOTINGESCROWInstance(TestContract::new(
+        lp_addr: Key,
+        minter: Key,
+        reward_contract: Key,
+        rewarded_token: Key,
+        admin: Key,
+    ) -> LIQUIDITYGAUGEREWARDInstance {
+        LIQUIDITYGAUGEREWARDInstance(TestContract::new(
             env,
-            "voting-escrow.wasm",
+            "liquidity-gauge-reward.wasm",
             contract_name,
             sender,
             runtime_args! {
-                "token_addr" => token_addr,
-                "name" => name,
-                "symbol" => symbol,
-                "version" => version,
+                "lp_addr" => lp_addr,
+                "minter" => minter,
+                "reward_contract" => reward_contract,
+                "rewarded_token" => rewarded_token,
+                "admin" => admin,
             },
             0,
         ))
     }
 
-    pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key) {
+    pub fn user_checkpoint(&self, owner: AccountHash, addr: Key) {
         self.0.call_contract(
             owner,
-            "commit_transfer_ownership",
+            "user_checkpoint",
             runtime_args! {
                 "addr" => addr
-            },
-            0,
-        );
-    }
-
-    pub fn apply_transfer_ownership(&self, owner: AccountHash) {
-        self.0
-            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, 0);
-    }
-
-    pub fn get_last_user_slope_js_client(&self, owner: AccountHash, addr: Key) {
-        self.0.call_contract(
-            owner,
-            "get_last_user_slope_js_client",
-            runtime_args! {
-                "addr" => addr
-            },
-            0,
-        );
-    }
-
-    pub fn user_point_history_ts_js_client(&self, owner: AccountHash, addr: Key, idx: U256) {
-        self.0.call_contract(
-            owner,
-            "user_point_history_ts_js_client",
-            runtime_args! {
-                "addr" => addr,
-                "idx" => idx,
-            },
-            0,
-        );
-    }
-
-    pub fn locked_end_js_client(&self, owner: AccountHash, addr: Key) {
-        self.0.call_contract(
-            owner,
-            "locked_end_js_client",
-            runtime_args! {
-                "addr" => addr,
-            },
-            0,
-        );
-    }
-
-    pub fn checkpoint(&self, owner: AccountHash) {
-        self.0
-            .call_contract(owner, "checkpoint", runtime_args! {}, 0);
-    }
-
-    pub fn deposit_for(&self, owner: AccountHash, addr: Key, value: U256) {
-        self.0.call_contract(
-            owner,
-            "deposit_for",
-            runtime_args! {
-                "addr" => addr,
-                "value" => value
-            },
-            0,
-        );
-    }
-
-    pub fn create_lock(&self, owner: AccountHash, value: U256, unlock_time: U256) {
-        self.0.call_contract(
-            owner,
-            "create_lock",
-            runtime_args! {
-                "value" => value,
-                "unlock_time" =>  unlock_time
-            },
-            0,
-        );
-    }
-
-    pub fn increase_amount(&self, owner: AccountHash, value: U256) {
-        self.0.call_contract(
-            owner,
-            "increase_amount",
-            runtime_args! {
-                "value" => value
-            },
-            0,
-        );
-    }
-
-    pub fn increase_unlock_time(&self, owner: AccountHash, unlock_time: U256) {
-        self.0.call_contract(
-            owner,
-            "increase_unlock_time",
-            runtime_args! {
-                "unlock_time" => unlock_time
-            },
-            0,
-        );
-    }
-
-    pub fn withdraw(&self, owner: AccountHash, time: u64) {
-        self.0
-            .call_contract(owner, "withdraw", runtime_args! {}, time);
-    }
-
-    pub fn balance_of_js_client(&self, owner: AccountHash, addr: Key, t: U256) {
-        self.0.call_contract(
-            owner,
-            "balance_of_js_client",
-            runtime_args! {
-                "addr" => addr,
-                "t" => t
-            },
-            0,
-        );
-    }
-
-    pub fn balance_of_at_js_client(&self, owner: AccountHash, addr: Key, block: U256) {
-        self.0.call_contract(
-            owner,
-            "balance_of_at_js_client",
-            runtime_args! {
-                "addr" => addr,
-                "block" => block
-            },
-            0,
-        );
-    }
-
-    pub fn total_supply_js_client(&self, owner: AccountHash, t: U256) {
-        self.0.call_contract(
-            owner,
-            "total_supply_js_client",
-            runtime_args! {
-                "t" => t
-            },
-            0,
-        );
-    }
-
-    pub fn total_supply_at_js_client(&self, owner: AccountHash, block: U256) {
-        self.0.call_contract(
-            owner,
-            "total_supply_at_js_client",
-            runtime_args! {
-                "block" => block
-            },
-            0,
-        );
-    }
-
-    pub fn change_controller(&self, owner: AccountHash, new_controller: Key) {
-        self.0.call_contract(
-            owner,
-            "change_controller",
-            runtime_args! {
-                "new_controller" => new_controller
             },
             0,
         );
