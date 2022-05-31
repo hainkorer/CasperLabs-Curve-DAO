@@ -100,7 +100,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             },
         );
         d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
-        let total_balance:U256= get_total_supply();
+        let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
@@ -388,7 +388,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     // @param _spender The address which will transfer the funds
     // @param _value The amount of tokens that may be transferred
-    fn approve(&self,spender: Key,amount: U256){
+    fn approve(&self, spender: Key, amount: U256) {
         Allowances::instance().set(&self.get_caller(), &spender, amount);
         LIQUIDITYGAUGEWRAPPER::emit(
             self,
@@ -473,10 +473,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             runtime::revert(ApiError::from(Error::GaugeWrapperAdminNotSet));
         }
         set_admin(admin);
-        LIQUIDITYGAUGEWRAPPER::emit(
-            self,
-            &LiquidityGaugeWrapperEvent::ApplyOwnership { admin },
-        );
+        LIQUIDITYGAUGEWRAPPER::emit(self, &LiquidityGaugeWrapperEvent::ApplyOwnership { admin });
     }
 
     fn emit(&self, liquidity_gauge_wrapper_event: &LiquidityGaugeWrapperEvent) {
@@ -488,10 +485,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             LiquidityGaugeWrapperEvent::Deposit { provider, value } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package_hash);
-                event.insert(
-                    "event_type",
-                    liquidity_gauge_wrapper_event.type_name(),
-                );
+                event.insert("event_type", liquidity_gauge_wrapper_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
                 events.push(event);
@@ -499,10 +493,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             LiquidityGaugeWrapperEvent::Withdraw { provider, value } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package_hash);
-                event.insert(
-                    "event_type",
-                    liquidity_gauge_wrapper_event.type_name(),
-                );
+                event.insert("event_type", liquidity_gauge_wrapper_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
                 events.push(event);
@@ -510,30 +501,21 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             LiquidityGaugeWrapperEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package_hash);
-                event.insert(
-                    "event_type",
-                    liquidity_gauge_wrapper_event.type_name(),
-                );
+                event.insert("event_type", liquidity_gauge_wrapper_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
             LiquidityGaugeWrapperEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package_hash);
-                event.insert(
-                    "event_type",
-                    liquidity_gauge_wrapper_event.type_name(),
-                );
+                event.insert("event_type", liquidity_gauge_wrapper_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
             LiquidityGaugeWrapperEvent::Transfer { from, to, value } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package_hash);
-                event.insert(
-                    "event_type",
-                    liquidity_gauge_wrapper_event.type_name(),
-                );
+                event.insert("event_type", liquidity_gauge_wrapper_event.type_name());
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
                 event.insert("value", value.to_string());
@@ -546,10 +528,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package_hash);
-                event.insert(
-                    "event_type",
-                    liquidity_gauge_wrapper_event.type_name(),
-                );
+                event.insert("event_type", liquidity_gauge_wrapper_event.type_name());
                 event.insert("from", owner.to_string());
                 event.insert("to", spender.to_string());
                 event.insert("value", value.to_string());

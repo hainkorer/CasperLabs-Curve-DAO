@@ -8,7 +8,6 @@ use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U25
 use common::keys::*;
 use contract_utils::{get_key, set_key};
 
-
 pub const VESTING_ESCROW_FACTORY_MIN_VESTING_DURATION: U256 = U256([56400 * 360, 0, 0, 0]);
 
 pub fn vesting_escrow_simple_contract() -> Key {

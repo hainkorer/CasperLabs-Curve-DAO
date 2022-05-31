@@ -152,7 +152,9 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         .checked_add(TOKEN_CHECKPOINT_DEADLINE)
                         .unwrap_or_revert())))
         {
-            runtime::revert(ApiError::from(Error::FeeDistributorInvalidTokenCheckpointUpdate))
+            runtime::revert(ApiError::from(
+                Error::FeeDistributorInvalidTokenCheckpointUpdate,
+            ))
         }
         self._checkpoint_token();
     }

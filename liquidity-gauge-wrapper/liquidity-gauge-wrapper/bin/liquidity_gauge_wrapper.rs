@@ -115,23 +115,23 @@ fn withdraw() {
 fn allowance() {
     let owner: Key = runtime::get_named_arg("owner");
     let spender: Key = runtime::get_named_arg("recipient");
-    let ret = LiquidityGaugeWrapper::default().allowance(owner,spender);
+    let ret = LiquidityGaugeWrapper::default().allowance(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn transfer() {
-   let recipient: Key = runtime::get_named_arg("recipient");
-   let amount: U256 = runtime::get_named_arg("amount");
-   let ret = LiquidityGaugeWrapper::default().transfer(recipient, amount);
-   runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = LiquidityGaugeWrapper::default().transfer(recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn transfer_from() {
-   let owner: Key = runtime::get_named_arg("owner");
-   let recipient: Key = runtime::get_named_arg("recipient");
-   let amount: U256 = runtime::get_named_arg("amount");
-   let ret = LiquidityGaugeWrapper::default().transfer_from(owner, recipient, amount);
-   runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = LiquidityGaugeWrapper::default().transfer_from(owner, recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn approve() {
@@ -143,16 +143,14 @@ fn approve() {
 fn increase_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> =
-        LiquidityGaugeWrapper::default().increase_allowance(spender, amount);
+    let ret: Result<(), u32> = LiquidityGaugeWrapper::default().increase_allowance(spender, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn decrease_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> =
-        LiquidityGaugeWrapper::default().decrease_allowance(spender, amount);
+    let ret: Result<(), u32> = LiquidityGaugeWrapper::default().decrease_allowance(spender, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 

@@ -69,8 +69,7 @@ pub const REWARD_ONLY_GAUGE_REWARD_TOKENS_DICT: &str = "reward_tokens";
 pub const REWARD_ONLY_GAUGE_REWARD_BALANCES_DICT: &str = "reward_balances";
 pub const REWARD_ONLY_GAUGE_REWARDS_RECEIVER_DICT: &str = "reward_receiver";
 pub const REWARD_ONLY_GAUGE_REWARD_INTEGRAL_DICT: &str = "reward_integral";
-pub const REWARD_ONLY_GAUGE_REWARD_INTEGRAL_FOR_DICT: &str =
-    "reward_integral_for";
+pub const REWARD_ONLY_GAUGE_REWARD_INTEGRAL_FOR_DICT: &str = "reward_integral_for";
 pub const REWARD_ONLY_GAUGE_CLAIM_DATA_DICT: &str = "claim_data";
 pub const REWARD_ONLY_GAUGE_CLAIM_SIG: &str = "claim_sig";
 pub const REWARD_ONLY_GAUGE_NAME: &str = "name";

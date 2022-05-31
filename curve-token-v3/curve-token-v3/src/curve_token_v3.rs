@@ -9,10 +9,9 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
 use erc20_crate::{self, data as erc20_data, ERC20};
-use common::errors::*;
-
 
 pub enum CurveTokenV3Event {
     Transfer_crv3 { from: Key, to: Key, value: U256 },
