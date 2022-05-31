@@ -439,7 +439,7 @@ pub fn account_zero_address() -> Key {
     .unwrap()
 }
 pub fn time_total() -> U256 {
-    get_key(TIME_TOTAL).unwrap_or_revert()
+    get_key(TIME_TOTAL).unwrap_or_default()
 }
 
 pub fn set_time_total(time_total: U256) {
@@ -479,14 +479,14 @@ pub fn set_token(token: Key) {
 }
 
 pub fn n_gauge_types() -> U128 {
-    get_key(N_GAUGE_TYPES).unwrap_or_revert()
+    get_key(N_GAUGE_TYPES).unwrap_or_default()
 }
 
 pub fn set_n_gauge_types(n_gauge_types: U128) {
     set_key(N_GAUGE_TYPES, n_gauge_types);
 }
 pub fn n_gauges() -> U128 {
-    get_key(N_GAUGES).unwrap_or_revert()
+    get_key(N_GAUGES).unwrap_or_default()
 }
 
 pub fn set_n_gauges(n_gauges: U128) {

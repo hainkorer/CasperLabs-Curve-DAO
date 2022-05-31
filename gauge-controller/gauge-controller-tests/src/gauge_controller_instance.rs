@@ -333,7 +333,7 @@ impl GAUGECONLTROLLERInstance {
     }
     pub fn contract_package_hash(&self) -> ContractPackageHash {
         self.0
-            .query_named_key(String::from("contract_package_hash"))
+            .query_named_key(String::from("self_contract_package_hash"))
     }
     pub fn contract_hash(&self) -> Key {
         self.0.query_named_key(String::from("self_contract_hash"))
