@@ -22,6 +22,8 @@ build-liquidity-gauge-reward-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
 build-liquidity-gauge-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-wrapper-session-code --target wasm32-unknown-unknown	
+build-gauge-controller-session-code:
+	cargo build --release -p gauge-controller-session-code --target wasm32-unknown-unknown
 build-contract-erc20:
 	cargo build --release -p erc20 -p erc20-proxy --target wasm32-unknown-unknown
 build-contract-minter:
@@ -157,6 +159,8 @@ copy-wasm-file-curve-token-v2:
 copy-wasm-file-curve-token-v3:
 	cp ${wasm_src_path}/*.wasm curve-token-v3/curve-token-v3-tests/wasm
 
+test-gauge-controller:
+	make build-contract-gauge-controller && make build-gauge-controller-session-code && make copy-wasm-file-gauge-controller
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter && make test-only-minter
 test-gauge-controller:
