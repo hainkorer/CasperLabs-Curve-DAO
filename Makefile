@@ -86,7 +86,7 @@ test-only-liquidity-gauge-reward:
 test-only-erc20-crv:
 	cargo test -p erc20_crv_tests -- --nocapture
 test-only-vesting-escrow-simple:
-	cargo test -p vesting_escrow_simple_tests -- --nocapture
+	cargo test -p vesting-escrow-simple-tests -- --nocapture
 test-only-erc20:
 	cargo test -p erc20-tests	
 test-only-liquidity-gauge-reward-wrapper:
@@ -203,7 +203,7 @@ all:
 	make test-vesting-escrow-factory
 	make test-voting-escrow
 	make test-fee-distributor
-	make test-liquidity-gauge-reward
+	# make test-liquidity-gauge-reward
 	make test-vesting-escrow-simple
 	make test-liquidity-gauge-reward-wrapper
 	make test-curve-token-v1

@@ -23,7 +23,7 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
 fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
         env,
-        "erc20-crv-token.wasm",
+        "erc20_crv.wasm",
         "erc20-crv",
         sender,
         runtime_args! {

@@ -37,7 +37,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
         owner,
         Key::Hash(contract.contract_hash()),
     );
-    let key: ContractPackageHash = contract.query_named_key("self_package_hash".to_string());
+    let key: ContractPackageHash = contract.query_named_key("self_contract_package_hash".to_string());
     let to: Key = Key::from(key);
     let amount: U256 = U256::from(TEN_E_NINE * 100);
 
