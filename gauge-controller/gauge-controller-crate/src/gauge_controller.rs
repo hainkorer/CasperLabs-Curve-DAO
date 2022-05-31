@@ -587,8 +587,13 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         }
     }
 
-    fn add_gauge(&mut self, addr: Key, gauge_type: U128) {
-        let weight: U256 = 0.into();
+    fn add_gauge(&mut self, addr: Key, gauge_type: U128, _weight: Option<U256>) {
+        let weight: U256;
+        if _weight.is_some() {
+            weight = _weight.unwrap()
+        } else {
+            weight = 0.into();
+        }
         if self.get_caller() == data::admin() {
             if gauge_type >= U128::from(0) && gauge_type < data::n_gauge_types() {
                 if self.gauge_types_(addr) == U128::from(0)

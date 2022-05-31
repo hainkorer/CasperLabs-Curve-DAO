@@ -4,13 +4,13 @@
 #[macro_use]
 extern crate alloc;
 
-use alloc::{collections::BTreeSet, format, string::String};
+use alloc::{boxed::Box, collections::BTreeSet, format, string::String};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
+    runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
     U256,
 };
@@ -354,7 +354,8 @@ fn add_gauge() {
 
     let addr: Key = runtime::get_named_arg("addr");
     let gauge_type: U128 = runtime::get_named_arg("gauge_type");
-    Token::default().add_gauge(addr, gauge_type);
+    let weight: Option<U256> = runtime::get_named_arg("weight");
+    Token::default().add_gauge(addr, gauge_type, weight);
 }
 
 #[no_mangle]
@@ -762,6 +763,7 @@ fn get_entry_points() -> EntryPoints {
         vec![
             Parameter::new("addr", Key::cl_type()),
             Parameter::new("type_id", U128::cl_type()),
+            Parameter::new("weight", CLType::Option(Box::new(U256::cl_type()))),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

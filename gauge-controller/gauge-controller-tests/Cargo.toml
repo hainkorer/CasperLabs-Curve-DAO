@@ -11,6 +11,7 @@ casper-engine-test-support = "2.1.0"
 contract-utils = { path = "../../utils/contract-utils" }
 test-env = { path = "../../utils/test-env" }
 blake2 = "0.9.1"
+common = { path = "../../common" }
 hex = "0.4.3"
 
 [features]

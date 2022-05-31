@@ -1,13 +1,15 @@
-use casper_types::{account::AccountHash, Key, U128, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use test_env::{TestContract, TestEnv};
 
 use crate::gauge_controller_instance::GAUGECONLTROLLERInstance;
+use common::keys::*;
 
 const NAME: &str = "GAUGECONLTROLLER";
 const TOKEN_NAME: &str = "ERC20";
 const TOKEN_SYMBOL: &str = "ERC";
 const DECIMALS: u8 = 8;
 const INIT_TOTAL_SUPPLY: u64 = 0;
+pub const VOTING_ESCROW_WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
 
 fn deploy() -> (
     TestEnv,
@@ -336,7 +338,8 @@ fn test_gauge_controller_add_gauge() {
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 0.into();
-    gauge_controller.add_gauge(_owner, _user, gauge_type);
+    let weight: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 }
 
 #[test]
@@ -355,7 +358,7 @@ fn test_gauge_controller_add_gauge_by_user() {
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 0.into();
-    gauge_controller.add_gauge(_user, _user, gauge_type);
+    gauge_controller.add_gauge(_user, _user, gauge_type, None);
 }
 
 #[test]
@@ -373,11 +376,11 @@ fn test_gauge_controller_add_gauge_multiple_time() {
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 0.into();
-    gauge_controller.add_gauge(_owner, _user, gauge_type);
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 1.into();
-    gauge_controller.add_gauge(_owner, _user1, gauge_type);
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
 }
 
 #[test]
@@ -396,11 +399,11 @@ fn test_gauge_controller_add_gauge_multiple_time_by_user() {
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 0.into();
-    gauge_controller.add_gauge(_owner, _user, gauge_type);
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 1.into();
-    gauge_controller.add_gauge(_user, _user1, gauge_type);
+    gauge_controller.add_gauge(_user, _user1, gauge_type, None);
 }
 
 #[test]
@@ -418,7 +421,7 @@ fn test_gauge_controller_change_gauge_weight() {
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 0.into();
-    gauge_controller.add_gauge(_owner, _user, gauge_type);
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let weight: U256 = 2.into();
     gauge_controller.change_gauge_weight(_owner, _user, weight);
 }
@@ -438,7 +441,7 @@ fn test_gauge_controller_change_gauge_weight_multiple_time() {
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 0.into();
-    gauge_controller.add_gauge(_owner, _user, gauge_type);
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let weight: U256 = 2.into();
     gauge_controller.change_gauge_weight(_owner, _user, weight);
     let weight: U256 = 3.into();
@@ -461,7 +464,7 @@ fn test_gauge_controller_change_gauge_weight_by_user() {
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name);
     let gauge_type: U128 = 0.into();
-    gauge_controller.add_gauge(_owner, _user, gauge_type);
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let weight: U256 = 2.into();
     gauge_controller.change_gauge_weight(_user, _user, weight);
 }
@@ -482,7 +485,7 @@ fn test_gauge_controller_change_gauge_weight_without_adding_type() {
     // let name: String = "type".to_string();
     // gauge_controller.add_type(_owner, name);
     // let gauge_type: U128 = 0.into();
-    // gauge_controller.add_gauge(_owner, _user, gauge_type);
+    // gauge_controller.add_gauge(_owner, _user, gauge_type,None);
     let weight: U256 = 2.into();
     gauge_controller.change_gauge_weight(_owner, _user, weight);
 }
@@ -503,28 +506,907 @@ fn test_gauge_controller_change_gauge_weight_without_adding_gauge() {
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name);
     // let gauge_type: U128 = 0.into();
-    // gauge_controller.add_gauge(_owner, _user, gauge_type);
+    // gauge_controller.add_gauge(_owner, _user, gauge_type,None);
     let weight: U256 = 2.into();
     gauge_controller.change_gauge_weight(_owner, _user, weight);
 }
 
+#[test]
+fn test_gauge_controller_vote_for_gauge_weights() {
+    let (env, gauge_controller, owner, token, voting_escrow) = deploy();
+
+    let value: U256 = 1000.into();
+    let unlock_time: U256 =
+        VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK;
+    token.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value + value
+        },
+        0,
+    );
+    token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::Hash(voting_escrow.package_hash()),
+            "amount" => value + value
+        },
+        0,
+    );
+    voting_escrow.call_contract(
+        owner,
+        "create_lock",
+        runtime_args! {
+            "value" => value,
+            "unlock_time" => unlock_time
+        },
+        0,
+    );
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(owner, _user, gauge_type, None);
+    let weight: U256 = 0.into();
+    gauge_controller.vote_for_gauge_weights(owner, _user, weight);
+}
+
+#[test]
+#[should_panic]
+fn test_gauge_controller_vote_for_gauge_weights_by_user() {
+    let (env, gauge_controller, owner, token, voting_escrow) = deploy();
+
+    let value: U256 = 1000.into();
+    let unlock_time: U256 =
+        VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK;
+    token.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value + value
+        },
+        0,
+    );
+    token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::Hash(voting_escrow.package_hash()),
+            "amount" => value + value
+        },
+        0,
+    );
+    voting_escrow.call_contract(
+        owner,
+        "create_lock",
+        runtime_args! {
+            "value" => value,
+            "unlock_time" => unlock_time
+        },
+        0,
+    );
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(owner, _user, gauge_type, None);
+    let weight: U256 = 0.into();
+    gauge_controller.vote_for_gauge_weights(_user, _user, weight);
+}
+
+#[test]
+fn test_gauge_controller_vote_for_gauge_weights_multiple_time() {
+    let (env, gauge_controller, owner, token, voting_escrow) = deploy();
+
+    let value: U256 = 1000.into();
+    let unlock_time: U256 =
+        VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK + VOTING_ESCROW_WEEK;
+    token.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value + value
+        },
+        0,
+    );
+    token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::Hash(voting_escrow.package_hash()),
+            "amount" => value + value
+        },
+        0,
+    );
+    voting_escrow.call_contract(
+        owner,
+        "create_lock",
+        runtime_args! {
+            "value" => value,
+            "unlock_time" => unlock_time
+        },
+        0,
+    );
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(owner, _user, gauge_type, None);
+    let weight: U256 = 0.into();
+    gauge_controller.vote_for_gauge_weights(owner, _user, weight);
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(owner, _user1, gauge_type, None);
+    let weight: U256 = 1.into();
+    gauge_controller.vote_for_gauge_weights(owner, _user1, weight);
+}
+
+#[test]
+fn test_gauge_controller_gauge_types() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_TYPES),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user)
+        },
+        0,
+    );
+
+    let ret: U128 = env.query_account_named_key(_owner, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+#[test]
+fn test_gauge_controller_gauge_types_by_user() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_TYPES),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user)
+        },
+        0,
+    );
+
+    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+#[test]
+fn test_gauge_controller_gauge_types_by_user_multiple_times() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_TYPES),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user)
+        },
+        0,
+    );
+
+    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, 0.into());
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_TYPES),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        0,
+    );
+
+    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, 1.into());
+}
+
+#[test]
+fn test_gauge_controller_gauge_types_multiple_times() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, None);
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_TYPES),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user)
+        },
+        0,
+    );
+
+    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, 0.into());
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_TYPES),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        0,
+    );
+
+    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, 1.into());
+}
+
+#[test]
+#[should_panic]
+fn test_gauge_controller_gauge_types_without_adding_gauge_types() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_TYPES),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user)
+        },
+        0,
+    );
+
+    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+#[test]
+fn test_gauge_controller_gauge_relative_weight() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+#[test]
+fn test_gauge_controller_gauge_relative_weight_by_user() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_user, &[GAUGE_RELATIVE_WEIGHT.into()]);
+    assert_eq!(ret, 0.into());
+}
 
 // #[test]
-// fn test_gauge_controller_vote_for_gauge_weights() {
-//     let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
-//     let _user = env.next_user();
-//     let _user1 = env.next_user();
-//     assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
-//     assert_eq!(
-//         gauge_controller.voting_escrow(),
-//         Key::Hash(_voting_escrow.package_hash())
-//     );
-//     assert_eq!(gauge_controller.admin(), Key::from(_owner));
-//     assert_eq!(gauge_controller.time_total(), U256::from(0));
-//     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
-//     let gauge_type: U128 = 0.into();
-//     gauge_controller.add_gauge(_owner, _user, gauge_type);
-//     let weight: U256 = 0.into();
-//     gauge_controller.vote_for_gauge_weights(_owner, _user, weight);
-// }
+fn test_gauge_controller_gauge_relative_weight_without_adding_gauge() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+#[test]
+fn test_gauge_controller_gauge_relative_weight_write() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT_WRITE),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT_WRITE.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+// #[test]
+fn test_gauge_controller_gauge_relative_weight_write_by_user() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT_WRITE),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_user, &[GAUGE_RELATIVE_WEIGHT_WRITE.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+#[test]
+fn test_gauge_controller_get_gauge_weight() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+    let type_id: U128 = 1.into();
+    let weight: U256 = 2.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GET_GAUGE_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GET_GAUGE_WEIGHT.into()]);
+    assert_eq!(ret, 1000000.into());
+}
+
+// #[test]
+fn test_gauge_controller_get_gauge_weight_multiple_users() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+    let type_id: U128 = 1.into();
+    let weight: U256 = 2.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GET_GAUGE_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user1)
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GET_GAUGE_WEIGHT.into()]);
+    assert_eq!(ret, 1000000.into());
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GET_GAUGE_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "addr"=>Key::from(_user)
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GET_GAUGE_WEIGHT.into()]);
+    assert_eq!(ret, 500.into());
+}
+
+#[test]
+fn test_gauge_controller_get_type_weight() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+    let type_id: U128 = 1.into();
+    let weight: U256 = 2.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user1,
+        runtime_args! {
+            "entrypoint" => String::from(GET_TYPE_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "type_id"=>gauge_type
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_user1, &[GET_TYPE_WEIGHT.into()]);
+    assert_eq!(ret, 2.into());
+}
+
+#[test]
+fn test_gauge_controller_get_total_weight() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+    let type_id: U128 = 1.into();
+    let weight: U256 = 2.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GET_TOTAL_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "type_id"=>gauge_type
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GET_TOTAL_WEIGHT.into()]);
+    assert_eq!(ret, 2000000.into());
+}
+
+// #[test]
+fn test_gauge_controller_get_total_weight_by_user() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+    let type_id: U128 = 1.into();
+    let weight: U256 = 2.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GET_TOTAL_WEIGHT),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "type_id"=>gauge_type
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_user, &[GET_TOTAL_WEIGHT.into()]);
+    assert_eq!(ret, 2000000.into());
+}
+
+#[test]
+fn test_gauge_controller_get_weights_sum_per_type() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+    let type_id: U128 = 1.into();
+    let weight: U256 = 2.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GET_WEIGHTS_SUM_PER_TYPE),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "type_id"=>gauge_type
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GET_WEIGHTS_SUM_PER_TYPE.into()]);
+    assert_eq!(ret, 1000000.into());
+}
+
+// #[test]
+fn test_gauge_controller_get_weights_sum_per_type_by_user() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+    let type_id: U128 = 1.into();
+    let weight: U256 = 2.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _user,
+        runtime_args! {
+            "entrypoint" => String::from(GET_WEIGHTS_SUM_PER_TYPE),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "type_id"=>gauge_type
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_user, &[GET_WEIGHTS_SUM_PER_TYPE.into()]);
+    assert_eq!(ret, 1000000.into());
+}
+
+// #[test]
+fn test_gauge_controller_get_weights_sum_per_type_multiple_times() {
+    let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();
+    let _user = env.next_user();
+    let _user1 = env.next_user();
+    assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
+    assert_eq!(
+        gauge_controller.voting_escrow(),
+        Key::Hash(_voting_escrow.package_hash())
+    );
+    assert_eq!(gauge_controller.admin(), Key::from(_owner));
+    assert_eq!(gauge_controller.time_total(), U256::from(0));
+    let name: String = "type".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
+    let name: String = "type2".to_string();
+    gauge_controller.add_type(_owner, name);
+    let gauge_type: U128 = 1.into();
+    gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
+    let type_id: U128 = 1.into();
+    let weight: U256 = 2.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GET_WEIGHTS_SUM_PER_TYPE),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "type_id"=>gauge_type
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GET_WEIGHTS_SUM_PER_TYPE.into()]);
+    assert_eq!(ret, 1000000.into());
+    let type_id: U128 = 0.into();
+    let weight: U256 = 3.into();
+    gauge_controller.change_type_weight(_owner, type_id, weight);
+    TestContract::new(
+        &env,
+        "gauge-controller-session-code.wasm",
+        "SessionCode",
+        _owner,
+        runtime_args! {
+            "entrypoint" => String::from(GET_WEIGHTS_SUM_PER_TYPE),
+            "package_hash" => Key::from(gauge_controller.contract_package_hash()),
+            "type_id"=>gauge_type
+        },
+        1000000000,
+    );
+
+    let ret: U256 = env.query_account_named_key(_owner, &[GET_WEIGHTS_SUM_PER_TYPE.into()]);
+    assert_eq!(ret, 1000000.into());
+}

@@ -912,6 +912,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "gauge-controller-session-code"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+]
+
+[[package]]
 name = "gauge-controller-tests"
 version = "0.2.1"
 dependencies = [
@@ -919,6 +928,7 @@ dependencies = [
  "casper-contract",
  "casper-engine-test-support",
  "casper-types",
+ "common",
  "contract-utils",
  "hex",
  "test-env",

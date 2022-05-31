@@ -1,8 +1,6 @@
 src_target = target/wasm32-unknown-unknown/release
 root_directory = ./
 
-# liquid_locker_des_wasm = liquid-locker/liquid-locker-tests/wasm
-# liquid_helper_des_wasm = liquid-helper/liquid-helper-tests/wasm
 minter_des_wasm = minter/minter-tests/wasm
 gauge_controller_des_wasm = gauge-controller/gauge-controller-tests/wasm
 reward_only_gauge_des_wasm = reward-only-gauge/reward-only-gauge-tests/wasm
@@ -27,6 +25,8 @@ build-liquidity-gauge-reward-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
 build-liquidity-gauge-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-wrapper-session-code --target wasm32-unknown-unknown	
+build-gauge-controller-session-code:
+	cargo build --release -p gauge-controller-session-code --target wasm32-unknown-unknown
 build-contract-erc20:
 	cargo build --release -p erc20 -p erc20-proxy --target wasm32-unknown-unknown
 build-contract-minter:
@@ -167,7 +167,7 @@ copy-wasm-file-curve-token-v3:
 	cp target/wasm32-unknown-unknown/release/*.wasm curve-token-v3/curve-token-v3-tests/wasm
 
 test-gauge-controller:
-	make build-contract-gauge-controller && make copy-wasm-file-gauge-controller
+	make build-contract-gauge-controller && make build-gauge-controller-session-code && make copy-wasm-file-gauge-controller
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter
 test-reward-only-gauge:
@@ -200,21 +200,21 @@ test-curve-token-v3:
 	make build-contract-curve-token-v3 && make copy-wasm-file-curve-token-v3
 
 all:
-	# make test-erc20 && make test-only-erc20
-	# make test-erc20-crv && make test-only-erc20-crv
-	# make test-minter && make test-only-minter
+	make test-erc20 && make test-only-erc20
+	make test-erc20-crv && make test-only-erc20-crv
+	make test-minter && make test-only-minter
 	make test-gauge-controller && make test-only-gauge-controller
-	# make test-reward-only-gauge && make test-only-reward-only-gauge
-	# make test-vesting-escrow && make test-only-vesting-escrow
-	# make test-vesting-escrow-factory && make test-only-vesting-escrow-factory
-	# make test-voting-escrow && make test-only-voting-escrow
-	# make test-fee-distributor && make test-only-fee-distributor
-	# make test-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
-	# make test-vesting-escrow-simple && make test-only-vesting-escrow-simple
-	# make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
-	# make test-curve-token-v1 && make test-only-curve-token-v1
-	# make test-curve-token-v2 && make test-only-curve-token-v2
-	# make test-curve-token-v3 && make test-only-curve-token-v3
+	make test-reward-only-gauge && make test-only-reward-only-gauge
+	make test-vesting-escrow && make test-only-vesting-escrow
+	make test-vesting-escrow-factory && make test-only-vesting-escrow-factory
+	make test-voting-escrow && make test-only-voting-escrow
+	make test-fee-distributor && make test-only-fee-distributor
+	make test-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
+	make test-vesting-escrow-simple && make test-only-vesting-escrow-simple
+	make test-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
+	make test-curve-token-v1 && make test-only-curve-token-v1
+	make test-curve-token-v2 && make test-only-curve-token-v2
+	make test-curve-token-v3 && make test-only-curve-token-v3
 
 
 

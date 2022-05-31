@@ -22,6 +22,17 @@ pub const START_EPOCH_TIME_WRITE: &str = "start_epoch_time_write";
 pub const AVAILABLE_SUPPLY: &str = "available_supply";
 pub const MINT_CRV: &str = "mint_crv";
 pub const MINTABLE_IN_TIMEFRAME: &str = "mintable_in_timeframe";
+// Gauge Controller Wasm Keys
+pub const GAUGE_TYPES: &str = "gauge_types";
+pub const GAUGE_RELATIVE_WEIGHT: &str = "gauge_relative_weight";
+pub const GAUGE_RELATIVE_WEIGHT_WRITE: &str = "gauge_relative_weight_write";
+pub const GET_GAUGE_WEIGHT: &str = "get_gauge_weight";
+pub const GET_TYPE_WEIGHT: &str = "get_type_weight";
+pub const GET_TOTAL_WEIGHT: &str = "get_total_weight";
+pub const GET_WEIGHTS_SUM_PER_TYPE: &str = "get_weights_sum_per_type";
+
+
+
 //ERC20_CRV
 pub const ERC20_CRV_SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const ERC20_CRV_SELF_PACKAGE_HASH: &str = "self_package_hash";
@@ -69,8 +80,7 @@ pub const REWARD_ONLY_GAUGE_REWARD_TOKENS_DICT: &str = "reward_tokens";
 pub const REWARD_ONLY_GAUGE_REWARD_BALANCES_DICT: &str = "reward_balances";
 pub const REWARD_ONLY_GAUGE_REWARDS_RECEIVER_DICT: &str = "reward_receiver";
 pub const REWARD_ONLY_GAUGE_REWARD_INTEGRAL_DICT: &str = "reward_integral";
-pub const REWARD_ONLY_GAUGE_REWARD_INTEGRAL_FOR_DICT: &str =
-    "reward_integral_for";
+pub const REWARD_ONLY_GAUGE_REWARD_INTEGRAL_FOR_DICT: &str = "reward_integral_for";
 pub const REWARD_ONLY_GAUGE_CLAIM_DATA_DICT: &str = "claim_data";
 pub const REWARD_ONLY_GAUGE_CLAIM_SIG: &str = "claim_sig";
 pub const REWARD_ONLY_GAUGE_NAME: &str = "name";

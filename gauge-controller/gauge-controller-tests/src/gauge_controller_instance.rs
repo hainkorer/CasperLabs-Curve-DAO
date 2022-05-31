@@ -6,8 +6,9 @@ use blake2::{
 };
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{
-    account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
-    RuntimeArgs, U128, U256,
+    account::AccountHash,
+    bytesrepr::{FromBytes, ToBytes},
+    runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U128, U256,
 };
 use test_env::{TestContract, TestEnv};
 
@@ -193,13 +194,20 @@ impl GAUGECONLTROLLERInstance {
             10000000,
         );
     }
-    pub fn add_gauge<T: Into<Key>>(&self, sender: AccountHash, addr: T, gauge_type: U128) {
+    pub fn add_gauge<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        addr: T,
+        gauge_type: U128,
+        weight: Option<U256>,
+    ) {
         self.0.call_contract(
             sender,
             "add_gauge",
             runtime_args! {
                 "addr" => addr.into(),
                 "gauge_type" => gauge_type,
+                "weight"=>weight
             },
             0,
         );
@@ -217,7 +225,7 @@ impl GAUGECONLTROLLERInstance {
                 "_gauge_addr" => _gauge_addr.into(),
                 "_user_weight" => _user_weight,
             },
-            10000000,
+            1000000,
         );
     }
 
@@ -333,6 +341,9 @@ impl GAUGECONLTROLLERInstance {
     pub fn time_total(&self) -> U256 {
         self.0.query_named_key(String::from("time_total"))
     }
+    pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
+        self.0.query_named_key(key)
+    }
 }
 
 pub fn key_to_str(key: &Key) -> String {
@@ -368,5 +379,4 @@ pub fn values_to_str<T: CLTyped + ToBytes>(value_a: &T, value_b: &T) -> String {
     let mut ret = [0u8; 32];
     hasher.finalize_variable(|hash| ret.clone_from_slice(hash));
     hex::encode(ret)
- 
 }

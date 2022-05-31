@@ -1,7 +1,6 @@
 use crate::voting_escrow_instance::VOTINGESCROWInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use common::keys::*;
-use common::keys::*;
 use test_env::{TestContract, TestEnv};
 use voting_escrow_crate::data::*;
 

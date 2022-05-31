@@ -10,6 +10,7 @@ members = [
   "gauge-controller/gauge-controller-crate",
   "gauge-controller/gauge-controller-proxy",
   "gauge-controller/gauge-controller-tests",
+  "gauge-controller/session-code",
   # REWARD ONLY GAUGE
   "reward-only-gauge/reward-only-gauge",
   "reward-only-gauge/reward-only-gauge-crate",
