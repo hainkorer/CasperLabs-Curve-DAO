@@ -87,20 +87,6 @@ fn claimable_tokens_js_client() {
     let ret: U256 = LiquidityGaugeWrapper::default().claimable_tokens(addr);
     js_ret(ret);
 }
-
-#[no_mangle]
-fn claimable_reward() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeWrapper::default().claimable_reward(addr);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn claimable_reward_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeWrapper::default().claimable_reward(addr);
-    js_ret(ret);
-}
 #[no_mangle]
 fn claim_tokens() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -225,20 +211,6 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claimable_tokens_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_reward",
-        vec![Parameter::new("addr", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_reward_js_client",
         vec![Parameter::new("addr", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,

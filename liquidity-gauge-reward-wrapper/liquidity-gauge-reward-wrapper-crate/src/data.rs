@@ -1,10 +1,10 @@
 use alloc::{
-    string::{String, ToString},
+    string::{String},
     vec::Vec,
 };
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{
-    bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U128, U256,
+    bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256,
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;

@@ -91,7 +91,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" => Key::from(get_package_hash())
             },
         );
         let () = runtime::call_versioned_contract(
@@ -107,7 +107,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" =>Key::from(get_package_hash())
             },
         );
         d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
@@ -141,7 +141,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" => Key::from(get_package_hash())
             },
         );
         let () = runtime::call_versioned_contract(
@@ -155,7 +155,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" =>Key::from(get_package_hash())
             },
         );
         d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
@@ -201,7 +201,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             get_gauge().into_hash().unwrap_or_revert().into(),
             None,
             "claimable_tokens",
-            runtime_args! {},
+            runtime_args! {
+                "addr" => Key::from(get_package_hash())
+            },
         );
         let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
