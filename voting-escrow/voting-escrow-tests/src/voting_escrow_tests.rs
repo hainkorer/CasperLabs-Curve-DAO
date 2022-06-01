@@ -1,9 +1,8 @@
 use crate::voting_escrow_instance::VOTINGESCROWInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use common::keys::*;
-use common::keys::*;
 use test_env::{TestContract, TestEnv};
-use voting_escrow_crate::data::*;
+use voting_escrow_crate::data::WEEK;
 
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
@@ -48,7 +47,7 @@ fn test_commit_transfer_ownership() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
     instance.commit_transfer_ownership(owner, addr);
-    let ret: Key = instance.key_value(VOTING_ESCROW_FUTURE_ADMIN.to_string());
+    let ret: Key = instance.key_value(FUTURE_ADMIN.to_string());
     assert_eq!(ret, addr, "Ownership not transferred");
 }
 
@@ -58,7 +57,7 @@ fn test_apply_transfer_ownership() {
     let addr: Key = Key::Account(env.next_user());
     instance.commit_transfer_ownership(owner, addr);
     instance.apply_transfer_ownership(owner);
-    let ret: Key = instance.key_value(VOTING_ESCROW_ADMIN.to_string());
+    let ret: Key = instance.key_value(ADMIN.to_string());
     assert_eq!(ret, addr, "Ownership transfer not applied");
 }
 
@@ -87,7 +86,7 @@ fn test_get_last_user_slope_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
     instance.get_last_user_slope_js_client(owner, addr);
-    let ret: U128 = instance.key_value(VOTING_ESCROW_RESULT.to_string());
+    let ret: U128 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
@@ -119,7 +118,7 @@ fn test_user_point_history_ts_js_client() {
     let addr: Key = Key::Account(env.next_user());
     let idx: U256 = 10.into();
     instance.user_point_history_ts_js_client(owner, addr, idx);
-    let ret: U256 = instance.key_value(VOTING_ESCROW_RESULT.to_string());
+    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
@@ -148,7 +147,7 @@ fn test_locked_end_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
     instance.locked_end_js_client(owner, addr);
-    let ret: U256 = instance.key_value(VOTING_ESCROW_RESULT.to_string());
+    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
@@ -163,7 +162,7 @@ fn test_deposit_for() {
     let (_, owner, instance, erc20) = deploy();
     let addr: Key = Key::Account(owner);
     let value: U256 = 1000.into();
-    let unlock_time: U256 = VOTING_ESCROW_WEEK;
+    let unlock_time: U256 = WEEK;
     erc20.call_contract(
         owner,
         "mint",
@@ -190,7 +189,7 @@ fn test_deposit_for() {
 fn test_create_lock() {
     let (_, owner, instance, erc20) = deploy();
     let value: U256 = 1000.into();
-    let unlock_time: U256 = VOTING_ESCROW_WEEK;
+    let unlock_time: U256 = WEEK;
     erc20.call_contract(
         owner,
         "mint",
@@ -216,7 +215,7 @@ fn test_create_lock() {
 fn test_increase_amount() {
     let (_, owner, instance, erc20) = deploy();
     let value: U256 = 1000.into();
-    let unlock_time: U256 = VOTING_ESCROW_WEEK;
+    let unlock_time: U256 = WEEK;
     erc20.call_contract(
         owner,
         "mint",
@@ -243,7 +242,7 @@ fn test_increase_amount() {
 fn test_increase_unlock_time() {
     let (_, owner, instance, erc20) = deploy();
     let value: U256 = 1000.into();
-    let unlock_time: U256 = VOTING_ESCROW_WEEK;
+    let unlock_time: U256 = WEEK;
     erc20.call_contract(
         owner,
         "mint",
@@ -270,7 +269,7 @@ fn test_increase_unlock_time() {
 fn test_withdraw() {
     let (_, owner, instance, erc20) = deploy();
     let value: U256 = 1000.into();
-    let unlock_time: U256 = VOTING_ESCROW_WEEK;
+    let unlock_time: U256 = WEEK;
     erc20.call_contract(
         owner,
         "mint",
@@ -291,7 +290,7 @@ fn test_withdraw() {
     );
     instance.create_lock(owner, value, unlock_time);
     instance.withdraw(owner, 1234567891099);
-    let ret: U256 = instance.key_value(VOTING_ESCROW_SUPPLY.to_string());
+    let ret: U256 = instance.key_value(SUPPLY.to_string());
     assert_eq!(ret, 0.into(), "Withdrawal not done");
 }
 
@@ -323,7 +322,7 @@ fn test_balance_of_js_client() {
     let addr: Key = Key::Account(env.next_user());
     let t: U256 = 123.into();
     instance.balance_of_js_client(owner, addr, t);
-    let ret: U256 = instance.key_value(VOTING_ESCROW_RESULT.to_string());
+    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default balance");
 }
 
@@ -355,7 +354,7 @@ fn test_balance_of_at_js_client() {
     let addr: Key = Key::Account(env.next_user());
     let block: U256 = 123.into();
     instance.balance_of_at_js_client(owner, addr, block);
-    let ret: U256 = instance.key_value(VOTING_ESCROW_RESULT.to_string());
+    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default balance");
 }
 
@@ -384,7 +383,7 @@ fn test_total_supply_js_client() {
     let (_, owner, instance, _) = deploy();
     let t: U256 = 123.into();
     instance.total_supply_js_client(owner, t);
-    let ret: U256 = instance.key_value(VOTING_ESCROW_RESULT.to_string());
+    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default total supply");
 }
 
@@ -413,7 +412,7 @@ fn test_total_supply_at_js_client() {
     let (_, owner, instance, _) = deploy();
     let block: U256 = 123.into();
     instance.total_supply_at_js_client(owner, block);
-    let ret: U256 = instance.key_value(VOTING_ESCROW_RESULT.to_string());
+    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default total supply");
 }
 
@@ -422,6 +421,6 @@ fn test_change_controller() {
     let (env, owner, instance, _) = deploy();
     let new_controller: Key = Key::Account(env.next_user());
     instance.change_controller(owner, new_controller);
-    let ret: Key = instance.key_value(VOTING_ESCROW_CONTROLLER.to_string());
+    let ret: Key = instance.key_value(CONTROLLER.to_string());
     assert_eq!(ret, new_controller, "Controller not changed");
 }

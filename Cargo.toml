@@ -1,5 +1,10 @@
 [workspace]
 members = [
+  # COMMON
+  "common",
+  # SESSION CODE
+  "session-code",
+  # SESSION CODE
   # MINTER
   "minter/minter",
   "minter/minter-crate",
@@ -10,6 +15,10 @@ members = [
   "gauge-controller/gauge-controller-crate",
   "gauge-controller/gauge-controller-proxy",
   "gauge-controller/gauge-controller-tests",
+  # GAUGE PROXY
+  "gauge-proxy/gauge-proxy",
+  "gauge-proxy/gauge-proxy-crate",
+  "gauge-proxy/gauge-proxy-tests",
   # REWARD ONLY GAUGE
   "reward-only-gauge/reward-only-gauge",
   "reward-only-gauge/reward-only-gauge-crate",
@@ -25,15 +34,6 @@ members = [
   "vesting-escrow-factory/vesting-escrow-factory-crate",
   "vesting-escrow-factory/vesting-escrow-factory-proxy",
   "vesting-escrow-factory/vesting-escrow-factory-tests",
-  # COMMON
-  "common",
-  # SESSION CODE
-  "session-code",
-  # ERC20
-  "erc20/erc20",
-  "erc20/erc20-crate",
-  "erc20/erc20-proxy",
-  "erc20/erc20-tests",
   # VotingEscrow
   "voting-escrow/voting-escrow",
   "voting-escrow/voting-escrow-crate",
@@ -46,11 +46,11 @@ members = [
   "liquidity-gauge-reward/liquidity-gauge-reward",
   "liquidity-gauge-reward/liquidity-gauge-reward-crate",
   "liquidity-gauge-reward/liquidity-gauge-reward-tests",
-
+  # ERC-20 CRV
   "erc20-crv/erc20_crv",
   "erc20-crv/erc20_crv_tests",
   "erc20-crv/session_code",
-  
+  # VESTING ESCROW SIMPLE
   "vesting-escrow-simple/vesting-escrow-simple",
   "vesting-escrow-simple/vesting-escrow-simple-tests",
   # ERC20
@@ -58,25 +58,24 @@ members = [
   "erc20/erc20-crate",
   "erc20/erc20-proxy",
   "erc20/erc20-tests",
-  # Liquidity Gauge Reward Wrapper
+  # LIQUIDITY GAUGE REWARD WRAPPER
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-crate",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests",
-  # SESSION CODE
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-session-code",
-
+  # CURVE TOKEN V1
   "curve-token-v1/curve-token-v1",
   "curve-token-v1/curve-token-v1-tests",
+  # CURVE TOKEN V2
   "curve-token-v2/curve-token-v2",
   "curve-token-v2/curve-token-v2-tests",
+  # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
   "curve-token-v3/curve-token-v3-tests",
-
-  #Liquidity Gauge Wrapper
+  # LIQUIDITY GAUGE WRAPPER
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper",
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-crate",
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests",
-  # SESSION CODE
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-session-code",
 ]
 

@@ -2,8 +2,7 @@ use crate::alloc::string::ToString;
 use crate::data::{
     self, ChangeSum, ChangesWeight, GaugeTypeNames, GaugeTypes_, Gauges, LastUserVote, Point,
     PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum, TimeTypeWeight, TimeWeight,
-    VoteUserPower, VoteUserSlopes, VotedSlope, GAUGE_CONTROLLER_MULTIPLIER, GAUGE_CONTROLLER_WEEK,
-    GAUGE_CONTROLLER_WEIGHT_VOTE_DELAY,
+    VoteUserPower, VoteUserSlopes, VotedSlope, MULTIPLIER, WEEK, WEIGHT_VOTE_DELAY,
 };
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
@@ -126,8 +125,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_package_hash(package_hash);
         data::set_admin(self.get_caller());
         data::set_time_total(
-            U256::from(u64::from(runtime::get_blocktime())) / data::GAUGE_CONTROLLER_WEEK
-                * data::GAUGE_CONTROLLER_WEEK,
+            U256::from(u64::from(runtime::get_blocktime())) / data::WEEK * data::WEEK,
         );
         GaugeTypeNames::init();
         GaugeTypes_::init();
@@ -204,11 +202,11 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                     break;
                 }
                 t = t
-                    .checked_add(GAUGE_CONTROLLER_WEEK)
+                    .checked_add(WEEK)
                     .ok_or(Error::GaugeControllerOverFlow1)
                     .unwrap_or_revert();
 
-                let d_bias: U256 = pt.slope * GAUGE_CONTROLLER_WEEK;
+                let d_bias: U256 = pt.slope * WEEK;
                 if pt.bias > d_bias {
                     pt.bias = pt
                         .bias
@@ -246,7 +244,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         if t > U256::from(u64::from(runtime::get_blocktime())) {
             // # If we have already checkpointed - still need to change the value
             t = t
-                .checked_sub(GAUGE_CONTROLLER_WEEK)
+                .checked_sub(WEEK)
                 .ok_or(Error::GaugeControllerUnderFlow4)
                 .unwrap_or_revert();
         }
@@ -263,7 +261,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 break;
             }
             t = t
-                .checked_add(GAUGE_CONTROLLER_WEEK)
+                .checked_add(WEEK)
                 .ok_or(Error::GaugeControllerOverFlow2)
                 .unwrap_or_revert();
             pt = U256::from(0);
@@ -301,10 +299,10 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                     break;
                 }
                 t = t
-                    .checked_add(GAUGE_CONTROLLER_WEEK)
+                    .checked_add(WEEK)
                     .ok_or(Error::GaugeControllerOverFlow4)
                     .unwrap_or_revert();
-                let d_bias: U256 = pt.slope * GAUGE_CONTROLLER_WEEK;
+                let d_bias: U256 = pt.slope * WEEK;
                 if pt.bias > d_bias {
                     pt.bias = pt
                         .bias
@@ -342,7 +340,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                     break;
                 }
                 t = t
-                    .checked_add(GAUGE_CONTROLLER_WEEK)
+                    .checked_add(WEEK)
                     .ok_or(Error::GaugeControllerOverFlow5)
                     .unwrap_or_revert();
                 PointsTypeWeight::instance().set(&gauge_type, &t, w);
@@ -365,14 +363,14 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     /// @return Value of relative weight normalized to 1e18
     /// """
     fn _gauge_relative_weight(&mut self, addr: Key, time: U256) -> U256 {
-        let t: U256 = time / GAUGE_CONTROLLER_WEEK * GAUGE_CONTROLLER_WEEK;
+        let t: U256 = time / WEEK * WEEK;
         let _total_weight = self.points_total(t);
 
         if _total_weight > U256::from(0) {
             let gauge_type: U128 = self.gauge_types_(addr);
             let _type_weight: U256 = self.points_type_weight(gauge_type, t);
             let _gauge_weight: U256 = self.points_weight(addr, t).bias;
-            return GAUGE_CONTROLLER_MULTIPLIER * _type_weight * _gauge_weight / _total_weight;
+            return MULTIPLIER * _type_weight * _gauge_weight / _total_weight;
         } else {
             return U256::from(0);
         }
@@ -388,11 +386,11 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         let old_sum: U256 = self._get_sum(type_id);
         let _total_weight: U256 = self._get_total();
         let next_time: U256 = (U256::from(u64::from(runtime::get_blocktime()))
-            .checked_add(GAUGE_CONTROLLER_WEEK)
+            .checked_add(WEEK)
             .ok_or(Error::GaugeControllerOverFlow6)
             .unwrap_or_revert())
-            / GAUGE_CONTROLLER_WEEK
-            * GAUGE_CONTROLLER_WEEK;
+            / WEEK
+            * WEEK;
 
         let _total_weight = _total_weight
             .checked_add(
@@ -429,11 +427,11 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         let old_sum: U256 = self._get_sum(gauge_type);
         let _total_weight: U256 = self._get_total();
         let next_time: U256 = (U256::from(u64::from(runtime::get_blocktime()))
-            .checked_add(GAUGE_CONTROLLER_WEEK)
+            .checked_add(WEEK)
             .ok_or(Error::GaugeControllerOverFlow8)
             .unwrap_or_revert())
-            / GAUGE_CONTROLLER_WEEK
-            * GAUGE_CONTROLLER_WEEK;
+            / WEEK
+            * WEEK;
         let mut points_wight = self.points_weight(addr, next_time);
         points_wight.bias = weight;
         PointsWeight::instance().set(&addr, &next_time, points_wight);
@@ -609,11 +607,11 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                             .unwrap_or_revert(),
                     );
                     let next_time: U256 = ((U256::from(u64::from(runtime::get_blocktime()))
-                        .checked_add(data::GAUGE_CONTROLLER_WEEK)
+                        .checked_add(data::WEEK)
                         .ok_or(Error::GaugeControllerOverFlow14)
                         .unwrap_or_revert())
-                        / data::GAUGE_CONTROLLER_WEEK)
-                        * data::GAUGE_CONTROLLER_WEEK;
+                        / data::WEEK)
+                        * data::WEEK;
                     if weight > U256::from(0) {
                         let mut _type_weight: U256 = self._get_type_weight(gauge_type);
                         let mut _old_sum: U256 = self._get_sum(gauge_type);
@@ -688,18 +686,18 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
 
         let _n_gauges: U128 = data::n_gauges();
         let next_time: U256 = ((U256::from(u64::from(runtime::get_blocktime()))
-            .checked_add(data::GAUGE_CONTROLLER_WEEK)
+            .checked_add(data::WEEK)
             .ok_or(Error::GaugeControllerOverFlow17)
             .unwrap_or_revert())
-            / data::GAUGE_CONTROLLER_WEEK)
-            * data::GAUGE_CONTROLLER_WEEK;
+            / data::WEEK)
+            * data::WEEK;
 
         if lock_end > next_time {
             if _user_weight >= U256::from(0) && _user_weight <= U256::from(10000) {
                 if (U256::from(u64::from(runtime::get_blocktime())))
                     >= (self
                         .last_user_vote(self.get_caller(), _gauge_addr)
-                        .checked_add(GAUGE_CONTROLLER_WEIGHT_VOTE_DELAY)
+                        .checked_add(WEIGHT_VOTE_DELAY)
                         .ok_or(Error::GaugeControllerOverFlow18)
                         .unwrap_or_revert())
                 {

@@ -1,10 +1,6 @@
 # CasperLabs-Curve-DAO
 
-Implementation of `Curve Token V1`.`Curve Token v2`, `Curve Token v3`,`ERC20 CRV`,`Fee Distributor`,`Gauge Controller`,`Liquidity Gauge Reward`,`Liquidity Gauge Reward Wrapper`,`Minter`,`Reward Only Gauge`,`Vesting Erscrow`, `Vesting Escrow Simple`,`Vesting Escrow Factory` and `Voting Escrow` Contract for the CasperLabs platform.
-
-## Steps
-
-There are 4 contracts in this folder
+Implementation of following contracts for the CasperLabs platform.
 
 1. `Curve Token V1`
 2. `Curve Token v2`
@@ -12,17 +8,20 @@ There are 4 contracts in this folder
 4. `ERC20 CRV`
 5. `Fee Distributor`
 6. `Gauge Controller`
-7. `Liquidity Gauge Reward`
-8. `Liquidity Gauge Reward Wrapper`
-9. `Minter`
-10. `Reward Only Gauge`
-11. `Vesting Erscrow` 
-12. `Vesting Escrow Simple`
-13. `Vesting Escrow Factory` 
-14. `Voting Escrow`
+7. `Gauge Proxy`
+8. `Liquidity Gauge Reward`
+9. `Liquidity Gauge Reward Wrapper`
+10. `Liquidity Gauge Wrapper`
+11. `Minter`
+12. `Reward Only Gauge`
+13. `Vesting Escrow`
+14. `Vesting Escrow Factory`
+15. `Vesting Escrow Simple`
+16. `Voting Escrow`
 
 ## Error Code List
-  https://docs.google.com/spreadsheets/d/1Rzh1LERQyGiGpHB3djlT1Tk0LNQ18q_eLBWFDPm2bNc/edit#gid=4667616
+
+https://docs.google.com/spreadsheets/d/1Rzh1LERQyGiGpHB3djlT1Tk0LNQ18q_eLBWFDPm2bNc/edit#gid=4667616
 
 ## Table of contents
 
@@ -101,7 +100,7 @@ make prepare
 
 It's also recommended to have [wasm-strip](https://github.com/WebAssembly/wabt)
 available in your PATH to reduce the size of compiled Wasm.
- 
+
 #### Build individual Smart Contract
 
 You can run this commands to build individual smart contracts.
@@ -131,6 +130,7 @@ Run this command to build & test all smart contract.
 ```
 make all
 ```
+
 <!--
 ### Deploying Reward Only Gauge contract manually
 

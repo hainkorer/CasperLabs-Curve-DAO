@@ -1,5 +1,5 @@
 use crate::alloc::string::ToString;
-use crate::data::{self, VESTING_ESCROW_FACTORY_MIN_VESTING_DURATION};
+use crate::data::{self, MIN_VESTING_DURATION};
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
@@ -61,7 +61,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
         } else if vesting_start < U256::from(u64::from(runtime::get_blocktime())) {
             //Vesting Escrow Start Time Too Soon
             runtime::revert(Error::VestingEscrowFactoryStartTimeTooSoon);
-        } else if _vesting_duration < VESTING_ESCROW_FACTORY_MIN_VESTING_DURATION {
+        } else if _vesting_duration < MIN_VESTING_DURATION {
             //Vesting Escrow Duration Too Soon
             runtime::revert(Error::VestingEscrowFactoryDurationTooShort);
         } else {

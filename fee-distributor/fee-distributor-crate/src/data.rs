@@ -28,7 +28,7 @@ pub struct Point {
     pub blk: U256, // block
 }
 
-pub const FEE_DISTRIBUTOR_TIME_CURSOR_OF: &str = "fee_distributor_time_cursor_of";
+pub const TIME_CURSOR_OF: &str = "time_cursor_of";
 pub struct TimeCursorOf {
     dict: Dict,
 }
@@ -36,12 +36,12 @@ pub struct TimeCursorOf {
 impl TimeCursorOf {
     pub fn instance() -> TimeCursorOf {
         TimeCursorOf {
-            dict: Dict::instance(FEE_DISTRIBUTOR_TIME_CURSOR_OF),
+            dict: Dict::instance(TIME_CURSOR_OF),
         }
     }
 
     pub fn init() {
-        Dict::init(FEE_DISTRIBUTOR_TIME_CURSOR_OF)
+        Dict::init(TIME_CURSOR_OF)
     }
 
     pub fn get(&self, key: &Key) -> U256 {
@@ -53,7 +53,7 @@ impl TimeCursorOf {
     }
 }
 
-pub const FEE_DISTRIBUTOR_USER_EPOCH_OF: &str = "fee_distributor_user_epoch_of";
+pub const USER_EPOCH_OF: &str = "user_epoch_of";
 pub struct UserEpochOf {
     dict: Dict,
 }
@@ -61,12 +61,12 @@ pub struct UserEpochOf {
 impl UserEpochOf {
     pub fn instance() -> UserEpochOf {
         UserEpochOf {
-            dict: Dict::instance(FEE_DISTRIBUTOR_USER_EPOCH_OF),
+            dict: Dict::instance(USER_EPOCH_OF),
         }
     }
 
     pub fn init() {
-        Dict::init(FEE_DISTRIBUTOR_USER_EPOCH_OF)
+        Dict::init(USER_EPOCH_OF)
     }
 
     pub fn get(&self, key: &Key) -> U256 {
@@ -78,7 +78,7 @@ impl UserEpochOf {
     }
 }
 
-pub const FEE_DISTRIBUTOR_TOKENS_PER_WEEK: &str = "fee_distributor_tokens_per_week";
+pub const TOKENS_PER_WEEK: &str = "tokens_per_week";
 pub struct TokensPerWeek {
     dict: Dict,
     length: U256,
@@ -87,13 +87,13 @@ pub struct TokensPerWeek {
 impl TokensPerWeek {
     pub fn instance() -> TokensPerWeek {
         TokensPerWeek {
-            dict: Dict::instance(FEE_DISTRIBUTOR_TOKENS_PER_WEEK),
+            dict: Dict::instance(TOKENS_PER_WEEK),
             length: 0.into(),
         }
     }
 
     pub fn init() {
-        Dict::init(FEE_DISTRIBUTOR_TOKENS_PER_WEEK)
+        Dict::init(TOKENS_PER_WEEK)
     }
 
     pub fn get(&self, indx: &U256) -> U256 {
@@ -110,7 +110,7 @@ impl TokensPerWeek {
     }
 }
 
-pub const FEE_DISTRIBUTOR_VE_SUPPLY: &str = "fee_distributor_ve_supply";
+pub const VE_SUPPLY: &str = "ve_supply";
 pub struct VeSupply {
     dict: Dict,
     length: U256,
@@ -119,13 +119,13 @@ pub struct VeSupply {
 impl VeSupply {
     pub fn instance() -> VeSupply {
         VeSupply {
-            dict: Dict::instance(FEE_DISTRIBUTOR_VE_SUPPLY),
+            dict: Dict::instance(VE_SUPPLY),
             length: 0.into(),
         }
     }
 
     pub fn init() {
-        Dict::init(FEE_DISTRIBUTOR_VE_SUPPLY)
+        Dict::init(VE_SUPPLY)
     }
 
     pub fn get(&self, indx: &U256) -> U256 {
@@ -143,125 +143,125 @@ impl VeSupply {
 }
 
 pub fn get_start_time() -> U256 {
-    get_key(FEE_DISTRIBUTOR_START_TIME).unwrap_or_default()
+    get_key(START_TIME).unwrap_or_default()
 }
 
 pub fn set_start_time(start_time: U256) {
-    set_key(FEE_DISTRIBUTOR_START_TIME, start_time);
+    set_key(START_TIME, start_time);
 }
 
 pub fn get_time_cursor() -> U256 {
-    get_key(FEE_DISTRIBUTOR_TIME_CURSOR).unwrap_or_default()
+    get_key(TIME_CURSOR).unwrap_or_default()
 }
 
 pub fn set_time_cursor(time_cursor: U256) {
-    set_key(FEE_DISTRIBUTOR_TIME_CURSOR, time_cursor);
+    set_key(TIME_CURSOR, time_cursor);
 }
 
 pub fn get_last_token_time() -> U256 {
-    get_key(FEE_DISTRIBUTOR_LAST_TOKEN_TIME).unwrap_or_default()
+    get_key(LAST_TOKEN_TIME).unwrap_or_default()
 }
 
 pub fn set_last_token_time(last_token_time: U256) {
-    set_key(FEE_DISTRIBUTOR_LAST_TOKEN_TIME, last_token_time);
+    set_key(LAST_TOKEN_TIME, last_token_time);
 }
 
 pub fn get_voting_escrow() -> Key {
-    get_key(FEE_DISTRIBUTOR_VOTING_ESCROW).unwrap_or(zero_address())
+    get_key(VOTING_ESCROW).unwrap_or(zero_address())
 }
 
 pub fn set_voting_escrow(voting_escrow: Key) {
-    set_key(FEE_DISTRIBUTOR_VOTING_ESCROW, voting_escrow);
+    set_key(VOTING_ESCROW, voting_escrow);
 }
 
 pub fn get_token() -> Key {
-    get_key(FEE_DISTRIBUTOR_TOKEN).unwrap_or(zero_address())
+    get_key(TOKEN).unwrap_or(zero_address())
 }
 
 pub fn set_token(token: Key) {
-    set_key(FEE_DISTRIBUTOR_TOKEN, token);
+    set_key(TOKEN, token);
 }
 
 pub fn get_total_received() -> U256 {
-    get_key(FEE_DISTRIBUTOR_TOTAL_RECEIVED).unwrap_or_default()
+    get_key(TOTAL_RECEIVED).unwrap_or_default()
 }
 
 pub fn set_total_received(total_received: U256) {
-    set_key(FEE_DISTRIBUTOR_TOTAL_RECEIVED, total_received);
+    set_key(TOTAL_RECEIVED, total_received);
 }
 
 pub fn get_token_last_balance() -> U256 {
-    get_key(FEE_DISTRIBUTOR_TOKEN_LAST_BALANCE).unwrap_or_default()
+    get_key(TOKEN_LAST_BALANCE).unwrap_or_default()
 }
 
 pub fn set_token_last_balance(token_last_balance: U256) {
-    set_key(FEE_DISTRIBUTOR_TOKEN_LAST_BALANCE, token_last_balance);
+    set_key(TOKEN_LAST_BALANCE, token_last_balance);
 }
 
 pub fn get_admin() -> Key {
-    get_key(FEE_DISTRIBUTOR_ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or(zero_address())
 }
 
 pub fn set_admin(admin: Key) {
-    set_key(FEE_DISTRIBUTOR_ADMIN, admin);
+    set_key(ADMIN, admin);
 }
 
 pub fn get_future_admin() -> Key {
-    get_key(FEE_DISTRIBUTOR_FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
 }
 
 pub fn set_future_admin(future_admin: Key) {
-    set_key(FEE_DISTRIBUTOR_FUTURE_ADMIN, future_admin);
+    set_key(FUTURE_ADMIN, future_admin);
 }
 
 pub fn get_can_checkpoint_token() -> bool {
-    get_key(FEE_DISTRIBUTOR_CAN_CHECKPOINT_TOKEN).unwrap_or_default()
+    get_key(CAN_CHECKPOINT_TOKEN).unwrap_or_default()
 }
 
 pub fn set_can_checkpoint_token(can_checkpoint_token: bool) {
-    set_key(FEE_DISTRIBUTOR_CAN_CHECKPOINT_TOKEN, can_checkpoint_token);
+    set_key(CAN_CHECKPOINT_TOKEN, can_checkpoint_token);
 }
 
 pub fn get_emergency_return() -> Key {
-    get_key(FEE_DISTRIBUTOR_EMERGENCY_RETURN).unwrap_or(zero_address())
+    get_key(EMERGENCY_RETURN).unwrap_or(zero_address())
 }
 
 pub fn set_emergency_return(emergency_return: Key) {
-    set_key(FEE_DISTRIBUTOR_EMERGENCY_RETURN, emergency_return);
+    set_key(EMERGENCY_RETURN, emergency_return);
 }
 
 pub fn get_is_killed() -> bool {
-    get_key(FEE_DISTRIBUTOR_IS_KILLED).unwrap_or_default()
+    get_key(IS_KILLED).unwrap_or_default()
 }
 
 pub fn set_is_killed(is_killed: bool) {
-    set_key(FEE_DISTRIBUTOR_IS_KILLED, is_killed);
+    set_key(IS_KILLED, is_killed);
 }
 
 pub fn get_lock() -> bool {
-    get_key(FEE_DISTRIBUTOR_LOCK).unwrap_or_default()
+    get_key(LOCK).unwrap_or_default()
 }
 
 pub fn set_lock(lock: bool) {
-    set_key(FEE_DISTRIBUTOR_LOCK, lock);
+    set_key(LOCK, lock);
 }
 
 pub fn get_contract_hash() -> ContractHash {
-    get_key(FEE_DISTRIBUTOR_CONTRACT_HASH).unwrap_or_default()
+    get_key(SELF_CONTRACT_HASH).unwrap_or_default()
 }
 
 pub fn set_contract_hash(contract_hash: ContractHash) {
-    set_key(FEE_DISTRIBUTOR_CONTRACT_HASH, contract_hash);
+    set_key(SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(FEE_DISTRIBUTOR_PACKAGE_HASH).unwrap_or_default()
+    get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_default()
 }
 
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(FEE_DISTRIBUTOR_PACKAGE_HASH, package_hash);
+    set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn js_ret<T: CLTyped + ToBytes>(ret: T) {
-    set_key(FEE_DISTRIBUTOR_RESULT, ret);
+    set_key(RESULT, ret);
 }

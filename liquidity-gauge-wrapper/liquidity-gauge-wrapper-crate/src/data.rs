@@ -19,12 +19,12 @@ pub struct Allowances {
 impl Allowances {
     pub fn instance() -> Allowances {
         Allowances {
-            dict: Dict::instance(GAUGE_WRAPPER_ALLOWANCES),
+            dict: Dict::instance(ALLOWANCES),
         }
     }
 
     pub fn init() {
-        Dict::init(GAUGE_WRAPPER_ALLOWANCES)
+        Dict::init(ALLOWANCES)
     }
 
     pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
@@ -45,12 +45,12 @@ pub struct ApprovedToDeposit {
 impl ApprovedToDeposit {
     pub fn instance() -> ApprovedToDeposit {
         ApprovedToDeposit {
-            dict: Dict::instance(GAUGE_WRAPPER_APPROVED_TO_DEPOSIT),
+            dict: Dict::instance(APPROVED_TO_DEPOSIT),
         }
     }
 
     pub fn init() {
-        Dict::init(GAUGE_WRAPPER_APPROVED_TO_DEPOSIT)
+        Dict::init(APPROVED_TO_DEPOSIT)
     }
 
     pub fn get(&self, key_1: &Key, key_2: &Key) -> bool {
@@ -69,12 +69,12 @@ pub struct BalanceOf {
 impl BalanceOf {
     pub fn instance() -> BalanceOf {
         BalanceOf {
-            dict: Dict::instance(GAUGE_WRAPPER_BALANCE_OF),
+            dict: Dict::instance(BALANCE_OF),
         }
     }
 
     pub fn init() {
-        Dict::init(GAUGE_WRAPPER_BALANCE_OF)
+        Dict::init(BALANCE_OF)
     }
 
     pub fn get(&self, key: &Key) -> U256 {
@@ -93,12 +93,12 @@ pub struct ClaimableCrv {
 impl ClaimableCrv {
     pub fn instance() -> ClaimableCrv {
         ClaimableCrv {
-            dict: Dict::instance(GAUGE_WRAPPER_CLAIMABLE_CRV),
+            dict: Dict::instance(CLAIMABLE_CRV),
         }
     }
 
     pub fn init() {
-        Dict::init(GAUGE_WRAPPER_CLAIMABLE_CRV)
+        Dict::init(CLAIMABLE_CRV)
     }
 
     pub fn get(&self, key: &Key) -> U256 {
@@ -117,12 +117,12 @@ pub struct CrvIntegralFor {
 impl CrvIntegralFor {
     pub fn instance() -> CrvIntegralFor {
         CrvIntegralFor {
-            dict: Dict::instance(GAUGE_WRAPPER_CRV_INTEGRAL_FOR),
+            dict: Dict::instance(CRV_INTEGRAL_FOR),
         }
     }
 
     pub fn init() {
-        Dict::init(GAUGE_WRAPPER_CRV_INTEGRAL_FOR)
+        Dict::init(CRV_INTEGRAL_FOR)
     }
 
     pub fn get(&self, key: &Key) -> U256 {
@@ -135,122 +135,122 @@ impl CrvIntegralFor {
 }
 
 pub fn name() -> String {
-    get_key(GAUGE_WRAPPER_NAME).unwrap_or_revert()
+    get_key(NAME).unwrap_or_revert()
 }
 
 pub fn set_name(name: String) {
-    set_key(GAUGE_WRAPPER_NAME, name);
+    set_key(NAME, name);
 }
 
 pub fn symbol() -> String {
-    get_key(GAUGE_WRAPPER_SYMBOL).unwrap_or_revert()
+    get_key(SYMBOL).unwrap_or_revert()
 }
 
 pub fn set_symbol(symbol: String) {
-    set_key(GAUGE_WRAPPER_SYMBOL, symbol);
+    set_key(SYMBOL, symbol);
 }
 
 pub fn decimals() -> u8 {
-    get_key(GAUGE_WRAPPER_DECIMALS).unwrap_or_revert()
+    get_key(DECIMALS).unwrap_or_revert()
 }
 
 pub fn set_decimals(decimals: u8) {
-    set_key(GAUGE_WRAPPER_DECIMALS, decimals);
+    set_key(DECIMALS, decimals);
 }
 
 pub fn get_minter() -> Key {
-    get_key(GAUGE_WRAPPER_MINTER).unwrap_or(zero_address())
+    get_key(MINTER).unwrap_or(zero_address())
 }
 
 pub fn set_minter(minter: Key) {
-    set_key(GAUGE_WRAPPER_MINTER, minter);
+    set_key(MINTER, minter);
 }
 
 pub fn get_crv_token() -> Key {
-    get_key(GAUGE_WRAPPER_CRV_TOKEN).unwrap_or(zero_address())
+    get_key(CRV_TOKEN).unwrap_or(zero_address())
 }
 
 pub fn set_crv_token(crv_token: Key) {
-    set_key(GAUGE_WRAPPER_CRV_TOKEN, crv_token);
+    set_key(CRV_TOKEN, crv_token);
 }
 
 pub fn get_lp_token() -> Key {
-    get_key(GAUGE_WRAPPER_LP_TOKEN).unwrap_or(zero_address())
+    get_key(LP_TOKEN).unwrap_or(zero_address())
 }
 
 pub fn set_lp_token(lp_token: Key) {
-    set_key(GAUGE_WRAPPER_LP_TOKEN, lp_token);
+    set_key(LP_TOKEN, lp_token);
 }
 pub fn get_gauge() -> Key {
-    get_key(GAUGE_WRAPPER_GAUGE).unwrap_or(zero_address())
+    get_key(GAUGE).unwrap_or(zero_address())
 }
 
 pub fn set_gauge(gauge: Key) {
-    set_key(GAUGE_WRAPPER_GAUGE, gauge);
+    set_key(GAUGE, gauge);
 }
 
 pub fn get_total_supply() -> U256 {
-    get_key(GAUGE_WRAPPER_TOTAL_SUPPLY).unwrap_or_default()
+    get_key(TOTAL_SUPPLY).unwrap_or_default()
 }
 
 pub fn set_total_supply(total_supply: U256) {
-    set_key(GAUGE_WRAPPER_TOTAL_SUPPLY, total_supply);
+    set_key(TOTAL_SUPPLY, total_supply);
 }
 pub fn get_crv_integral() -> U256 {
-    get_key(GAUGE_WRAPPER_CRV_INTEGRAL).unwrap_or_default()
+    get_key(CRV_INTEGRAL).unwrap_or_default()
 }
 
 pub fn set_crv_integral(crv_integral: U256) {
-    set_key(GAUGE_WRAPPER_CRV_INTEGRAL, crv_integral);
+    set_key(CRV_INTEGRAL, crv_integral);
 }
 pub fn get_admin() -> Key {
-    get_key(GAUGE_WRAPPER_ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or(zero_address())
 }
 
 pub fn set_admin(admin: Key) {
-    set_key(GAUGE_WRAPPER_ADMIN, admin);
+    set_key(ADMIN, admin);
 }
 
 pub fn get_future_admin() -> Key {
-    get_key(GAUGE_WRAPPER_FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
 }
 
 pub fn set_future_admin(future_admin: Key) {
-    set_key(GAUGE_WRAPPER_FUTURE_ADMIN, future_admin);
+    set_key(FUTURE_ADMIN, future_admin);
 }
 
 pub fn get_is_killed() -> bool {
-    get_key(GAUGE_WRAPPER_IS_KILLED).unwrap_or_default()
+    get_key(IS_KILLED).unwrap_or_default()
 }
 
 pub fn set_is_killed(is_killed: bool) {
-    set_key(GAUGE_WRAPPER_IS_KILLED, is_killed);
+    set_key(IS_KILLED, is_killed);
 }
 
 pub fn get_lock() -> bool {
-    get_key(GAUGE_WRAPPER_LOCK).unwrap_or_default()
+    get_key(LOCK).unwrap_or_default()
 }
 
 pub fn set_lock(lock: bool) {
-    set_key(GAUGE_WRAPPER_LOCK, lock);
+    set_key(LOCK, lock);
 }
 
 pub fn get_contract_hash() -> ContractHash {
-    get_key(GAUGE_WRAPPER_CONTRACT_HASH).unwrap_or_default()
+    get_key(SELF_CONTRACT_HASH).unwrap_or_default()
 }
 
 pub fn set_contract_hash(contract_hash: ContractHash) {
-    set_key(GAUGE_WRAPPER_CONTRACT_HASH, contract_hash);
+    set_key(SELF_CONTRACT_HASH, contract_hash);
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(GAUGE_WRAPPER_PACKAGE_HASH).unwrap_or_default()
+    get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_default()
 }
 
 pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(GAUGE_WRAPPER_PACKAGE_HASH, package_hash);
+    set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn js_ret<T: CLTyped + ToBytes>(ret: T) {
-    set_key(GAUGE_WRAPPER_RESULT, ret);
+    set_key(RESULT, ret);
 }
