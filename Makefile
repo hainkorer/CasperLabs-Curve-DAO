@@ -6,6 +6,7 @@ gauge_proxy_des_wasm = ./gauge-proxy/gauge-proxy-tests/wasm
 reward_only_gauge_des_wasm = ./reward-only-gauge/reward-only-gauge-tests/wasm
 vesting_escrow_des_wasm = ./vesting-escrow/vesting-escrow-tests/wasm
 vesting_escrow_factory_des_wasm = ./vesting-escrow-factory/vesting-escrow-factory-tests/wasm
+vesting_escrow_simple_des_wasm = ./vesting-escrow-simple/vesting-escrow-simple-tests/wasm
 voting_escrow_des_wasm = ./voting-escrow/voting-escrow-tests/wasm/
 fee_distributor_des_wasm = ./fee-distributor/fee-distributor-tests/wasm/
 liquidity_gauge_reward_des_wasm = ./liquidity-gauge-reward/liquidity-gauge-reward-tests/wasm/
@@ -195,9 +196,11 @@ clean:
 	rm -rf Cargo.lock
 	rm -rf ${minter_des_wasm}/*.wasm
 	rm -rf ${gauge_controller_des_wasm}/*.wasm
+	rm -rf ${gauge_proxy_des_wasm}/*.wasm
 	rm -rf ${reward_only_gauge_des_wasm}/*.wasm
 	rm -rf ${vesting_escrow_des_wasm}/*.wasm
 	rm -rf ${vesting_escrow_factory_des_wasm}/*.wasm
+	rm -rf ${vesting_escrow_simple_des_wasm}/*.wasm
 	rm -rf ${voting_escrow_des_wasm}/*.wasm
 	rm -rf ${fee_distributor_des_wasm}*.wasm
 	rm -rf ${voting_escrow_des_wasm}*.wasm
