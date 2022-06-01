@@ -892,6 +892,7 @@ dependencies = [
  "casper-contract",
  "casper-engine-test-support",
  "casper-types",
+ "common",
  "contract-utils",
  "hex",
  "test-env",
@@ -2252,6 +2253,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "vesting-escrow-simple-tests"
+version = "0.2.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-execution-engine",
+ "casper-hashing",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
 name = "vesting-escrow-tests"
 version = "0.2.1"
 dependencies = [
@@ -2275,21 +2291,6 @@ dependencies = [
  "erc20-crate",
  "hex",
  "renvm-sig",
-]
-
-[[package]]
-name = "vesting_escrow_simple_tests"
-version = "0.2.0"
-dependencies = [
- "blake2",
- "casper-contract",
- "casper-engine-test-support",
- "casper-execution-engine",
- "casper-hashing",
- "casper-types",
- "contract-utils",
- "hex",
- "test-env",
 ]
 
 [[package]]

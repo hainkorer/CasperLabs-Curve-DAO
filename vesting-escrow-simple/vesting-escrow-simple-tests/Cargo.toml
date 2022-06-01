@@ -1,7 +1,7 @@
 [package]
 authors = ["Nouman Nadeem <nouman.nadeem.zafar@scytalelabs.com>"]
 edition = "2018"
-name = "vesting_escrow_simple_tests"
+name = "vesting-escrow-simple-tests"
 version = "0.2.0"
 
 [dependencies]

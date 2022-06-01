@@ -158,7 +158,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::GaugeControllerOnlyAdmin2);
         }
         let _admin = self.future_admin();
-        if _admin == data::zero_address() {
+        if _admin == data::zero_address() || _admin == data::account_zero_address() {
             //Gauge Controller Admin Not Set
             runtime::revert(Error::GaugeControllerAdminNotSet);
         }
@@ -585,8 +585,13 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         }
     }
 
-    fn add_gauge(&mut self, addr: Key, gauge_type: U128) {
-        let weight: U256 = 0.into();
+    fn add_gauge(&mut self, addr: Key, gauge_type: U128, _weight: Option<U256>) {
+        let weight: U256;
+        if _weight.is_some() {
+            weight = _weight.unwrap()
+        } else {
+            weight = 0.into();
+        }
         if self.get_caller() == data::admin() {
             if gauge_type >= U128::from(0) && gauge_type < data::n_gauge_types() {
                 if self.gauge_types_(addr) == U128::from(0)
@@ -670,18 +675,18 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         };
         let escrow_package_hash = ContractPackageHash::new(escrow_package_hash_add_array);
 
-        let slope: U256 = runtime::call_versioned_contract(
+        let slope: U128 = runtime::call_versioned_contract(
             escrow_package_hash,
             None,
             "get_last_user_slope",
-            runtime_args! {"msg.sender" => self.get_caller()},
+            runtime_args! {"addr" => self.get_caller()},
         );
 
         let lock_end: U256 = runtime::call_versioned_contract(
             escrow_package_hash,
             None,
-            "locked__end",
-            runtime_args! {"msg.sender" => self.get_caller()},
+            "locked_end",
+            runtime_args! {"addr" => self.get_caller()},
         );
 
         let _n_gauges: U128 = data::n_gauges();
@@ -720,7 +725,8 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                         }
                         let old_bias: U256 = old_slope.slope * old_dt;
                         let new_slope: VotedSlope = VotedSlope {
-                            slope: slope * (_user_weight / U256::from(100000)),
+                            slope: U256::from(slope.as_u128())
+                                * (_user_weight / U256::from(100000)),
                             end: lock_end,
                             power: _user_weight,
                         };
