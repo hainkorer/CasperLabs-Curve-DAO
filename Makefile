@@ -1,4 +1,4 @@
-wasm_src_path = ./target/wasm32-unknown-unknown/release
+wasm_src_path = ./target/wasm32-unknown-unknown/release/
 
 minter_des_wasm = ./minter/minter-tests/wasm
 gauge_controller_des_wasm = ./gauge-controller/gauge-controller-tests/wasm
@@ -13,6 +13,7 @@ liquidity_gauge_reward_des_wasm = ./liquidity-gauge-reward/liquidity-gauge-rewar
 erc20_des_wasm = ./erc20/erc20-tests/wasm/
 liquidity_gauge_reward_wrapper_des_wasm = ./liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests/wasm/
 liquidity_gauge_wrapper_des_wasm = ./liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests/wasm/
+curve_token_v3_des_wasm=./curve-token-v3/curve-token-v3-tests/wasm
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -57,8 +58,7 @@ build-contract-liquidity-gauge-reward-wrapper:
 build-contract-liquidity-gauge-wrapper:
 	cargo build --release -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
 build-contract-curve-token-v3:
-	cargo build --release -p curve_token_v3 --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v3.wasm 2>/dev/null | true
+	cargo build --release -p curve-token-v3 -p curve-token-v3-proxy --target wasm32-unknown-unknown
 
 test-only-minter:
 	cargo test -p minter-tests
@@ -89,7 +89,7 @@ test-only-liquidity-gauge-reward-wrapper:
 test-only-liquidity-gauge-wrapper:
 	cargo test -p liquidity-gauge-wrapper-tests
 test-only-curve-token-v3:
-	cargo test -p curve_token_v3_tests -- --nocapture
+	cargo test -p curve-token-v3-tests
 
 copy-wasm-file-minter:
 	cp ${wasm_src_path}/minter-token.wasm ${minter_des_wasm}
@@ -142,7 +142,8 @@ copy-wasm-file-erc20-crv:
 copy-wasm-file-vesting-escrow-simple:
 	cp ${wasm_src_path}/*.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm
 copy-wasm-file-curve-token-v3:
-	cp ${wasm_src_path}/*.wasm curve-token-v3/curve-token-v3-tests/wasm
+	cp ${root_directory}${wasm_src_path}curve-token-v3.wasm ${curve_token_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}crv3-proxy-token.wasm ${curve_token_v3_des_wasm}
 
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter && make test-only-minter

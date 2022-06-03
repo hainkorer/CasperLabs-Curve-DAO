@@ -96,7 +96,17 @@ pub const TRANSFERS_ENABLED: &str = "transfers_enabled";
 pub const VERSION: &str = "version";
 pub const EPOCH: &str = "epoch";
 // Curve Token V3
-pub const CURVE: &str = "curve";
+pub const CURVE_TOKEN_V3_SELF_CONTRACT_HASH: &str = "self_contract_hash";
+pub const CURVE_TOKEN_V3_SELF_PACKAGE_HASH: &str = "self_package_hash";
+pub const CURVE_TOKEN_V3_RESULT: &str = "result";
+pub const CURVE_TOKEN_V3_NAME: &str = "name";
+pub const CURVE_TOKEN_V3_SYMBOL: &str = "symbol";
+pub const CURVE_TOKEN_V3_DECIMALS: &str = "decimals";
+pub const CURVE_TOKEN_V3_BALANCE_OF_DICT: &str = "balance_of";
+pub const CURVE_TOKEN_V3_ALLOWANCES_DICT: &str = "allowances";
+pub const CURVE_TOKEN_V3_TOTAL_SUPPLY: &str = "total_supply";
+pub const CURVE_TOKEN_V3_CURVE: &str = "curve";
+pub const CURVE_TOKEN_V3_MINTER: &str = "minter";
 // Gauge Controller
 pub const GAUGE_TYPE_NAMES_DICT: &str = "gauge_type_names";
 pub const GAUGE_TYPES_DICT: &str = "gauge_types_";
