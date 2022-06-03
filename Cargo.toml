@@ -15,6 +15,7 @@ members = [
   "gauge-controller/gauge-controller-crate",
   "gauge-controller/gauge-controller-proxy",
   "gauge-controller/gauge-controller-tests",
+  "gauge-controller/session-code",
   # GAUGE PROXY
   "gauge-proxy/gauge-proxy",
   "gauge-proxy/gauge-proxy-crate",
@@ -53,6 +54,8 @@ members = [
   # VESTING ESCROW SIMPLE
   "vesting-escrow-simple/vesting-escrow-simple",
   "vesting-escrow-simple/vesting-escrow-simple-tests",
+  "vesting-escrow-simple/vesting-escrow-simple-proxy",
+
   # ERC20
   "erc20/erc20",
   "erc20/erc20-crate",
