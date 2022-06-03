@@ -144,6 +144,7 @@ impl VESTINGESCROWSIMPLEInstance {
     }
 
     pub fn package_hash(&self) -> ContractPackageHash {
-        self.0.query_named_key("self_contract_package_hash".to_string())
+        self.0
+            .query_named_key("self_contract_package_hash".to_string())
     }
 }

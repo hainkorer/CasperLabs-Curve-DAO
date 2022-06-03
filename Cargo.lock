@@ -1081,6 +1081,47 @@ dependencies = [
 ]
 
 [[package]]
+name = "i-reward-distribution-recipient"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "i-reward-distribution-recipient-crate",
+ "ownable-crate",
+ "renvm-sig",
+]
+
+[[package]]
+name = "i-reward-distribution-recipient-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "ownable-crate",
+]
+
+[[package]]
+name = "i-reward-distribution-recipient-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-hashing",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
 name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1338,6 +1379,53 @@ dependencies = [
 ]
 
 [[package]]
+name = "lp-token-wrapper"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "lp-token-wrapper-crate",
+ "renvm-sig",
+]
+
+[[package]]
+name = "lp-token-wrapper-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+]
+
+[[package]]
+name = "lp-token-wrapper-session-code"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+]
+
+[[package]]
+name = "lp-token-wrapper-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
 name = "match_cfg"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1531,6 +1619,45 @@ name = "opaque-debug"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
+
+[[package]]
+name = "ownable"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "ownable-crate",
+ "renvm-sig",
+]
+
+[[package]]
+name = "ownable-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+]
+
+[[package]]
+name = "ownable-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-hashing",
+ "casper-types",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
 
 [[package]]
 name = "parity-wasm"
@@ -2018,6 +2145,14 @@ dependencies = [
  "redox_syscall",
  "remove_dir_all",
  "winapi",
+]
+
+[[package]]
+name = "test"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
 ]
 
 [[package]]

@@ -3,3 +3,6 @@ make: Entering directory '/home/saad/CasperLabs-Curve-DAO'
 rustup target add wasm32-unknown-unknown
 make: Leaving directory '/home/saad/CasperLabs-Curve-DAO'
  
+Makefile:181: warning: overriding recipe for target 'test-gauge-controller'
+Makefile:177: warning: ignoring old recipe for target 'test-gauge-controller'
+

@@ -77,6 +77,20 @@ members = [
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-crate",
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests",
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-session-code",
+  # Ownable
+  "ownable/ownable",
+  "ownable/ownable-crate",
+  "ownable/ownable-tests",
+  "ownable/test-contract",
+  # IREWARDDISTRIBUTIONRECIPIENT
+  "i-reward-distribution-recipient/i-reward-distribution-recipient",
+  "i-reward-distribution-recipient/i-reward-distribution-recipient-crate",
+  "i-reward-distribution-recipient/i-reward-distribution-recipient-tests",
+  # Lp Token WRAPPER
+  "lp-token-wrapper/lp-token-wrapper",
+  "lp-token-wrapper/lp-token-wrapper-crate",
+  "lp-token-wrapper/lp-token-wrapper-tests",
+  "lp-token-wrapper/lp-token-wrapper-session-code",
 ]
 
 [profile.release]

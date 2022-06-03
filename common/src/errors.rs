@@ -510,6 +510,12 @@ pub enum Error {
     GaugeWrapperZeroAddress = 11411,
     /// 65,540 for (Liquidity Gauge Wrapper Is Killed)
     GaugeWrapperIsKilled2 = 11412,
+    /// 65,546 for (Ownable: caller is not the owner)
+    OwnableNotOwner = 11501,
+    /// 65,540 for (Ownable: new owner is the zero address)
+    OwnableNewOwnerAddressZero = 11502,
+    /// 65,540 for (IRewardDistributionRecipient: Caller is not reward distribution)
+    NotRewardDistribution = 11601,
     Abort = 150,
     SmartContractDepositorsNotAllowed = 151,
 }
