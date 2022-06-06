@@ -516,6 +516,10 @@ pub enum Error {
     OwnableNewOwnerAddressZero = 11502,
     /// 65,540 for (IRewardDistributionRecipient: Caller is not reward distribution)
     NotRewardDistribution = 11601,
+    //65,540 for (CurveRewards:Cannot stake 0)
+    CurveRewardsCannotStake = 11701,
+    //65,540 for (CurveRewards:Cannot withdraw 0)
+    CurveRewardsCannotWithdraw = 11702,
     Abort = 150,
     SmartContractDepositorsNotAllowed = 151,
 }

@@ -91,6 +91,11 @@ members = [
   "lp-token-wrapper/lp-token-wrapper-crate",
   "lp-token-wrapper/lp-token-wrapper-tests",
   "lp-token-wrapper/lp-token-wrapper-session-code",
+  # Curve Rewards
+  "curve-rewards/curve-rewards",
+  "curve-rewards/curve-rewards-crate",
+  "curve-rewards/curve-rewards-tests",
+  "curve-rewards/curve-rewards-session-code",
 ]
 
 [profile.release]

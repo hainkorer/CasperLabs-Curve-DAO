@@ -1,5 +1,6 @@
 use crate::lp_token_wrapper_instance::LPTOKENWRAPPERInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
+use common::keys::*;
 use test_env::{TestContract, TestEnv};
 //Const
 pub const TEN_E_NINE: u128 = 1000000000;
@@ -12,7 +13,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
         runtime_args! {
             "name" => "ERC",
             "symbol" => "ERC20",
-            "decimals" => 18 as u8,
+            "decimals" => 9 as u8,
             "initial_supply" => U256::from(TEN_E_NINE * 10000000000000)
         },
         0,
@@ -53,10 +54,24 @@ fn test_deploy() {
 }
 #[test]
 fn total_supply() {
-    let (_, owner, instance) = deploy();
-    let lp_token_wrapper_instance = LPTOKENWRAPPERInstance::contract_instance(instance);
+    let (env, owner, lp_token_wrapper) = deploy();
+    let package_hash = Key::Hash(lp_token_wrapper.package_hash());
+    let lp_token_wrapper_instance = LPTOKENWRAPPERInstance::contract_instance(lp_token_wrapper);
     let amount: U256 = U256::from(TEN_E_NINE * 2);
     lp_token_wrapper_instance.stake(owner, amount);
+    TestContract::new(
+        &env,
+        "lp-token-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(TOTAL_SUPPLY),
+            "package_hash" => package_hash,
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
+    assert_eq!(ret, amount, "Invalid result");
     // proxy.total_supply(owner);
     // let v: U256 = proxy.result();
     // println!("{:?}", v);

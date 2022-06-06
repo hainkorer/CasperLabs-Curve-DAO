@@ -4,13 +4,13 @@ use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::{
     contract_api::{
-        runtime::{self, get_blocktime},
+        runtime::{self},
         storage,
     },
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};

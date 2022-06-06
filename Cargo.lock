@@ -424,6 +424,60 @@ dependencies = [
 ]
 
 [[package]]
+name = "curve-rewards"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "cryptoxide",
+ "curve-rewards-crate",
+ "hex",
+ "i-reward-distribution-recipient-crate",
+ "lp-token-wrapper-crate",
+ "ownable-crate",
+ "renvm-sig",
+]
+
+[[package]]
+name = "curve-rewards-crate"
+version = "0.2.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "cryptoxide",
+ "hex",
+ "i-reward-distribution-recipient-crate",
+ "lp-token-wrapper-crate",
+]
+
+[[package]]
+name = "curve-rewards-session-code"
+version = "0.1.0"
+dependencies = [
+ "casper-contract",
+ "casper-types",
+ "common",
+]
+
+[[package]]
+name = "curve-rewards-tests"
+version = "0.1.0"
+dependencies = [
+ "blake2",
+ "casper-contract",
+ "casper-engine-test-support",
+ "casper-types",
+ "common",
+ "contract-utils",
+ "hex",
+ "test-env",
+]
+
+[[package]]
 name = "curve25519-dalek"
 version = "3.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1420,6 +1474,7 @@ dependencies = [
  "casper-contract",
  "casper-engine-test-support",
  "casper-types",
+ "common",
  "contract-utils",
  "hex",
  "test-env",

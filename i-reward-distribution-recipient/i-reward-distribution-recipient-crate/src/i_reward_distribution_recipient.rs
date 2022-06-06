@@ -1,4 +1,3 @@
-//use crate::data::{self, Allowances, Balances, Nonces};
 use crate::data;
 use casper_contract::contract_api::runtime;
 use casper_types::{ApiError, ContractHash, ContractPackageHash, Key};

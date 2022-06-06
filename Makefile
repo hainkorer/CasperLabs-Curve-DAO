@@ -15,6 +15,7 @@ liquidity_gauge_wrapper_des_wasm = ./liquidity-gauge-wrapper/liquidity-gauge-wra
 ownable_des_wasm = ./ownable/ownable-tests/wasm/
 i_reward_distribution_recipient_des_wasm = ./i-reward-distribution-recipient/i-reward-distribution-recipient-tests/wasm/
 lp_token_wrapper_des_wasm = ./lp-token-wrapper/lp-token-wrapper-tests/wasm/
+curve_rewards_des_wasm = ./curve-rewards/curve-rewards-tests/wasm/
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -79,6 +80,10 @@ build-lp-token-wrapper-session-code:
 	cargo build --release -p lp-token-wrapper-session-code --target wasm32-unknown-unknown
 build-lp-token-wrapper:
 	cargo build --release -p lp-token-wrapper --target wasm32-unknown-unknown
+build-curve-rewards-session-code:
+	cargo build --release -p curve-rewards-session-code --target wasm32-unknown-unknown
+build-curve-rewards:
+	cargo build --release -p erc20 -p curve-rewards --target wasm32-unknown-unknown
 
 test-only-minter:
 	cargo test -p minter-tests
@@ -120,6 +125,8 @@ test-only-ownable:
 	cargo test -p ownable-tests -- --nocapture
 test-only-lp-token-wrapper:
 	cargo test -p lp-token-wrapper-tests
+test-only-curve-rewards:
+	cargo test -p curve-rewards-tests -- --nocapture
 copy-wasm-file-minter:
 	cp ${wasm_src_path}/minter-token.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/minter-proxy-token.wasm ${minter_des_wasm}
@@ -186,6 +193,10 @@ copy-wasm-file-lp-token-wrapper:
 	cp ${wasm_src_path}/erc20-token.wasm ${lp_token_wrapper_des_wasm}
 	cp ${wasm_src_path}/lp-token-wrapper.wasm ${lp_token_wrapper_des_wasm}
 	cp ${wasm_src_path}/lp-token-wrapper-session-code.wasm ${lp_token_wrapper_des_wasm}
+copy-wasm-file-curve-rewards:
+	cp ${wasm_src_path}/erc20-token.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/curve-rewards-session-code.wasm ${curve_rewards_des_wasm}
 test-gauge-controller:
 	make build-contract-gauge-controller && make build-gauge-controller-session-code && make copy-wasm-file-gauge-controller
 test-minter:
@@ -227,7 +238,9 @@ test-ownable:
 test-i-reward-distribution-recipient:
 	make build-i-reward-distribution-recipient && make copy-wasm-file-i-reward-distribution-recipient && make test-only-i-reward-distribution-recipient
 test-lp-token-wrapper:
-	make build-contract-erc20 && make build-lp-token-wrapper && make build-lp-token-wrapper-session-code && make copy-wasm-file-lp-token-wrapper && make test-only-lp-token-wrapper
+	make build-contract-erc20 && make build-lp-token-wrapper-session-code && make build-lp-token-wrapper && make copy-wasm-file-lp-token-wrapper && make test-only-lp-token-wrapper
+test-curve-rewards:
+	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
 all:
 	make test-erc20
 	make test-erc20-crv

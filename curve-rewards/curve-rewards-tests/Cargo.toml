@@ -1,7 +1,7 @@
 [package]
 authors = ["Saad Majeed <saad.majeed@scytalelabs.com>"]
 edition = "2018"
-name = "lp-token-wrapper-tests"
+name = "curve-rewards-tests"
 version = "0.1.0"
 
 [dependencies]

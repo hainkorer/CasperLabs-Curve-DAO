@@ -33,26 +33,35 @@ pub extern "C" fn call() {
 
     match entrypoint.as_str() {
         // LP TOKEN WRAPPER
-        TOTAL_SUPPLY => {
+        LAST_TIME_REWARD_APPLICABLE => {
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                TOTAL_SUPPLY,
+                LAST_TIME_REWARD_APPLICABLE,
                 runtime_args! {},
             );
-            store(TOTAL_SUPPLY, ret);
+            store(LAST_TIME_REWARD_APPLICABLE, ret);
         }
-        BALANCE_OF => {
+        REWARD_PER_TOKEN => {
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                REWARD_PER_TOKEN,
+                runtime_args! {},
+            );
+            store(REWARD_PER_TOKEN, ret);
+        }
+        EARNED => {
             let account: Key = runtime::get_named_arg("account");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                BALANCE_OF,
+                EARNED,
                 runtime_args! {
                     "account" => account,
                 },
             );
-            store(BALANCE_OF, ret);
+            store(EARNED, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
