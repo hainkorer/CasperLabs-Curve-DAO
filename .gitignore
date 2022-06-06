@@ -6,18 +6,18 @@ target
 # More information here https://doc.rust-lang.org/cargo/guide/cargo-toml-vs-cargo-lock.html
 Cargo.lock
 
-./curve-token-v3/curve-token-v3-tests/wasm/*.wasm
-./erc20/erc20-tests/wasm/*.wasm
-./erc20-crv/erc20-crv-tests/wasm/*.wasm
-./fee-distributor/fee-distributor-tests/wasm/*.wasm
-./gauge-controller/gauge-controller-tests/wasm/*.wasm
-./gauge-proxy/gauge-proxy-tests/wasm/*.wasm
-./liquidity-gauge-reward/liquidity-gauge-reward-tests/wasm/*.wasm
-./liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests/wasm/*.wasm
-./liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests/wasm/*.wasm
-./minter/minter-tests/wasm/*.wasm
-./reward-only-gauge/reward-only-gauge-tests/wasm/*.wasm
-./vesting-escrow/vesting-escrow-tests/wasm/*.wasm
-./vesting-escrow-factory/vesting-escrow-factory-tests/wasm/*.wasm
-./vesting-escrow-simple/vesting-escrow-simple-tests/wasm/*.wasm
-./voting-escrow/voting-escrow-tests/wasm/*.wasm
+curve-token-v3/curve-token-v3-tests/wasm/*.wasm
+erc20/erc20-tests/wasm/*.wasm
+erc20-crv/erc20-crv-tests/wasm/*.wasm
+fee-distributor/fee-distributor-tests/wasm/*.wasm
+gauge-controller/gauge-controller-tests/wasm/*.wasm
+gauge-proxy/gauge-proxy-tests/wasm/*.wasm
+liquidity-gauge-reward/liquidity-gauge-reward-tests/wasm/*.wasm
+liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests/wasm/*.wasm
+liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests/wasm/*.wasm
+minter/minter-tests/wasm/*.wasm
+reward-only-gauge/reward-only-gauge-tests/wasm/*.wasm
+vesting-escrow/vesting-escrow-tests/wasm/*.wasm
+vesting-escrow-factory/vesting-escrow-factory-tests/wasm/*.wasm
+vesting-escrow-simple/vesting-escrow-simple-tests/wasm/*.wasm
+voting-escrow/voting-escrow-tests/wasm/*.wasm

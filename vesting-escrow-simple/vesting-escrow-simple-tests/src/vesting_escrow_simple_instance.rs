@@ -18,7 +18,7 @@ impl VESTINGESCROWSIMPLEInstance {
     ) -> TestContract {
         TestContract::new(
             env,
-            "vesting_escrow_simple.wasm",
+            "vesting-escrow-simple.wasm",
             contract_name,
             sender,
             runtime_args! {
@@ -35,7 +35,7 @@ impl VESTINGESCROWSIMPLEInstance {
     ) -> TestContract {
         TestContract::new(
             env,
-            "contract.wasm",
+            "vesting-escrow-simple-proxy.wasm",
             contract_name,
             sender,
             runtime_args! {
@@ -144,6 +144,7 @@ impl VESTINGESCROWSIMPLEInstance {
     }
 
     pub fn package_hash(&self) -> ContractPackageHash {
-        self.0.query_named_key("self_contract_package_hash".to_string())
+        self.0
+            .query_named_key("self_contract_package_hash".to_string())
     }
 }

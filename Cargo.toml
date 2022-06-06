@@ -4,12 +4,22 @@ members = [
   "common",
   # SESSION CODE
   "session-code",
-  # SESSION CODE
-  # MINTER
-  "minter/minter",
-  "minter/minter-crate",
-  "minter/minter-proxy",
-  "minter/minter-tests",
+  # CURVE TOKEN V3
+  "curve-token-v3/curve-token-v3",
+  "curve-token-v3/curve-token-v3-tests",
+  # ERC20
+  "erc20/erc20",
+  "erc20/erc20-crate",
+  "erc20/erc20-proxy",
+  "erc20/erc20-tests",
+  # ERC-20 CRV
+  "erc20-crv/erc20-crv",
+  "erc20-crv/erc20-crv-tests",
+  "erc20-crv/session-code",
+  # FEE DISTRIVUTOR
+  "fee-distributor/fee-distributor",
+  "fee-distributor/fee-distributor-crate",
+  "fee-distributor/fee-distributor-tests",
   # GAUGE CONTROLLER
   "gauge-controller/gauge-controller",
   "gauge-controller/gauge-controller-crate",
@@ -19,6 +29,25 @@ members = [
   "gauge-proxy/gauge-proxy",
   "gauge-proxy/gauge-proxy-crate",
   "gauge-proxy/gauge-proxy-tests",
+  # LIQUIDITY GAUGE REWARD
+  "liquidity-gauge-reward/liquidity-gauge-reward",
+  "liquidity-gauge-reward/liquidity-gauge-reward-crate",
+  "liquidity-gauge-reward/liquidity-gauge-reward-tests",
+  # LIQUIDITY GAUGE REWARD WRAPPER
+  "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper",
+  "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-crate",
+  "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests",
+  "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-session-code",
+  # LIQUIDITY GAUGE WRAPPER
+  "liquidity-gauge-wrapper/liquidity-gauge-wrapper",
+  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-crate",
+  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests",
+  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-session-code",
+  # MINTER
+  "minter/minter",
+  "minter/minter-crate",
+  "minter/minter-proxy",
+  "minter/minter-tests",
   # REWARD ONLY GAUGE
   "reward-only-gauge/reward-only-gauge",
   "reward-only-gauge/reward-only-gauge-crate",
@@ -34,43 +63,14 @@ members = [
   "vesting-escrow-factory/vesting-escrow-factory-crate",
   "vesting-escrow-factory/vesting-escrow-factory-proxy",
   "vesting-escrow-factory/vesting-escrow-factory-tests",
-  # VotingEscrow
+  # VESTING ESCROW SIMPLE
+  "vesting-escrow-simple/vesting-escrow-simple",
+  "vesting-escrow-simple/vesting-escrow-simple-proxy",
+  "vesting-escrow-simple/vesting-escrow-simple-tests",
+  # VOTING ESCROW
   "voting-escrow/voting-escrow",
   "voting-escrow/voting-escrow-crate",
   "voting-escrow/voting-escrow-tests",
-  # Fee Distributor 
-  "fee-distributor/fee-distributor",
-  "fee-distributor/fee-distributor-crate",
-  "fee-distributor/fee-distributor-tests",
-  # Liquidity Gauge Reward
-  "liquidity-gauge-reward/liquidity-gauge-reward",
-  "liquidity-gauge-reward/liquidity-gauge-reward-crate",
-  "liquidity-gauge-reward/liquidity-gauge-reward-tests",
-  # ERC-20 CRV
-  "erc20-crv/erc20_crv",
-  "erc20-crv/erc20_crv_tests",
-  "erc20-crv/session_code",
-  # VESTING ESCROW SIMPLE
-  "vesting-escrow-simple/vesting-escrow-simple",
-  "vesting-escrow-simple/vesting-escrow-simple-tests",
-  # ERC20
-  "erc20/erc20",
-  "erc20/erc20-crate",
-  "erc20/erc20-proxy",
-  "erc20/erc20-tests",
-  # LIQUIDITY GAUGE REWARD WRAPPER
-  "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper",
-  "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-crate",
-  "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests",
-  "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-session-code",
-  # CURVE TOKEN V3
-  "curve-token-v3/curve-token-v3",
-  "curve-token-v3/curve-token-v3-tests",
-  # LIQUIDITY GAUGE WRAPPER
-  "liquidity-gauge-wrapper/liquidity-gauge-wrapper",
-  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-crate",
-  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests",
-  "liquidity-gauge-wrapper/liquidity-gauge-wrapper-session-code",
 ]
 
 [profile.release]
