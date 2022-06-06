@@ -43,11 +43,127 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
+    pub fn claimable_tokens(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "claimable_tokens",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+
+    pub fn claimable_reward(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "claimable_reward",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+
+    pub fn kick(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "kick",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+
+    pub fn set_approve_deposit(&self, owner: AccountHash, addr: Key, can_deposit: bool) {
+        self.0.call_contract(
+            owner,
+            "set_approve_deposit",
+            runtime_args! {
+                "addr" => addr,
+                "can_deposit" => can_deposit
+            },
+            0,
+        );
+    }
+
+    pub fn deposit(&self, owner: AccountHash, addr: Key, value: U256) {
+        self.0.call_contract(
+            owner,
+            "deposit",
+            runtime_args! {
+                "addr" => addr,
+                "value" => value
+            },
+            0,
+        );
+    }
+
+    pub fn withdraw(&self, owner: AccountHash, claim_rewards: bool, value: U256) {
+        self.0.call_contract(
+            owner,
+            "withdraw",
+            runtime_args! {
+                "claim_rewards" => claim_rewards,
+                "value" => value
+            },
+            0,
+        );
+    }
+
+    pub fn claim_rewards(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "claim_rewards",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+
+    pub fn integrate_checkpoint(&self, owner: AccountHash) {
+        self.0
+            .call_contract(owner, "integrate_checkpoint", runtime_args! {}, 0);
+    }
+
+    pub fn kill_me(&self, owner: AccountHash) {
+        self.0.call_contract(owner, "kill_me", runtime_args! {}, 0);
+    }
+
+    pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "commit_transfer_ownership",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+
+    pub fn apply_transfer_ownership(&self, owner: AccountHash) {
+        self.0
+            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, 0);
+    }
+
+    pub fn toggle_external_rewards_claim(&self, owner: AccountHash, val: bool) {
+        self.0.call_contract(
+            owner,
+            "toggle_external_rewards_claim",
+            runtime_args! {
+                "val" => val
+            },
+            0,
+        );
+    }
+
+    // Get stored key values
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
     }
 
-    // Get stored key values
     pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
         self.0.query_named_key(key)
     }

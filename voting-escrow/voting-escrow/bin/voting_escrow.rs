@@ -1,13 +1,13 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{collections::BTreeSet, format, string::String, vec};
+use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
+    runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
     U256,
 };
@@ -157,7 +157,7 @@ fn withdraw() {
 #[no_mangle]
 fn balance_of() {
     let addr: Key = runtime::get_named_arg("addr");
-    let t: U256 = runtime::get_named_arg("t");
+    let t: Option<U256> = runtime::get_named_arg("t");
     let ret: U256 = VotingEscrow::default().balance_of(addr, t);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -165,7 +165,7 @@ fn balance_of() {
 #[no_mangle]
 fn balance_of_js_client() {
     let addr: Key = runtime::get_named_arg("addr");
-    let t: U256 = runtime::get_named_arg("t");
+    let t: Option<U256> = runtime::get_named_arg("t");
     let ret: U256 = VotingEscrow::default().balance_of(addr, t);
     data::js_ret(ret);
 }
@@ -188,14 +188,14 @@ fn balance_of_at_js_client() {
 
 #[no_mangle]
 fn total_supply() {
-    let t: U256 = runtime::get_named_arg("t");
+    let t: Option<U256> = runtime::get_named_arg("t");
     let ret: U256 = VotingEscrow::default().total_supply(t);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 #[no_mangle]
 fn total_supply_js_client() {
-    let t: U256 = runtime::get_named_arg("t");
+    let t: Option<U256> = runtime::get_named_arg("t");
     let ret: U256 = VotingEscrow::default().total_supply(t);
     data::js_ret(ret);
 }
@@ -440,7 +440,7 @@ fn get_entry_points() -> EntryPoints {
         "balance_of",
         vec![
             Parameter::new("addr", Key::cl_type()),
-            Parameter::new("t", U256::cl_type()),
+            Parameter::new("t", CLType::Option(Box::new(CLType::U256))),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -450,7 +450,7 @@ fn get_entry_points() -> EntryPoints {
         "balance_of_js_client",
         vec![
             Parameter::new("addr", Key::cl_type()),
-            Parameter::new("t", U256::cl_type()),
+            Parameter::new("t", CLType::Option(Box::new(CLType::U256))),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -478,14 +478,14 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "total_supply",
-        vec![Parameter::new("t", U256::cl_type())],
+        vec![Parameter::new("t", CLType::Option(Box::new(CLType::U256)))],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "total_supply_js_client",
-        vec![Parameter::new("t", U256::cl_type())],
+        vec![Parameter::new("t", CLType::Option(Box::new(CLType::U256)))],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
