@@ -148,4 +148,3 @@ fn get_reward() {
     let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     curve_rewards_instance.get_reward(owner);
 }
-

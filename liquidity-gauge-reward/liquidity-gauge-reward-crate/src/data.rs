@@ -34,12 +34,12 @@ impl ApprovedToDeposit {
         Dict::init(APPROVED_TO_DEPOSIT)
     }
 
-    pub fn get(&self, key_1: &Key, key_2: &Key) -> bool {
-        self.dict.get_by_keys((key_1, key_2)).unwrap_or_default()
+    pub fn get(&self, key0: &Key, key1: &Key) -> bool {
+        self.dict.get_by_keys((key0, key1)).unwrap_or_default()
     }
 
-    pub fn set(&self, key_1: &Key, key_2: &Key, value: bool) {
-        self.dict.set_by_keys((key_1, key_2), value);
+    pub fn set(&self, key0: &Key, key1: &Key, value: bool) {
+        self.dict.set_by_keys((key0, key1), value);
     }
 }
 
@@ -113,12 +113,12 @@ impl PeriodTimestamp {
         Dict::init(PERIOD_TIMESTAMP)
     }
 
-    pub fn get(&self, indx: &U256) -> U256 {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_default()
+    pub fn get(&self, key: &U256) -> U256 {
+        self.dict.get(key.to_string().as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, indx: &U256, value: U256) {
-        self.dict.set(indx.to_string().as_str(), value);
+    pub fn set(&self, key: &U256, value: U256) {
+        self.dict.set(key.to_string().as_str(), value);
     }
 
     pub fn push(&mut self, value: U256) {
@@ -148,12 +148,12 @@ impl IntegrateInvSupply {
         Dict::init(INTEGRATE_INV_SUPPLY)
     }
 
-    pub fn get(&self, indx: &U256) -> U256 {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_default()
+    pub fn get(&self, key: &U256) -> U256 {
+        self.dict.get(key.to_string().as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, indx: &U256, value: U256) {
-        self.dict.set(indx.to_string().as_str(), value);
+    pub fn set(&self, key: &U256, value: U256) {
+        self.dict.set(key.to_string().as_str(), value);
     }
 
     pub fn push(&mut self, value: U256) {

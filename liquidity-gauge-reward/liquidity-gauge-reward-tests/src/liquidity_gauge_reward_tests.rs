@@ -142,9 +142,9 @@ fn test_deploy() {
 
 #[test]
 fn test_user_checkpoint() {
-    //let (env, owner, instance, _) = deploy();
-    //let addr: Key = Key::Account(owner);
-    // instance.user_checkpoint(owner, addr);
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(owner);
+    instance.user_checkpoint(owner, addr);
     // let ret: Key = instance.key_value(FUTURE_ADMIN.to_string());
     // assert_eq!(ret, addr, "Ownership not transferred");
 }
