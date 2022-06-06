@@ -20,3 +20,4 @@ Cargo.lock
 ./vesting-escrow-factory/vesting-escrow-factory-tests/wasm/*.wasm
 ./vesting-escrow-simple/vesting-escrow-simple-tests/wasm/*.wasm
 ./voting-escrow/voting-escrow-tests/wasm/*.wasm
+./curve-rewards/curve-rewards-tests/wasm/*.wasm
