@@ -1,4 +1,4 @@
-wasm_src_path = ./target/wasm32-unknown-unknown/release
+wasm_src_path = ./target/wasm32-unknown-unknown/release/
 
 curve_token_v3_des_wasm = ./curve-token-v3/curve-token-v3-tests/wasm
 erc20_des_wasm = ./erc20/erc20-tests/wasm
@@ -191,6 +191,7 @@ copy-wasm-file-vesting-escrow-simple:
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_simple_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-simple.wasm ${vesting_escrow_simple_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-simple-proxy.wasm ${vesting_escrow_simple_des_wasm}
+	# cp ${wasm_src_path}/*.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm
 copy-wasm-file-voting-escrow:
 	cp ${wasm_src_path}/session-code.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${voting_escrow_des_wasm}
@@ -248,7 +249,7 @@ test-lp-token-wrapper:
 	make build-contract-erc20 && make build-lp-token-wrapper-session-code && make build-lp-token-wrapper && make copy-wasm-file-lp-token-wrapper && make test-only-lp-token-wrapper
 test-curve-rewards:
 	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
-	
+
 all:
 	make test-curve-token-v3
 	make test-erc20

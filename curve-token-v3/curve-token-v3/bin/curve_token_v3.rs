@@ -12,8 +12,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
-use curve_token_v3::{self, CURVETOKENV3};
-use erc20_crate::{self, ERC20};
+use curve_token_v3_crate::{CURVETOKENV3, data};
 
 #[derive(Default)]
 struct CurveTokenV3(OnChainContractStorage);
@@ -22,7 +21,7 @@ impl ContractContext<OnChainContractStorage> for CurveTokenV3 {
         &self.0
     }
 }
-impl ERC20<OnChainContractStorage> for CurveTokenV3 {}
+
 impl CURVETOKENV3<OnChainContractStorage> for CurveTokenV3 {}
 
 impl CurveTokenV3 {
@@ -46,10 +45,14 @@ fn constructor() {
     CurveTokenV3::default().constructor(name, symbol, contract_hash, package_hash);
 }
 #[no_mangle]
-fn mint_crv3() {
-    let _to: Key = runtime::get_named_arg("_to");
-    let _value: U256 = runtime::get_named_arg("_value");
-    CurveTokenV3::default().mint_crv3(_to, _value);
+fn decimals() {
+    let ret = CurveTokenV3::default().decimals();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn get_total_supply_crv3() {
+    let ret = CurveTokenV3::default().get_total_supply_crv3();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn set_minter() {
@@ -57,16 +60,70 @@ fn set_minter() {
     CurveTokenV3::default().set_minter(_minter);
 }
 #[no_mangle]
+fn transfer() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = CurveTokenV3::default().transfer(recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn transfer_from() {
+    let owner: Key = runtime::get_named_arg("owner");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret=CurveTokenV3::default().transfer_from(owner, recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn approve() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret= CurveTokenV3::default().approve(spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn increase_allowance() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret= CurveTokenV3::default().increase_allowance(spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn decrease_allowance() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret= CurveTokenV3::default().decrease_allowance(spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn mint() {
+    let _to: Key = runtime::get_named_arg("_to");
+    let _value: U256 = runtime::get_named_arg("_value");
+    let ret = CurveTokenV3::default().mint(_to, _value);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
 fn burn_from() {
     let _to: Key = runtime::get_named_arg("_to");
     let _value: U256 = runtime::get_named_arg("_value");
-    CurveTokenV3::default().burn_from(_to, _value);
+    let ret=CurveTokenV3::default().burn_from(_to, _value);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn set_name() {
     let _name: String = runtime::get_named_arg("_name");
     let _symbol: String = runtime::get_named_arg("_symbol");
     CurveTokenV3::default().set_name(_name, _symbol);
+}
+#[no_mangle]
+fn name() {
+   runtime::ret(CLValue::from_t(data::get_name()).unwrap_or_revert());
+}
+#[no_mangle]
+fn balance_of() {
+    let key: Key = runtime::get_named_arg("key");
+   runtime::ret(CLValue::from_t(data::Balances::instance().get(&key)).unwrap_or_revert());
 }
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -83,12 +140,16 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "mint_crv3",
-        vec![
-            Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type()),
-        ],
-        <()>::cl_type(),
+        "decimals",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "get_total_supply_crv3",
+        vec![],
+        U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -99,42 +160,132 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+    
+    entry_points.add_entry_point(EntryPoint::new(
+        "transfer",
+        vec![
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "transfer_from",
+        vec![
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "approve",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "increase_allowance",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "decrease_allowance",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    
+    entry_points.add_entry_point(EntryPoint::new(
+        "mint",
+        vec![
+            Parameter::new("_to", Key::cl_type()),
+            Parameter::new("_value", U256::cl_type()),
+        ],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
     entry_points.add_entry_point(EntryPoint::new(
         "burn_from",
         vec![
             Parameter::new("_to", Key::cl_type()),
             Parameter::new("_value", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-
     entry_points.add_entry_point(EntryPoint::new(
         "set_name",
         vec![
             Parameter::new("_name", String::cl_type()),
             Parameter::new("_symbol", String::cl_type()),
         ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "name",
+        vec![
+        
+        ],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of",
+        vec![
+            Parameter::new("key", Key::cl_type()),
+        ],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-
     entry_points
 }
 
 #[no_mangle]
 fn call() {
-    // Build new package with initial a first version of the contract.
     let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
+        // Build new package with initial a first version of the contract.
         let (package_hash, access_token) = storage::create_contract_package_at_hash();
         let (contract_hash, _) =
             storage::add_contract_version(package_hash, get_entry_points(), Default::default());
         let name: String = runtime::get_named_arg("name");
         let symbol: String = runtime::get_named_arg("symbol");
-
         // Prepare constructor args
         let constructor_args = runtime_args! {
 
@@ -162,7 +313,6 @@ fn call() {
             .unwrap_or_revert();
 
         // Store contract in the account's named keys.
-        let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
         runtime::put_key(
             &format!("{}_package_hash", contract_name),
             package_hash.into(),

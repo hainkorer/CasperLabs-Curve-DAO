@@ -82,6 +82,8 @@ members = [
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-session-code",
   # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
+  "curve-token-v3/curve-token-v3-crate",
+  "curve-token-v3/curve-token-v3-proxy",
   "curve-token-v3/curve-token-v3-tests",
   # LIQUIDITY GAUGE WRAPPER
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper",
