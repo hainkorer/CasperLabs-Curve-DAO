@@ -198,20 +198,20 @@ test-voting-escrow:
 	make build-contract-voting-escrow && make copy-wasm-file-voting-escrow && make test-only-voting-escrow
 
 all:
-	# make test-curve-token-v3
-	# make test-erc20
-	# make test-erc20-crv
-	# make test-fee-distributor
-	# make test-gauge-controller
-	# make test-gauge-proxy
-	# make test-liquidity-gauge-reward
-	# make test-liquidity-gauge-reward-wrapper
-	# make test-liquidity-gauge-wrapper
-	# make test-minter
-	# make test-reward-only-gauge
-	# make test-vesting-escrow
-	# make test-vesting-escrow-factory
-	# make test-vesting-escrow-simple
+	make test-curve-token-v3
+	make test-erc20
+	make test-erc20-crv
+	make test-fee-distributor
+	make test-gauge-controller
+	make test-gauge-proxy
+	make test-liquidity-gauge-reward
+	make test-liquidity-gauge-reward-wrapper
+	make test-liquidity-gauge-wrapper
+	make test-minter
+	make test-reward-only-gauge
+	make test-vesting-escrow
+	make test-vesting-escrow-factory
+	make test-vesting-escrow-simple
 	make test-voting-escrow
 
 clean:
