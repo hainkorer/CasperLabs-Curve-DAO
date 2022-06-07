@@ -14,6 +14,7 @@ erc20_des_wasm = ./erc20/erc20-tests/wasm/
 liquidity_gauge_reward_wrapper_des_wasm = ./liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests/wasm/
 liquidity_gauge_wrapper_des_wasm = ./liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests/wasm/
 curve_token_v3_des_wasm=./curve-token-v3/curve-token-v3-tests/wasm
+vesting_escrow_simple_des_wasm = ./vesting-escrow-simple/vesting-escrow-simple-tests/wasm
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -50,9 +51,11 @@ build-contract-erc20-crv:
 build-erc20-crv-session-code:
 	cargo build --release -p erc20-crv-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/erc20-crv-session-code.wasm 2>/dev/null | true
+build-vesting-escrow-simple-proxy-contract:
+	cargo build --release -p contract --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/contract.wasm 2>/dev/null | true
 build-contract-vesting-escrow-simple:
-	cargo build --release -p vesting_escrow_simple --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
+	cargo build --release -p vesting-escrow-simple -p erc20 -p vesting-escrow-simple-proxy --target wasm32-unknown-unknown
 build-contract-liquidity-gauge-reward-wrapper:
 	cargo build --release -p liquidity-gauge-reward-wrapper --target wasm32-unknown-unknown
 build-contract-liquidity-gauge-wrapper:
@@ -81,7 +84,7 @@ test-only-liquidity-gauge-reward:
 test-only-erc20-crv:
 	cargo test -p erc20_crv_tests -- --nocapture
 test-only-vesting-escrow-simple:
-	cargo test -p vesting-escrow-simple-tests -- --nocapture
+	cargo test -p vesting-escrow-simple-tests 
 test-only-erc20:
 	cargo test -p erc20-tests	
 test-only-liquidity-gauge-reward-wrapper:
@@ -140,7 +143,9 @@ copy-wasm-file-liquidity-gauge-wrapper:
 copy-wasm-file-erc20-crv:
 	cp ${wasm_src_path}/*.wasm erc20-crv/erc20_crv_tests/wasm
 copy-wasm-file-vesting-escrow-simple:
-	cp ${wasm_src_path}/*.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm
+	cp ${wasm_src_path}/vesting-escrow-simple.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm 
+	cp ${wasm_src_path}/vesting-escrow-simple-proxy-token.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm
+	cp ${wasm_src_path}/erc20-token.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm 
 copy-wasm-file-curve-token-v3:
 	cp ${root_directory}${wasm_src_path}curve-token-v3.wasm ${curve_token_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}crv3-proxy-token.wasm ${curve_token_v3_des_wasm}

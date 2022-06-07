@@ -53,7 +53,17 @@ fn initialize() {
         });
     mappings::set_key(&mappings::result_key(), ret);
 }
-
+#[no_mangle]
+fn toggle_disable() {
+    let vesting_escrow_simple_address: ContractHash =
+        mappings::get_key(&mappings::vesting_escrow_simple_key());
+        let recipient:Key = runtime::get_named_arg("recipient");
+    let ret: () =
+        runtime::call_contract(vesting_escrow_simple_address, "toggle_disable", runtime_args! {
+            "recipient" => recipient
+        });
+    mappings::set_key(&mappings::result_key(), ret);
+}
 #[no_mangle]
 fn vested_of() {
     let vesting_escrow_simple_address: ContractHash =
@@ -140,6 +150,15 @@ fn get_entry_points() -> EntryPoints {
         Parameter::new("start_time", U256::cl_type()),
         Parameter::new("end_time", U256::cl_type()),
         Parameter::new("can_disable", bool::cl_type())
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "toggle_disable",
+        vec![
+            Parameter::new("recipient", Key::cl_type())
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

@@ -51,8 +51,10 @@ members = [
   "erc20-crv/erc20_crv_tests",
   "erc20-crv/session_code",
   # VESTING ESCROW SIMPLE
+  "vesting-escrow-simple/vesting-escrow-simple-crate",
   "vesting-escrow-simple/vesting-escrow-simple",
   "vesting-escrow-simple/vesting-escrow-simple-tests",
+  "vesting-escrow-simple/vesting-escrow-simple-proxy",
   # ERC20
   "erc20/erc20",
   "erc20/erc20-crate",
@@ -73,6 +75,10 @@ members = [
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-crate",
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests",
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-session-code",
+  #LIQUIDITY GAUGE V3
+  "liquidity-gauge-v3/liquidity-gauge-v3",
+  "liquidity-gauge-v3/liquidity-gauge-v3-crate",
+
 ]
 
 [profile.release]

@@ -163,3 +163,6 @@ pub const GET_GAUGE_WEIGHT: &str = "get_gauge_weight";
 pub const GET_TYPE_WEIGHT: &str = "get_type_weight";
 pub const GET_TOTAL_WEIGHT: &str = "get_total_weight";
 pub const GET_WEIGHTS_SUM_PER_TYPE: &str = "get_weights_sum_per_type";
+
+//Liqudity Guage v3 keys
+pub const MYVEC: &str = "myvec";
