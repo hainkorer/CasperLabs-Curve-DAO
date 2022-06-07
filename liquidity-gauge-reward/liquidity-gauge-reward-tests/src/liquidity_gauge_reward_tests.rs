@@ -140,11 +140,95 @@ fn test_deploy() {
     let (_, _, _, _) = deploy();
 }
 
-#[test]
+// #[test]
 fn test_user_checkpoint() {
-    let (env, owner, instance, _) = deploy();
+    let (_, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     instance.user_checkpoint(owner, addr);
-    // let ret: Key = instance.key_value(FUTURE_ADMIN.to_string());
-    // assert_eq!(ret, addr, "Ownership not transferred");
+}
+
+// #[test]
+fn test_claimable_tokens() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(owner);
+    instance.claimable_tokens(owner, addr);
+}
+
+// #[test]
+fn test_claimable_reward() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(owner);
+    instance.claimable_reward(owner, addr);
+}
+
+// #[test]
+fn test_kick() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(owner);
+    instance.kick(owner, addr);
+}
+
+#[test]
+fn test_set_approve_deposit() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(owner);
+    let can_deposit: bool = true;
+    instance.set_approve_deposit(owner, addr, can_deposit);
+}
+
+// #[test]
+fn test_deposit() {
+    let (env, owner, instance, _) = deploy();
+    let value: U256 = 10.into();
+    let addr: Key = Key::Account(owner);
+    instance.deposit(owner, addr, value);
+}
+
+// #[test]
+fn test_withdraw() {
+    let (env, owner, instance, _) = deploy();
+    let claim_rewards: bool = true;
+    let value: U256 = 10.into();
+    instance.withdraw(owner, claim_rewards, value);
+}
+
+// #[test]
+fn test_claim_rewards() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(owner);
+    instance.claim_rewards(owner, addr);
+}
+
+#[test]
+fn test_integrate_checkpoint() {
+    let (env, owner, instance, _) = deploy();
+    instance.integrate_checkpoint(owner);
+}
+
+#[test]
+fn test_kill_me() {
+    let (env, owner, instance, _) = deploy();
+    instance.kill_me(owner);
+}
+
+#[test]
+fn test_commit_transfer_ownership() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(owner);
+    instance.commit_transfer_ownership(owner, addr);
+}
+
+#[test]
+fn test_apply_transfer_ownership() {
+    let (env, owner, instance, _) = deploy();
+    let addr: Key = Key::Account(owner);
+    instance.commit_transfer_ownership(owner, addr);
+    instance.apply_transfer_ownership(owner);
+}
+
+#[test]
+fn test_toggle_external_rewards_claim() {
+    let (env, owner, instance, _) = deploy();
+    let val: bool = true;
+    instance.toggle_external_rewards_claim(owner, val);
 }

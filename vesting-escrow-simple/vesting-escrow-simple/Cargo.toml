@@ -1,7 +1,7 @@
 [package]
 authors = ["Nouman Nadeem <nouman.nadeem.zafar@scytalelabs.com>"]
 edition = "2018"
-name = "vesting_escrow_simple"
+name = "vesting-escrow-simple"
 version = "0.2.0"
 
 [dependencies]
@@ -17,7 +17,7 @@ erc20-crate = { path = "../../erc20/erc20-crate" }
 [[bin]]
 bench = false
 doctest = false
-name = "vesting_escrow_simple"
+name = "vesting-escrow-simple"
 path = "bin/vesting_escrow_simple.rs"
 test = false
 

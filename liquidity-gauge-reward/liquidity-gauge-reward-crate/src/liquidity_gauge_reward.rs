@@ -119,14 +119,17 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             None,
             "balance_of",
             runtime_args! {
-                "owner" => addr
+                "addr" => addr,
+                "t" => None::<U256>
             },
         );
         let voting_total: U256 = runtime::call_versioned_contract(
             voting_escrow.into_hash().unwrap_or_revert().into(),
             None,
             "total_supply",
-            runtime_args! {},
+            runtime_args! {
+                "t" => None::<U256>
+            },
         );
         let mut lim: U256 = l
             .checked_mul(TOKENLESS_PRODUCTION)
@@ -277,125 +280,125 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                 "addr" => Key::from(get_package_hash())
             },
         );
-        // let working_balance: U256 = WorkingBalances::instance().get(&addr);
-        // let working_supply: U256 = get_working_supply();
-        // if get_is_killed() {
-        //     rate = 0.into(); // Stop distributing inflation as soon as killed
-        // }
-        // // Update integral of 1/supply
-        // if U256::from(u64::from(get_blocktime())) > period_time {
-        //     let mut prev_week_time: U256 = period_time;
-        //     let mut week_time: U256 = U256::min(
-        //         (period_time.checked_add(WEEK).unwrap_or_revert())
-        //             .checked_div(WEEK)
-        //             .unwrap_or_revert()
-        //             .checked_mul(WEEK)
-        //             .unwrap_or_revert(),
-        //         U256::from(u64::from(get_blocktime())),
-        //     );
-        //     for _ in 0..500 {
-        //         let dt: U256 = week_time.checked_sub(prev_week_time).unwrap_or_revert();
-        //         let w: U256 = runtime::call_versioned_contract(
-        //             controller.into_hash().unwrap_or_revert().into(),
-        //             None,
-        //             "gauge_relative_weight",
-        //             runtime_args! {
-        //                 "addr" => Key::from(get_package_hash()),
-        //                 "time" => prev_week_time.checked_div(WEEK).unwrap_or_revert().checked_mul(WEEK).unwrap_or_revert()
-        //             },
-        //         );
-        //         if working_supply > 0.into() {
-        //             if prev_future_epoch >= prev_week_time && prev_future_epoch < week_time {
-        //                 // If we went across one or multiple epochs, apply the rate
-        //                 // of the first epoch until it ends, and then the rate of
-        //                 // the last epoch.
-        //                 // If more than one epoch is crossed - the gauge gets less,
-        //                 // but that'd meen it wasn't called for more than 1 year
-        //                 integrate_inv_supply = integrate_inv_supply
-        //                     .checked_add(
-        //                         rate.checked_mul(w)
-        //                             .unwrap_or_revert()
-        //                             .checked_mul(
-        //                                 prev_future_epoch
-        //                                     .checked_sub(prev_week_time)
-        //                                     .unwrap_or_revert(),
-        //                             )
-        //                             .unwrap_or_revert()
-        //                             .checked_div(working_supply)
-        //                             .unwrap_or_revert(),
-        //                     )
-        //                     .unwrap_or_revert();
-        //                 rate = new_rate;
-        //                 integrate_inv_supply = integrate_inv_supply
-        //                     .checked_add(
-        //                         rate.checked_mul(w)
-        //                             .unwrap_or_revert()
-        //                             .checked_mul(
-        //                                 week_time.checked_sub(prev_future_epoch).unwrap_or_revert(),
-        //                             )
-        //                             .unwrap_or_revert()
-        //                             .checked_div(working_supply)
-        //                             .unwrap_or_revert(),
-        //                     )
-        //                     .unwrap_or_revert();
-        //             } else {
-        //                 integrate_inv_supply = integrate_inv_supply
-        //                     .checked_add(
-        //                         rate.checked_mul(w)
-        //                             .unwrap_or_revert()
-        //                             .checked_mul(dt)
-        //                             .unwrap_or_revert()
-        //                             .checked_div(working_supply)
-        //                             .unwrap_or_revert(),
-        //                     )
-        //                     .unwrap_or_revert();
-        //             }
-        //             // On precisions of the calculation
-        //             //  rate ~= 10e18
-        //             //  last_weight > 0.01 * 1e18 = 1e16 (if pool weight is 1%)
-        //             //  _working_supply ~= TVL * 1e18 ~= 1e26 ($100M for example)
-        //             //  The largest loss is at dt = 1
-        //             //  Loss is 1e-9 - acceptable
-        //         }
-        //         if week_time == U256::from(u64::from(get_blocktime())) {
-        //             break;
-        //         }
-        //         prev_week_time = week_time;
-        //         week_time = U256::min(
-        //             week_time.checked_add(WEEK).unwrap_or_revert(),
-        //             U256::from(u64::from(get_blocktime())),
-        //         )
-        //     }
-        // }
-        // period = period.checked_add(1.into()).unwrap_or_revert();
-        // set_period(period);
-        // PeriodTimestamp::instance().set(
-        //     &period.as_u128().into(),
-        //     U256::from(u64::from(get_blocktime())),
-        // );
-        // IntegrateInvSupply::instance().set(&period.as_u128().into(), integrate_inv_supply);
-        // // Update user-specific integrals
-        // IntegrateFraction::instance().set(
-        //     &addr,
-        //     IntegrateFraction::instance()
-        //         .get(&addr)
-        //         .checked_add(
-        //             working_balance
-        //                 .checked_mul(
-        //                     integrate_inv_supply
-        //                         .checked_sub(IntegrateInvSupplyOf::instance().get(&addr))
-        //                         .unwrap_or_revert(),
-        //                 )
-        //                 .unwrap_or_revert()
-        //                 .checked_div(10.into())
-        //                 .unwrap_or_revert()
-        //                 .pow(18.into()),
-        //         )
-        //         .unwrap_or_revert(),
-        // );
-        // IntegrateInvSupplyOf::instance().set(&addr, integrate_inv_supply);
-        // IntegrateCheckpointOf::instance().set(&addr, U256::from(u64::from(get_blocktime())));
-        // self._checkpoint_rewards(addr, claim_rewards);
+        let working_balance: U256 = WorkingBalances::instance().get(&addr);
+        let working_supply: U256 = get_working_supply();
+        if get_is_killed() {
+            rate = 0.into(); // Stop distributing inflation as soon as killed
+        }
+        // Update integral of 1/supply
+        if U256::from(u64::from(get_blocktime())) > period_time {
+            let mut prev_week_time: U256 = period_time;
+            let mut week_time: U256 = U256::min(
+                (period_time.checked_add(WEEK).unwrap_or_revert())
+                    .checked_div(WEEK)
+                    .unwrap_or_revert()
+                    .checked_mul(WEEK)
+                    .unwrap_or_revert(),
+                U256::from(u64::from(get_blocktime())),
+            );
+            for _ in 0..500 {
+                let dt: U256 = week_time.checked_sub(prev_week_time).unwrap_or_revert();
+                let w: U256 = runtime::call_versioned_contract(
+                    controller.into_hash().unwrap_or_revert().into(),
+                    None,
+                    "gauge_relative_weight",
+                    runtime_args! {
+                        "addr" => Key::from(get_package_hash()),
+                        "time" => prev_week_time.checked_div(WEEK).unwrap_or_revert().checked_mul(WEEK).unwrap_or_revert()
+                    },
+                );
+                if working_supply > 0.into() {
+                    if prev_future_epoch >= prev_week_time && prev_future_epoch < week_time {
+                        // If we went across one or multiple epochs, apply the rate
+                        // of the first epoch until it ends, and then the rate of
+                        // the last epoch.
+                        // If more than one epoch is crossed - the gauge gets less,
+                        // but that'd meen it wasn't called for more than 1 year
+                        integrate_inv_supply = integrate_inv_supply
+                            .checked_add(
+                                rate.checked_mul(w)
+                                    .unwrap_or_revert()
+                                    .checked_mul(
+                                        prev_future_epoch
+                                            .checked_sub(prev_week_time)
+                                            .unwrap_or_revert(),
+                                    )
+                                    .unwrap_or_revert()
+                                    .checked_div(working_supply)
+                                    .unwrap_or_revert(),
+                            )
+                            .unwrap_or_revert();
+                        rate = new_rate;
+                        integrate_inv_supply = integrate_inv_supply
+                            .checked_add(
+                                rate.checked_mul(w)
+                                    .unwrap_or_revert()
+                                    .checked_mul(
+                                        week_time.checked_sub(prev_future_epoch).unwrap_or_revert(),
+                                    )
+                                    .unwrap_or_revert()
+                                    .checked_div(working_supply)
+                                    .unwrap_or_revert(),
+                            )
+                            .unwrap_or_revert();
+                    } else {
+                        integrate_inv_supply = integrate_inv_supply
+                            .checked_add(
+                                rate.checked_mul(w)
+                                    .unwrap_or_revert()
+                                    .checked_mul(dt)
+                                    .unwrap_or_revert()
+                                    .checked_div(working_supply)
+                                    .unwrap_or_revert(),
+                            )
+                            .unwrap_or_revert();
+                    }
+                    // On precisions of the calculation
+                    //  rate ~= 10e18
+                    //  last_weight > 0.01 * 1e18 = 1e16 (if pool weight is 1%)
+                    //  _working_supply ~= TVL * 1e18 ~= 1e26 ($100M for example)
+                    //  The largest loss is at dt = 1
+                    //  Loss is 1e-9 - acceptable
+                }
+                if week_time == U256::from(u64::from(get_blocktime())) {
+                    break;
+                }
+                prev_week_time = week_time;
+                week_time = U256::min(
+                    week_time.checked_add(WEEK).unwrap_or_revert(),
+                    U256::from(u64::from(get_blocktime())),
+                )
+            }
+        }
+        period = period.checked_add(1.into()).unwrap_or_revert();
+        set_period(period);
+        PeriodTimestamp::instance().set(
+            &period.as_u128().into(),
+            U256::from(u64::from(get_blocktime())),
+        );
+        IntegrateInvSupply::instance().set(&period.as_u128().into(), integrate_inv_supply);
+        // Update user-specific integrals
+        IntegrateFraction::instance().set(
+            &addr,
+            IntegrateFraction::instance()
+                .get(&addr)
+                .checked_add(
+                    working_balance
+                        .checked_mul(
+                            integrate_inv_supply
+                                .checked_sub(IntegrateInvSupplyOf::instance().get(&addr))
+                                .unwrap_or_revert(),
+                        )
+                        .unwrap_or_revert()
+                        .checked_div(10.into())
+                        .unwrap_or_revert()
+                        .pow(18.into()),
+                )
+                .unwrap_or_revert(),
+        );
+        IntegrateInvSupplyOf::instance().set(&addr, integrate_inv_supply);
+        IntegrateCheckpointOf::instance().set(&addr, U256::from(u64::from(get_blocktime())));
+        self._checkpoint_rewards(addr, claim_rewards);
     }
 
     // @notice Record a checkpoint for `addr`
@@ -406,7 +409,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardUnauthorized));
         }
         self._checkpoint(addr, get_is_claiming_rewards());
-        // self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
+        self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
         true
     }
 
@@ -475,25 +478,26 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             None,
             "user_point_epoch",
             runtime_args! {
-                "addr" => addr
+                "key" => addr
             },
         );
         let t_ve: U256 = runtime::call_versioned_contract(
             voting_escrow.into_hash().unwrap_or_revert().into(),
             None,
-            "user_point_history__ts",
+            "user_point_history_ts",
             runtime_args! {
                 "addr" => addr,
-                "epoch" => ret
+                "idx" => ret
             },
         );
         let balance: U256 = BalanceOf::instance().get(&addr);
         let ret: U256 = runtime::call_versioned_contract(
-            get_voting_escrow().into_hash().unwrap_or_revert().into(),
+            voting_escrow.into_hash().unwrap_or_revert().into(),
             None,
             "balance_of",
             runtime_args! {
-                "owner" => addr
+                "addr" => addr,
+                "t" => None::<U256>
             },
         );
         if !(ret == 0.into() || t_ve > t_last) {
@@ -508,8 +512,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardKickNotNeeded2));
         }
-        self._checkpoint(addr, get_is_claiming_rewards());
-        self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
+        // self._checkpoint(addr, get_is_claiming_rewards());
+        // self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
     }
 
     // @notice Set whether `addr` can deposit tokens for `self.get_caller()`

@@ -12,7 +12,7 @@ use casper_types::{
 };
 use contract_utils::{set_key, ContractContext, OnChainContractStorage};
 use erc20_crate::{self, ERC20};
-use erc20_crv::{self, ERC20CRV};
+use erc20_crv::{self, data, ERC20CRV};
 
 #[derive(Default)]
 struct Erc20Crv(OnChainContractStorage);
@@ -134,6 +134,10 @@ fn mint_crv_js_client() {
     let value: U256 = runtime::get_named_arg("value");
     let ret = Erc20Crv::default().mint_crv(to, value);
     set_key("result", ret);
+}
+#[no_mangle]
+fn rate() {
+    runtime::ret(CLValue::from_t(data::get_rate()).unwrap_or_revert());
 }
 
 fn get_entry_points() -> EntryPoints {
@@ -262,7 +266,13 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-
+    entry_points.add_entry_point(EntryPoint::new(
+        "rate",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
     entry_points
 }
 
