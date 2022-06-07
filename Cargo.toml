@@ -65,6 +65,7 @@ members = [
   "vesting-escrow-factory/vesting-escrow-factory-proxy",
   "vesting-escrow-factory/vesting-escrow-factory-tests",
   # VESTING ESCROW SIMPLE
+  "vesting-escrow-simple/vesting-escrow-simple-crate",
   "vesting-escrow-simple/vesting-escrow-simple",
   "vesting-escrow-simple/vesting-escrow-simple-proxy",
   "vesting-escrow-simple/vesting-escrow-simple-tests",
@@ -113,6 +114,10 @@ members = [
   "curve-rewards/curve-rewards-crate",
   "curve-rewards/curve-rewards-tests",
   "curve-rewards/curve-rewards-session-code",
+  #LIQUIDITY GAUGE V3
+  "liquidity-gauge-v3/liquidity-gauge-v3",
+  "liquidity-gauge-v3/liquidity-gauge-v3-crate",
+
 ]
 
 [profile.release]

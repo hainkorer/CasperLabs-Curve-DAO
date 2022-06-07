@@ -179,3 +179,6 @@ pub const REWARDS_DICT: &str = "rewards";
 pub const LAST_TIME_REWARD_APPLICABLE: &str = "last_time_reward_applicable";
 pub const REWARD_PER_TOKEN: &str = "reward_per_token";
 pub const EARNED: &str = "earned";
+
+//Liqudity Guage v3 keys
+pub const MYVEC: &str = "myvec";

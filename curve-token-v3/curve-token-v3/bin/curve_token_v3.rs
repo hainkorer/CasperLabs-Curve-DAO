@@ -116,14 +116,33 @@ fn set_name() {
     let _symbol: String = runtime::get_named_arg("_symbol");
     CurveTokenV3::default().set_name(_name, _symbol);
 }
+//[no_mangle] of public variables 
 #[no_mangle]
 fn name() {
    runtime::ret(CLValue::from_t(data::get_name()).unwrap_or_revert());
 }
 #[no_mangle]
+fn symbol() {
+   runtime::ret(CLValue::from_t(data::get_symbol()).unwrap_or_revert());
+}
+#[no_mangle]
+fn total_supply() {
+   runtime::ret(CLValue::from_t(data::get_total_supply()).unwrap_or_revert());
+}
+#[no_mangle]
+fn minter() {
+   runtime::ret(CLValue::from_t(data::get_minter()).unwrap_or_revert());
+}
+#[no_mangle]
 fn balance_of() {
     let key: Key = runtime::get_named_arg("key");
    runtime::ret(CLValue::from_t(data::Balances::instance().get(&key)).unwrap_or_revert());
+}
+#[no_mangle]
+fn allowance() {
+    let key1: Key = runtime::get_named_arg("key1");
+    let key2: Key = runtime::get_named_arg("key2");
+   runtime::ret(CLValue::from_t(data::Allowances::instance().get(&key1,&key2)).unwrap_or_revert());
 }
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -255,6 +274,8 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+
+    //entry points of public variables
     entry_points.add_entry_point(EntryPoint::new(
         "name",
         vec![
@@ -265,9 +286,46 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
+        "symbol",
+        vec![
+        
+        ],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "total_supply",
+        vec![
+        
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "minter",
+        vec![
+        
+        ],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
         vec![
             Parameter::new("key", Key::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "allowance",
+        vec![
+            Parameter::new("key1", Key::cl_type()),
+            Parameter::new("key2", Key::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,

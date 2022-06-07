@@ -13,7 +13,7 @@ use casper_types::{
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
 use erc20_crate::{self, ERC20};
-use vesting_escrow_simple::{self, VESTINGESCROWSIMPLE};
+use vesting_escrow_simple_crate::VESTINGESCROWSIMPLE;
 
 #[derive(Default)]
 struct VestingEscrowSimple(OnChainContractStorage);

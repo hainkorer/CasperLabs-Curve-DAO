@@ -50,12 +50,4 @@ pub fn result_key() -> String {
     format!("result")
 }
 
-// pub fn decimals<T: FromBytes + CLTyped + Default>(name: &str) -> T {
-//     match runtime::get_key(name) {
-//         None => Default::default(),
-//         Some(value) => {
-//             let key = value.try_into().unwrap_or_revert();
-//             storage::read(key).unwrap_or_revert().unwrap_or_revert()
-//         }
-//     }
-// }
+

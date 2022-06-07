@@ -438,6 +438,9 @@ pub enum Error {
     /// 65,540 for (Vesting Escrow Factory Admin Not Set)
     VestingEscrowFactoryAdminNotSet = 11108,
     /// 65,540 for (Vesting Escrow Simple Initialize Once)
+
+    ///Vesting Escrow simple errors
+    /// 
     VestingEscrowSimpleOnlyInitializeOnce = 11201,
     /// 65,540 for (Vesting Escrow Simple Admin Only1)
     VestingEscrowSimpleAdminOnly1 = 11202,
@@ -451,8 +454,11 @@ pub enum Error {
     VestingEscrowSimpleCannotDisable = 11206,
     /// 65,540 for (Vesting Escrow Simple Admin Not Set)
     VestingEscrowSimpleAdminNotSet = 11207,
-    /// 65,540 for (Vesting Escrow Simple Is Locked)
-    VestingEscrowSimpleIsLocked = 11208,
+    /// 65,540 for (Vesting Escrow Simple Is Locked1)
+    VestingEscrowSimpleLocked1 = 11208,
+    /// 65,540 for (Vesting Escrow Simple Is Locked2)
+    VestingEscrowSimpleLocked2=11209,
+
     /// 65,540 for (Voting Escrow Invalid Decimals)
     VotingEscrowInvalidDecimals = 11301,
     /// 65,540 for (Voting Escrow Admin Only)
@@ -533,6 +539,63 @@ pub enum Error {
     CurveRewardsCannotStake = 11701,
     //65,540 for (CurveRewards:Cannot withdraw 0)
     CurveRewardsCannotWithdraw = 11702,
+
+    //LIQUIDITY GUAGE V3
+    /// 65,538 for (Liquidity guage v3 OverFlow1)
+    LiquidityGaugeV3OverFlow1 = 11800,
+    /// 65,539 for (Liquidity guage v3 OverFlow2)
+    LiquidityGaugeV3OverFlow2 = 11801,
+    /// 65,540 for (Liquidity guage v3 OverFlow3)
+    LiquidityGaugeV3OverFlow3 = 11802,
+    /// 65,541 for (Liquidity guage v3 OverFlow4)
+    LiquidityGaugeV3OverFlow4 = 11803,
+    /// 65,541 for (Liquidity guage v3 OverFlow5)
+    LiquidityGaugeV3OverFlow5 = 11804,
+    /// 65,541 for (Liquidity guage v3 OverFlow6)
+    LiquidityGaugeV3OverFlow6 = 11805,
+    /// 65,541 for (Liquidity guage v3 OverFlow7)
+    LiquidityGaugeV3OverFlow7 = 11806,
+    /// 65,542 for (Liquidity guage v3 UnderFlow1)
+    LiquidityGaugeUnderFlow1 = 11807,
+    /// 65,543 for (Liquidity guage v3 UnderFlow2)
+    LiquidityGaugeUnderFlow2 = 11808,
+    /// 65,544 for (Liquidity guage v3 UnderFlow3)
+    LiquidityGaugeUnderFlow3 = 11809,
+    /// 65,545 for (Liquidity guage v3 UnderFlow4)
+    LiquidityGaugeUnderFlow4 = 11810,
+    /// 65,546 for (Liquidity guage v3UnderFlow5)
+    LiquidityGaugeUnderFlow5 = 11812,
+    /// 65,546 for (Liquidity guage v3 UnderFlow6)
+    LiquidityGaugeUnderFlow6 = 11813,
+    /// 65,546 for (Liquidity guage v3UnderFlow7)
+    LiquidityGaugeUnderFlow7 = 11814,
+    /// 65,546 for (Liquidity guage v3UnderFlow8)
+    LiquidityGaugeUnderFlow8 = 11815,
+    /// 65,546 for (Liquidity guage v3 UnderFlow9)
+    LiquidityGaugeUnderFlow9 = 11816,
+    /// 65,540 for (Liquidity guage v3 Only Admin1)
+    LiquidityGaugeOnlyAdmin1 = 11817,
+    /// 65,540 for (Liquidity guage v3 Only Admin2)
+    LiquidityGaugeOnlyAdmin2 = 11818,
+    /// 65,540 for (Liquidity guage v3 Only Future Admin)
+    LiquidityGaugeOnlyFutureAdmin = 11819,
+    /// 65,540 for (Liquidity guage v3 Cannot Redirect When Claiming For Another User)
+    LiquidityGaugeCannotRedirectWhenClaimingForAnotherUser = 11820,
+    /// 65,540 for (Liquidity guage v3 Value Is Zero)
+    LiquidityGaugeValueIsZero1 = 11821,
+    /// 65,540 for (Liquidity guage v3 Value Is Zero)
+    LiquidityGaugeValueIsZero2 = 11822,
+    /// 65,540 for (Liquidity guage v3 Reward Token Is Zero)
+    LiquidityGaugeRewardTokenIsZeroAddress = 11823,
+    /// 65,540 for (Liquidity guage v3 Cannot Modify Existing Reward Token)
+    LiquidityGaugeCannotModifyExistingRewardToken = 11824,
+    /// 65,540 for (Liquidity guage locked 1)
+    LiquidityGaugeLocked1 = 11825,
+    /// 65,540 for (Liquidity guage v3 unauthorized)
+    LiquidityGuageV3Unauthorized = 11826,
+    /// 65,540 for (Liquidity guage v3 not allowed)
+    LiquidityGuageV3KickNotAllowed = 11827,
+
     Abort = 150,
     SmartContractDepositorsNotAllowed = 151,
 }

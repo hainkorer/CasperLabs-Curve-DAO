@@ -12,6 +12,7 @@ common = { path = "../../common" }
 hex = {version = "0.4.3", default-features = false}
 renvm-sig = "0.1.1"
 erc20-crate = { path = "../../erc20/erc20-crate" }
+vesting-escrow-simple-crate= { path="../vesting-escrow-simple-crate"}
 
 
 [[bin]]

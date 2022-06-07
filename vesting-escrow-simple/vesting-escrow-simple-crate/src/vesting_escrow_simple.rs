@@ -50,16 +50,15 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         InitialLocked::init();
         TotalClaimed::init();
 
-        //initialization for testing purposes
-
-        set_token(token);
-        set_admin(self.get_caller());
-        set_future_admin(self.get_caller());
-        set_start_time(U256::from(1));
-        set_end_time(U256::from(5));
-        set_can_disable(true);
-        InitialLocked::instance().set(&zero_address(), U256::from(100));
-        set_initial_locked_supply(U256::from(100));
+        
+    //     set_token(token);
+        set_admin(zero_address());
+    //     set_future_admin(self.get_caller());
+    //     set_start_time(U256::from(0));
+    //     set_end_time(U256::from(0));
+    //     set_can_disable(true);
+    //   //  InitialLocked::instance().set(&zero_address(), U256::from(100));
+    //     set_initial_locked_supply(U256::from(0));
     }
     fn initialize(
         &self,
@@ -71,6 +70,11 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         end_time: U256,
         can_disable: bool,
     ) -> bool {
+        let lock = get_lock();
+        if lock != false {
+            runtime::revert(Error::VestingEscrowSimpleLocked1);
+        }
+        set_lock(true);
         if !(get_admin() == zero_address()) {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleOnlyInitializeOnce));
         }
@@ -80,24 +84,24 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         set_end_time(end_time);
         set_can_disable(can_disable);
 
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
-            token.into_hash().unwrap_or_revert().into(),
-            None,
-            "transfer_from",
-            runtime_args! {
-                "owner" =>self.get_caller(),
-                "recipient" => Key::from(get_package_hash()),
-                "amount" => amount
-            },
-        );
-        ret.unwrap_or_revert();
+        // let ret: Result<(), u32> = runtime::call_versioned_contract(
+        //     token.into_hash().unwrap_or_revert().into(),
+        //     None,
+        //     "transfer_from",
+        //     runtime_args! {
+        //         "owner" =>self.get_caller(),
+        //         "recipient" => Key::from(get_package_hash()),
+        //         "amount" => amount
+        //     },
+        // );
+        // ret.unwrap_or_revert();
         InitialLocked::instance().set(&recipient, amount);
         set_initial_locked_supply(amount);
         self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::Fund {
             recipient: recipient,
             amount: amount,
         });
-
+        set_lock(false);
         true
     }
     fn toggle_disable(&self, recipient: Key) {
@@ -201,7 +205,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     }
     fn claim(&self, addr: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::VestingEscrowSimpleIsLocked));
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleLocked2));
         }
         set_lock(true);
         let mut t: U256 = DisableddAt::instance().get(&addr);
