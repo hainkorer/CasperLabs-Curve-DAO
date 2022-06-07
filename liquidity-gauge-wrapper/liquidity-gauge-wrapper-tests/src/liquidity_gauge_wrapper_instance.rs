@@ -16,7 +16,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
         name: String,
         symbol: String,
         gauge: Key,
-        admin: Key
+        admin: Key,
     ) -> TestContract {
         TestContract::new(
             env,

@@ -486,6 +486,40 @@ pub enum Error {
     VotingEscrowTheLockDidntExpire = 11322,
     /// 65,540 for (Voting Escrow Invalid Block Number)
     VotingEscrowInvalidBlockNumber = 11323,
+    /// 65,540 for (Liquidity Gauge Wrapper Unauthorized)
+    GaugeWrapperUnauthorized = 11401,
+    /// 65,540 for (Liquidity Gauge Wrapper Is Killed)
+    GaugeWrapperIsKilled1 = 11402,
+    /// 65,546 for (Liquidity Gauge Wrapper Not Approved)
+    GaugeWrapperNotApproved = 11403,
+    /// 65,546 for (Liquidity Gauge Wrapper IsLocked1)
+    GaugeWrapperIsLocked1 = 11404,
+    /// 65,546 for (Liquidity Gauge Wrapper IsLocked2)
+    GaugeWrapperIsLocked2 = 11405,
+    /// 65,546 for (Liquidity Gauge Wrapper Is Locked3)
+    GaugeWrapperIsLocked3 = 11406,
+    /// 65,546 for (Liquidity Gauge Wrapper Admin Only1)
+    GaugeWrapperAdminOnly1 = 11407,
+    /// 65,546 for (Liquidity Gauge Wrapper Admin Only2)
+    GaugeWrapperAdminOnly2 = 11408,
+    /// 65,546 for (Liquidity Gauge Wrapper Admin Only3)
+    GaugeWrapperAdminOnly3 = 11409,
+    /// 65,546 for (Liquidity Gauge Wrapper Admin Not Set)
+    GaugeWrapperAdminNotSet = 11410,
+    /// 65,546 for (Liquidity Gauge Wrapper Zero Address)
+    GaugeWrapperZeroAddress = 11411,
+    /// 65,540 for (Liquidity Gauge Wrapper Is Killed)
+    GaugeWrapperIsKilled2 = 11412,
+    /// 65,546 for (Ownable: caller is not the owner)
+    OwnableNotOwner = 11501,
+    /// 65,540 for (Ownable: new owner is the zero address)
+    OwnableNewOwnerAddressZero = 11502,
+    /// 65,540 for (IRewardDistributionRecipient: Caller is not reward distribution)
+    NotRewardDistribution = 11601,
+    //65,540 for (CurveRewards:Cannot stake 0)
+    CurveRewardsCannotStake = 11701,
+    //65,540 for (CurveRewards:Cannot withdraw 0)
+    CurveRewardsCannotWithdraw = 11702,
     Abort = 150,
     SmartContractDepositorsNotAllowed = 151,
 }

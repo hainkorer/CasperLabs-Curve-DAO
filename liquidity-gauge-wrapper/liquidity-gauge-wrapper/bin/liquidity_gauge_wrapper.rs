@@ -87,20 +87,6 @@ fn claimable_tokens_js_client() {
     let ret: U256 = LiquidityGaugeWrapper::default().claimable_tokens(addr);
     js_ret(ret);
 }
-
-#[no_mangle]
-fn claimable_reward() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeWrapper::default().claimable_reward(addr);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn claimable_reward_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeWrapper::default().claimable_reward(addr);
-    js_ret(ret);
-}
 #[no_mangle]
 fn claim_tokens() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -129,23 +115,23 @@ fn withdraw() {
 fn allowance() {
     let owner: Key = runtime::get_named_arg("owner");
     let spender: Key = runtime::get_named_arg("recipient");
-    let ret = LiquidityGaugeWrapper::default().allowance(owner,spender);
+    let ret = LiquidityGaugeWrapper::default().allowance(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn transfer() {
-   let recipient: Key = runtime::get_named_arg("recipient");
-   let amount: U256 = runtime::get_named_arg("amount");
-   let ret = LiquidityGaugeWrapper::default().transfer(recipient, amount);
-   runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = LiquidityGaugeWrapper::default().transfer(recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn transfer_from() {
-   let owner: Key = runtime::get_named_arg("owner");
-   let recipient: Key = runtime::get_named_arg("recipient");
-   let amount: U256 = runtime::get_named_arg("amount");
-   let ret = LiquidityGaugeWrapper::default().transfer_from(owner, recipient, amount);
-   runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = LiquidityGaugeWrapper::default().transfer_from(owner, recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn approve() {
@@ -157,16 +143,14 @@ fn approve() {
 fn increase_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> =
-        LiquidityGaugeWrapper::default().increase_allowance(spender, amount);
+    let ret: Result<(), u32> = LiquidityGaugeWrapper::default().increase_allowance(spender, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn decrease_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> =
-        LiquidityGaugeWrapper::default().decrease_allowance(spender, amount);
+    let ret: Result<(), u32> = LiquidityGaugeWrapper::default().decrease_allowance(spender, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -225,20 +209,6 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claimable_tokens_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_reward",
-        vec![Parameter::new("addr", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_reward_js_client",
         vec![Parameter::new("addr", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,

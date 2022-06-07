@@ -153,3 +153,19 @@ pub const GET_GAUGE_WEIGHT: &str = "get_gauge_weight";
 pub const GET_TYPE_WEIGHT: &str = "get_type_weight";
 pub const GET_TOTAL_WEIGHT: &str = "get_total_weight";
 pub const GET_WEIGHTS_SUM_PER_TYPE: &str = "get_weights_sum_per_type";
+//IRewardDistributionRecipient
+pub const REWARDDISTRIBUTION: &str = "reward_distribution";
+//LpTokenWrapper
+pub const UNI: &str = "uni";
+pub const BALANCES: &str = "balances";
+//CruveRewards
+pub const SNX: &str = "snx";
+pub const PERIOD_FINISH: &str = "period_finish";
+pub const REWARD_RATE: &str = "reward_rate";
+pub const LAST_UPDATE_TIME: &str = "last_update_time";
+pub const REWARD_PER_TOKEN_STORED: &str = "reward_per_token_stored";
+pub const USER_REWARD_PER_TOKEN_PAID_DICT: &str = "user_reward_per_token_paid";
+pub const REWARDS_DICT: &str = "rewards";
+pub const LAST_TIME_REWARD_APPLICABLE: &str = "last_time_reward_applicable";
+pub const REWARD_PER_TOKEN: &str = "reward_per_token";
+pub const EARNED: &str = "earned";

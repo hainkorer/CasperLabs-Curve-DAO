@@ -15,6 +15,10 @@ vesting_escrow_des_wasm = ./vesting-escrow/vesting-escrow-tests/wasm
 vesting_escrow_factory_des_wasm = ./vesting-escrow-factory/vesting-escrow-factory-tests/wasm
 vesting_escrow_simple_des_wasm = ./vesting-escrow-simple/vesting-escrow-simple-tests/wasm
 voting_escrow_des_wasm = ./voting-escrow/voting-escrow-tests/wasm
+ownable_des_wasm = ./ownable/ownable-tests/wasm/
+i_reward_distribution_recipient_des_wasm = ./i-reward-distribution-recipient/i-reward-distribution-recipient-tests/wasm/
+lp_token_wrapper_des_wasm = ./lp-token-wrapper/lp-token-wrapper-tests/wasm/
+curve_rewards_des_wasm = ./curve-rewards/curve-rewards-tests/wasm/
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -22,6 +26,12 @@ prepare:
 build-contract-curve-token-v3:
 	cargo build --release -p curve_token_v3 --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v3.wasm 2>/dev/null | true
+build-liquidity-gauge-reward-wrapper-session-code:
+	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
+build-i-reward-distribution-recipient:
+	cargo build --release -p i-reward-distribution-recipient --target wasm32-unknown-unknown
+build-liquidity-gauge-wrapper-session-code:
+	cargo build --release -p liquidity-gauge-wrapper-session-code --target wasm32-unknown-unknown	
 build-contract-erc20:
 	cargo build --release -p erc20-proxy -p erc20 --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/erc20-token.wasm 2>/dev/null | true
@@ -64,6 +74,18 @@ build-contract-vesting-escrow-simple:
 build-contract-voting-escrow:
 	cargo build --release -p session-code -p erc20 -p voting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
+build-contract-ownable:
+	cargo build --release -p ownable --target wasm32-unknown-unknown
+build-contract-ownable-test-contract:
+	cargo build --release -p test --target wasm32-unknown-unknown
+build-lp-token-wrapper-session-code:
+	cargo build --release -p lp-token-wrapper-session-code --target wasm32-unknown-unknown
+build-lp-token-wrapper:
+	cargo build --release -p lp-token-wrapper --target wasm32-unknown-unknown
+build-curve-rewards-session-code:
+	cargo build --release -p curve-rewards-session-code --target wasm32-unknown-unknown
+build-curve-rewards:
+	cargo build --release -p erc20 -p curve-rewards --target wasm32-unknown-unknown
 
 test-only-curve-token-v3:
 	cargo test -p curve_token_v3_tests
@@ -95,6 +117,14 @@ test-only-vesting-escrow-simple:
 	cargo test -p vesting-escrow-simple-tests
 test-only-voting-escrow:
 	cargo test -p voting-escrow-tests
+test-only-i-reward-distribution-recipient:
+	cargo test -p i-reward-distribution-recipient-tests
+test-only-ownable:
+	cargo test -p ownable-tests -- --nocapture
+test-only-lp-token-wrapper:
+	cargo test -p lp-token-wrapper-tests
+test-only-curve-rewards:
+	cargo test -p curve-rewards-tests -- --nocapture
 
 copy-wasm-file-curve-token-v3:
 	cp ${wasm_src_path}/curve_token_v3.wasm ${curve_token_v3_des_wasm}
@@ -165,17 +195,21 @@ copy-wasm-file-voting-escrow:
 	cp ${wasm_src_path}/session-code.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${voting_escrow_des_wasm}
+	cp ${wasm_src_path}/*.wasm ${voting_escrow_des_wasm}
+copy-wasm-file-ownable:
+	cp ${wasm_src_path}/ownable_test.wasm ${ownable_des_wasm}
+	cp ${wasm_src_path}/ownable.wasm ${ownable_des_wasm}
+copy-wasm-file-i-reward-distribution-recipient:
+	cp ${wasm_src_path}/i-reward-distribution-recipient.wasm ${i_reward_distribution_recipient_des_wasm}
+copy-wasm-file-lp-token-wrapper:
+	cp ${wasm_src_path}/erc20-token.wasm ${lp_token_wrapper_des_wasm}
+	cp ${wasm_src_path}/lp-token-wrapper.wasm ${lp_token_wrapper_des_wasm}
+	cp ${wasm_src_path}/lp-token-wrapper-session-code.wasm ${lp_token_wrapper_des_wasm}
+copy-wasm-file-curve-rewards:
+	cp ${wasm_src_path}/erc20-token.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/curve-rewards-session-code.wasm ${curve_rewards_des_wasm}
 
-test-curve-token-v3: 
-	make build-contract-curve-token-v3 && make copy-wasm-file-curve-token-v3 && make test-only-curve-token-v3
-test-erc20:
-	make build-contract-erc20 && make copy-wasm-file-erc20 && make test-only-erc20
-test-erc20-crv: 
-	make build-contract-erc20-crv && make copy-wasm-file-erc20-crv && make test-only-erc20-crv
-test-fee-distributor:
-	make build-contract-fee-distributor && make copy-wasm-file-fee-distributor && make test-only-fee-distributor
-test-gauge-controller:
-	make build-contract-gauge-controller && make copy-wasm-file-gauge-controller && make test-only-gauge-controller
 test-gauge-proxy:
 	make build-contract-gauge-proxy && make copy-wasm-file-gauge-proxy && make test-only-gauge-proxy
 test-liquidity-gauge-reward:
@@ -194,9 +228,27 @@ test-vesting-escrow-factory:
 	make build-contract-vesting-escrow-factory && make copy-wasm-file-vesting-escrow-factory && make test-only-vesting-escrow-factory
 test-vesting-escrow-simple: 
 	make build-contract-vesting-escrow-simple && make copy-wasm-file-vesting-escrow-simple && make test-only-vesting-escrow-simple
+test-curve-token-v3: 
+	make build-contract-curve-token-v3 && make copy-wasm-file-curve-token-v3 && make test-only-curve-token-v3
+test-erc20:
+	make build-contract-erc20 && make copy-wasm-file-erc20 && make test-only-erc20
+test-erc20-crv: 
+	make build-contract-erc20-crv && make copy-wasm-file-erc20-crv && make test-only-erc20-crv
+test-fee-distributor:
+	make build-contract-fee-distributor && make copy-wasm-file-fee-distributor && make test-only-fee-distributor
+test-gauge-controller:
+	make build-contract-gauge-controller && make copy-wasm-file-gauge-controller && make test-only-gauge-controller
 test-voting-escrow:
 	make build-contract-voting-escrow && make copy-wasm-file-voting-escrow && make test-only-voting-escrow
-
+test-ownable:
+	make build-contract-ownable && make build-contract-ownable-test-contract && make copy-wasm-file-ownable && make test-only-ownable
+test-i-reward-distribution-recipient:
+	make build-i-reward-distribution-recipient && make copy-wasm-file-i-reward-distribution-recipient && make test-only-i-reward-distribution-recipient
+test-lp-token-wrapper:
+	make build-contract-erc20 && make build-lp-token-wrapper-session-code && make build-lp-token-wrapper && make copy-wasm-file-lp-token-wrapper && make test-only-lp-token-wrapper
+test-curve-rewards:
+	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
+	
 all:
 	make test-curve-token-v3
 	make test-erc20
@@ -213,6 +265,10 @@ all:
 	make test-vesting-escrow-factory
 	make test-vesting-escrow-simple
 	make test-voting-escrow
+	make test-ownable
+	make test-i-reward-distribution-recipient
+	make test-lp-token-wrapper
+	make test-curve-rewards
 
 clean:
 	cargo clean
@@ -232,6 +288,9 @@ clean:
 	rm -rf ${vesting_escrow_factory_des_wasm}/*.wasm
 	rm -rf ${vesting_escrow_simple_des_wasm}/*.wasm
 	rm -rf ${voting_escrow_des_wasm}/*.wasm
+	rm -rf ${ownable_des_wasm}/*.wasm
+	rm -rf ${i_reward_distribution_recipient_des_wasm}/*.wasm
+	rm -rf ${lp_token_wrapper_des_wasm}/*.wasm
 
 lint: clippy
 	cargo fmt --all

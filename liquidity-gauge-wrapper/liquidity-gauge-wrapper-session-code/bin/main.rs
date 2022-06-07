@@ -33,7 +33,7 @@ pub extern "C" fn call() {
 
     match entrypoint.as_str() {
         // Voting Escrow
-        GET_LAST_USER_SLOPE => {
+        TOTAL_SUPPLY => {
             let addr: Key = runtime::get_named_arg("addr");
             let ret: U128 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
