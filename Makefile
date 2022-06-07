@@ -19,17 +19,6 @@ voting_escrow_des_wasm = ./voting-escrow/voting-escrow-tests/wasm
 prepare:
 	rustup target add wasm32-unknown-unknown
 
-build-session-code:
-	cargo build --release -p session-code --target wasm32-unknown-unknown
-build-liquidity-gauge-reward-wrapper-session-code:
-	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
-build-liquidity-gauge-wrapper-session-code:
-	cargo build --release -p liquidity-gauge-wrapper-session-code --target wasm32-unknown-unknown	
-build-gauge-controller-session-code:
-	cargo build --release -p gauge-controller-session-code --target wasm32-unknown-unknown	
-build-vesting-escrow-simple-proxy-contract:
-	cargo build --release -p contract --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/contract.wasm 2>/dev/null | true
 build-contract-curve-token-v3:
 	cargo build --release -p curve_token_v3 --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v3.wasm 2>/dev/null | true
@@ -157,17 +146,14 @@ copy-wasm-file-minter:
 	cp ${wasm_src_path}/gauge-controller-token.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-proxy-token.wasm ${minter_des_wasm}
 copy-wasm-file-reward-only-gauge:
-	cp ${wasm_src_path}/*.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-proxy-token.wasm ${reward_only_gauge_des_wasm}
 copy-wasm-file-vesting-escrow:
-	cp ${wasm_src_path}/*.wasm ${vesting_escrow_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-token.wasm ${vesting_escrow_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-proxy-token.wasm ${vesting_escrow_des_wasm}
 copy-wasm-file-vesting-escrow-factory:
-	cp ${wasm_src_path}/*.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-factory-token.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-factory-proxy-token.wasm ${vesting_escrow_factory_des_wasm}
@@ -189,21 +175,21 @@ test-erc20-crv:
 test-fee-distributor:
 	make build-contract-fee-distributor && make copy-wasm-file-fee-distributor && make test-only-fee-distributor
 test-gauge-controller:
-	make copy-wasm-file-gauge-controller && make test-only-gauge-controller
+	make build-contract-gauge-controller && make copy-wasm-file-gauge-controller && make test-only-gauge-controller
 test-gauge-proxy:
 	make build-contract-gauge-proxy && make copy-wasm-file-gauge-proxy && make test-only-gauge-proxy
 test-liquidity-gauge-reward:
 	make build-contract-liquidity-gauge-reward && make copy-wasm-file-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
 test-liquidity-gauge-reward-wrapper:
-	make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper && make test-test-liquidity-gauge-reward-wrapper
+	make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
 test-liquidity-gauge-wrapper:
 	make build-contract-liquidity-gauge-wrapper && make copy-wasm-file-liquidity-gauge-wrapper && make test-only-liquidity-gauge-wrapper
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter && make test-only-minter
 test-reward-only-gauge:
-	make copy-wasm-file-reward-only-gauge && make test-only-reward-only-gauge
+	make build-contract-reward-only-gauge && make copy-wasm-file-reward-only-gauge && make test-only-reward-only-gauge
 test-vesting-escrow:
-	make copy-wasm-file-vesting-escrow && make test-only-vesting-escrow
+	make build-contract-vesting-escrow && make copy-wasm-file-vesting-escrow && make test-only-vesting-escrow
 test-vesting-escrow-factory:
 	make build-contract-vesting-escrow-factory && make copy-wasm-file-vesting-escrow-factory && make test-only-vesting-escrow-factory
 test-vesting-escrow-simple: 
@@ -211,22 +197,21 @@ test-vesting-escrow-simple:
 test-voting-escrow:
 	make build-contract-voting-escrow && make copy-wasm-file-voting-escrow && make test-only-voting-escrow
 
-
 all:
-	make test-curve-token-v3
-	make test-erc20
-	make test-erc20-crv
-	make test-fee-distributor
-	make test-gauge-controller
-	make test-gauge-proxy
-	make test-liquidity-gauge-reward
-	make test-liquidity-gauge-reward-wrapper
-	make test-liquidity-gauge-wrapper
-	make test-minter
-	make test-reward-only-gauge
-	make test-vesting-escrow
-	make test-vesting-escrow-factory
-	make test-vesting-escrow-simple
+	# make test-curve-token-v3
+	# make test-erc20
+	# make test-erc20-crv
+	# make test-fee-distributor
+	# make test-gauge-controller
+	# make test-gauge-proxy
+	# make test-liquidity-gauge-reward
+	# make test-liquidity-gauge-reward-wrapper
+	# make test-liquidity-gauge-wrapper
+	# make test-minter
+	# make test-reward-only-gauge
+	# make test-vesting-escrow
+	# make test-vesting-escrow-factory
+	# make test-vesting-escrow-simple
 	make test-voting-escrow
 
 clean:
@@ -248,25 +233,6 @@ clean:
 	rm -rf ${vesting_escrow_simple_des_wasm}/*.wasm
 	rm -rf ${voting_escrow_des_wasm}/*.wasm
 
-clean-wasm:
-	rm -rf ${minter_des_wasm}/*.wasm
-	rm -rf ${gauge_controller_des_wasm}/*.wasm
-	rm -rf ${gauge_proxy_des_wasm}/*.wasm
-	rm -rf ${reward_only_gauge_des_wasm}/*.wasm
-	rm -rf ${vesting_escrow_des_wasm}/*.wasm
-	rm -rf ${vesting_escrow_factory_des_wasm}/*.wasm
-	rm -rf ${vesting_escrow_simple_des_wasm}/*.wasm
-	rm -rf ${voting_escrow_des_wasm}/*.wasm
-	rm -rf ${fee_distributor_des_wasm}*.wasm
-	rm -rf ${voting_escrow_des_wasm}*.wasm
-	rm -rf ${liquidity_gauge_reward_des_wasm}*.wasm
-	rm -rf ${erc20_des_wasm}/*.wasm
-	rm -rf ${erc20_crv}/*.wasm
-	rm -rf ${liquidity_gauge_reward_wrapper_des_wasm}/*.wasm
-	rm -rf ${liquidity_gauge_wrapper_des_wasm}/*.wasm
-	rm -rf curve-token-v3/curve-token-v3-tests/wasm/*.wasm
-	rm -rf vesting-escrow-simple/vesting-escrow-simple-tests/wasm/*.wasm
-	rm -rf erc20-crv/erc20_crv_tests/wasm/*.wasm
 lint: clippy
 	cargo fmt --all
 
