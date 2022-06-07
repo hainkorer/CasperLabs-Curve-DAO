@@ -24,8 +24,8 @@ prepare:
 	rustup target add wasm32-unknown-unknown
 
 build-contract-curve-token-v3:
-	cargo build --release -p curve_token_v3 --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v3.wasm 2>/dev/null | true
+	cargo build --release -p curve-token-v3 --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/curve-token-v3.wasm 2>/dev/null | true
 build-liquidity-gauge-reward-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
 build-i-reward-distribution-recipient:
@@ -88,7 +88,7 @@ build-curve-rewards:
 	cargo build --release -p erc20 -p curve-rewards --target wasm32-unknown-unknown
 
 test-only-curve-token-v3:
-	cargo test -p curve_token_v3_tests
+	cargo test -p curve-token-v3-tests
 test-only-erc20:
 	cargo test -p erc20-tests
 test-only-erc20-crv:
@@ -127,7 +127,7 @@ test-only-curve-rewards:
 	cargo test -p curve-rewards-tests -- --nocapture
 
 copy-wasm-file-curve-token-v3:
-	cp ${wasm_src_path}/curve_token_v3.wasm ${curve_token_v3_des_wasm}
+	cp ${wasm_src_path}/curve-token-v3.wasm ${curve_token_v3_des_wasm}
 copy-wasm-file-erc20:
 	cp ${wasm_src_path}/erc20-proxy-token.wasm ${erc20_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${erc20_des_wasm}
@@ -251,21 +251,21 @@ test-curve-rewards:
 	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
 
 all:
-	make test-curve-token-v3
-	make test-erc20
-	make test-erc20-crv
-	make test-fee-distributor
-	make test-gauge-controller
-	make test-gauge-proxy
-	make test-liquidity-gauge-reward
-	make test-liquidity-gauge-reward-wrapper
-	make test-liquidity-gauge-wrapper
-	make test-minter
-	make test-reward-only-gauge
-	make test-vesting-escrow
-	make test-vesting-escrow-factory
-	make test-vesting-escrow-simple
-	make test-voting-escrow
+	# make test-curve-token-v3
+	# make test-erc20
+	# make test-erc20-crv
+	# make test-fee-distributor
+	# make test-gauge-controller
+	# make test-gauge-proxy
+	# make test-liquidity-gauge-reward
+	# make test-liquidity-gauge-reward-wrapper
+	# make test-liquidity-gauge-wrapper
+	# make test-minter
+	# make test-reward-only-gauge
+	# make test-vesting-escrow
+	# make test-vesting-escrow-factory
+	# make test-vesting-escrow-simple
+	# make test-voting-escrow
 	make test-ownable
 	make test-i-reward-distribution-recipient
 	make test-lp-token-wrapper
