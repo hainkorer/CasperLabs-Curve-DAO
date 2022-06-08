@@ -135,10 +135,10 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn mint_crv(&self, sender: AccountHash, to: Key, value: U256) {
+    pub fn mint(&self, sender: AccountHash, to: Key, value: U256) {
         self.0.call_contract(
             sender,
-            "mint_crv",
+            "mint",
             runtime_args! {
                 "to"=>to,
                 "value"=>value
