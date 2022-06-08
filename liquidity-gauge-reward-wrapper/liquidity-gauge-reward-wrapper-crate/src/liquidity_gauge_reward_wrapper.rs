@@ -141,21 +141,23 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "account" => Key::from(get_package_hash())
+                "owner" => Key::from(get_package_hash()),
             },
         );
         let () = runtime::call_versioned_contract(
             gauge.into_hash().unwrap_or_revert().into(),
             None,
             "claim_rewards",
-            runtime_args! {},
+            runtime_args! {
+                "addr" => self.get_caller()
+            },
         );
         d_reward_updated = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
             "balance_of",
             runtime_args! {
-                "account" =>Key::from(get_package_hash())
+                "owner" =>Key::from(get_package_hash())
             },
         );
         d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();

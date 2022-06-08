@@ -44,7 +44,7 @@ pub extern "C" fn call() {
         // }
         USER_CHECKPOINT => {
             let addr: Key = runtime::get_named_arg("addr");
-            let ret: U256 = runtime::call_versioned_contract(
+            let ret: bool = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 USER_CHECKPOINT,

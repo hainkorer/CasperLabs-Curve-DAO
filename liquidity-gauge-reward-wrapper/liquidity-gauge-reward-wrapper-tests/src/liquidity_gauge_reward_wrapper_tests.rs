@@ -1,5 +1,5 @@
 use crate::liquidity_gauge_reward_wrapper_instance::LIQUIDITYGAUGEREWARDWRAPPERInstance;
-use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256, U128};
 use test_env::{TestContract, TestEnv};
 use common::keys::*;
 //Const
@@ -16,7 +16,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
             "name" => "rewarded_token",
             "symbol" => "ERA",
             "decimals" => 9 as u8,
-            "initial_supply" => U256::from(TEN_E_NINE * 10000000)
+            "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
         0,
     )
@@ -32,7 +32,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
             "decimal" => 9 as u8,
-            "supply" => U256::from(0)
+            "supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
         0,
     )
@@ -90,7 +90,7 @@ fn deploy_reward(env: &TestEnv, owner: AccountHash) -> TestContract {
             "name" => "reward token",
             "symbol" => "RT",
             "decimals" => 9 as u8,
-            "initial_supply" => U256::from(TEN_E_NINE * 10000000)
+            "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
         0,
     )
@@ -110,35 +110,32 @@ fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key
     )
 }
 //Curve Rewards
-fn deploy_curve_rewards(env: &TestEnv, owner: AccountHash) -> TestContract {
-    let token = deploy_erc20(&env, owner);
-    let reward = deploy_reward(&env, owner);
+fn deploy_curve_rewards(env: &TestEnv, owner: AccountHash,token:Key,reward:Key) -> TestContract {
     TestContract::new(
         &env,
         "curve-rewards.wasm",
         "Curve Rewards",
         owner,
         runtime_args! {
-            "token" => Key::Hash(token.package_hash()),
-            "reward" => Key::Hash(reward.package_hash()),
+            "token" => token,
+            "reward" => reward
         },
         0,
     )
 }
 // Liquidity Guage Reward
-fn deploy_liquidity_gauge_reward(env: &TestEnv, owner: AccountHash,minter:Key) -> TestContract {
-    let erc20 = deploy_erc20(&env, owner);
-    let reward = deploy_curve_rewards(&env, owner);
+fn deploy_liquidity_gauge_reward(env: &TestEnv, owner: AccountHash,minter:Key,token:Key,reward:Key) -> TestContract {
+    let cruve_rewards = deploy_curve_rewards(&env, owner,token,reward);
     TestContract::new(
         &env,
         "liquidity-gauge-reward.wasm",
         "Liquidity Guage Reward",
         owner,
         runtime_args!{
-            "lp_addr" => Key::Hash(erc20.package_hash()),
+            "lp_addr" => token,
             "minter" => minter,
-            "reward_contract" => Key::Hash(reward.package_hash()),
-            "rewarded_token" => Key::Hash(erc20.package_hash()),
+            "reward_contract" => Key::Hash(cruve_rewards.package_hash()),
+            "rewarded_token" => token,
             "admin" => Key::Account(owner)
         },
         0
@@ -152,6 +149,7 @@ fn deploy() -> (
     let env = TestEnv::new();
     let owner = env.next_user();
     let erc20 = deploy_erc20(&env, owner);
+    let reward = deploy_reward(&env, owner);
     let erc20_crv = deploy_erc20_crv(&env, owner);
     let voting_escrow = deploy_voting_escrow(
         &env,
@@ -173,7 +171,7 @@ fn deploy() -> (
         Key::Hash(gauge_controller.package_hash()),
         Key::Hash(erc20_crv.package_hash()),
     );
-    let deploy_liquidity_gauge_reward = deploy_liquidity_gauge_reward(&env, owner,Key::Hash(minter.package_hash()));
+    let deploy_liquidity_gauge_reward = deploy_liquidity_gauge_reward(&env, owner,Key::Hash(minter.package_hash()),Key::Hash(erc20.package_hash()),Key::Hash(reward.package_hash()));
     let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::new(
         &env,
         NAME,
@@ -183,31 +181,91 @@ fn deploy() -> (
         Key::Hash(deploy_liquidity_gauge_reward.package_hash()),
         Key::Account(owner),
     );
+    // For Minting Purpose
+    let to = Key::Hash(liquidity_gauge_reward_wrapper_instance.package_hash());
+    let amount: U256 = U256::from(TEN_E_NINE * 100000000000000000000);
+    erc20.call_contract(
+        owner,
+        "mint",
+        runtime_args! {"to" => to , "amount" => amount},
+        0,
+    );
+    reward.call_contract(
+        owner,
+        "mint",
+        runtime_args! {"to" => to , "amount" => amount},
+        0,
+    );
+    erc20_crv.call_contract(
+        owner,
+        "mint",
+        runtime_args! {"to" => to , "value" => amount},
+        0,
+    );
+    
+    let _name: String = "type".to_string();
+    gauge_controller.call_contract(
+        owner,
+        "add_type",
+        runtime_args! {"_name" => _name },
+        0,
+    );
+    let addr:Key = Key::Account(owner);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.call_contract(
+        owner,
+        "add_gauge",
+        runtime_args! {
+            "addr" => addr,
+            "gauge_type" => gauge_type,
+            "weight"=>None::<U256> 
+        },
+        0,
+    );
+    let _name_1: String = "type1".to_string();
+    gauge_controller.call_contract(
+        owner,
+        "add_type",
+        runtime_args! {"_name" => _name_1 },
+        0,
+    );
+    let addr1:Key = Key::Hash(deploy_liquidity_gauge_reward.package_hash());
+    let gauge_type_1: U128 = 1.into();
+    gauge_controller.call_contract(
+        owner,
+        "add_gauge",
+        runtime_args! {
+            "addr" => addr1,
+            "gauge_type" => gauge_type_1,
+            "weight"=>None::<U256> 
+        },
+        0,
+    );
     (env,owner,liquidity_gauge_reward_wrapper_instance)
 }
 
 #[test]
 fn test_deploy() {
-    let (env, owner,instance) = deploy();
+    let (_, _,_) = deploy();
 }
-// #[test]
-// fn test_user_checkpoint() {
-//     let (env, owner,instance) = deploy();
-//     let package_hash = Key::Hash(instance.package_hash());
-//     let addr:Key = Key::Account(owner);
-//     TestContract::new(
-//         &env,
-//         "liquidity-gauge-reward-wrapper-session-code.wasm",
-//         SESSION_CODE_NAME,
-//         owner,
-//         runtime_args! {
-//             "entrypoint" => String::from(USER_CHECKPOINT),
-//             "package_hash" => package_hash,
-//             "addr" => addr,
-//         },
-//         200,
-//     );
-//     let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
-//     println!("{:?}",ret);
-//     //liquidity_gauge_reward_wrapper_instance.use
-// }
+#[test]
+fn test_user_checkpoint() {
+    let (env, owner,instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    let addr:Key = Key::Account(owner);
+    TestContract::new(
+        &env,
+        "liquidity-gauge-reward-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(USER_CHECKPOINT),
+            "package_hash" => package_hash,
+            "addr" => addr,
+        },
+        0,
+    );
+    let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
+    println!("{:?}",ret);
+    //liquidity_gauge_reward_wrapper_instance.use
+}
