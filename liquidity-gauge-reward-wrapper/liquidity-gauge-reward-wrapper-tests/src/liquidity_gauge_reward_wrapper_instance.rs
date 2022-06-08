@@ -33,10 +33,10 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
         )
     }
 
-    pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key) {
+    pub fn user_checkpoint(&self, owner: AccountHash, addr: Key) {
         self.0.call_contract(
             owner,
-            "commit_transfer_ownership",
+            "user_checkpoint",
             runtime_args! {
                 "addr" => addr
             },

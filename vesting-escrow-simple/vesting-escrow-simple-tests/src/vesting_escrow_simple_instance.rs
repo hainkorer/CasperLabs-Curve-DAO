@@ -163,7 +163,8 @@ impl VESTINGESCROWSIMPLEInstance {
     }
 
     pub fn initial_locked_supply(&self) -> U256 {
-        self.0.query_named_key(String::from("initial_locked_supply"))
+        self.0
+            .query_named_key(String::from("initial_locked_supply"))
     }
 
     pub fn can_disable(&self) -> bool {

@@ -4,8 +4,8 @@ use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::bytesrepr::Bytes;
 use casper_types::{ContractHash, ContractPackageHash, Key, U128, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use contract_utils::{get_key, key_to_str, set_key, Dict};
 use common::keys::*;
+use contract_utils::{get_key, key_to_str, set_key, Dict};
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);

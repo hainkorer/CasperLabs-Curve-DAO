@@ -155,6 +155,7 @@ pub const ALLOWANCES: &str = "allownances";
 pub const CLAIMABLE_CRV: &str = "claimable_crv";
 pub const CRV_INTEGRAL_FOR: &str = "crv_integral_for";
 pub const CLAIMABLE_REWARDS: &str = "claimable_rewards";
+pub const USER_CHECKPOINT: &str = "user_checkpoint";
 // Gauge Controller Wasm Keys
 pub const GAUGE_TYPES: &str = "gauge_types";
 pub const GAUGE_RELATIVE_WEIGHT: &str = "gauge_relative_weight";
@@ -179,6 +180,5 @@ pub const REWARDS_DICT: &str = "rewards";
 pub const LAST_TIME_REWARD_APPLICABLE: &str = "last_time_reward_applicable";
 pub const REWARD_PER_TOKEN: &str = "reward_per_token";
 pub const EARNED: &str = "earned";
-
 //Liqudity Guage v3 keys
 pub const MYVEC: &str = "myvec";

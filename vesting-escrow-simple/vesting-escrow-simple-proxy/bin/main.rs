@@ -33,16 +33,18 @@ fn constructor() {
 fn initialize() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
-       
-    let admin: Key= runtime::get_named_arg("admin");
-    let token: Key= runtime::get_named_arg("token");
+
+    let admin: Key = runtime::get_named_arg("admin");
+    let token: Key = runtime::get_named_arg("token");
     let recipient: Key = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
     let start_time: U256 = runtime::get_named_arg("start_time");
     let end_time: U256 = runtime::get_named_arg("end_time");
     let can_disable: bool = runtime::get_named_arg("can_disable");
-    let ret: bool =
-        runtime::call_contract(vesting_escrow_simple_address, "initialize", runtime_args! {
+    let ret: bool = runtime::call_contract(
+        vesting_escrow_simple_address,
+        "initialize",
+        runtime_args! {
             "admin"=>admin,
                 "token"=>token,
                 "recipient"=>recipient,
@@ -50,81 +52,99 @@ fn initialize() {
                 "start_time"=>start_time,
                 "end_time"=>end_time,
                 "can_disable"=>can_disable
-        });
+        },
+    );
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
 fn toggle_disable() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
-        let recipient:Key = runtime::get_named_arg("recipient");
-    let ret: () =
-        runtime::call_contract(vesting_escrow_simple_address, "toggle_disable", runtime_args! {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret: () = runtime::call_contract(
+        vesting_escrow_simple_address,
+        "toggle_disable",
+        runtime_args! {
             "recipient" => recipient
-        });
+        },
+    );
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
 fn vested_of() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
-        let recipient:Key = runtime::get_named_arg("recipient");
-    let ret: U256 =
-        runtime::call_contract(vesting_escrow_simple_address, "vested_of", runtime_args! {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret: U256 = runtime::call_contract(
+        vesting_escrow_simple_address,
+        "vested_of",
+        runtime_args! {
             "recipient" => recipient
-        });
+        },
+    );
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
 fn vested_supply() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
-    let ret: U256 =
-        runtime::call_contract(vesting_escrow_simple_address, "vested_supply", runtime_args! {
-        });
+    let ret: U256 = runtime::call_contract(
+        vesting_escrow_simple_address,
+        "vested_supply",
+        runtime_args! {},
+    );
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
 fn locked_supply() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
-    let ret: U256 =
-        runtime::call_contract(vesting_escrow_simple_address, "locked_supply", runtime_args! {
-        });
+    let ret: U256 = runtime::call_contract(
+        vesting_escrow_simple_address,
+        "locked_supply",
+        runtime_args! {},
+    );
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
 fn balance_of_vest() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
-        let recipient:Key = runtime::get_named_arg("recipient");
-    let ret: U256 =
-        runtime::call_contract(vesting_escrow_simple_address, "balance_of_vest", runtime_args! {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret: U256 = runtime::call_contract(
+        vesting_escrow_simple_address,
+        "balance_of_vest",
+        runtime_args! {
             "recipient" => recipient
-        });
+        },
+    );
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
 fn commit_transfer_ownership() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
-        let addr:Key = runtime::get_named_arg("addr");
-    let ret: bool =
-        runtime::call_contract(vesting_escrow_simple_address, "commit_transfer_ownership", runtime_args! {
+    let addr: Key = runtime::get_named_arg("addr");
+    let ret: bool = runtime::call_contract(
+        vesting_escrow_simple_address,
+        "commit_transfer_ownership",
+        runtime_args! {
             "addr" => addr
-        });
+        },
+    );
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
 fn apply_transfer_ownership() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
-    let ret: bool =
-        runtime::call_contract(vesting_escrow_simple_address, "apply_transfer_ownership", runtime_args! {
-        });
+    let ret: bool = runtime::call_contract(
+        vesting_escrow_simple_address,
+        "apply_transfer_ownership",
+        runtime_args! {},
+    );
     mappings::set_key(&mappings::result_key(), ret);
 }
-
 
 #[no_mangle]
 fn get_entry_points() -> EntryPoints {
@@ -143,13 +163,13 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "initialize",
         vec![
-        Parameter::new("admin", Key::cl_type()),
-        Parameter::new("token", Key::cl_type()),
-        Parameter::new("recipient", Key::cl_type()),
-        Parameter::new("amount", U256::cl_type()),
-        Parameter::new("start_time", U256::cl_type()),
-        Parameter::new("end_time", U256::cl_type()),
-        Parameter::new("can_disable", bool::cl_type())
+            Parameter::new("admin", Key::cl_type()),
+            Parameter::new("token", Key::cl_type()),
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+            Parameter::new("start_time", U256::cl_type()),
+            Parameter::new("end_time", U256::cl_type()),
+            Parameter::new("can_disable", bool::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -157,60 +177,49 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "toggle_disable",
-        vec![
-            Parameter::new("recipient", Key::cl_type())
-        ],
+        vec![Parameter::new("recipient", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "vested_of",
-        vec![
-            Parameter::new("recipient", Key::cl_type())
-        ],
+        vec![Parameter::new("recipient", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "vested_supply",
-        vec![
-        ],
+        vec![],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "locked_supply",
-        vec![
-        ],
+        vec![],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of_vest",
-        vec![
-            Parameter::new("recipient", Key::cl_type())
-        ],
+        vec![Parameter::new("recipient", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "commit_transfer_ownership",
-        vec![
-            Parameter::new("addr", Key::cl_type())
-        ],
+        vec![Parameter::new("addr", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "apply_transfer_ownership",
-        vec![
-        ],
+        vec![],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

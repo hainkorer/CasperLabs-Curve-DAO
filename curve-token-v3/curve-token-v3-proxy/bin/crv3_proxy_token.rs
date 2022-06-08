@@ -59,7 +59,8 @@ fn transfer_from() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32> = runtime::call_contract(curve_token_v3_address, "transfer_from", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(curve_token_v3_address, "transfer_from", args);
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
@@ -108,7 +109,7 @@ fn approve() {
         "amount" => amount,
     };
 
-    let ret: ()= runtime::call_contract(curve_token_v3_address, "approve", args);
+    let ret: () = runtime::call_contract(curve_token_v3_address, "approve", args);
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
@@ -122,7 +123,8 @@ fn increase_allowance() {
         "amount" => amount,
     };
 
-    let ret: Result<(), u32>  = runtime::call_contract(curve_token_v3_address, "increase_allowance", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(curve_token_v3_address, "increase_allowance", args);
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
@@ -137,7 +139,8 @@ fn decrease_allowance() {
         "amount" => amount,
     };
 
-    let ret:  Result<(), u32> = runtime::call_contract(curve_token_v3_address, "decrease_allowance", args);
+    let ret: Result<(), u32> =
+        runtime::call_contract(curve_token_v3_address, "decrease_allowance", args);
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
@@ -182,8 +185,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    
-   
+
     entry_points.add_entry_point(EntryPoint::new(
         "transfer",
         vec![

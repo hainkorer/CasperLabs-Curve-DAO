@@ -5,8 +5,9 @@ use blake2::{
     VarBlake2b,
 };
 use casper_types::{
-    account::AccountHash, bytesrepr::{ToBytes, FromBytes}, runtime_args, CLTyped, ContractPackageHash, Key,
-    RuntimeArgs, U256,
+    account::AccountHash,
+    bytesrepr::{FromBytes, ToBytes},
+    runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U256,
 };
 use test_env::{TestContract, TestEnv};
 
@@ -20,13 +21,7 @@ impl CURVETOKENV3Instance {
         CURVETOKENV3Instance(erc20)
     }
 
-   
-   
-    pub fn proxy(
-        env: &TestEnv,
-        curve_token_v3: Key,
-        sender: AccountHash,
-    ) -> TestContract {
+    pub fn proxy(env: &TestEnv, curve_token_v3: Key, sender: AccountHash) -> TestContract {
         TestContract::new(
             env,
             "crv3-proxy-token.wasm",
@@ -38,11 +33,7 @@ impl CURVETOKENV3Instance {
             0,
         )
     }
-    pub fn proxy2(
-        env: &TestEnv,
-        curve_token_v3: Key,
-        sender: AccountHash,
-    ) -> TestContract {
+    pub fn proxy2(env: &TestEnv, curve_token_v3: Key, sender: AccountHash) -> TestContract {
         TestContract::new(
             env,
             "crv3-proxy-token.wasm",
@@ -75,17 +66,12 @@ impl CURVETOKENV3Instance {
         )
     }
 
-    pub fn constructor(
-        &self,
-        sender: AccountHash,
-        name: String,
-        symbol: String,
-    ) {
+    pub fn constructor(&self, sender: AccountHash, name: String, symbol: String) {
         self.0.call_contract(
             sender,
             "constructor",
             runtime_args! {
-               
+
                 "name" => name,
                 "symbol" => symbol,
             },
@@ -112,7 +98,7 @@ impl CURVETOKENV3Instance {
             0,
         );
     }
-   
+
     pub fn transfer(&self, sender: AccountHash, recipient: Key, amount: U256) {
         self.0.call_contract(
             sender,
@@ -220,7 +206,6 @@ impl CURVETOKENV3Instance {
         );
     }
 
-
     // Result methods
     pub fn result<T: CLTyped + FromBytes>(&self) -> T {
         self.0.query_named_key("result".to_string())
@@ -231,10 +216,6 @@ impl CURVETOKENV3Instance {
     }
 }
 
-
-   
-
-    
 //     pub fn allowance_package_hash<T: Into<Key>>(
 //         &self,
 //         owner: ContractPackageHash,

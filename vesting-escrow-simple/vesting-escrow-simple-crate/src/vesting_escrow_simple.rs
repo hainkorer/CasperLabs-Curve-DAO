@@ -50,15 +50,14 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         InitialLocked::init();
         TotalClaimed::init();
 
-        
-    //     set_token(token);
+        //     set_token(token);
         set_admin(zero_address());
-    //     set_future_admin(self.get_caller());
-    //     set_start_time(U256::from(0));
-    //     set_end_time(U256::from(0));
-    //     set_can_disable(true);
-    //   //  InitialLocked::instance().set(&zero_address(), U256::from(100));
-    //     set_initial_locked_supply(U256::from(0));
+        //     set_future_admin(self.get_caller());
+        //     set_start_time(U256::from(0));
+        //     set_end_time(U256::from(0));
+        //     set_can_disable(true);
+        //   //  InitialLocked::instance().set(&zero_address(), U256::from(100));
+        //     set_initial_locked_supply(U256::from(0));
     }
     fn initialize(
         &self,

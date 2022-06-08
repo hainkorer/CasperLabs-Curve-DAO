@@ -21,7 +21,6 @@ pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     }
 }
 
-
 pub fn set_token(token: Key) {
     set_key(TOKEN, token);
 }

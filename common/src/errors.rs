@@ -440,7 +440,7 @@ pub enum Error {
     /// 65,540 for (Vesting Escrow Simple Initialize Once)
 
     ///Vesting Escrow simple errors
-    /// 
+    ///
     VestingEscrowSimpleOnlyInitializeOnce = 11201,
     /// 65,540 for (Vesting Escrow Simple Admin Only1)
     VestingEscrowSimpleAdminOnly1 = 11202,
@@ -457,7 +457,7 @@ pub enum Error {
     /// 65,540 for (Vesting Escrow Simple Is Locked1)
     VestingEscrowSimpleLocked1 = 11208,
     /// 65,540 for (Vesting Escrow Simple Is Locked2)
-    VestingEscrowSimpleLocked2=11209,
+    VestingEscrowSimpleLocked2 = 11209,
 
     /// 65,540 for (Voting Escrow Invalid Decimals)
     VotingEscrowInvalidDecimals = 11301,

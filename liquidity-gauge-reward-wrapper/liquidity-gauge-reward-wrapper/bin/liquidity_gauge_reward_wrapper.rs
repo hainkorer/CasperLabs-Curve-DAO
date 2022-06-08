@@ -8,8 +8,7 @@ use casper_contract::{
 };
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
-    U256,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
 use liquidity_gauge_reward_wrapper_crate::{self, data::*, LIQUIDITYGAUGEREWARDWRAPPER};

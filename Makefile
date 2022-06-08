@@ -51,7 +51,7 @@ build-contract-liquidity-gauge-reward:
 	cargo build --release -p session-code -p erc20_crv -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy -p minter -p minter-proxy -p liquidity-gauge-reward --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward-wrapper:
-	cargo build --release -p erc20 -p minter -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p liquidity-gauge-reward-wrapper --target wasm32-unknown-unknown
+	cargo build --release -p erc20_crv -p erc20 -p minter -p voting-escrow -p gauge-controller -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p curve-rewards --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward-wrapper.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-wrapper:
 	cargo build --release -p erc20 -p minter -p liquidity-gauge-reward -p liquidity-gauge-wrapper-session-code -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
@@ -102,7 +102,7 @@ test-only-gauge-proxy:
 test-only-liquidity-gauge-reward:
 	cargo test -p liquidity-gauge-reward-tests
 test-only-liquidity-gauge-reward-wrapper:
-	cargo test -p liquidity-gauge-reward-wrapper-tests
+	cargo test -p liquidity-gauge-reward-wrapper-tests -- --nocapture
 test-only-liquidity-gauge-wrapper:
 	cargo test -p liquidity-gauge-wrapper-tests
 test-only-minter:
@@ -162,6 +162,10 @@ copy-wasm-file-liquidity-gauge-reward-wrapper:
 	cp ${wasm_src_path}/liquidity-gauge-reward-wrapper-session-code.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/minter-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/gauge-controller-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/voting-escrow.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/erc20_crv.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 copy-wasm-file-liquidity-gauge-wrapper:
 	cp ${wasm_src_path}/erc20-token.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-wrapper.wasm ${liquidity_gauge_wrapper_des_wasm}
