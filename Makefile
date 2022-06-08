@@ -292,6 +292,7 @@ clean:
 	rm -rf ${ownable_des_wasm}/*.wasm
 	rm -rf ${i_reward_distribution_recipient_des_wasm}/*.wasm
 	rm -rf ${lp_token_wrapper_des_wasm}/*.wasm
+	rm -rf ${curve_rewards_des_wasm}/*.wasm
 
 lint: clippy
 	cargo fmt --all
