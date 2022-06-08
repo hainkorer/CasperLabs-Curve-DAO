@@ -84,7 +84,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             name,
             symbol,
             decimal,
-            U256::from(0),
+            supply,
             "".to_string(),
             "".to_string(),
             data::get_hash(),
@@ -149,6 +149,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             rate: rate,
             supply: data::get_start_epoch_supply(),
         });
+    }
+    fn balance_of(&self,account:Key) ->U256{
+        erc20_data::Balances::instance().get(&account)
     }
     fn update_mining_parameters(&self) {
         let blocktime: u64 = runtime::get_blocktime().into();

@@ -59,19 +59,19 @@ pub extern "C" fn call() {
             );
             store(AVAILABLE_SUPPLY, ret);
         }
-        MINT_CRV => {
+        MINT => {
             let to: Key = runtime::get_named_arg("to");
             let value: U256 = runtime::get_named_arg("value");
             let ret: bool = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                MINT_CRV,
+                MINT,
                 runtime_args! {
                     "to"=>to,
                     "value"=>value
                 },
             );
-            store(MINT_CRV, ret);
+            store(MINT, ret);
         }
         MINTABLE_IN_TIMEFRAME => {
             let start: U256 = runtime::get_named_arg("start");

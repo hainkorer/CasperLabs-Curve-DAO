@@ -171,7 +171,7 @@ fn test_mint_crv() {
         "SessionCode",
         owner,
         runtime_args! {
-            "entrypoint" => String::from(MINT_CRV),
+            "entrypoint" => String::from(MINT),
             "package_hash" => Key::Hash(contract.package_hash()),
             "to"=>to,
             "value"=>value
@@ -179,7 +179,7 @@ fn test_mint_crv() {
         1000000000,
     );
 
-    let ret: bool = env.query_account_named_key(owner, &[MINT_CRV.into()]);
+    let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
     assert_eq!(ret, true);
 }
 #[test]

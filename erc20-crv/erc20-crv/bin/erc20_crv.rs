@@ -62,6 +62,13 @@ fn set_minter() {
     Erc20Crv::default().set_minter(_minter);
 }
 #[no_mangle]
+fn balance_of() {
+    let account: Key = runtime::get_named_arg("account");
+   let ret= Erc20Crv::default().balance_of(account);
+   runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+
+}
+#[no_mangle]
 fn burn_caller() {
     let _value: U256 = runtime::get_named_arg("_value");
     Erc20Crv::default().burn_caller(_value);
@@ -122,7 +129,7 @@ fn update_mining_parameters() {
     Erc20Crv::default().update_mining_parameters();
 }
 #[no_mangle]
-fn mint_crv() {
+fn mint() {
     let to: Key = runtime::get_named_arg("to");
     let value: U256 = runtime::get_named_arg("value");
     let ret = Erc20Crv::default().mint_crv(to, value);
@@ -154,6 +161,13 @@ fn get_entry_points() -> EntryPoints {
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of",
+        vec![Parameter::new("account", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
@@ -247,7 +261,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "mint_crv",
+        "mint",
         vec![
             Parameter::new("to", Key::cl_type()),
             Parameter::new("value", U256::cl_type()),
