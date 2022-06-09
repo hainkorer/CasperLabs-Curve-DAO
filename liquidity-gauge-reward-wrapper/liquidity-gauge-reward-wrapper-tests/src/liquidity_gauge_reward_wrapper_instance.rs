@@ -43,10 +43,25 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             0,
         );
     }
-
-    pub fn apply_transfer_ownership(&self, owner: AccountHash) {
-        self.0
-            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, 0);
+    pub fn claimable_tokens(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "claimable_tokens",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+    pub fn claimable_reward(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "claimable_reward",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
     }
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()

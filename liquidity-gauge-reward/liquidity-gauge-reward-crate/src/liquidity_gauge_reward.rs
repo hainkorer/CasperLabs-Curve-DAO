@@ -424,8 +424,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                 None,
                 "minted",
                 runtime_args! {
-                    "user" => addr,
-                    "gauge" => Key::from(get_package_hash())
+                    "key0" => addr,
+                    "key1" => Key::from(get_package_hash())
                 },
             ))
             .unwrap_or_revert()
@@ -441,7 +441,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             None,
             "earned",
             runtime_args! {
-                "addr" => Key::from(get_package_hash())
+                "account" => Key::from(get_package_hash())
             },
         );
         let user_balance: U256 = BalanceOf::instance().get(&addr);

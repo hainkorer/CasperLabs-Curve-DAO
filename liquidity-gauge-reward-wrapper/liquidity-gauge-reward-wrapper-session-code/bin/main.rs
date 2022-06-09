@@ -54,6 +54,30 @@ pub extern "C" fn call() {
             );
             store(USER_CHECKPOINT, ret);
         }
+        CLAIMABLE_TOKENS => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                CLAIMABLE_TOKENS,
+                runtime_args! {
+                    "addr" => addr,
+                },
+            );
+            store(CLAIMABLE_TOKENS, ret);
+        }
+        CLAIMABLE_REWARD => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                CLAIMABLE_REWARD,
+                runtime_args! {
+                    "addr" => addr,
+                },
+            );
+            store(CLAIMABLE_REWARD, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

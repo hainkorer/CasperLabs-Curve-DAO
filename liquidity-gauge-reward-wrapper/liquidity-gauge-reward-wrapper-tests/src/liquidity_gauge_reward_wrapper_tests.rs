@@ -263,9 +263,44 @@ fn test_user_checkpoint() {
             "package_hash" => package_hash,
             "addr" => addr,
         },
-        0,
+        300,
     );
     let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
     println!("{:?}",ret);
-    //liquidity_gauge_reward_wrapper_instance.use
+}
+#[test]
+fn test_claimable_tokens() {
+    let (env, owner,instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    let addr:Key = Key::Account(owner);
+    TestContract::new(
+        &env,
+        "liquidity-gauge-reward-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMABLE_TOKENS),
+            "package_hash" => package_hash,
+            "addr" => addr,
+        },
+        300,
+    );
+}
+#[test]
+fn test_claimable_reward() {
+    let (env, owner,instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    let addr:Key = Key::Account(owner);
+    TestContract::new(
+        &env,
+        "liquidity-gauge-reward-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMABLE_REWARD),
+            "package_hash" => package_hash,
+            "addr" => addr,
+        },
+        300,
+    );
 }
