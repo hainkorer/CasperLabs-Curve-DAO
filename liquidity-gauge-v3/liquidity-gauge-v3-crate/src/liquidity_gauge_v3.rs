@@ -4,7 +4,6 @@ use crate::data::{
     MAX_REWARDS,
 };
 use crate::{alloc::string::ToString, event::*};
-use common::errors::*;
 use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::String};
 use casper_contract::{
@@ -15,6 +14,7 @@ use casper_types::bytesrepr::Bytes;
 use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
+use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
 use core::convert::TryInto;
 
@@ -169,51 +169,50 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         _claim_sig: Bytes,
         _reward_tokens: Vec<String>,
     ) {
-            let lock = data::get_lock();
-            if lock != false {
+        let lock = data::get_lock();
+        if lock != false {
+            runtime::revert(Error::LiquidityGaugeLocked1);
+        }
+        data::set_lock(true);
+        if self.get_caller() != self.admin() {
+            runtime::revert(Error::LiquidityGaugeOnlyAdmin2);
+        }
+        let mut reward_tokens: Vec<Key> = Vec::new();
+        for i in 0..(_reward_tokens.len()) {
+            reward_tokens.push(Key::from_formatted_str(&_reward_tokens[i]).unwrap());
+        }
+        let _lp_token = self.lp_token();
+        let _current_reward_contract = self.reward_data().address;
+        let total_supply = self.total_supply();
+        // if (RewardTokens::instance().get(0.into())!=zero_address()){
+        //     self._checkpoint_rewards(
+        //         zero_address(),
+        //         total_supply,
+        //         false,
+        //         zero_address(),
+        //     );
+        // }
+        // if current_reward_contract != ZERO_ADDRESS:
+        // withdraw_sig: Bytes[4] = slice(self.reward_sigs, 4, 4)
+        // if convert(withdraw_sig, uint256) != 0:
+        //     if total_supply != 0:
+        //         raw_call(
+        //             current_reward_contract,
+        //             concat(withdraw_sig, convert(total_supply, bytes32))
+        //         )
+        //     ERC20(lp_token).approve(current_reward_contract, 0)
 
-                runtime::revert(Error::LiquidityGaugeLocked1);
-            }
-            data::set_lock(true);
-            if self.get_caller() != self.admin() {
-                runtime::revert(Error::LiquidityGaugeOnlyAdmin2);
-            }
-            let mut reward_tokens: Vec<Key> = Vec::new();
-            for i in 0..(_reward_tokens.len()) {
-                reward_tokens.push(Key::from_formatted_str(&_reward_tokens[i]).unwrap());
-            }
-            let _lp_token = self.lp_token();
-            let _current_reward_contract = self.reward_data().address;
-            let total_supply = self.total_supply();
-            // if (RewardTokens::instance().get(0.into())!=zero_address()){
-            //     self._checkpoint_rewards(
-            //         zero_address(),
-            //         total_supply,
-            //         false,
-            //         zero_address(),
-            //     );
-            // }
-            // if current_reward_contract != ZERO_ADDRESS:
-            // withdraw_sig: Bytes[4] = slice(self.reward_sigs, 4, 4)
-            // if convert(withdraw_sig, uint256) != 0:
-            //     if total_supply != 0:
-            //         raw_call(
-            //             current_reward_contract,
-            //             concat(withdraw_sig, convert(total_supply, bytes32))
-            //         )
-            //     ERC20(lp_token).approve(current_reward_contract, 0)
+        if _reward_contract != zero_address() {
+            let reward_token = self.reward_tokens(0.into());
+            if reward_token == zero_address() {
 
-            if _reward_contract != zero_address() {
-                let reward_token = self.reward_tokens(0.into());
-                if reward_token == zero_address() {
-        
-                  //  runtime::revert(Error::RewardOnlyGaugeRewardTokenIsZeroAddress);
-                }
-                data::set_claim_sig(_claim_sig);
+                //  runtime::revert(Error::RewardOnlyGaugeRewardTokenIsZeroAddress);
+            }
+            data::set_claim_sig(_claim_sig);
 
-                //is Contract Check is missing
-                // deposit_sig: Bytes[4] = slice(_sigs, 0, 4)
-                // withdraw_sig: Bytes[4] = slice(_sigs, 4, 4)
+            //is Contract Check is missing
+            // deposit_sig: Bytes[4] = slice(_sigs, 0, 4)
+            // withdraw_sig: Bytes[4] = slice(_sigs, 4, 4)
             //     if convert(deposit_sig, uint256) != 0:
             //     # need a non-zero total supply to verify the sigs
             //     assert total_supply != 0  # dev: zero total supply
@@ -239,35 +238,30 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             //     )
             // else:
             //     assert convert(withdraw_sig, uint256) == 0
-            }
-            let mut reward_data = self.reward_data();
-            reward_data.address = _reward_contract;
-           // data::set_reward_sigs(_sigs);
-            for i in 0..(MAX_REWARDS.as_usize()) {
-                let current_token = self.reward_tokens(i.into());
-                let new_token: Key = reward_tokens[i];
+        }
+        let mut reward_data = self.reward_data();
+        reward_data.address = _reward_contract;
+        // data::set_reward_sigs(_sigs);
+        for i in 0..(MAX_REWARDS.as_usize()) {
+            let current_token = self.reward_tokens(i.into());
+            let new_token: Key = reward_tokens[i];
 
-                if current_token != zero_address() {
-                    if current_token != new_token {
-                     
-                      //  runtime::revert(Error::RewardOnlyGaugeCannotModifyExistingRewardToken);
-                    }
-                } else if new_token != zero_address() {
-                    RewardTokens::instance().set(&i.into(), new_token);
-                } else {
-                    break;
+            if current_token != zero_address() {
+                if current_token != new_token {
+
+                    //  runtime::revert(Error::RewardOnlyGaugeCannotModifyExistingRewardToken);
                 }
+            } else if new_token != zero_address() {
+                RewardTokens::instance().set(&i.into(), new_token);
+            } else {
+                break;
             }
-            if _reward_contract != zero_address() {
-                // # do an initial checkpoint to verify that claims are working
-                self._checkpoint_rewards(
-                    zero_address(),
-                    total_supply,
-                    false,
-                    zero_address(),
-                )
-            }
-            data::set_lock(false);
+        }
+        if _reward_contract != zero_address() {
+            // # do an initial checkpoint to verify that claims are working
+            self._checkpoint_rewards(zero_address(), total_supply, false, zero_address())
+        }
+        data::set_lock(false);
     }
     fn integrate_checkpoint() -> U256 {
         PeriodTimestamp::instance().get(&U256::from(data::get_period().as_u128()))

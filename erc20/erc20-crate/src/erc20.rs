@@ -8,8 +8,8 @@ use casper_types::{
     system::mint::Error as MintError, ApiError, BlockTime, ContractHash, ContractPackageHash, Key,
     URef, U256,
 };
-use contract_utils::{set_key, ContractContext, ContractStorage};
 use common::errors::*;
+use contract_utils::{set_key, ContractContext, ContractStorage};
 use cryptoxide::ed25519;
 use hex::encode;
 use renvm_sig::{hash_message, keccak256};

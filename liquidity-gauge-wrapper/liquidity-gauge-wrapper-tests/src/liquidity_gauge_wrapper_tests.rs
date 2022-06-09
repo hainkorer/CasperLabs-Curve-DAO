@@ -1,8 +1,8 @@
-use casper_types::{account::AccountHash, Key, U256, runtime_args,RuntimeArgs};
-use test_env::{TestContract, TestEnv};
 use crate::liquidity_gauge_wrapper_instance::LIQUIDITYGAUGEWRAPPERInstance;
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
+use test_env::{TestContract, TestEnv};
 //Const
-pub const TEN_E_NINE:u128 = 1000000000;
+pub const TEN_E_NINE: u128 = 1000000000;
 const NAME: &str = "LiquidityGuageWrapper";
 //ERC20
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
@@ -15,9 +15,9 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
             "name" => "rewarded_token",
             "symbol" => "ERA",
             "decimals" => 9 as u8,
-            "initial_supply" => U256::from(TEN_E_NINE * 10000000) 
+            "initial_supply" => U256::from(TEN_E_NINE * 10000000)
         },
-        0
+        0,
     )
 }
 
@@ -34,7 +34,7 @@ fn deploy_minter(env: &TestEnv, owner: AccountHash) -> TestContract {
             "controller" => Key::Account(owner),
             "lock" => U256::from(0)
         },
-        0
+        0,
     )
 }
 //Liquidity Guage Reward
@@ -79,7 +79,7 @@ fn deploy_minter(env: &TestEnv, owner: AccountHash) -> TestContract {
 #[test]
 fn test_deploy() {
     //let (env, token, owner) = deploy();
-   // let user = env.next_user();
+    // let user = env.next_user();
     // assert_eq!(token.name(), NAME);
     // assert_eq!(token.symbol(), SYMBOL);
     // // assert_eq!(token.meta(), meta::contract_meta());
@@ -93,4 +93,3 @@ fn test_deploy() {
     // assert_eq!(token.allowance(owner, user), 0.into());
     // assert_eq!(token.allowance(user, owner), 0.into());
 }
-

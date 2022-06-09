@@ -43,23 +43,44 @@ impl VESTINGESCROWSIMPLE_EVENT {
 }
 
 pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage> {
-    fn init(&self, token: Key, contract_hash: Key, package_hash: ContractPackageHash) {
+    fn init(
+        &self,
+        admin: Key,
+        token: Key,
+        recipient: Key,
+        amount: U256,
+        start_time: U256,
+        end_time: U256,
+        can_disable: bool,
+        contract_hash: Key,
+        package_hash: ContractPackageHash,
+    ) {
         set_hash(contract_hash);
         set_package_hash(package_hash);
         DisableddAt::init();
         InitialLocked::init();
         TotalClaimed::init();
 
-        
-    //     set_token(token);
-        set_admin(zero_address());
-    //     set_future_admin(self.get_caller());
-    //     set_start_time(U256::from(0));
-    //     set_end_time(U256::from(0));
-    //     set_can_disable(true);
-    //   //  InitialLocked::instance().set(&zero_address(), U256::from(100));
-    //     set_initial_locked_supply(U256::from(0));
+        set_token(token);
+        set_admin(self.get_caller());
+        set_start_time(start_time);
+        set_end_time(end_time);
+        set_can_disable(can_disable);
+        InitialLocked::instance().set(&recipient, amount);
+        set_initial_locked_supply(amount);
     }
+
+    // @notice Initialize the contract.
+    // @dev This function is seperate from `__init__` because of the factory pattern
+    //      used in `VestingEscrowFactory.deploy_vesting_contract`. It may be called
+    //      once per deployment.
+    // @param _admin Admin address
+    // @param _token Address of the ERC20 token being distributed
+    // @param _recipient Address to vest tokens for
+    // @param _amount Amount of tokens being vested for `_recipient`
+    // @param _start_time Epoch time at which token distribution starts
+    // @param _end_time Time until everything should be vested
+    // @param _can_disable Can admin disable recipient's ability to claim tokens?
     fn initialize(
         &self,
         admin: Key,
@@ -84,17 +105,17 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         set_end_time(end_time);
         set_can_disable(can_disable);
 
-        // let ret: Result<(), u32> = runtime::call_versioned_contract(
-        //     token.into_hash().unwrap_or_revert().into(),
-        //     None,
-        //     "transfer_from",
-        //     runtime_args! {
-        //         "owner" =>self.get_caller(),
-        //         "recipient" => Key::from(get_package_hash()),
-        //         "amount" => amount
-        //     },
-        // );
-        // ret.unwrap_or_revert();
+        let ret: Result<(), u32> = runtime::call_versioned_contract(
+            token.into_hash().unwrap_or_revert().into(),
+            None,
+            "transfer_from",
+            runtime_args! {
+                "owner" =>self.get_caller(),
+                "recipient" => Key::from(get_package_hash()),
+                "amount" => amount
+            },
+        );
+        ret.unwrap_or_revert();
         InitialLocked::instance().set(&recipient, amount);
         set_initial_locked_supply(amount);
         self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::Fund {
@@ -104,6 +125,12 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         set_lock(false);
         true
     }
+
+    //  @notice Disable or re-enable a vested address's ability to claim tokens
+    // @dev When disabled, the address is only unable to claim tokens which are still
+    //      locked at the time of this call. It is not possible to block the claim
+    //      of tokens which have already vested.
+    // @param _recipient address to disable or enable
     fn toggle_disable(&self, recipient: Key) {
         if !(get_admin() == self.get_caller()) {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly1));
@@ -126,12 +153,15 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             disabled: is_disabled,
         });
     }
+
+    /*@notice Disable the ability to call `toggle_disable` */
     fn disable_can_disable(&self) {
         if !(get_admin() == self.get_caller()) {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly2));
         }
         set_can_disable(false);
     }
+
     fn _total_vested_of(&self, recipient: Key, time: U256) -> U256 {
         let start: U256 = get_start_time();
         let end: U256 = get_end_time();
@@ -146,6 +176,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .unwrap_or_revert();
         ans.min(locked)
     }
+
     fn _total_vested(&self) -> U256 {
         let start: U256 = get_start_time();
         let end: U256 = get_end_time();
@@ -162,9 +193,15 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .unwrap_or_revert();
         ans.min(locked)
     }
+
+    /* @notice Get the total number of tokens which have vested, that are held
+    by this contract*/
     fn vested_supply(&self) -> U256 {
         self._total_vested()
     }
+
+    /*@notice Get the total number of tokens which are still locked
+    (have not yet vested) */
     fn locked_supply(&self) -> U256 {
         let initial_locked_supply = get_initial_locked_supply();
         let total_vested: U256 = self._total_vested();
@@ -172,11 +209,17 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .checked_sub(total_vested)
             .unwrap_or_revert()
     }
+
+    /*@notice Get the number of tokens which have vested for a given address
+    @param _recipient address to check */
     fn vested_of(&self, recipient: Key) -> U256 {
-        let blocktime: U256 = 1000.into();
+        let blocktime: u64 = runtime::get_blocktime().into();
         self._total_vested_of(recipient, U256::from(blocktime))
     }
-    fn balance_of_vest(&self, recipient: Key) -> U256 {
+
+    /*@notice Get the number of unclaimed, vested tokens for a given address
+    @param _recipient address to check */
+    fn balance_of(&self, recipient: Key) -> U256 {
         let blocktime: u64 = runtime::get_blocktime().into();
         let total_vested_of: U256 = self._total_vested_of(recipient, U256::from(blocktime));
         let self_total_claimed: U256 = TotalClaimed::instance().get(&recipient);
@@ -184,6 +227,9 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .checked_sub(self_total_claimed)
             .unwrap_or_revert()
     }
+
+    /*@notice Get the number of locked tokens for a given address
+    @param _recipient address to check */
     fn locked_of(&self, recipient: Key) -> U256 {
         let initial_locked = InitialLocked::instance().get(&recipient);
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -192,10 +238,13 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .checked_sub(total_vested_of)
             .unwrap_or_revert()
     }
+
+    /* @notice Transfer ownership of GaugeController to `addr`
+    @param addr Address to have ownership transferred to*/
     fn commit_transfer_ownership(&self, addr: Key) -> bool {
-        // if !(get_admin() == self.get_caller()) {
-        //     runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly3));
-        // }
+        if !(get_admin() == self.get_caller()) {
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly3));
+        }
         set_future_admin(addr);
         self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::CommitOwnership {
             admin: addr,
@@ -203,7 +252,11 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
 
         true
     }
+
+    /*@notice Claim tokens which have vested
+    @param addr Address to claim tokens for */
     fn claim(&self, addr: Key) {
+        //Locked
         if get_lock() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleLocked2));
         }
@@ -241,10 +294,11 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         });
     }
 
+    // @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) -> bool {
-        // if !(self.get_caller() == get_admin()) {
-        //     runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly4));
-        // }
+        if !(self.get_caller() == get_admin()) {
+            runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly4));
+        }
         let mut _admin: Key = get_future_admin();
         if !(_admin != zero_address()) {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminNotSet));

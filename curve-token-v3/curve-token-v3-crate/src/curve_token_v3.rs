@@ -58,7 +58,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @dev Transfer token for a specified address
     // @param recipient The address to transfer to.
     // @param amount The amount to be transferred.
-    fn transfer(&self, recipient: Key, amount: U256) -> Result<(), u32>{
+    fn transfer(&self, recipient: Key, amount: U256) -> Result<(), u32> {
         Balances::instance().set(
             &self.get_caller(),
             Balances::instance()
@@ -87,7 +87,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     //  @param  owner address The address which you want to send tokens from
     //  @param recipient address The address which you want to transfer to
     //  @param amount U256 the amount of tokens to be transferred
-    fn transfer_from(&self, owner: Key, recipient: Key, amount: U256) -> Result<(), u32>{
+    fn transfer_from(&self, owner: Key, recipient: Key, amount: U256) -> Result<(), u32> {
         Balances::instance().set(
             &owner,
             Balances::instance()
@@ -104,9 +104,8 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
                 .ok_or(Error::CurveTokenV3OverFlow2)
                 .unwrap_or_revert(),
         );
-        let allowance:U256=Allowances::instance()
-        .get(&owner, &self.get_caller());
-        if (allowance!=U256::MAX) {
+        let allowance: U256 = Allowances::instance().get(&owner, &self.get_caller());
+        if (allowance != U256::MAX) {
             Allowances::instance().set(
                 &owner,
                 &self.get_caller(),
@@ -133,15 +132,14 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     //      {increase_allowance} and {decrease_allowance}.
     // @param spender The address which will transfer the funds
     // @param amount The amount of tokens that may be transferred
-    // 
-    fn approve(&self, spender:Key, amount:U256) {
+    //
+    fn approve(&self, spender: Key, amount: U256) {
         Allowances::instance().set(&self.get_caller(), &spender, amount);
         self.curve_token_v3_emit(&CurveTokenV3Event::Approval {
             owner: self.get_caller(),
             spender: spender,
             value: amount,
         });
-       
     }
 
     // @dev mint an amount of the token and assigns it to an account.
@@ -179,7 +177,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @param _to The account whose tokens will be burned.
     // @param _value The amount that will be burned.
     // @return bool success
-    fn burn_from(&self, _to: Key, _value: U256) ->bool{
+    fn burn_from(&self, _to: Key, _value: U256) -> bool {
         if !(self.get_caller() == get_minter()) {
             runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed2));
         }
@@ -210,9 +208,12 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @param spender The address which will transfer the funds
     // @param added_value The amount of to increase the allowance
     // @return ok success
-    fn increase_allowance(&self, spender: Key, amount: U256)-> Result<(), u32> {
-        let allowance:U256= Allowances::instance().get(&self.get_caller(),&spender).checked_add(amount).ok_or(Error::CurveTokenV3OverFlow6)
-        .unwrap_or_revert();
+    fn increase_allowance(&self, spender: Key, amount: U256) -> Result<(), u32> {
+        let allowance: U256 = Allowances::instance()
+            .get(&self.get_caller(), &spender)
+            .checked_add(amount)
+            .ok_or(Error::CurveTokenV3OverFlow6)
+            .unwrap_or_revert();
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         self.curve_token_v3_emit(&CurveTokenV3Event::Approval {
             owner: self.get_caller(),
@@ -222,15 +223,18 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         Ok(())
     }
 
-     // @notice Decrease the allowance granted to `spender` by the caller
+    // @notice Decrease the allowance granted to `spender` by the caller
     // @dev This is alternative to {approve} that can be used as a mitigation for
     //      the potential race condition
     // @param spender The address which will transfer the funds
     // @param amount The amount of to decrease the allowance
     // @return ok success
-    fn decrease_allowance(&self, spender: Key, amount: U256)->Result<(), u32> {
-        let allowance:U256= Allowances::instance().get(&self.get_caller(),&spender).checked_sub(amount).ok_or(Error::CurveTokenV3UnderFlow7)
-        .unwrap_or_revert();
+    fn decrease_allowance(&self, spender: Key, amount: U256) -> Result<(), u32> {
+        let allowance: U256 = Allowances::instance()
+            .get(&self.get_caller(), &spender)
+            .checked_sub(amount)
+            .ok_or(Error::CurveTokenV3UnderFlow7)
+            .unwrap_or_revert();
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         self.curve_token_v3_emit(&CurveTokenV3Event::Approval {
             owner: self.get_caller(),
@@ -242,7 +246,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
 
     // @dev set name and symbol
     // @param _name.
-    fn set_name(&self,_name:String,_symbol:String){
+    fn set_name(&self, _name: String, _symbol: String) {
         // if self.get_caller() == runtime::call_versioned_contract(
         //     get_token().into_hash().unwrap_or_revert().into(),
         //     None,

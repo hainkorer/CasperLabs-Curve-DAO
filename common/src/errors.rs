@@ -120,28 +120,28 @@ pub enum Error {
     CurveTokenV2OnlyMinterAllowed2 = 10408,
     /// 65,538 for (Curve Token V1 Invalid Minter)
     CurveTokenV2ZeroAddressNotAllowed = 10409,
-   ///Curve token v3 errors
-   CurveTokenV3OnlyMinterCanSet = 10501,
-   CurveTokenV3UnderFlow1 = 10502,
-   CurveTokenV3OverFlow1 = 10503,
-   CurveTokenV3UnderFlow2 = 10504,
-   CurveTokenV3OverFlow2 = 10505,
-   CurveTokenV3ReduceSpenderAllowanceToZero = 10506,
-   CurveTokenV3OnlyMinterAllowed = 10507,
-   CurveTokenV3ZeroAddressNotAllowed = 10508,
-   CurveTokenV3OverFlow3 = 10509,
-   CurveTokenV3OverFlow4 = 10510,
-   CurveTokenV3ZeroAddress = 10511,
-   CurveTokenV3UnderFlow5 = 10512,
-   CurveTokenV3UnderFlow6 = 10513,
-   CurveTokenV3OnlyMinterAllowed1 = 10514,
-   CurveTokenV3OnlyMinterAllowed2 = 10515,
-   CurveTokenV3OverFlow6=10516,
-   CurveTokenV3UnderFlow7=10517,
-   CurveTokenV3NotAuthorized=10518,
-   CurveTokenV3UnderFlow8=10519,
-   CurveTokenV3UnderFlow9=10520,
-   //FeeDistributor
+    ///Curve token v3 errors
+    CurveTokenV3OnlyMinterCanSet = 10501,
+    CurveTokenV3UnderFlow1 = 10502,
+    CurveTokenV3OverFlow1 = 10503,
+    CurveTokenV3UnderFlow2 = 10504,
+    CurveTokenV3OverFlow2 = 10505,
+    CurveTokenV3ReduceSpenderAllowanceToZero = 10506,
+    CurveTokenV3OnlyMinterAllowed = 10507,
+    CurveTokenV3ZeroAddressNotAllowed = 10508,
+    CurveTokenV3OverFlow3 = 10509,
+    CurveTokenV3OverFlow4 = 10510,
+    CurveTokenV3ZeroAddress = 10511,
+    CurveTokenV3UnderFlow5 = 10512,
+    CurveTokenV3UnderFlow6 = 10513,
+    CurveTokenV3OnlyMinterAllowed1 = 10514,
+    CurveTokenV3OnlyMinterAllowed2 = 10515,
+    CurveTokenV3OverFlow6 = 10516,
+    CurveTokenV3UnderFlow7 = 10517,
+    CurveTokenV3NotAuthorized = 10518,
+    CurveTokenV3UnderFlow8 = 10519,
+    CurveTokenV3UnderFlow9 = 10520,
+    //FeeDistributor
     FeeDistributorInvalidTokenCheckpointUpdate = 10601,
     /// 65,538 for (Fee Distributor Killed1)
     FeeDistributorKilled1 = 10602,
@@ -440,7 +440,7 @@ pub enum Error {
     /// 65,540 for (Vesting Escrow Simple Initialize Once)
 
     ///Vesting Escrow simple errors
-    /// 
+    ///
     VestingEscrowSimpleOnlyInitializeOnce = 11201,
     /// 65,540 for (Vesting Escrow Simple Admin Only1)
     VestingEscrowSimpleAdminOnly1 = 11202,
@@ -457,7 +457,7 @@ pub enum Error {
     /// 65,540 for (Vesting Escrow Simple Is Locked1)
     VestingEscrowSimpleLocked1 = 11208,
     /// 65,540 for (Vesting Escrow Simple Is Locked2)
-    VestingEscrowSimpleLocked2=11209,
+    VestingEscrowSimpleLocked2 = 11209,
 
     /// 65,540 for (Voting Escrow Invalid Decimals)
     VotingEscrowInvalidDecimals = 11301,
