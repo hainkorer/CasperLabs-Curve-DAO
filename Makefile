@@ -252,25 +252,25 @@ test-curve-rewards:
 	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
 
 all:
-	# make test-curve-token-v3
-	# make test-erc20
-	# make test-erc20-crv
-	# make test-fee-distributor
-	# make test-gauge-controller
-	# make test-gauge-proxy
-	# make test-liquidity-gauge-reward
-	# make test-liquidity-gauge-reward-wrapper
-	# make test-liquidity-gauge-wrapper
+	make test-curve-token-v3
+	make test-erc20
+	make test-erc20-crv
+	make test-fee-distributor
+	make test-gauge-controller
+	make test-gauge-proxy
+	make test-liquidity-gauge-reward
+	make test-liquidity-gauge-reward-wrapper
+	make test-liquidity-gauge-wrapper
 	make test-minter
-	# make test-reward-only-gauge
-	# make test-vesting-escrow
-	# make test-vesting-escrow-factory
-	# make test-vesting-escrow-simple
-	# make test-voting-escrow
-	# make test-ownable
-	# make test-i-reward-distribution-recipient
-	# make test-lp-token-wrapper
-	# make test-curve-rewards
+	make test-reward-only-gauge
+	make test-vesting-escrow
+	make test-vesting-escrow-factory
+	make test-vesting-escrow-simple
+	make test-voting-escrow
+	make test-ownable
+	make test-i-reward-distribution-recipient
+	make test-lp-token-wrapper
+	make test-curve-rewards
 
 clean:
 	cargo clean
