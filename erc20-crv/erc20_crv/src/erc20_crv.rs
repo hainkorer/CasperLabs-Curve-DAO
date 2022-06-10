@@ -76,6 +76,8 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
     ) {
         let base: i32 = 10;
         data::set_init_supply(data::INITIAL_SUPPLY * (base.pow(u32::from(decimal))));
+        data::set_is_updated(false);
+        data::set_admin(self.get_caller());
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
 
@@ -91,18 +93,15 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             data::get_package_hash(),
         );
         erc20_data::Balances::instance().set(&self.get_caller(), data::get_init_supply());
-
         erc20_data::set_total_supply(data::get_init_supply());
-        data::set_admin(self.get_caller());
 
-        data::set_minter(self.get_caller());
         self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
             from: data::zero_address(),
             to: self.get_caller(),
             value: data::get_init_supply(),
         });
-        //  let blocktime_u64: u64 =u64::from(1000);// runtime::get_blocktime().into();
-        let blocktime: U256 = 100000000.into(); //blocktime is set to 10^8 for testing purposes
+        let blocktime_u64: u64 = runtime::get_blocktime().into();
+        let blocktime: U256 = U256::from(blocktime_u64); 
 
         let start_eporch_time: U256 = blocktime
             .checked_add(data::INFLATION_DELAY)
@@ -111,7 +110,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             .unwrap_or_revert();
         data::set_start_epoch_time(start_eporch_time);
         data::set_mining_epoch(0.into());
-        data::set_is_updated(false);
+
         data::set_rate(0.into());
         data::set_start_epoch_supply(data::get_init_supply());
     }
@@ -124,9 +123,12 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 .unwrap_or_revert(),
         );
 
-        //adminlet prev_mining_epoch: U128= data::get_mining_epoch();
-        //  data::set_mining_epoch(prev_mining_epoch.checked_add(1.into()).unwrap_or_revert());
-        data::set_is_updated(true);
+        if (data::get_is_updated()==true){
+            data::set_mining_epoch(data::get_mining_epoch().checked_add(1.into()).unwrap_or_revert());
+        }else{
+            data::set_is_updated(true);
+        }
+       
         if rate == 0.into() {
             rate = data::INITIAL_RATE;
         } else {
@@ -142,8 +144,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 .unwrap_or_revert();
         }
         data::set_rate(rate);
-        //let blocktime: u64 = runtime::get_blocktime().into();
-        let blocktime: U256 = 1000000000.into();
+        let blocktime: u64 = runtime::get_blocktime().into();
         self.erc20_crv_emit(&ERC20CRV_EVENT::UpdateMiningParameters {
             time: U256::from(blocktime),
             rate: rate,
@@ -164,8 +165,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
     }
     fn start_epoch_time_write(&self) -> U256 {
         let start_epoch_time = data::get_start_epoch_time();
-        // let blocktime: u64 = runtime::get_blocktime().into();
-        let blocktime: U256 = 1000000000.into();
+        let blocktime: u64 = runtime::get_blocktime().into();
         if U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
@@ -179,8 +179,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
     }
     fn future_epoch_time_write(&self) -> U256 {
         let mut start_epoch_time = data::get_start_epoch_time();
-        //let blocktime: u64 = runtime::get_blocktime().into();
-        let blocktime: U256 = 1000000000.into();
+        let blocktime: u64 = runtime::get_blocktime().into();
         if U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
@@ -197,8 +196,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         }
     }
     fn _available_supply(&self) -> U256 {
-        // let blocktime: u64 = runtime::get_blocktime().into();
-        let blocktime: U256 = 100000000.into();
+        let blocktime: u64 = runtime::get_blocktime().into();
         let var: U256 = U256::from(blocktime)
             .checked_sub(data::get_start_epoch_time())
             .unwrap_or_revert();
@@ -210,7 +208,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
     fn available_supply(&self) -> U256 {
         self._available_supply()
     }
-    fn mint_crv(&self, to: Key, value: U256) -> bool {
+    fn mint(&self, to: Key, value: U256) -> bool {
         if !(self.get_caller() == data::get_minter()) {
             runtime::revert(ApiError::from(Error::Erc20CRVMinterOnly));
         }
@@ -228,9 +226,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         let total_supply: U256 = erc20_data::total_supply()
             .checked_add(value)
             .unwrap_or_revert();
-        // if !(total_supply <= self.available_supply()) {
-        //     runtime::revert(ApiError::from(Error::Erc20CRVExceedsAllowableMint));
-        // }
+        if !(total_supply <= self.available_supply()) {
+            runtime::revert(ApiError::from(Error::Erc20CRVExceedsAllowableMint));
+        }
         erc20_data::set_total_supply(total_supply);
         let existing_balance: U256 = erc20_data::Balances::instance().get(&to);
         erc20_data::Balances::instance()
@@ -243,9 +241,8 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
 
         true
     }
-
     fn set_minter(&self, _minter: Key) {
-        if !(self.get_caller() == _minter) {
+        if !(self.get_caller() == data::get_admin()) {
             runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
         }
         data::set_minter(_minter);
@@ -265,7 +262,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         ERC20::burn(self, self.get_caller(), _value);
     }
     fn set_admin(&self, admin: Key) {
-        if !(self.get_caller() == admin) {
+        if !(self.get_caller() == data::get_admin()) {
             runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly));
         }
         data::set_admin(admin);

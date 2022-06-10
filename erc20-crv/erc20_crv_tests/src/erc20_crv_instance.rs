@@ -40,10 +40,10 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn burn_caller(&self, sender: AccountHash, _value: U256) {
+    pub fn burn(&self, sender: AccountHash, _value: U256) {
         self.0.call_contract(
             sender,
-            "burn_caller",
+            "burn",
             runtime_args! {
                 "_value"=>_value
             },
@@ -135,10 +135,10 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn mint_crv(&self, sender: AccountHash, to: Key, value: U256) {
+    pub fn mint(&self, sender: AccountHash, to: Key, value: U256) {
         self.0.call_contract(
             sender,
-            "mint_crv",
+            "mint",
             runtime_args! {
                 "to"=>to,
                 "value"=>value
@@ -146,10 +146,10 @@ impl ERC20CRVInstance {
             1000000000,
         );
     }
-    pub fn mint_crv_js_client(&self, sender: AccountHash, to: Key, value: U256) {
+    pub fn mint_js_client(&self, sender: AccountHash, to: Key, value: U256) {
         self.0.call_contract(
             sender,
-            "mint_crv_js_client",
+            "mint_js_client",
             runtime_args! {
                 "to"=>to,
                 "value"=>value
@@ -157,7 +157,6 @@ impl ERC20CRVInstance {
             1000000000,
         );
     }
-
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
     }

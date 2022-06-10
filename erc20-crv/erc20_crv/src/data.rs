@@ -72,13 +72,13 @@ pub fn get_mining_epoch() -> U128 {
     get_key(MINING_EPOCH).unwrap_or_revert()
 }
 pub fn set_mining_epoch(mining_epoch: U128) {
-    set_key(MINING_EPOCH, mining_epoch.to_string());
+    set_key(MINING_EPOCH, mining_epoch);
 }
 pub fn get_is_updated() -> bool {
     get_key(IS_UPDATED).unwrap_or_revert()
 }
 pub fn set_is_updated(is_updated: bool) {
-    set_key(IS_UPDATED, is_updated.to_string());
+    set_key(IS_UPDATED, is_updated);
 }
 
 pub fn zero_address() -> Key {

@@ -11,8 +11,8 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use contract_utils::{set_key, ContractContext, OnChainContractStorage};
-use erc20_crate::{self, ERC20};
-use erc20_crv::{self, ERC20CRV};
+use erc20_crate::{self, data as erc20_data, ERC20};
+use erc20_crv::{self, ERC20CRV, data};
 
 #[derive(Default)]
 struct Erc20Crv(OnChainContractStorage);
@@ -62,7 +62,7 @@ fn set_minter() {
     Erc20Crv::default().set_minter(_minter);
 }
 #[no_mangle]
-fn burn_caller() {
+fn burn() {
     let _value: U256 = runtime::get_named_arg("_value");
     Erc20Crv::default().burn_caller(_value);
 }
@@ -122,19 +122,73 @@ fn update_mining_parameters() {
     Erc20Crv::default().update_mining_parameters();
 }
 #[no_mangle]
-fn mint_crv() {
+fn mint() {
     let to: Key = runtime::get_named_arg("to");
     let value: U256 = runtime::get_named_arg("value");
-    let ret = Erc20Crv::default().mint_crv(to, value);
+    let ret = Erc20Crv::default().mint(to, value);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn mint_crv_js_client() {
+fn mint_js_client() {
     let to: Key = runtime::get_named_arg("to");
     let value: U256 = runtime::get_named_arg("value");
-    let ret = Erc20Crv::default().mint_crv(to, value);
+    let ret = Erc20Crv::default().mint(to, value);
     set_key("result", ret);
 }
+#[no_mangle]
+fn transfer_from() {
+    let owner: Key = runtime::get_named_arg("owner");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = ERC20::transfer_from(&mut Erc20Crv::default(),owner,recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn approve() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    ERC20::approve(&mut Erc20Crv::default(),spender, amount);
+}
+#[no_mangle]
+fn transfer() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = ERC20::transfer(&mut Erc20Crv::default(),recipient, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+//[no_mangle] of public variables
+#[no_mangle]
+fn name() {
+    runtime::ret(CLValue::from_t(erc20_data::name()).unwrap_or_revert());
+#[no_mangle]
+fn symbol() {
+    runtime::ret(CLValue::from_t(erc20_data::symbol()).unwrap_or_revert());
+}
+#[no_mangle]
+fn decimals() {
+    runtime::ret(CLValue::from_t(erc20_data::decimals()).unwrap_or_revert());
+}
+#[no_mangle]
+fn balance_of() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(erc20_data::Balances::instance().get(&key)).unwrap_or_revert());
+}
+#[no_mangle]
+fn allowances() {
+    let key1: Key = runtime::get_named_arg("key1");
+    let key2: Key = runtime::get_named_arg("key2");
+    runtime::ret(CLValue::from_t(erc20_data::Allowances::instance().get(&key1,&key2)).unwrap_or_revert());
+}
+#[no_mangle]
+fn minter() {
+    runtime::ret(CLValue::from_t(data::get_minter()).unwrap_or_revert());
+}
+#[no_mangle]
+fn admin() {
+    runtime::ret(CLValue::from_t(data::get_admin()).unwrap_or_revert());
+}
+
+
 
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -160,7 +214,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "burn_caller",
+        "burn",
         vec![Parameter::new("_value", U256::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -243,7 +297,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "mint_crv",
+        "mint",
         vec![
             Parameter::new("to", Key::cl_type()),
             Parameter::new("value", U256::cl_type()),
@@ -253,12 +307,78 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "mint_crv_js_client",
+        "mint_js_client",
         vec![
             Parameter::new("to", Key::cl_type()),
             Parameter::new("value", U256::cl_type()),
         ],
         <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "transfer",
+        vec![
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+     //entry points of public variables
+     entry_points.add_entry_point(EntryPoint::new(
+        "name",
+        vec![],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "symbol",
+        vec![],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "decimals",
+        vec![],
+        u8::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of",
+        vec![Parameter::new("key", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "allowances",
+        vec![
+            Parameter::new("key1", Key::cl_type()),
+            Parameter::new("key2", Key::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "minter",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "admin",
+        vec![],
+        Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -324,4 +444,5 @@ fn call() {
         &format!("{}_package_access_token", contract_name),
         access_token.into(),
     );
+}
 }

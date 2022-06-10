@@ -25,28 +25,47 @@ fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance) {
 fn test_deploy() {
     let (_, _, _) = deploy();
 }
-// #[test]
-// fn set_minter() {
-//     let (env, owner, instance) = deploy();
-//     let instance = ERC20CRVInstance::contract_instance(instance);
-//     let _minter_arg: Key = Key::Account(owner);
-//     instance.set_minter(owner, _minter_arg);
-// }
-// #[test]
-// fn burn_caller() {
-//     let (env, owner, contract) = deploy();
-//     let contract = ERC20CRVInstance::contract_instance(contract);
-//     let _value: U256 = 1.into();
-//     contract.burn_caller(owner, _value);
-// }
-// #[test]
-// fn set_admin() {
-//     let (env, owner, contract) = deploy();
-//     let contract = ERC20CRVInstance::contract_instance(contract);
-//     let admin_arg: Key = Key::Account(owner);
-//     contract.set_admin(owner, admin_arg);
-// }
-//#[test]
+
+#[test]
+fn burn() {
+    let (env, owner, contract) = deploy();
+    let to: Key = Key::Account(owner);
+    let value: U256 = 10.into();
+    let minter=Key::from(owner);
+    contract.set_minter(owner, minter);
+    TestContract::new(
+        &env,
+        "erc20-crv-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(MINT),
+            "package_hash" => Key::Hash(contract.package_hash()),
+            "to"=>to,
+            "value"=>value
+        },
+        1000000000,
+    );
+
+    let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
+    assert_eq!(ret, true);
+
+   
+    contract.burn(owner, value);
+}
+#[test]
+fn set_admin() {
+    let (env, owner, contract) = deploy();
+    let admin: Key = Key::from(env.next_user());
+    contract.set_admin(owner, admin);
+}
+#[test]
+fn test_set_minter() {
+    let (env, owner, contract) = deploy();
+    let minter=Key::from(env.next_user());
+    contract.set_minter(owner, minter);
+}
+#[test]
 fn test_update_mining_parameters() {
     let (env, owner, contract) = deploy();
     contract.update_mining_parameters(owner);
@@ -66,7 +85,6 @@ fn test_start_epoch_time_write() {
         },
         1000000000,
     );
-
     let ret: U256 = env.query_account_named_key(owner, &[START_EPOCH_TIME_WRITE.into()]);
     assert_eq!(ret, 100086400.into());
 }
@@ -78,7 +96,7 @@ fn test_start_epoch_time_write_js_client() {
     assert_eq!(ret, 100086400.into());
 }
 
-//#[test]
+#[test]
 fn test_future_epoch_time_write() {
     let (env, owner, contract) = deploy();
     let addr: Key = Key::Account(env.next_user());
@@ -105,7 +123,7 @@ fn test_future_epoch_time_write_js_client() {
 
     assert_eq!(ret, 131622400.into());
 }
-//#[test]
+#[test]
 fn test_available_supply() {
     let (env, owner, contract) = deploy();
 
@@ -122,15 +140,14 @@ fn test_available_supply() {
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[AVAILABLE_SUPPLY.into()]);
-    println!("{:}", ret);
+    assert_eq!(ret,130303030300u128.into());
 }
-//#[test]
+#[test]
 fn test_available_supply_js_client() {
     let (env, owner, contract) = deploy();
     contract.available_supply_js_client(owner);
     let ret: U256 = contract.key_value(RESULT.to_string());
-    println!("{:}", ret);
-    //assert_eq!(ret,130303030300.into());
+   assert_eq!(ret,130303030300u128.into());
 }
 //#[test]
 fn test_mintable_in_timeframe() {
@@ -142,13 +159,13 @@ fn test_mintable_in_timeframe() {
         "SessionCode",
         owner,
         runtime_args! {
-            "entrypoint" => String::from(AVAILABLE_SUPPLY),
+            "entrypoint" => String::from(MINTABLE_IN_TIMEFRAME),
             "package_hash" => Key::Hash(contract.package_hash())
         },
         0,
     );
 
-    let ret: U256 = env.query_account_named_key(owner, &[AVAILABLE_SUPPLY.into()]);
+    let ret: U256 = env.query_account_named_key(owner, &[MINTABLE_IN_TIMEFRAME.into()]);
     println!("{:}", ret);
 }
 //#[test]
@@ -161,17 +178,19 @@ fn test_mintable_in_timeframe_js_client() {
     assert_eq!(ret, 0.into());
 }
 #[test]
-fn test_mint_crv() {
+fn test_mint() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
     let value: U256 = 10.into();
+    let minter=Key::from(owner);
+    contract.set_minter(owner, minter);
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
         "SessionCode",
         owner,
         runtime_args! {
-            "entrypoint" => String::from(MINT_CRV),
+            "entrypoint" => String::from(MINT),
             "package_hash" => Key::Hash(contract.package_hash()),
             "to"=>to,
             "value"=>value
@@ -179,15 +198,17 @@ fn test_mint_crv() {
         1000000000,
     );
 
-    let ret: bool = env.query_account_named_key(owner, &[MINT_CRV.into()]);
+    let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
     assert_eq!(ret, true);
 }
 #[test]
-fn test_mint_crv_js_client() {
+fn test_mint_js_client() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
     let value: U256 = 10.into();
-    contract.mint_crv_js_client(owner, to, value);
+    let minter=Key::from(owner);
+    contract.set_minter(owner, minter);
+    contract.mint_js_client(owner, to, value);
     let ret: bool = contract.key_value(RESULT.to_string());
     assert_eq!(ret, true);
 }
