@@ -275,28 +275,24 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             .checked_div(U256::from(TEN_E_NINE))
             .unwrap_or_revert();
     }
-
-    /// @notice Kick `addr` for abusing their boost
-    /// @dev Only if either they had another voting event, or their voting escrow lock expired
-    /// @param addr Address to kick
     fn claim_tokens(&self, addr: Key) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::RewardWrapperIsLocked1));
         }
         set_lock(true);
         self._checkpoint(addr);
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
-            get_crv_token().into_hash().unwrap_or_revert().into(),
-            None,
-            "transfer",
-            runtime_args! {
-                "recipient" => addr,
-                "amount" => ClaimableCrv::instance().get(&addr)
-            },
-        );
-        if ret.is_err() {
-            runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-        }
+        // let ret: Result<(), u32> = runtime::call_versioned_contract(
+        //     get_crv_token().into_hash().unwrap_or_revert().into(),
+        //     None,
+        //     "transfer",
+        //     runtime_args! {
+        //         "recipient" => addr,
+        //         "amount" => ClaimableCrv::instance().get(&addr)
+        //     },
+        // );
+        // if ret.is_err() {
+        //     runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
+        // }
         let ret: Result<(), u32> = runtime::call_versioned_contract(
             get_rewarded_token().into_hash().unwrap_or_revert().into(),
             None,
@@ -359,14 +355,15 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             if ret.is_err() {
                 runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
             }
-            let () = runtime::call_versioned_contract(
-                get_gauge().into_hash().unwrap_or_revert().into(),
-                None,
-                "deposit",
-                runtime_args! {
-                    "value" => value
-                },
-            );
+            // let () = runtime::call_versioned_contract(
+            //     get_gauge().into_hash().unwrap_or_revert().into(),
+            //     None,
+            //     "deposit",
+            //     runtime_args! {
+            //         "addr" => self.get_caller(),
+            //         "value" => value
+            //     },
+            // );
         }
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,

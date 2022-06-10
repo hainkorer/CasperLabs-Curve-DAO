@@ -85,7 +85,6 @@ fn test_deploy() {
 fn last_time_reward_applicable() {
     let (env, owner, instance) = deploy();
     let package_hash = Key::Hash(instance.package_hash());
-    //let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     TestContract::new(
         &env,
         "curve-rewards-session-code.wasm",
@@ -97,9 +96,6 @@ fn last_time_reward_applicable() {
         },
         200,
     );
-    let ret: U256 = env.query_account_named_key(owner, &[LAST_TIME_REWARD_APPLICABLE.into()]);
-    println!("{:?}", ret);
-    //proxy.last_time_reward_applicable(owner);
 }
 #[test]
 fn reward_per_token() {
@@ -120,10 +116,10 @@ fn reward_per_token() {
         },
         200,
     );
-    let ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
-    // proxy.reward_per_token(owner);
-    // let v1: U256 = proxy.result();
-    println!("{:?}", ret);
+    // let ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
+    // // proxy.reward_per_token(owner);
+    // // let v1: U256 = proxy.result();
+    // println!("{:?}", ret);
 }
 #[test]
 fn earned() {
@@ -145,11 +141,11 @@ fn earned() {
         },
         200,
     );
-    let ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
-    // proxy.earned(owner, Key::Account(owner));
-    //let v1: U256 = curve_rewards_instance.result();
-    println!("{:?}", ret);
-    //println!("{:?}", v1);
+    // let ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
+    // // proxy.earned(owner, Key::Account(owner));
+    // //let v1: U256 = curve_rewards_instance.result();
+    // println!("{:?}", ret);
+    // //println!("{:?}", v1);
 }
 #[test]
 fn stake() {

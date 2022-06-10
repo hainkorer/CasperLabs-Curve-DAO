@@ -138,6 +138,35 @@ fn notify_reward_amount() {
     let reward: U256 = runtime::get_named_arg("reward");
     CurveRewards::default().notify_reward_amount(reward);
 }
+#[no_mangle]
+fn owner() {
+    let ret: Key = OWNABLE::owner(&CurveRewards::default());
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn is_owner() {
+    let ret: bool = OWNABLE::is_owner(&CurveRewards::default());
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn owner_js_client() {
+    let ret: Key = OWNABLE::owner(&CurveRewards::default());
+    js_ret(ret)
+}
+#[no_mangle]
+fn is_owner_js_client() {
+    let ret: bool = OWNABLE::is_owner(&CurveRewards::default());
+    js_ret(ret)
+}
+#[no_mangle]
+fn renounce_ownership() {
+    OWNABLE::renounce_ownership(&mut CurveRewards::default());
+}
+#[no_mangle]
+fn transfer_ownership() {
+    let new_owner: Key = runtime::get_named_arg("new_owner");
+    OWNABLE::transfer_ownership(&mut CurveRewards::default(),new_owner);
+}
 //Entry Points
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -269,6 +298,48 @@ fn get_entry_points() -> EntryPoints {
         "set_reward_distribution",
         vec![Parameter::new("reward_distribution", Key::cl_type())],
         Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "owner",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "is_owner",
+        vec![],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "owner_js_client",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "is_owner_js_client",
+        vec![],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "renounce_ownership",
+        vec![],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "transfer_ownership",
+        vec![Parameter::new("new_owner", Key::cl_type())],
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

@@ -63,6 +63,38 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             0,
         );
     }
+    pub fn claim_tokens(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "claim_tokens",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+    pub fn set_approve_deposit(&self, owner: AccountHash, addr: Key, can_deposit: bool) {
+        self.0.call_contract(
+            owner,
+            "set_approve_deposit",
+            runtime_args! {
+                "addr" => addr,
+                "can_deposit" => can_deposit
+            },
+            0,
+        );
+    }
+    pub fn deposit(&self, owner: AccountHash,value: U256,addr: Key) {
+        self.0.call_contract(
+            owner,
+            "deposit",
+            runtime_args! {
+                "value" => value,
+                "addr" => addr,
+            },
+            0,
+        );
+    }
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
     }
