@@ -1,7 +1,7 @@
-use casper_types::{account::AccountHash, Key, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use test_env::{TestContract, TestEnv};
 
-use crate::vesting_escrow_instance::VESTINGESCROWInstance;
+use crate::vesting_escrow_instance::{self, VESTINGESCROWInstance};
 
 const NAME: &str = "VESTINGESCROW";
 
@@ -14,8 +14,9 @@ fn deploy() -> (
     TestEnv,
     VESTINGESCROWInstance,
     AccountHash,
-    // VESTINGESCROWInstance,
-    // VESTINGESCROWInstance,
+    AccountHash,
+    TestContract, // VESTINGESCROWInstance,
+                  // VESTINGESCROWInstance,
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
@@ -30,8 +31,9 @@ fn deploy() -> (
     let _start_time: U256 = 10000.into();
     let _end_time: U256 = 10000.into();
     let _can_disable: bool = true;
+    let user1 = env.next_user();
     let _fund_admins: Vec<String> = vec![
-        env.next_user().to_formatted_string(),
+        user1.to_formatted_string(),
         env.next_user().to_formatted_string(),
         env.next_user().to_formatted_string(),
         env.next_user().to_formatted_string(),
@@ -46,240 +48,383 @@ fn deploy() -> (
         _can_disable,
         _fund_admins,
     );
-    // let test_contract: TestContract =
-    //     VESTINGESCROWInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
-    // let test_contract2: TestContract =
-    //     VESTINGESCROWInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
     (
         env,
         VESTINGESCROWInstance::instance(token),
         owner,
-        // VESTINGESCROWInstance::instance(test_contract),
-        // VESTINGESCROWInstance::instance(test_contract2),
+        user1,
+        _token,
     )
 }
 
 #[test]
 fn test_deploy() {
-    let (env, _token, _owner) = deploy();
+    let (env, vesting_escrow_instance, _owner, user1, token) = deploy();
     let _user = env.next_user();
-    // assert_eq!(token.name(), NAME);
-    // assert_eq!(token.symbol(), SYMBOL);
-    // // assert_eq!(token.meta(), meta::contract_meta());
-    // assert_eq!(
-    //     token.total_supply(),
-    //     (INIT_TOTAL_SUPPLY + INIT_TOTAL_SUPPLY).into()
-    // );
-    // assert_eq!(token.decimals(), DECIMALS);
-    // assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-    // assert_eq!(token.balance_of(user), 0.into());
-    // assert_eq!(token.allowance(owner, user), 0.into());
-    // assert_eq!(token.allowance(user, owner), 0.into());
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), _owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
 }
 
-// #[test]
-// fn test_vesting_escrow_approve() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     token.approve(owner, user, amount);
-//     assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-//     assert_eq!(token.balance_of(user), 0.into());
-//     assert_eq!(token.allowance(owner, user), amount);
-//     assert_eq!(token.allowance(user, owner), 0.into());
-// }
+#[test]
+fn test_disable_fund_admins() {
+    let (env, vesting_escrow_instance, _owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), _owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    vesting_escrow_instance.disable_fund_admins(_owner);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), false);
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+}
 
-// #[test]
-// fn test_vesting_escrow_mint() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     token.mint(owner, user, amount);
-//     assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-//     assert_eq!(token.balance_of(user), amount);
-//     assert_eq!(token.balance_of(user), 10.into());
-// }
+#[test]
+fn test_disable_can_disable() {
+    let (env, vesting_escrow_instance, _owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), _owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    vesting_escrow_instance.disable_can_disable(_owner);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.can_disable(), false);
+}
 
-// #[test]
-// fn test_vesting_escrow_burn() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     assert_eq!(token.balance_of(owner), U256::from(INIT_TOTAL_SUPPLY));
-//     token.burn(owner, owner, amount);
-//     assert_eq!(
-//         token.balance_of(owner),
-//         U256::from(INIT_TOTAL_SUPPLY) - amount
-//     );
-//     assert_eq!(token.balance_of(user), 0.into());
-// }
+#[test]
+fn test_toggle_disable() {
+    let (env, vesting_escrow_instance, _owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), _owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    vesting_escrow_instance.toggle_disable(_owner, _user);
+    assert_eq!(vesting_escrow_instance.disabled_at(_owner), 0.into());
+    assert_eq!(vesting_escrow_instance.disabled_at(_user), 1000.into());
+}
 
-// #[test]
-// fn test_vesting_escrow_transfer() {
-//     let (env, token, owner, proxy, _proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let user = env.next_user();
-//     let amount: U256 = 100.into();
+#[test]
+fn test_toggle_disable_after_toggle_disable() {
+    let (env, vesting_escrow_instance, _owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), _owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    vesting_escrow_instance.toggle_disable(_owner, _user);
+    assert_eq!(vesting_escrow_instance.disabled_at(_owner), 0.into());
+    assert_eq!(vesting_escrow_instance.disabled_at(_user), 1000.into());
+    vesting_escrow_instance.toggle_disable(_owner, _user);
+    assert_eq!(vesting_escrow_instance.disabled_at(_owner), 0.into());
+    assert_eq!(vesting_escrow_instance.disabled_at(_user), 0.into());
+}
 
-//     // TRASNFER CALL IN PROXY USES:- runtime::call_contract() so transfer is being done from proxy to a recipient
+#[test]
+#[should_panic]
+fn test_toggle_disable_by_user() {
+    let (env, vesting_escrow_instance, _owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), _owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    vesting_escrow_instance.disable_can_disable(_owner);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.can_disable(), false);
+    vesting_escrow_instance.toggle_disable(_user, _user);
+}
 
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, amount);
+#[test]
+#[should_panic]
+fn test_toggle_disable_when_disabled() {
+    let (env, vesting_escrow_instance, _owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), _owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    vesting_escrow_instance.disable_can_disable(_owner);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.can_disable(), false);
+    vesting_escrow_instance.toggle_disable(_owner, _user);
+}
 
-//     assert_eq!(token.balance_of(package_hash), amount);
-//     assert_eq!(token.balance_of(user), U256::from(0));
+#[test]
+fn test_add_tokens() {
+    let (env, vesting_escrow_instance, owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    let amount: U256 = 100.into();
 
-//     // // Transfering to user from the proxy contract
-//     proxy.transfer(owner, user, amount);
+    let value: U256 = 1000.into();
+    token.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value + value
+        },
+        0,
+    );
+    token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::from(vesting_escrow_instance.package_hash()),
+            "amount" => value + value
+        },
+        0,
+    );
+    vesting_escrow_instance.add_tokens(owner, amount);
+    assert_eq!(vesting_escrow_instance.unallocated_supply(), amount);
+    vesting_escrow_instance.add_tokens(owner, amount);
+    assert_eq!(
+        vesting_escrow_instance.unallocated_supply(),
+        amount + amount
+    );
+}
 
-//     assert_eq!(token.balance_of(package_hash), U256::from(0));
-//     assert_eq!(token.balance_of(user), amount);
 
-//     let ret: Result<(), u32> = proxy.transfer_result();
+#[test]
+#[should_panic]
+fn test_add_tokens_by_user() {
+    let (env, vesting_escrow_instance, owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    let amount: U256 = 100.into();
 
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
+    let value: U256 = 1000.into();
+    token.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value + value
+        },
+        0,
+    );
+    token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::from(vesting_escrow_instance.package_hash()),
+            "amount" => value + value
+        },
+        0,
+    );
+    vesting_escrow_instance.add_tokens(user1, amount);
+    assert_eq!(vesting_escrow_instance.unallocated_supply(), amount);
+}
 
-// #[test]
-// #[should_panic]
-// fn test_vesting_escrow_transfer_with_same_sender_and_recipient() {
-//     let (env, token, owner, proxy, _proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let user = env.next_user();
-//     let amount: U256 = 100.into();
 
-//     // TRASNFER CALL IN PROXY USES:- runtime::call_contract() so transfer is being done from proxy to a recipient
+#[test]
+fn test_fund() {
+    let (env, vesting_escrow_instance, owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    
+    let amount: U256 = 100.into();
 
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, amount);
+    let value: U256 = 1000.into();
+    token.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value + value
+        },
+        0,
+    );
+    token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::from(vesting_escrow_instance.package_hash()),
+            "amount" => value + value
+        },
+        0,
+    );
+    vesting_escrow_instance.add_tokens(owner, amount);
+    assert_eq!(vesting_escrow_instance.unallocated_supply(), amount);
+    let user_1=env.next_user();
+    let user_2=env.next_user();
+    let user_3=env.next_user();
+    let user_4=env.next_user();
+    let _recipients: Vec<String> = vec![
+        user_1.to_formatted_string(),
+        user_2.to_formatted_string(),
+        user_3.to_formatted_string(),
+        user_4.to_formatted_string(),
+    ];
+    let _amounts: Vec<U256> = vec![
+        1.into(),
+        2.into(),
+        3.into(),
+        4.into(),
+    ];
+    vesting_escrow_instance.fund(owner, _recipients,_amounts);
+    assert_eq!(vesting_escrow_instance.initial_locked_supply(), 10.into());
+    assert_eq!(vesting_escrow_instance.unallocated_supply(), 90.into());
+    assert_eq!(vesting_escrow_instance.initial_locked(user_1), 1.into());
+    assert_eq!(vesting_escrow_instance.initial_locked(user_2), 2.into());
+    assert_eq!(vesting_escrow_instance.initial_locked(user_3), 3.into());
+    assert_eq!(vesting_escrow_instance.initial_locked(user_4), 4.into());
+  
+}
 
-//     assert_eq!(token.balance_of(package_hash), amount);
-//     assert_eq!(token.balance_of(user), U256::from(0));
-//     assert_eq!(token.balance_of(owner), 1000.into());
+#[test]
+#[should_panic]
+fn test_fund_by_user() {
+    let (env, vesting_escrow_instance, owner, user1, token) = deploy();
+    let _user = env.next_user();
+    assert_eq!(
+        vesting_escrow_instance.token(),
+        Key::Hash(token.package_hash())
+    );
+    assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.end_time(), 10000.into());
+    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert_eq!(vesting_escrow_instance.admin(), owner.into());
+    assert_eq!(vesting_escrow_instance.lock(), 0);
+    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
+    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
+    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    
+    let amount: U256 = 100.into();
 
-//     // Transfering to user from the proxy contract
-//     proxy.transfer(owner, package_hash, amount);
-
-//     assert_eq!(token.balance_of(package_hash), U256::from(100));
-
-//     assert_eq!(token.balance_of(owner), U256::from(1000));
-
-//     let ret: Result<(), u32> = proxy.transfer_result();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
-
-// #[test]
-// fn test_vesting_escrow_transfer_from() {
-//     let (env, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let recipient = env.next_user();
-//     let user = env.next_user();
-//     let mint_amount = 100.into();
-//     let allowance = 10.into();
-//     let amount: U256 = 1.into();
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, mint_amount);
-
-//     proxy.approve(owner, package_hash2, allowance);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 10.into());
-
-//     proxy2.transfer_from(owner, package_hash.into(), user.into(), amount);
-
-//     assert_eq!(token.nonce(owner), 0.into());
-//     assert_eq!(token.nonce(recipient), 0.into());
-//     assert_eq!(token.balance_of(owner), 1000.into());
-//     assert_eq!(token.balance_of(user), amount);
-
-//     let ret: Result<(), u32> = proxy2.transfer_from_result();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
-
-// #[test]
-// #[should_panic]
-// fn test_vesting_escrow_transfer_from_too_much() {
-//     let (env, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let user = env.next_user();
-//     let mint_amount = 100.into();
-//     let allowance = 10.into();
-//     let amount: U256 = 12.into();
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, mint_amount);
-
-//     proxy.approve(owner, package_hash2, allowance);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 10.into());
-
-//     proxy2.transfer_from(owner, package_hash.into(), user.into(), amount);
-// }
-
-// #[test]
-// fn test_vesting_escrow_increase_allowance() {
-//     let (_, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let amount: U256 = 100.into();
-
-//     proxy.increase_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 100.into());
-
-//     proxy.increase_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 200.into());
-
-//     let ret: Result<(), u32> = proxy.increase_allowance_res();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
-//     }
-// }
-
-// #[test]
-// fn test_vesting_escrow_decrease_allowance() {
-//     let (_, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let amount: U256 = 100.into();
-
-//     proxy.increase_allowance(owner, package_hash2, amount + amount);
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 200.into());
-
-//     proxy.decrease_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 100.into());
-
-//     let ret: Result<(), u32> = proxy.decrease_allowance_res();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Decrease Allowance Failed ERROR:{}", e),
-//     }
-// }
+    let value: U256 = 1000.into();
+    token.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value + value
+        },
+        0,
+    );
+    token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::from(vesting_escrow_instance.package_hash()),
+            "amount" => value + value
+        },
+        0,
+    );
+    vesting_escrow_instance.add_tokens(owner, amount);
+    assert_eq!(vesting_escrow_instance.unallocated_supply(), amount);
+    let user_1=env.next_user();
+    let user_2=env.next_user();
+    let user_3=env.next_user();
+    let user_4=env.next_user();
+    let _recipients: Vec<String> = vec![
+        user_1.to_formatted_string(),
+        user_2.to_formatted_string(),
+        user_3.to_formatted_string(),
+        user_4.to_formatted_string(),
+    ];
+    let _amounts: Vec<U256> = vec![
+        1.into(),
+        2.into(),
+        3.into(),
+        4.into(),
+    ];
+    vesting_escrow_instance.fund(_user, _recipients,_amounts);
+    assert_eq!(vesting_escrow_instance.initial_locked_supply(), 10.into());
+    assert_eq!(vesting_escrow_instance.unallocated_supply(), 90.into());
+    assert_eq!(vesting_escrow_instance.initial_locked(user_1), 1.into());
+    assert_eq!(vesting_escrow_instance.initial_locked(user_2), 2.into());
+    assert_eq!(vesting_escrow_instance.initial_locked(user_3), 3.into());
+    assert_eq!(vesting_escrow_instance.initial_locked(user_4), 4.into());
+  
+}

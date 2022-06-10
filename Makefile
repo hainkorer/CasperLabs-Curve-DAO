@@ -42,7 +42,7 @@ build-contract-fee-distributor:
 	cargo build --release -p session-code -p erc20 -p voting-escrow -p fee-distributor --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/fee-distributor.wasm 2>/dev/null | true
 build-contract-gauge-controller:
-	cargo build --release -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy --target wasm32-unknown-unknown
+	cargo build --release -p session-code -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/gauge-controller-token.wasm 2>/dev/null | true
 build-contract-gauge-proxy:
 	cargo build --release -p gauge-proxy --target wasm32-unknown-unknown
@@ -57,13 +57,13 @@ build-contract-liquidity-gauge-wrapper:
 	cargo build --release -p erc20 -p minter -p liquidity-gauge-reward -p liquidity-gauge-wrapper-session-code -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-wrapper.wasm 2>/dev/null | true
 build-contract-minter:
-	cargo build --release -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy -p minter -p minter-proxy --target wasm32-unknown-unknown
+	cargo build --release -p erc20 -p erc20_crv -p erc20-crv-session-code  -p voting-escrow -p gauge-controller -p gauge-controller-proxy -p minter -p minter-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/minter-token.wasm 2>/dev/null | true
 build-contract-reward-only-gauge:
 	cargo build --release -p erc20 -p reward-only-gauge -p reward-only-gauge-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/reward-only-gauge.wasm 2>/dev/null | true
 build-contract-vesting-escrow:
-	cargo build --release -p erc20 -p vesting-escrow -p vesting-escrow-proxy --target wasm32-unknown-unknown
+	cargo build --release -p session-code -p erc20 -p vesting-escrow -p vesting-escrow-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow.wasm 2>/dev/null | true
 build-contract-vesting-escrow-factory:
 	cargo build --release -p erc20 -p vesting-escrow-factory -p vesting-escrow-factory-proxy --target wasm32-unknown-unknown
@@ -169,6 +169,7 @@ copy-wasm-file-liquidity-gauge-wrapper:
 	cp ${wasm_src_path}/minter-token.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward.wasm ${liquidity_gauge_wrapper_des_wasm}
 copy-wasm-file-minter:
+	cp ${wasm_src_path}/erc20_crv.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/minter-token.wasm ${minter_des_wasm}
@@ -251,25 +252,25 @@ test-curve-rewards:
 	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
 
 all:
-	make test-curve-token-v3
-	make test-erc20
-	make test-erc20-crv
-	make test-fee-distributor
-	make test-gauge-controller
-	make test-gauge-proxy
-	make test-liquidity-gauge-reward
-	make test-liquidity-gauge-reward-wrapper
-	make test-liquidity-gauge-wrapper
+	# make test-curve-token-v3
+	# make test-erc20
+	# make test-erc20-crv
+	# make test-fee-distributor
+	# make test-gauge-controller
+	# make test-gauge-proxy
+	# make test-liquidity-gauge-reward
+	# make test-liquidity-gauge-reward-wrapper
+	# make test-liquidity-gauge-wrapper
 	make test-minter
-	make test-reward-only-gauge
-	make test-vesting-escrow
-	make test-vesting-escrow-factory
-	make test-vesting-escrow-simple
-	make test-voting-escrow
-	make test-ownable
-	make test-i-reward-distribution-recipient
-	make test-lp-token-wrapper
-	make test-curve-rewards
+	# make test-reward-only-gauge
+	# make test-vesting-escrow
+	# make test-vesting-escrow-factory
+	# make test-vesting-escrow-simple
+	# make test-voting-escrow
+	# make test-ownable
+	# make test-i-reward-distribution-recipient
+	# make test-lp-token-wrapper
+	# make test-curve-rewards
 
 clean:
 	cargo clean

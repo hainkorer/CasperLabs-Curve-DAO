@@ -196,9 +196,9 @@ fn commit_transfer_ownership() {
 
 #[no_mangle]
 fn transfer() {
-    let _to: Key = runtime::get_named_arg("_to");
-    let _value: U256 = runtime::get_named_arg("amount");
-    let ret: bool = Token::default().transfer(_to, _value);
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret: Result<(), u32> = Token::default().transfer(recipient, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -211,10 +211,10 @@ fn transfer() {
 /// """
 #[no_mangle]
 fn transfer_from() {
-    let _from: Key = runtime::get_named_arg("_from");
-    let _to: Key = runtime::get_named_arg("_to");
-    let _value: U256 = runtime::get_named_arg("_value");
-    let ret: bool = Token::default().transfer_from(_from, _to, _value);
+    let owner: Key = runtime::get_named_arg("owner");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret: Result<(), u32> = Token::default().transfer_from(owner, recipient, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -232,10 +232,9 @@ fn transfer_from() {
 /// """
 #[no_mangle]
 fn approve() {
-    let _spender: Key = runtime::get_named_arg("_spender");
-    let _value: U256 = runtime::get_named_arg("_value");
-    let ret: bool = Token::default().approve(_spender, _value);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    Token::default().approve(spender, amount);
 }
 
 /// """
@@ -248,9 +247,9 @@ fn approve() {
 /// """
 #[no_mangle]
 fn increase_allowance() {
-    let _spender: Key = runtime::get_named_arg("_spender");
-    let _added_value: U256 = runtime::get_named_arg("_added_value");
-    let ret: bool = Token::default().increase_allowance(_spender, _added_value);
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret: Result<(), u32> = Token::default().increase_allowance(spender, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -264,10 +263,10 @@ fn increase_allowance() {
 /// """
 #[no_mangle]
 fn decrease_allowance() {
-    let _spender: Key = runtime::get_named_arg("spender");
-    let _subtracted_value: U256 = runtime::get_named_arg("_subtracted_value");
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
 
-    let ret: bool = Token::default().decrease_allowance(_spender, _subtracted_value);
+    let ret: Result<(), u32> = Token::default().decrease_allowance(spender, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -691,38 +690,47 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("_spender", Key::cl_type()),
             Parameter::new("_added_value", U256::cl_type()),
         ],
-        bool::cl_type(),
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "approve",
         vec![
-            Parameter::new("_spender", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "transfer",
         vec![
-            Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type()),
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "transfer_from",
         vec![
-            Parameter::new("_from", Key::cl_type()),
-            Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

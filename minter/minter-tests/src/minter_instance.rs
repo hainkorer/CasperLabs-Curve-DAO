@@ -108,7 +108,31 @@ impl MINTERInstance {
             0,
         )
     }
-
+    pub fn deploy_liquidity_gauge_reward(
+        env: &TestEnv,
+        contract_name: &str,
+        sender: AccountHash,
+        lp_addr: Key,
+        minter: Key,
+        reward_contract: Key,
+        rewarded_token: Key,
+        admin: Key,
+    ) -> TestContract {
+        TestContract::new(
+            env,
+            "liquidity-gauge-reward.wasm",
+            contract_name,
+            sender,
+            runtime_args! {
+                "lp_addr" => lp_addr,
+                "minter" => minter,
+                "reward_contract" => reward_contract,
+                "rewarded_token" => rewarded_token,
+                "admin" => admin,
+            },
+            0,
+        )
+    }
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
@@ -128,7 +152,21 @@ impl MINTERInstance {
             0,
         )
     }
-
+    pub fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
+        TestContract::new(
+            env,
+            "erc20_crv.wasm",
+            "erc20-crv",
+            sender,
+            runtime_args! {
+                "name" => "CRV",
+                "symbol" => "ERC20CRV",
+                "decimal" => 9 as u8,
+                "supply" => U256::from(0)
+            },
+            0,
+        )
+    }
     pub fn constructor(
         &self,
         sender: AccountHash,
