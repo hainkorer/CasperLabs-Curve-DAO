@@ -134,7 +134,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         RewardTokens::instance().get(&index)
     }
 
-    fn transfer(&mut self, _to: Key, _value: U256) -> bool {
+    fn transfer(&mut self, _to: Key, _value: U256) -> Result<(), u32> {
         let lock = data::get_lock();
         if lock != 0 {
             //Reward Only Gauge: Locked
@@ -143,21 +143,20 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_lock(1);
         self._transfer(self.get_caller(), _to, _value);
         data::set_lock(0);
-        return true;
+        return Ok(());
     }
 
-    fn approve(&mut self, spender: Key, _value: U256) -> bool {
+    fn approve(&mut self, spender: Key, _value: U256) {
         self._approve(self.get_caller(), spender, _value)
     }
 
-    fn _approve(&mut self, _owner: Key, _spender: Key, _value: U256) -> bool {
+    fn _approve(&mut self, _owner: Key, _spender: Key, _value: U256) {
         Allowances::instance().set(&_owner, &_spender, _value);
         self.emit(&REWARDONLYGAUGEEvent::Approval {
             owner: _owner,
             spender: _spender,
             value: _value,
         });
-        return true;
     }
 
     fn allowance(&mut self, owner: Key, spender: Key) -> U256 {
@@ -172,7 +171,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         ClaimData::instance().get(&user, &claiming_address)
     }
 
-    fn increase_allowance(&mut self, _spender: Key, _added_value: U256) -> bool {
+    fn increase_allowance(&mut self, _spender: Key, _added_value: U256) -> Result<(), u32> {
         let allowances = Allowances::instance();
         let owner: Key = self.get_caller();
 
@@ -182,10 +181,10 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             .ok_or(Error::RewardOnlyGaugeOverFlow1)
             .unwrap_or_revert();
         self._approve(owner, _spender, new_allowance);
-        return true;
+        return Ok(());
     }
 
-    fn decrease_allowance(&mut self, _spender: Key, _subtracted_value: U256) -> bool {
+    fn decrease_allowance(&mut self, _spender: Key, _subtracted_value: U256) -> Result<(), u32> {
         let allowances = Allowances::instance();
 
         let owner: Key = self.get_caller();
@@ -198,10 +197,10 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             .unwrap_or_revert();
         self._approve(owner, _spender, new_allowance);
 
-        return true;
+        return Ok(());
     }
 
-    fn transfer_from(&mut self, _from: Key, _to: Key, _value: U256) -> bool {
+    fn transfer_from(&mut self, _from: Key, _to: Key, _value: U256) -> Result<(), u32> {
         let lock = data::get_lock();
         if lock != 0 {
             //Reward Only Gauge: Locked
@@ -219,7 +218,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         }
         self._transfer(_from, _to, _value);
         data::set_lock(0);
-        return true;
+        return Ok(());
     }
 
     fn _transfer(&mut self, _from: Key, _to: Key, _value: U256) {
@@ -470,7 +469,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             token_package_hash,
             None,
             "transfer_from",
-            runtime_args! {"_from" => self.get_caller(),"_to" =>  data::get_package_hash(),"_value" => _value},
+            runtime_args! {"owner" => self.get_caller(),"recipient" =>  data::get_package_hash(),"amount" => _value},
         );
 
         self.emit(&REWARDONLYGAUGEEvent::Deposit {

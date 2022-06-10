@@ -125,7 +125,7 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::MinterLocked2);
         }
         data::set_lock(1);
-        for i in 0..(gauge_addrs.len() - 1) {
+        for i in 0..(gauge_addrs.len()) {
             self._mint_for(gauge_addrs[i], self.get_caller())
         }
         data::set_lock(0);
