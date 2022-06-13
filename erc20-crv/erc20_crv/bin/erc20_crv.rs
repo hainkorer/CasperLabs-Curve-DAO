@@ -30,7 +30,6 @@ impl Erc20Crv {
         name: String,
         symbol: String,
         decimal: u8,
-        supply: U256,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
@@ -39,7 +38,6 @@ impl Erc20Crv {
             name,
             symbol,
             decimal,
-            supply,
             Key::from(contract_hash),
             package_hash,
         );
@@ -51,10 +49,9 @@ fn constructor() {
     let name: String = runtime::get_named_arg("name");
     let symbol: String = runtime::get_named_arg("symbol");
     let decimal: u8 = runtime::get_named_arg("decimal");
-    let supply: U256 = runtime::get_named_arg("supply");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    Erc20Crv::default().constructor(name, symbol, decimal, supply, contract_hash, package_hash);
+    Erc20Crv::default().constructor(name, symbol, decimal, contract_hash, package_hash);
 }
 #[no_mangle]
 fn set_minter() {
@@ -198,7 +195,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("name", String::cl_type()),
             Parameter::new("symbol", String::cl_type()),
             Parameter::new("decimal", u8::cl_type()),
-            Parameter::new("supply", U256::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
         ],
@@ -395,12 +391,10 @@ fn call() {
     let name: String = runtime::get_named_arg("name");
     let symbol: String = runtime::get_named_arg("symbol");
     let decimal: u8 = runtime::get_named_arg("decimal");
-    let supply: U256 = runtime::get_named_arg("supply");
     let constructor_args = runtime_args! {
             "name" => name,
             "symbol" => symbol,
             "decimal" => decimal,
-            "supply" => supply,
             "contract_hash" => contract_hash,
             "package_hash"=> package_hash
     };

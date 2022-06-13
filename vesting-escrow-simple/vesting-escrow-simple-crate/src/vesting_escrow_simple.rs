@@ -161,7 +161,6 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         }
         set_can_disable(false);
     }
-
     fn _total_vested_of(&self, recipient: Key, time: U256) -> U256 {
         let start: U256 = get_start_time();
         let end: U256 = get_end_time();
@@ -173,7 +172,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .checked_mul(time.checked_sub(start).unwrap_or_revert())
             .unwrap_or_revert()
             .checked_div(end.checked_sub(start).unwrap_or_revert())
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VestingEscrowSimpleAirthmeticError1);
         ans.min(locked)
     }
 
@@ -190,7 +189,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .checked_mul(blocktime.checked_sub(start).unwrap_or_revert())
             .unwrap_or_revert()
             .checked_div(end.checked_sub(start).unwrap_or_revert())
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VestingEscrowSimpleAirthmeticError2);
         ans.min(locked)
     }
 
@@ -207,7 +206,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let total_vested: U256 = self._total_vested();
         initial_locked_supply
             .checked_sub(total_vested)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow1)
     }
 
     /*@notice Get the number of tokens which have vested for a given address
@@ -225,7 +224,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let self_total_claimed: U256 = TotalClaimed::instance().get(&recipient);
         total_vested_of
             .checked_sub(self_total_claimed)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow2)
     }
 
     /*@notice Get the number of locked tokens for a given address
@@ -236,7 +235,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let total_vested_of: U256 = self._total_vested_of(recipient, U256::from(blocktime));
         initial_locked
             .checked_sub(total_vested_of)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow3)
     }
 
     /* @notice Transfer ownership of GaugeController to `addr`
@@ -270,7 +269,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let _total_claimed: U256 = TotalClaimed::instance().get(&addr);
         let claimable: U256 = _total_vested_of
             .checked_sub(_total_claimed)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow4);
         let updated_total_claimed = _total_claimed.checked_add(claimable).unwrap_or_revert();
         TotalClaimed::instance().set(&addr, updated_total_claimed);
         let token: Key = get_token();

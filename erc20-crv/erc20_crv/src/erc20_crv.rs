@@ -70,7 +70,6 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         name: String,
         symbol: String,
         decimal: u8,
-        supply: U256,
         contract_hash: Key,
         package_hash: ContractPackageHash,
     ) {
@@ -105,9 +104,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
 
         let start_eporch_time: U256 = blocktime
             .checked_add(data::INFLATION_DELAY)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::Erc20CRVOverFlow8)
             .checked_sub(data::RATE_REDUCTION_TIME)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::Erc20CRVUnderFlow3);
         data::set_start_epoch_time(start_eporch_time);
         data::set_mining_epoch(0.into());
 
@@ -120,11 +119,11 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         data::set_start_epoch_time(
             data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow9),
         );
 
         if (data::get_is_updated()==true){
-            data::set_mining_epoch(data::get_mining_epoch().checked_add(1.into()).unwrap_or_revert());
+            data::set_mining_epoch(data::get_mining_epoch().checked_add(1.into()).unwrap_or_revert_with(Error::Erc20CRVOverFlow10));
         }else{
             data::set_is_updated(true);
         }
@@ -137,11 +136,11 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                     rate.checked_mul(data::RATE_REDUCTION_TIME)
                         .unwrap_or_revert(),
                 )
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError4);
             data::set_start_epoch_supply(start_epoch_supply);
             rate = (rate.checked_mul(data::RATE_DENOMINATOR).unwrap_or_revert())
                 .checked_div(data::RATE_REDUCTION_COEFFICIENT)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError5);
         }
         data::set_rate(rate);
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -153,11 +152,10 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
     }
     fn update_mining_parameters(&self) {
         let blocktime: u64 = runtime::get_blocktime().into();
-        let blocktime: U256 = 1000000000.into();
         if !(U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert())
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow11))
         {
             runtime::revert(ApiError::from(Error::Erc20CRVTooSoon));
         }
@@ -169,7 +167,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         if U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow12)
         {
             self._update_mining_parameters();
             data::get_start_epoch_time()
@@ -183,27 +181,27 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         if U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow13)
         {
             self._update_mining_parameters();
             data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow14)
         } else {
             start_epoch_time
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow15)
         }
     }
     fn _available_supply(&self) -> U256 {
         let blocktime: u64 = runtime::get_blocktime().into();
-        let var: U256 = U256::from(blocktime)
+        let blocktime_sub_st_epoch: U256 = U256::from(blocktime)
             .checked_sub(data::get_start_epoch_time())
-            .unwrap_or_revert();
-        let ans: U256 = var.checked_mul(data::get_rate()).unwrap_or_revert();
+            .unwrap_or_revert_with(Error::Erc20CRVUnderFlow4);
+        let ans: U256 = blocktime_sub_st_epoch.checked_mul(data::get_rate()).unwrap_or_revert();
         data::get_start_epoch_supply()
             .checked_add(ans)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::Erc20CRVOverFlow16)
     }
     fn available_supply(&self) -> U256 {
         self._available_supply()
@@ -219,20 +217,20 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         if U256::from(blocktime)
             >= data::get_start_epoch_time()
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow17)
         {
             self._update_mining_parameters();
         }
         let total_supply: U256 = erc20_data::total_supply()
             .checked_add(value)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::Erc20CRVOverFlow18);
         if !(total_supply <= self.available_supply()) {
             runtime::revert(ApiError::from(Error::Erc20CRVExceedsAllowableMint));
         }
         erc20_data::set_total_supply(total_supply);
         let existing_balance: U256 = erc20_data::Balances::instance().get(&to);
         erc20_data::Balances::instance()
-            .set(&to, existing_balance.checked_add(value).unwrap_or_revert());
+            .set(&to, existing_balance.checked_add(value).unwrap_or_revert_with(Error::Erc20CRVOverFlow19));
         self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
             from: data::zero_address(),
             to: to,
@@ -277,23 +275,23 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         if end
             > current_epoch_time
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow1)
         {
             current_epoch_time = current_epoch_time
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow2);
             current_rate = current_rate
                 .checked_mul(
                     data::RATE_DENOMINATOR
                         .checked_div(data::RATE_REDUCTION_COEFFICIENT)
                         .unwrap_or_revert(),
                 )
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError1);
         }
         if !(end
             <= current_epoch_time
                 .checked_add(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert())
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow3))
         {
             runtime::revert(ApiError::from(Error::Erc20CRVTooFarInFuture));
         }
@@ -306,43 +304,46 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 if current_end
                     > current_epoch_time
                         .checked_add(data::RATE_REDUCTION_TIME)
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::Erc20CRVOverFlow4)
                 {
                     current_end = current_epoch_time
                         .checked_add(data::RATE_REDUCTION_TIME)
-                        .unwrap_or_revert();
+                        .unwrap_or_revert_with(Error::Erc20CRVOverFlow5);
                 }
                 current_start = start;
                 if current_start
                     >= current_epoch_time
                         .checked_add(data::RATE_REDUCTION_TIME)
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::Erc20CRVOverFlow6)
                 {
                     break;
                 } else if current_start < current_epoch_time {
                     current_start = current_epoch_time;
                 }
-                let sub_ce_cs: U256 = current_end.checked_sub(current_start).unwrap_or_revert();
-                to_mint = to_mint.checked_mul(sub_ce_cs).unwrap_or_revert();
+                let current_end_sub_current_st: U256 = current_end.checked_sub(current_start).unwrap_or_revert_with(Error::Erc20CRVOverFlow7);
+                to_mint=to_mint.checked_add(current_rate)
+                .unwrap_or_revert()
+                .checked_mul(current_end_sub_current_st)
+                .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError2);
                 if start >= current_epoch_time {
                     break;
                 }
             }
             current_epoch_time = current_epoch_time
                 .checked_sub(data::RATE_REDUCTION_TIME)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::Erc20CRVUnderFlow1);
             current_rate = current_rate
                 .checked_mul(
                     data::RATE_REDUCTION_COEFFICIENT
                         .checked_div(data::RATE_DENOMINATOR)
                         .unwrap_or_revert(),
                 )
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError3);
             if !(current_rate <= data::INITIAL_RATE) {
                 runtime::revert(ApiError::from(Error::Erc20CRVCurrRateLessThanInitRate));
             }
         }
-        to_mint
+         to_mint
     }
     fn erc20_crv_emit(&self, erc20_crv_event: &ERC20CRV_EVENT) {
         let mut events = Vec::new();

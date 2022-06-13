@@ -76,7 +76,7 @@ pub extern "C" fn call() {
         MINTABLE_IN_TIMEFRAME => {
             let start: U256 = runtime::get_named_arg("start");
             let end: U256 = runtime::get_named_arg("end");
-            let ret: bool = runtime::call_versioned_contract(
+            let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 MINTABLE_IN_TIMEFRAME,

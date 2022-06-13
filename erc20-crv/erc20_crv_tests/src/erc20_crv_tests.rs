@@ -16,7 +16,6 @@ fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance) {
         "ERC20CRV".to_string(),
         "erc20_crv".to_string(),
         u8::from(2 as u8),
-        100.into(),
     );
     (env, owner, instance)
 }
@@ -149,10 +148,12 @@ fn test_available_supply_js_client() {
     let ret: U256 = contract.key_value(RESULT.to_string());
    assert_eq!(ret,130303030300u128.into());
 }
-//#[test]
+#[test]
 fn test_mintable_in_timeframe() {
     let (env, owner, contract) = deploy();
-
+    contract.update_mining_parameters(owner);
+    let start: U256 = 50000000.into();
+    let end: U256 = 100000000.into();
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -160,20 +161,22 @@ fn test_mintable_in_timeframe() {
         owner,
         runtime_args! {
             "entrypoint" => String::from(MINTABLE_IN_TIMEFRAME),
-            "package_hash" => Key::Hash(contract.package_hash())
+            "package_hash" => Key::Hash(contract.package_hash()),
+            "start"=>start,
+            "end"=>end
         },
-        0,
+        1000000000,
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[MINTABLE_IN_TIMEFRAME.into()]);
-    println!("{:}", ret);
+    assert_eq!(ret,0.into());
 }
-//#[test]
+#[test]
 fn test_mintable_in_timeframe_js_client() {
     let (env, owner, contract) = deploy();
-    let start_arg: U256 = 10.into();
-    let end_arg: U256 = 100.into();
-    contract.mintable_in_timeframe_js_client(owner, start_arg, end_arg);
+    let start: U256 = 50000000.into();
+    let end: U256 = 100000000.into();
+    contract.mintable_in_timeframe_js_client(owner, start, end);
     let ret: U256 = contract.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into());
 }

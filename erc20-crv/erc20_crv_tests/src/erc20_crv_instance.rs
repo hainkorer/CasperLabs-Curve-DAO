@@ -13,8 +13,7 @@ impl ERC20CRVInstance {
         sender: AccountHash,
         name: String,
         symbol: String,
-        decimal: u8,
-        supply: U256,
+        decimal: u8
     ) -> ERC20CRVInstance {
         ERC20CRVInstance(TestContract::new(
             env,
@@ -25,7 +24,6 @@ impl ERC20CRVInstance {
                 "name" => name,
                 "symbol" => symbol,
                 "decimal" => decimal,
-                "supply" => supply,
             },
             100000000,
         ))
