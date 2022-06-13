@@ -68,6 +68,11 @@ fn withdraw() {
     let amount: U256 = runtime::get_named_arg("amount");
     LpTokenWrapper::default().withdraw(amount);
 }
+//Variables
+#[no_mangle]
+fn uni() {
+    runtime::ret(CLValue::from_t(get_uni()).unwrap_or_revert());
+}
 //Entry Points
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
@@ -114,6 +119,13 @@ fn get_entry_points() -> EntryPoints {
         "withdraw",
         vec![Parameter::new("amount", U256::cl_type())],
         <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "uni",
+        vec![],
+        Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

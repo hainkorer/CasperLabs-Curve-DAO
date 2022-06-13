@@ -318,24 +318,24 @@ fn test_claimable_reward() {
         300,
     );
 }
-#[test]
-fn test_claim_tokens() {
-    let (_, owner,instance) = deploy();
-    let addr:Key = Key::Account(owner);
-    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.claim_tokens(owner, addr);
-}
-#[test]
-fn test_set_approve_deposit() {
-    let (_, owner,instance) = deploy();
-    let addr:Key = Key::Account(owner);
-    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.set_approve_deposit(owner, addr,true);
-}
-#[test]
-fn test_deposit() {
-    let (_, owner,instance) = deploy();
-    let addr:Key = Key::Account(owner);
-    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE *1000),addr);
-}
+// #[test]
+// fn test_claim_tokens() {
+//     let (_, owner,instance) = deploy();
+//     let addr:Key = Key::Account(owner);
+//     let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+//     liquidity_gauge_reward_wrapper_instance.claim_tokens(owner, addr);
+// }
+// #[test]
+// fn test_set_approve_deposit() {
+//     let (_, owner,instance) = deploy();
+//     let addr:Key = Key::Account(owner);
+//     let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+//     liquidity_gauge_reward_wrapper_instance.set_approve_deposit(owner, addr,true);
+// }
+// #[test]
+// fn test_deposit() {
+//     let (_, owner,instance) = deploy();
+//     let addr:Key = Key::Account(owner);
+//     let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+//     liquidity_gauge_reward_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE *1000),addr);
+// }

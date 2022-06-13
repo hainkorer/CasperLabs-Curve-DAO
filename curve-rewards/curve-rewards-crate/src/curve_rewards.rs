@@ -45,28 +45,28 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
             .checked_add(
                 self.last_time_reward_applicable()
                     .checked_sub(get_last_update_time())
-                    .unwrap_or_revert()
+                    .unwrap_or_revert_with(Error::CurveRewardsSubtractionError1)
                     .checked_mul(get_reward_rate())
-                    .unwrap_or_revert()
+                    .unwrap_or_revert_with(Error::CurveRewardsMultiplyError1)
                     .checked_mul(U256::from(TEN_E_NINE))
-                    .unwrap_or_revert()
+                    .unwrap_or_revert_with(Error::CurveRewardsMultiplyError2)
                     .checked_div(lp_data::get_total_supply())
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::CurveRewardsDivisionError1),
             )
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::CurveRewardsAdditionError1);
     }
     fn earned(&self, account: Key) -> U256 {
         return LPTOKENWRAPPER::balance_of(self, account)
             .checked_mul(
                 self.reward_per_token()
                     .checked_sub(UserRewardPerTokenPaid::instance().get(&account))
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::CurveRewardsSubtractionError2),
             )
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::CurveRewardsMultiplyError3)
             .checked_div(U256::from(TEN_E_NINE))
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::CurveRewardsDivisionError2)
             .checked_add(Rewards::instance().get(&account))
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::CurveRewardsAdditionError2);
     }
     fn stake(&mut self, amount: U256) {
         self.update_reward(self.get_caller());
@@ -110,10 +110,6 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
                     "amount" => reward
                 },
             );
-            match ret {
-                Ok(()) => {}
-                Err(e) => runtime::revert(ApiError::User(e as u16)),
-            }
             CURVEREWARDS::emit(
                 self,
                 &CurveRewardsEvent::RewardPaid {
@@ -132,25 +128,25 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
         self.update_reward(zero_address());
         let blocktime: u64 = runtime::get_blocktime().into();
         if U256::from(blocktime) >= get_period_finish() {
-            set_reward_rate(reward.checked_div(DURATION).unwrap_or_revert());
+            set_reward_rate(reward.checked_div(DURATION).unwrap_or_revert_with(Error::CurveRewardsDivisionError3));
         } else {
             let remaining: U256 = get_period_finish()
                 .checked_sub(U256::from(blocktime))
-                .unwrap_or_revert();
-            let left_over: U256 = remaining.checked_mul(get_reward_rate()).unwrap_or_revert();
+                .unwrap_or_revert_with(Error::CurveRewardsSubtractionError3);
+            let left_over: U256 = remaining.checked_mul(get_reward_rate()).unwrap_or_revert_with(Error::CurveRewardsMultiplyError4);
             set_reward_rate(
                 reward
                     .checked_add(left_over)
-                    .unwrap_or_revert()
+                    .unwrap_or_revert_with(Error::CurveRewardsAdditionError3)
                     .checked_div(DURATION)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::CurveRewardsDivisionError4),
             );
         }
         set_last_update_time(U256::from(blocktime));
         set_period_finish(
             U256::from(blocktime)
                 .checked_add(DURATION)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveRewardsAdditionError4),
         );
         CURVEREWARDS::emit(self, &CurveRewardsEvent::RewardAdded { reward: reward });
     }
