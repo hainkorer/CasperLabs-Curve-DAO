@@ -291,7 +291,7 @@ pub fn set_reward_data(reward_data: RewardData) {
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str(
-        "_hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap()
 }

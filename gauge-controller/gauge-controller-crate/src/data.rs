@@ -446,14 +446,6 @@ pub fn set_time_total(time_total: U256) {
     set_key(TIME_TOTAL, time_total);
 }
 
-pub fn owner() -> Key {
-    get_key(OWNER).unwrap_or(zero_address())
-}
-
-pub fn set_owner(owner: Key) {
-    set_key(OWNER, owner);
-}
-
 pub fn admin() -> Key {
     get_key(ADMIN).unwrap_or(zero_address())
 }

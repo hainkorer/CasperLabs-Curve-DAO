@@ -32,6 +32,7 @@ pub const TOTAL_CLAIMED_DICT: &str = "total_claimed";
 pub const DISABLED_AT_DICT: &str = "disabled_at";
 pub const FUND_ADMINS_DICT: &str = "fund_admins";
 pub const CAN_DISABLE: &str = "can_disable";
+pub const FUND_ADMINS_ENABLED: &str = "fund_admins_enabled";
 pub const END_TIME: &str = "end_time";
 // Voting Escrow
 pub const GET_LAST_USER_SLOPE: &str = "get_last_user_slope";
@@ -184,3 +185,11 @@ pub const REWARD_PER_TOKEN: &str = "reward_per_token";
 pub const EARNED: &str = "earned";
 //Liqudity Guage v3 keys
 pub const MYVEC: &str = "myvec";
+
+//VESTING ES
+pub const APPLY_TRANSFER_OWNERSHIP: &str = "apply_transfer_ownership";
+pub const COMMIT_TRANSFER_OWNERSHIP: &str = "commit_transfer_ownership";
+pub const VESTED_SUPPLY: &str = "vested_supply";
+pub const LOCKED_SUPPLY: &str = "locked_supply";
+pub const VESTED_OF: &str = "vested_of";
+pub const LOCKED_OF: &str = "locked_of";
