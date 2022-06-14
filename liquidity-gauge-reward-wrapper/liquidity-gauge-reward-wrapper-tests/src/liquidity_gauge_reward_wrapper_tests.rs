@@ -32,9 +32,9 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
             "decimal" => 9 as u8,
-            "supply" => U256::from(TEN_E_NINE * 100000000000000000000)
+            "supply" => U256::from(TEN_E_NINE * 10000000000000000)
         },
-        0,
+        200000000000,
     )
 }
 // Voting Escrow
@@ -212,9 +212,15 @@ fn deploy() -> (
     );
     erc20_crv.call_contract(
         owner,
+        "set_minter",
+        runtime_args! {"_minter" => Key::Account(owner)},
+        0,
+    );
+    erc20_crv.call_contract(
+        owner,
         "mint",
         runtime_args! {"to" => to , "value" => amount_1},
-        blocktime,
+        2000000000000000000,
     );
     
     let _name: String = "type".to_string();
@@ -279,8 +285,6 @@ fn test_user_checkpoint() {
         },
         300,
     );
-    let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
-    println!("{:?}",ret);
 }
 #[test]
 fn test_claimable_tokens() {
@@ -318,24 +322,32 @@ fn test_claimable_reward() {
         300,
     );
 }
-// #[test]
-// fn test_claim_tokens() {
-//     let (_, owner,instance) = deploy();
-//     let addr:Key = Key::Account(owner);
-//     let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-//     liquidity_gauge_reward_wrapper_instance.claim_tokens(owner, addr);
-// }
-// #[test]
-// fn test_set_approve_deposit() {
-//     let (_, owner,instance) = deploy();
-//     let addr:Key = Key::Account(owner);
-//     let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-//     liquidity_gauge_reward_wrapper_instance.set_approve_deposit(owner, addr,true);
-// }
-// #[test]
-// fn test_deposit() {
-//     let (_, owner,instance) = deploy();
-//     let addr:Key = Key::Account(owner);
-//     let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-//     liquidity_gauge_reward_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE *1000),addr);
-// }
+#[test]
+fn test_claim_tokens() {
+    let (_, owner,instance) = deploy();
+    let addr:Key = Key::Account(owner);
+    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_reward_wrapper_instance.claim_tokens(owner, addr);
+}
+#[test]
+fn test_set_approve_deposit() {
+    let (_, owner,instance) = deploy();
+    let addr:Key = Key::Account(owner);
+    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_reward_wrapper_instance.set_approve_deposit(owner, addr,true);
+}
+#[test]
+fn test_deposit() {
+    let (_, owner,instance) = deploy();
+    let addr:Key = Key::Account(owner);
+    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_reward_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE *1000),addr);
+}
+#[test]
+fn test_withdraw() {
+    let (_, owner,instance) = deploy();
+    let addr:Key = Key::Account(owner);
+    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_reward_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE *1000),addr);
+    liquidity_gauge_reward_wrapper_instance.withdraw(owner, U256::from(TEN_E_NINE *10),addr);
+}

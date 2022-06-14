@@ -32,7 +32,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
             "decimal" => 9 as u8,
             "supply" => U256::from(0)
         },
-        0,
+        200000000000,
     )
 }
 

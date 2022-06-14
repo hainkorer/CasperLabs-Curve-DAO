@@ -95,6 +95,17 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             0,
         );
     }
+    pub fn withdraw(&self, owner: AccountHash,value: U256,addr: Key) {
+        self.0.call_contract(
+            owner,
+            "withdraw",
+            runtime_args! {
+                "value" => value,
+                "addr" => addr,
+            },
+            0,
+        );
+    }
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
     }

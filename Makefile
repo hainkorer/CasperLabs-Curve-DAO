@@ -2,7 +2,7 @@ wasm_src_path = ./target/wasm32-unknown-unknown/release/
 
 curve_token_v3_des_wasm = ./curve-token-v3/curve-token-v3-tests/wasm
 erc20_des_wasm = ./erc20/erc20-tests/wasm
-erc20_crv_des_wasm = ./erc20-crv/erc20-crv-tests/wasm
+erc20_crv_des_wasm = ./erc20-crv/erc20_crv_tests/wasm
 fee_distributor_des_wasm = ./fee-distributor/fee-distributor-tests/wasm
 gauge_controller_des_wasm = ./gauge-controller/gauge-controller-tests/wasm
 gauge_proxy_des_wasm = ./gauge-proxy/gauge-proxy-tests/wasm
@@ -48,7 +48,7 @@ build-contract-gauge-proxy:
 	cargo build --release -p gauge-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/gauge-proxy.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward:
-	cargo build --release -p session-code -p erc20_crv -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy -p minter -p minter-proxy -p liquidity-gauge-reward --target wasm32-unknown-unknown
+	cargo build --release -p curve-rewards -p session-code -p erc20_crv -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy -p minter -p minter-proxy -p liquidity-gauge-reward --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward-wrapper:
 	cargo build --release -p erc20_crv -p erc20 -p minter -p voting-escrow -p gauge-controller -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p curve-rewards --target wasm32-unknown-unknown
@@ -120,11 +120,11 @@ test-only-voting-escrow:
 test-only-i-reward-distribution-recipient:
 	cargo test -p i-reward-distribution-recipient-tests
 test-only-ownable:
-	cargo test -p ownable-tests -- --nocapture
+	cargo test -p ownable-tests 
 test-only-lp-token-wrapper:
 	cargo test -p lp-token-wrapper-tests
 test-only-curve-rewards:
-	cargo test -p curve-rewards-tests -- --nocapture
+	cargo test -p curve-rewards-tests 
 
 copy-wasm-file-curve-token-v3:
 	cp ${wasm_src_path}/curve-token-v3.wasm ${curve_token_v3_des_wasm}
@@ -156,6 +156,7 @@ copy-wasm-file-liquidity-gauge-reward:
 	cp ${wasm_src_path}/minter-token.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/minter-proxy-token.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${liquidity_gauge_reward_des_wasm}
 copy-wasm-file-liquidity-gauge-reward-wrapper:
 	cp ${wasm_src_path}/erc20-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward-wrapper.wasm ${liquidity_gauge_reward_wrapper_des_wasm}

@@ -91,7 +91,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "account" => Key::from(get_package_hash())
+                "owner" => Key::from(get_package_hash())
             },
         );
         let () = runtime::call_versioned_contract(
@@ -107,7 +107,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "account" =>Key::from(get_package_hash())
+                "owner" =>Key::from(get_package_hash())
             },
         );
         d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert_with(Error::RewardWrapperSubtractionError1);
@@ -149,7 +149,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "claim_rewards",
             runtime_args! {
-                "addr" => self.get_caller()
+                "addr" => None::<Key>
             },
         );
         d_reward_updated = runtime::call_versioned_contract(
@@ -360,8 +360,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 None,
                 "deposit",
                 runtime_args! {
-                    "addr" => self.get_caller(),
-                    "value" => value
+                    "value" => value,
+                    "addr" => None::<Key>,
+                    
                 },
             );
         }

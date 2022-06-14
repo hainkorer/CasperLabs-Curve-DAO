@@ -7,7 +7,7 @@ Cargo.lock
 
 curve-token-v3/curve-token-v3-tests/wasm/*.wasm
 erc20/erc20-tests/wasm/*.wasm
-erc20-crv/erc20-crv-tests/wasm/*.wasm
+erc20-crv/erc20_crv_tests/wasm/*.wasm
 fee-distributor/fee-distributor-tests/wasm/*.wasm
 gauge-controller/gauge-controller-tests/wasm/*.wasm
 gauge-proxy/gauge-proxy-tests/wasm/*.wasm
