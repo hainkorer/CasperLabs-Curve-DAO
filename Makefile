@@ -308,3 +308,7 @@ check-lint: clippy
 
 clippy:
 	cargo clippy --all-targets --all -- -D warnings
+
+git-clean:
+	git rm -rf --cached .
+	git add .

@@ -4,6 +4,7 @@ target
 # Remove Cargo.lock from gitignore if creating an executable, leave it for libraries
 # More information here https://doc.rust-lang.org/cargo/guide/cargo-toml-vs-cargo-lock.html
 Cargo.lock
+.vscode
 
 curve-token-v3/curve-token-v3-tests/wasm/*.wasm
 erc20/erc20-tests/wasm/*.wasm
