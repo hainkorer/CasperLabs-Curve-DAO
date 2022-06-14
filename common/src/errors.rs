@@ -47,59 +47,59 @@ pub enum Error {
     /// 65,546 for (ERC20 CRV Curr Rate Less Than Init Rate)
     Erc20CRVCurrRateLessThanInitRate = 10011,
     /// 65,546 for (ERC20 CRV Over flow1)
-    Erc20CRVOverFlow1=10012,
+    Erc20CRVOverFlow1 = 10012,
     /// 65,546 for (ERC20 CRV Over flow2)
-    Erc20CRVOverFlow2=10013,
+    Erc20CRVOverFlow2 = 10013,
     /// 65,546 for (ERC20 CRV Airthmetic Error1)
-    Erc20CRVAirthmeticError1=10014,
+    Erc20CRVAirthmeticError1 = 10014,
     /// 65,546 for (ERC20 CRV Over flow3)
-    Erc20CRVOverFlow3=10015,
+    Erc20CRVOverFlow3 = 10015,
     /// 65,546 for (ERC20 CRV Over flow4)
-    Erc20CRVOverFlow4=10016,
+    Erc20CRVOverFlow4 = 10016,
     /// 65,546 for (ERC20 CRV Over flow5)
-    Erc20CRVOverFlow5=10017,
+    Erc20CRVOverFlow5 = 10017,
     /// 65,546 for (ERC20 CRV Over flow6)
-    Erc20CRVOverFlow6=10018,
+    Erc20CRVOverFlow6 = 10018,
     /// 65,546 for (ERC20 CRV Airthmetic Error2)
-    Erc20CRVAirthmeticError2=10019,
+    Erc20CRVAirthmeticError2 = 10019,
     /// 65,546 for (ERC20 CRV Over flow7)
-    Erc20CRVOverFlow7=10020,
+    Erc20CRVOverFlow7 = 10020,
     /// 65,546 for (ERC20 CRV Under flow1)
-    Erc20CRVUnderFlow1=10021,
+    Erc20CRVUnderFlow1 = 10021,
     /// 65,546 for (ERC20 CRV Airthmetic Error3)
-    Erc20CRVAirthmeticError3=10022,
+    Erc20CRVAirthmeticError3 = 10022,
     /// 65,546 for (ERC20 CRV Over flow8)
-    Erc20CRVOverFlow8=10023,
+    Erc20CRVOverFlow8 = 10023,
     /// 65,546 for (ERC20 CRV Under flow3)
-    Erc20CRVUnderFlow3=10024,
+    Erc20CRVUnderFlow3 = 10024,
     /// 65,546 for (ERC20 CRV Over flow9)
-    Erc20CRVOverFlow9=10025,
+    Erc20CRVOverFlow9 = 10025,
     /// 65,546 for (ERC20 CRV Over flow10)
-    Erc20CRVOverFlow10=10026,
+    Erc20CRVOverFlow10 = 10026,
     /// 65,546 for (ERC20 CRV Airthmetic Error4)
-    Erc20CRVAirthmeticError4=10027,
+    Erc20CRVAirthmeticError4 = 10027,
     /// 65,546 for (ERC20 CRV Airthmetic Error5)
-    Erc20CRVAirthmeticError5=10028,
+    Erc20CRVAirthmeticError5 = 10028,
     /// 65,546 for (ERC20 CRV Over flow11)
-    Erc20CRVOverFlow11=10029,
+    Erc20CRVOverFlow11 = 10029,
     /// 65,546 for (ERC20 CRV Over flow12)
-    Erc20CRVOverFlow12=10030,
+    Erc20CRVOverFlow12 = 10030,
     /// 65,546 for (ERC20 CRV Over flow13)
-    Erc20CRVOverFlow13=10031,
+    Erc20CRVOverFlow13 = 10031,
     /// 65,546 for (ERC20 CRV Over flow14)
-    Erc20CRVOverFlow14=10032,
+    Erc20CRVOverFlow14 = 10032,
     /// 65,546 for (ERC20 CRV Over flow15)
-    Erc20CRVOverFlow15=10033,
+    Erc20CRVOverFlow15 = 10033,
     /// 65,546 for (ERC20 CRV Under flow4)
-    Erc20CRVUnderFlow4=10034,
+    Erc20CRVUnderFlow4 = 10034,
     /// 65,546 for (ERC20 CRV Over flow16)
-    Erc20CRVOverFlow16=10035,
+    Erc20CRVOverFlow16 = 10035,
     /// 65,546 for (ERC20 CRV Over flow17)
-    Erc20CRVOverFlow17=10036,
+    Erc20CRVOverFlow17 = 10036,
     /// 65,546 for (ERC20 CRV Over flow18)
-    Erc20CRVOverFlow18=10037,
+    Erc20CRVOverFlow18 = 10037,
     /// 65,546 for (ERC20 CRV Over flow19)
-    Erc20CRVOverFlow19=10038,
+    Erc20CRVOverFlow19 = 10038,
     /// 65,546 for (Liquidity Gauge Reward Unauthorized)
     LiquidityGaugeRewardUnauthorized = 10101,
     /// 65,546 for (Liquidity Gauge Reward Kick Not Allowed1)

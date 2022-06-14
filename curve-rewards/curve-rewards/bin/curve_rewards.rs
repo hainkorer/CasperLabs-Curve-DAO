@@ -12,10 +12,13 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use contract_utils::{set_key, ContractContext, OnChainContractStorage};
-use curve_rewards_crate::{data::{self,*}, CURVEREWARDS};
+use curve_rewards_crate::{
+    data::{self, *},
+    CURVEREWARDS,
+};
 use i_reward_distribution_recipient_crate::IREWARDDISTRIBUTIONRECIPIENT;
-use lp_token_wrapper_crate::{data as LpToken,LPTOKENWRAPPER};
-use ownable_crate::{OWNABLE};
+use lp_token_wrapper_crate::{data as LpToken, LPTOKENWRAPPER};
+use ownable_crate::OWNABLE;
 #[derive(Default)]
 struct CurveRewards(OnChainContractStorage);
 
@@ -165,7 +168,7 @@ fn renounce_ownership() {
 #[no_mangle]
 fn transfer_ownership() {
     let new_owner: Key = runtime::get_named_arg("new_owner");
-    OWNABLE::transfer_ownership(&mut CurveRewards::default(),new_owner);
+    OWNABLE::transfer_ownership(&mut CurveRewards::default(), new_owner);
 }
 //Variables
 #[no_mangle]
@@ -199,7 +202,9 @@ fn reward_per_token_stored() {
 #[no_mangle]
 fn user_reward_per_token_paid() {
     let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::UserRewardPerTokenPaid::instance().get(&key)).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(data::UserRewardPerTokenPaid::instance().get(&key)).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn rewards() {

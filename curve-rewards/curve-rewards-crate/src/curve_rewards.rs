@@ -128,12 +128,18 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
         self.update_reward(zero_address());
         let blocktime: u64 = runtime::get_blocktime().into();
         if U256::from(blocktime) >= get_period_finish() {
-            set_reward_rate(reward.checked_div(DURATION).unwrap_or_revert_with(Error::CurveRewardsDivisionError3));
+            set_reward_rate(
+                reward
+                    .checked_div(DURATION)
+                    .unwrap_or_revert_with(Error::CurveRewardsDivisionError3),
+            );
         } else {
             let remaining: U256 = get_period_finish()
                 .checked_sub(U256::from(blocktime))
                 .unwrap_or_revert_with(Error::CurveRewardsSubtractionError3);
-            let left_over: U256 = remaining.checked_mul(get_reward_rate()).unwrap_or_revert_with(Error::CurveRewardsMultiplyError4);
+            let left_over: U256 = remaining
+                .checked_mul(get_reward_rate())
+                .unwrap_or_revert_with(Error::CurveRewardsMultiplyError4);
             set_reward_rate(
                 reward
                     .checked_add(left_over)

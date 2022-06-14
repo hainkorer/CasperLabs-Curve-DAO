@@ -12,7 +12,11 @@ use casper_types::{
     U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
-use liquidity_gauge_wrapper_crate::{self, data::{self,*}, LIQUIDITYGAUGEWRAPPER};
+use liquidity_gauge_wrapper_crate::{
+    self,
+    data::{self, *},
+    LIQUIDITYGAUGEWRAPPER,
+};
 
 #[derive(Default)]
 struct LiquidityGaugeWrapper(OnChainContractStorage);
@@ -486,9 +490,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claimable_crv",
-        vec![
-            Parameter::new("key", Key::cl_type()),
-        ],
+        vec![Parameter::new("key", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

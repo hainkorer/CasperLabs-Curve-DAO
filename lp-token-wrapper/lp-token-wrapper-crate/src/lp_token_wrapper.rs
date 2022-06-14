@@ -1,10 +1,8 @@
 use crate::data::*;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{
-    runtime_args,ContractHash, ContractPackageHash, Key, RuntimeArgs, U256,
-};
-use contract_utils::{ContractContext, ContractStorage};
+use casper_types::{runtime_args, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256};
 use common::errors::*;
+use contract_utils::{ContractContext, ContractStorage};
 
 pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(&self, uni: Key, contract_hash: ContractHash, package_hash: ContractPackageHash) {
@@ -20,7 +18,11 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
         return Balances::instance().get(&account);
     }
     fn stake(&mut self, amount: U256) {
-        set_total_supply(get_total_supply().checked_add(amount).unwrap_or_revert_with(Error::LpTokenWrapperAdditionError1));
+        set_total_supply(
+            get_total_supply()
+                .checked_add(amount)
+                .unwrap_or_revert_with(Error::LpTokenWrapperAdditionError1),
+        );
         Balances::instance().set(
             &self.get_caller(),
             Balances::instance()
@@ -40,7 +42,11 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
         );
     }
     fn withdraw(&mut self, amount: U256) {
-        set_total_supply(get_total_supply().checked_sub(amount).unwrap_or_revert_with(Error::LpTokenWrapperSubtractionError1));
+        set_total_supply(
+            get_total_supply()
+                .checked_sub(amount)
+                .unwrap_or_revert_with(Error::LpTokenWrapperSubtractionError1),
+        );
         Balances::instance().set(
             &self.get_caller(),
             Balances::instance()

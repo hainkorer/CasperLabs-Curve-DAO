@@ -84,7 +84,7 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             0,
         );
     }
-    pub fn deposit(&self, owner: AccountHash,value: U256,addr: Key) {
+    pub fn deposit(&self, owner: AccountHash, value: U256, addr: Key) {
         self.0.call_contract(
             owner,
             "deposit",
@@ -95,7 +95,7 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             0,
         );
     }
-    pub fn withdraw(&self, owner: AccountHash,value: U256,addr: Key) {
+    pub fn withdraw(&self, owner: AccountHash, value: U256, addr: Key) {
         self.0.call_contract(
             owner,
             "withdraw",

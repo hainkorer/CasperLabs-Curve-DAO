@@ -30,7 +30,7 @@ fn burn() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
     let value: U256 = 10.into();
-    let minter=Key::from(owner);
+    let minter = Key::from(owner);
     contract.set_minter(owner, minter);
     TestContract::new(
         &env,
@@ -49,7 +49,6 @@ fn burn() {
     let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
     assert_eq!(ret, true);
 
-   
     contract.burn(owner, value);
 }
 #[test]
@@ -61,7 +60,7 @@ fn set_admin() {
 #[test]
 fn test_set_minter() {
     let (env, owner, contract) = deploy();
-    let minter=Key::from(env.next_user());
+    let minter = Key::from(env.next_user());
     contract.set_minter(owner, minter);
 }
 #[test]
@@ -139,14 +138,14 @@ fn test_available_supply() {
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[AVAILABLE_SUPPLY.into()]);
-    assert_eq!(ret,130303030300u128.into());
+    assert_eq!(ret, 130303030300u128.into());
 }
 #[test]
 fn test_available_supply_js_client() {
     let (env, owner, contract) = deploy();
     contract.available_supply_js_client(owner);
     let ret: U256 = contract.key_value(RESULT.to_string());
-   assert_eq!(ret,130303030300u128.into());
+    assert_eq!(ret, 130303030300u128.into());
 }
 #[test]
 fn test_mintable_in_timeframe() {
@@ -169,7 +168,7 @@ fn test_mintable_in_timeframe() {
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[MINTABLE_IN_TIMEFRAME.into()]);
-    assert_eq!(ret,0.into());
+    assert_eq!(ret, 0.into());
 }
 #[test]
 fn test_mintable_in_timeframe_js_client() {
@@ -185,7 +184,7 @@ fn test_mint() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
     let value: U256 = 10.into();
-    let minter=Key::from(owner);
+    let minter = Key::from(owner);
     contract.set_minter(owner, minter);
     TestContract::new(
         &env,
@@ -209,7 +208,7 @@ fn test_mint_js_client() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
     let value: U256 = 10.into();
-    let minter=Key::from(owner);
+    let minter = Key::from(owner);
     contract.set_minter(owner, minter);
     contract.mint_js_client(owner, to, value);
     let ret: bool = contract.key_value(RESULT.to_string());

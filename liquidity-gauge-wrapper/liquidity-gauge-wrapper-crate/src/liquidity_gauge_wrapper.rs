@@ -99,7 +99,9 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 "owner" =>  Key::from(get_package_hash())
             },
         );
-        d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert_with(Error::GaugeWrapperSubtractionError1);
+        d_reward = d_reward_updated
+            .checked_sub(d_reward)
+            .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError1);
         let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
@@ -109,7 +111,9 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 .checked_div(total_balance)
                 .unwrap_or_revert_with(Error::GaugeWrapperDivisionError1);
         }
-        let i: U256 = get_crv_integral().checked_add(di).unwrap_or_revert_with(Error::GaugeWrapperAdditionError1);
+        let i: U256 = get_crv_integral()
+            .checked_add(di)
+            .unwrap_or_revert_with(Error::GaugeWrapperAdditionError1);
         set_crv_integral(i);
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
@@ -119,7 +123,10 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 .get(&addr)
                 .checked_add(balance_of)
                 .unwrap_or_revert_with(Error::GaugeWrapperAdditionError2)
-                .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert_with(Error::GaugeWrapperSubtractionError2))
+                .checked_mul(
+                    i.checked_sub(crv_integral_for)
+                        .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError2),
+                )
                 .unwrap_or_revert_with(Error::GaugeWrapperMultiplyError2)
                 .checked_div(U256::from(TEN_E_NINE))
                 .unwrap_or_revert_with(Error::GaugeWrapperDivisionError2),
@@ -158,14 +165,19 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 .checked_div(total_balance)
                 .unwrap_or_revert_with(Error::GaugeWrapperDivisionError3);
         }
-        let i: U256 = get_crv_integral().checked_add(di).unwrap_or_revert_with(Error::GaugeWrapperAdditionError3);
+        let i: U256 = get_crv_integral()
+            .checked_add(di)
+            .unwrap_or_revert_with(Error::GaugeWrapperAdditionError3);
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
         let claimable_crv: U256 = ClaimableCrv::instance().get(&addr);
         return claimable_crv
             .checked_add(balance_of)
             .unwrap_or_revert_with(Error::GaugeWrapperAdditionError4)
-            .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert_with(Error::GaugeWrapperSubtractionError3))
+            .checked_mul(
+                i.checked_sub(crv_integral_for)
+                    .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError3),
+            )
             .unwrap_or_revert_with(Error::GaugeWrapperMultiplyError4)
             .checked_div(U256::from(TEN_E_NINE))
             .unwrap_or_revert_with(Error::GaugeWrapperDivisionError4);
@@ -223,7 +235,9 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 .get(&addr)
                 .checked_add(value)
                 .unwrap_or_revert_with(Error::GaugeWrapperAdditionError5);
-            let supply: U256 = get_total_supply().checked_add(value).unwrap_or_revert_with(Error::GaugeWrapperAdditionError6);
+            let supply: U256 = get_total_supply()
+                .checked_add(value)
+                .unwrap_or_revert_with(Error::GaugeWrapperAdditionError6);
             BalanceOf::instance().set(&addr, balance);
             set_total_supply(supply);
             let ret: Result<(), u32> = runtime::call_versioned_contract(
@@ -279,7 +293,9 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 .get(&self.get_caller())
                 .checked_sub(value)
                 .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError4);
-            let supply: U256 = get_total_supply().checked_sub(value).unwrap_or_revert_with(Error::GaugeWrapperSubtractionError5);
+            let supply: U256 = get_total_supply()
+                .checked_sub(value)
+                .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError5);
             BalanceOf::instance().set(&self.get_caller(), balance);
             set_total_supply(supply);
             let () = runtime::call_versioned_contract(
@@ -373,7 +389,9 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             Allowances::instance().set(
                 &owner,
                 &self.get_caller(),
-                allowance.checked_sub(amount).unwrap_or_revert_with(Error::GaugeWrapperSubtractionError7),
+                allowance
+                    .checked_sub(amount)
+                    .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError7),
             );
         }
         self._transfer(owner, recipient, amount);
