@@ -424,8 +424,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                 None,
                 "minted",
                 runtime_args! {
-                    "user" => addr,
-                    "gauge" => Key::from(get_package_hash())
+                    "key0" => addr,
+                    "key1" => Key::from(get_package_hash())
                 },
             ))
             .unwrap_or_revert()
@@ -441,7 +441,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             None,
             "earned",
             runtime_args! {
-                "addr" => Key::from(get_package_hash())
+                "account" => Key::from(get_package_hash())
             },
         );
         let user_balance: U256 = BalanceOf::instance().get(&addr);
@@ -460,7 +460,10 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             .get(&addr)
             .checked_add(user_balance)
             .unwrap_or_revert()
-            .checked_mul(I - RewardIntegralFor::instance().get(&addr))
+            .checked_mul(
+                I.checked_sub(RewardIntegralFor::instance().get(&addr))
+                    .unwrap_or_revert(),
+            )
             .unwrap_or_revert()
             .checked_div(10.into())
             .unwrap_or_revert()
@@ -471,10 +474,9 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     /// @dev Only if either they had another voting event, or their voting escrow lock expired
     /// @param addr Address to kick
     fn kick(&self, addr: Key) {
-        let voting_escrow: Key = get_voting_escrow();
         let t_last: U256 = IntegrateCheckpointOf::instance().get(&addr);
         let ret: U256 = runtime::call_versioned_contract(
-            voting_escrow.into_hash().unwrap_or_revert().into(),
+            get_voting_escrow().into_hash().unwrap_or_revert().into(),
             None,
             "user_point_epoch",
             runtime_args! {
@@ -482,7 +484,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             },
         );
         let t_ve: U256 = runtime::call_versioned_contract(
-            voting_escrow.into_hash().unwrap_or_revert().into(),
+            get_voting_escrow().into_hash().unwrap_or_revert().into(),
             None,
             "user_point_history_ts",
             runtime_args! {
@@ -492,7 +494,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         );
         let balance: U256 = BalanceOf::instance().get(&addr);
         let ret: U256 = runtime::call_versioned_contract(
-            voting_escrow.into_hash().unwrap_or_revert().into(),
+            get_voting_escrow().into_hash().unwrap_or_revert().into(),
             None,
             "balance_of",
             runtime_args! {
@@ -512,8 +514,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardKickNotNeeded2));
         }
-        // self._checkpoint(addr, get_is_claiming_rewards());
-        // self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
+        self._checkpoint(addr, get_is_claiming_rewards());
+        self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
     }
 
     // @notice Set whether `addr` can deposit tokens for `self.get_caller()`
@@ -526,11 +528,16 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     /// @notice Deposit `_value` LP tokens
     /// @param _value Number of tokens to deposit
     /// @param addr Address to deposit for
-    fn deposit(&self, value: U256, addr: Key) {
+    fn deposit(&self, value: U256, addr: Option<Key>) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardIsLocked1));
         }
         set_lock(true);
+        let addr: Key = match addr {
+            Some(val) => val,
+            None => self.get_caller(),
+        };
+
         if addr != self.get_caller() {
             if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
                 runtime::revert(ApiError::from(Error::LiquidityGaugeRewardNotApproved));
@@ -626,11 +633,16 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         set_lock(false);
     }
 
-    fn claim_rewards(&self, addr: Key) {
+    fn claim_rewards(&self, addr: Option<Key>) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardIsLocked3));
         }
         set_lock(true);
+        let addr: Key = match addr {
+            Some(val) => val,
+            None => self.get_caller(),
+        };
+
         self._checkpoint_rewards(addr, true);
         let rewards_for: U256 = RewardsFor::instance().get(&addr);
         let ret: Result<(), u32> = runtime::call_versioned_contract(

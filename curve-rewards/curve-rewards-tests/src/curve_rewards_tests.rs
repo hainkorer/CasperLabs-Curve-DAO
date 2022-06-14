@@ -85,7 +85,6 @@ fn test_deploy() {
 fn last_time_reward_applicable() {
     let (env, owner, instance) = deploy();
     let package_hash = Key::Hash(instance.package_hash());
-    //let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     TestContract::new(
         &env,
         "curve-rewards-session-code.wasm",
@@ -97,9 +96,6 @@ fn last_time_reward_applicable() {
         },
         200,
     );
-    let ret: U256 = env.query_account_named_key(owner, &[LAST_TIME_REWARD_APPLICABLE.into()]);
-    println!("{:?}", ret);
-    //proxy.last_time_reward_applicable(owner);
 }
 #[test]
 fn reward_per_token() {
@@ -120,12 +116,37 @@ fn reward_per_token() {
         },
         200,
     );
-    let ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
-    // proxy.reward_per_token(owner);
-    // let v1: U256 = proxy.result();
-    println!("{:?}", ret);
+    // let ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
+    // // proxy.reward_per_token(owner);
+    // // let v1: U256 = proxy.result();
+    // println!("{:?}", ret);
 }
-
+#[test]
+fn earned() {
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
+    let amount: U256 = U256::from(TEN_E_NINE * 100000000000000);
+    curve_rewards_instance.stake(owner, amount);
+    curve_rewards_instance.notify_reward_amount(owner, U256::from(TEN_E_NINE * 10000000000000));
+    TestContract::new(
+        &env,
+        "curve-rewards-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(EARNED),
+            "package_hash" => package_hash,
+            "account" => Key::Account(owner)
+        },
+        200,
+    );
+    // let ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
+    // // proxy.earned(owner, Key::Account(owner));
+    // //let v1: U256 = curve_rewards_instance.result();
+    // println!("{:?}", ret);
+    // //println!("{:?}", v1);
+}
 #[test]
 fn stake() {
     let (_, owner, instance) = deploy();
@@ -147,4 +168,20 @@ fn get_reward() {
     let (_, owner, instance) = deploy();
     let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     curve_rewards_instance.get_reward(owner);
+}
+#[test]
+fn exit() {
+    let (_, owner, instance) = deploy();
+    let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
+    let amount: U256 = U256::from(TEN_E_NINE * 20);
+    curve_rewards_instance.stake(owner, amount);
+    curve_rewards_instance.exit(owner);
+}
+#[test]
+fn notify_reward_amount() {
+    let (_, owner, instance) = deploy();
+    let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
+    let amount: U256 = U256::from(TEN_E_NINE * 20);
+    curve_rewards_instance.stake(owner, amount);
+    curve_rewards_instance.notify_reward_amount(owner, U256::from(TEN_E_NINE * 20));
 }

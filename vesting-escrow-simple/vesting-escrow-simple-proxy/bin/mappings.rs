@@ -49,5 +49,3 @@ pub fn vesting_escrow_simple_key() -> String {
 pub fn result_key() -> String {
     format!("result")
 }
-
-

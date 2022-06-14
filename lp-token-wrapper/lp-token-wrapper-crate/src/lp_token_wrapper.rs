@@ -1,8 +1,7 @@
 use crate::data::*;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256,
-};
+use casper_types::{runtime_args, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256};
+use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
 
 pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
@@ -19,13 +18,17 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
         return Balances::instance().get(&account);
     }
     fn stake(&mut self, amount: U256) {
-        set_total_supply(get_total_supply().checked_add(amount).unwrap_or_revert());
+        set_total_supply(
+            get_total_supply()
+                .checked_add(amount)
+                .unwrap_or_revert_with(Error::LpTokenWrapperAdditionError1),
+        );
         Balances::instance().set(
             &self.get_caller(),
             Balances::instance()
                 .get(&self.get_caller())
                 .checked_add(amount)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::LpTokenWrapperAdditionError2),
         );
         let ret: Result<(), u32> = runtime::call_versioned_contract(
             get_uni().into_hash().unwrap_or_revert().into(),
@@ -37,19 +40,19 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
                 "amount" => amount
             },
         );
-        match ret {
-            Ok(()) => {}
-            Err(e) => runtime::revert(ApiError::User(e as u16)),
-        }
     }
     fn withdraw(&mut self, amount: U256) {
-        set_total_supply(get_total_supply().checked_sub(amount).unwrap_or_revert());
+        set_total_supply(
+            get_total_supply()
+                .checked_sub(amount)
+                .unwrap_or_revert_with(Error::LpTokenWrapperSubtractionError1),
+        );
         Balances::instance().set(
             &self.get_caller(),
             Balances::instance()
                 .get(&self.get_caller())
                 .checked_sub(amount)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::LpTokenWrapperSubtractionError2),
         );
         let ret: Result<(), u32> = runtime::call_versioned_contract(
             get_uni().into_hash().unwrap_or_revert().into(),
@@ -60,9 +63,5 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
                 "amount" => amount
             },
         );
-        match ret {
-            Ok(()) => {}
-            Err(e) => runtime::revert(ApiError::User(e as u16)),
-        }
     }
 }

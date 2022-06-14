@@ -13,9 +13,9 @@ members = [
   "erc20/erc20-proxy",
   "erc20/erc20-tests",
   # ERC-20 CRV
-  "erc20-crv/erc20-crv",
-  "erc20-crv/erc20-crv-tests",
-  "erc20-crv/session-code",
+  "erc20-crv/erc20_crv",
+  "erc20-crv/erc20_crv_tests",
+  "erc20-crv/session_code",
   # FEE DISTRIVUTOR
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",

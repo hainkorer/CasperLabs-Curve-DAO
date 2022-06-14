@@ -1,7 +1,4 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
-Makefile:181: warning: overriding recipe for target 'test-gauge-controller'
-Makefile:177: warning: ignoring old recipe for target 'test-gauge-controller'
-
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -9,16 +6,16 @@ Makefile:177: warning: ignoring old recipe for target 'test-gauge-controller'
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Jun  3 09:06:34 2022
+# Make data base, printed on Tue Jun 14 12:06:23 2022
 
 # Variables
 
 # makefile (from 'Makefile', line 1)
-wasm_src_path = ./target/wasm32-unknown-unknown/release
+wasm_src_path = ./target/wasm32-unknown-unknown/release/
 # 'override' directive
 GNUMAKEFLAGS := 
-# makefile (from 'Makefile', line 10)
-fee_distributor_des_wasm = ./fee-distributor/fee-distributor-tests/wasm/
+# makefile (from 'Makefile', line 6)
+fee_distributor_des_wasm = ./fee-distributor/fee-distributor-tests/wasm
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
 # automatic
@@ -31,12 +28,16 @@ DESKTOP_SESSION = ubuntu
 .SHELLFLAGS := -c
 # environment
 XDG_SESSION_CLASS = user
+# makefile (from 'Makefile', line 16)
+vesting_escrow_simple_des_wasm = ./vesting-escrow-simple/vesting-escrow-simple-tests/wasm
 # environment
 XDG_SESSION_TYPE = x11
 # environment
 VSCODE_LOG_NATIVE = false
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
+# environment
+IM_CONFIG_PHASE = 1
 # automatic
 @D = $(patsubst %/,%,$(dir $@))
 # environment
@@ -50,23 +51,23 @@ CURDIR := /home/saad/CasperLabs-Curve-DAO
 # makefile
 SHELL = /bin/sh
 # environment
-VTE_VERSION = 6003
-# environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
-# makefile (from 'Makefile', line 12)
-erc20_des_wasm = ./erc20/erc20-tests/wasm/
+# makefile (from 'Makefile', line 4)
+erc20_des_wasm = ./erc20/erc20-tests/wasm
 # environment
-JOURNAL_STREAM = 8:47502
+_ = /usr/share/code/code
+# environment
+JOURNAL_STREAM = 8:50331
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
-# makefile (from 'Makefile', line 4)
+# makefile (from 'Makefile', line 7)
 gauge_controller_des_wasm = ./gauge-controller/gauge-controller-tests/wasm
 # makefile (from 'Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # automatic
 @F = $(notdir $@)
 # environment
-IM_CONFIG_PHASE = 1
+GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
 # environment
 USERNAME = saad
 # environment
@@ -74,23 +75,21 @@ MAKELEVEL := 0
 # environment
 XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
 # environment
-DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus,guid=ccf5f96a118ce3c32a51f81d6291facd
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
 VSCODE_VERBOSE_LOGGING = true
-# environment
-_ = /usr/bin/code
-# makefile (from 'Makefile', line 8)
+# makefile (from 'Makefile', line 15)
 vesting_escrow_factory_des_wasm = ./vesting-escrow-factory/vesting-escrow-factory-tests/wasm
 # environment
-MANAGERPID = 1425
-# makefile (from 'Makefile', line 15)
+MANAGERPID = 1439
+# makefile (from 'Makefile', line 18)
 ownable_des_wasm = ./ownable/ownable-tests/wasm/
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 LC_NAME = en_US.UTF-8
 # environment
-VSCODE_CWD = /home/saad/CasperLabs-Curve-DAO
+VSCODE_CWD = /home/saad
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
@@ -98,47 +97,55 @@ PATH = /home/saad/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/Muhammad-Saad-Majeed:@/tmp/.ICE-unix/1652,unix/Muhammad-Saad-Majeed:/tmp/.ICE-unix/1652
+GJS_DEBUG_OUTPUT = stderr
+# environment
+SESSION_MANAGER = local/Muhammad-Saad-Majeed:@/tmp/.ICE-unix/1655,unix/Muhammad-Saad-Majeed:/tmp/.ICE-unix/1655
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
-# makefile (from 'Makefile', line 7)
+# makefile (from 'Makefile', line 14)
 vesting_escrow_des_wasm = ./vesting-escrow/vesting-escrow-tests/wasm
-# makefile (from 'Makefile', line 16)
-i-reward-distribution-recipient_des_wasm = ./i-reward-distribution-recipient/i-reward-distribution-recipient-tests/wasm/
 # environment
 XDG_MENU_PREFIX = gnome-
 # environment
 VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
+# makefile (from 'Makefile', line 5)
+erc20_crv_des_wasm = ./erc20-crv/erc20_crv_tests/wasm
 # environment
-INVOCATION_ID = 1c5b5a1f92e64dd2a08a3ed6432d8cc3
+INVOCATION_ID = 274f811b63a946f7a7ef36f8c7d719c7
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
-LS_COLORS = rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+LS_COLORS = 
 # environment
 XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
+# environment
+GIO_LAUNCHED_DESKTOP_FILE_PID = 108523
 # automatic
 %F = $(notdir $%)
 # environment
 DISPLAY = :0
 # environment
 VSCODE_PIPE_LOGGING = true
+# makefile (from 'Makefile', line 3)
+curve_token_v3_des_wasm = ./curve-token-v3/curve-token-v3-tests/wasm
 # environment
 PWD = /home/saad/CasperLabs-Curve-DAO
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1605
-# makefile (from 'Makefile', line 13)
-liquidity_gauge_reward_wrapper_des_wasm = ./liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests/wasm/
+SSH_AGENT_PID = 1614
+# makefile (from 'Makefile', line 10)
+liquidity_gauge_reward_wrapper_des_wasm = ./liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests/wasm
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
 GTK_MODULES = gail:atk-bridge
+# makefile (from 'Makefile', line 21)
+curve_rewards_des_wasm = ./curve-rewards/curve-rewards-tests/wasm/
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # environment
@@ -146,19 +153,17 @@ HOME = /home/saad
 # environment
 LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
-VSCODE_CLI = 1
-# environment
 VSCODE_CODE_CACHE_PATH = /home/saad/.config/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
-# makefile (from 'Makefile', line 14)
-liquidity_gauge_wrapper_des_wasm = ./liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests/wasm/
+# makefile (from 'Makefile', line 11)
+liquidity_gauge_wrapper_des_wasm = ./liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests/wasm
 # environment
 LOGNAME = saad
+# makefile (from 'Makefile', line 19)
+i_reward_distribution_recipient_des_wasm = ./i-reward-distribution-recipient/i-reward-distribution-recipient-tests/wasm/
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # automatic
 +F = $(notdir $+)
-# environment
-ELECTRON_NO_ATTACH_CONSOLE = 1
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # environment
@@ -167,8 +172,6 @@ GNOME_DESKTOP_SESSION_ID = this-is-deprecated
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
 LC_TIME = en_US.UTF-8
-# environment
-COLORTERM = truecolor
 # default
 MAKE = $(MAKE_COMMAND)
 # default
@@ -176,16 +179,16 @@ MAKECMDGOALS := all
 # environment
 QT_IM_MODULE = ibus
 # environment
-SHLVL = 1
+SHLVL = 0
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-23904f39-c413-48cf-a030-940a9ae0fc4c.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-c1dfa1a8-9037-4632-850c-d8716a870189.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
 USER = saad
-# makefile (from 'Makefile', line 3)
+# makefile (from 'Makefile', line 12)
 minter_des_wasm = ./minter/minter-tests/wasm
 # environment
 LC_MONETARY = en_US.UTF-8
@@ -211,7 +214,7 @@ MAKEFLAGS = pqrR
 MFLAGS = -pqrR
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
-# makefile (from 'Makefile', line 5)
+# makefile (from 'Makefile', line 8)
 gauge_proxy_des_wasm = ./gauge-proxy/gauge-proxy-tests/wasm
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
@@ -219,14 +222,14 @@ gauge_proxy_des_wasm = ./gauge-proxy/gauge-proxy-tests/wasm
 GDK_BACKEND = x11
 # environment
 LC_PAPER = en_US.UTF-8
-# makefile (from 'Makefile', line 6)
+# makefile (from 'Makefile', line 13)
 reward_only_gauge_des_wasm = ./reward-only-gauge/reward-only-gauge-tests/wasm
-# makefile (from 'Makefile', line 9)
-voting_escrow_des_wasm = ./voting-escrow/voting-escrow-tests/wasm/
+# makefile (from 'Makefile', line 17)
+voting_escrow_des_wasm = ./voting-escrow/voting-escrow-tests/wasm
 # environment
 QT_ACCESSIBILITY = 1
-# makefile (from 'Makefile', line 11)
-liquidity_gauge_reward_des_wasm = ./liquidity-gauge-reward/liquidity-gauge-reward-tests/wasm/
+# makefile (from 'Makefile', line 9)
+liquidity_gauge_reward_des_wasm = ./liquidity-gauge-reward/liquidity-gauge-reward-tests/wasm
 # default
 MAKEFILES := 
 # environment
@@ -238,13 +241,9 @@ LC_MEASUREMENT = en_US.UTF-8
 # environment
 LC_ALL = C
 # environment
-DBUS_STARTER_BUS_TYPE = session
-# environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/d4f3bed7_2434_4385_8ee1_d63045cf5073
+GJS_DEBUG_TOPICS = JS ERROR;JS LOG
 # automatic
 ^F = $(notdir $^)
-# environment
-GNOME_TERMINAL_SERVICE = :1.12523
 # default
 SUFFIXES := 
 # environment
@@ -259,14 +258,12 @@ LC_IDENTIFICATION = en_US.UTF-8
 .RECIPEPREFIX := 
 # environment
 LC_ADDRESS = en_US.UTF-8
+# makefile (from 'Makefile', line 20)
+lp_token_wrapper_des_wasm = ./lp-token-wrapper/lp-token-wrapper-tests/wasm/
 # environment
 LANG = C
 # environment
-TERM = xterm-256color
-# environment
-VSCODE_PID = 290816
-# environment
-DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=ccf5f96a118ce3c32a51f81d6291facd
+VSCODE_PID = 108523
 # variable set hash-table stats:
 # Load=127/1024=12%, Rehash=0, Collisions=20/155=13%
 
@@ -276,9 +273,9 @@ DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=ccf5f96a118ce3c32a51f81
 
 # Directories
 
-# . (device 66309, inode 8920201): 33 files, no impossibilities.
+# . (device 66309, inode 8920201): 34 files, no impossibilities.
 
-# 33 files, no impossibilities in 1 directories.
+# 34 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -286,79 +283,60 @@ DBUS_STARTER_ADDRESS = unix:path=/run/user/1000/bus,guid=ccf5f96a118ce3c32a51f81
 
 # Files
 
-copy-wasm-file-gauge-controller:
+copy-wasm-file-erc20-crv:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 122):
-	cp ${wasm_src_path}/erc20-token.wasm ${gauge_controller_des_wasm}
-	cp ${wasm_src_path}/gauge-controller-token.wasm ${gauge_controller_des_wasm}
-	cp ${wasm_src_path}/gauge-controller-proxy-token.wasm ${gauge_controller_des_wasm}
-
-test-curve-token-v1:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
- 
-#  recipe to execute (from 'Makefile', line 207):
-	make build-contract-curve-token-v1 && make copy-wasm-file-curve-token-v1 && make test-only-curve-token-v1
+#  recipe to execute (from 'Makefile', line 135):
+	cp ${wasm_src_path}/erc20-crv-session-code.wasm ${erc20_crv_des_wasm}
+	cp ${wasm_src_path}/erc20_crv.wasm ${erc20_crv_des_wasm}
 
 test-vesting-escrow-simple:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 199):
+ 
+#  recipe to execute (from 'Makefile', line 236):
 	make build-contract-vesting-escrow-simple && make copy-wasm-file-vesting-escrow-simple && make test-only-vesting-escrow-simple
-
-test-only-erc20-crv:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 97):
-	cargo test -p erc20_crv_tests -- --nocapture
 
 build-contract-liquidity-gauge-wrapper:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 63):
-	cargo build --release -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
-
-test-only-curve-token-v1:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 107):
-	cargo test -p curve_token_v1_tests -- --nocapture
+#  recipe to execute (from 'Makefile', line 57):
+	cargo build --release -p erc20 -p minter -p liquidity-gauge-reward -p liquidity-gauge-wrapper-session-code -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-wrapper.wasm 2>/dev/null | true
 
 build-contract-voting-escrow:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 46):
-	cargo build --release -p voting-escrow -p erc20 --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 75):
+	cargo build --release -p session-code -p erc20 -p voting-escrow --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 
 build-contract-fee-distributor:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 48):
-	cargo build --release -p fee-distributor --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 42):
+	cargo build --release -p session-code -p erc20 -p voting-escrow -p fee-distributor --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/fee-distributor.wasm 2>/dev/null | true
 
 build-liquidity-gauge-reward-wrapper-session-code:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 24):
+#  recipe to execute (from 'Makefile', line 30):
 	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
 
 copy-wasm-file-erc20:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 148):
-	cp ${wasm_src_path}/erc20-token.wasm ${erc20_des_wasm}
+#  recipe to execute (from 'Makefile', line 132):
 	cp ${wasm_src_path}/erc20-proxy-token.wasm ${erc20_des_wasm}
+	cp ${wasm_src_path}/erc20-token.wasm ${erc20_des_wasm}
 
 all:
 #  Command line target.
@@ -385,60 +363,60 @@ all:
 # ? := 
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/11=9%
-#  recipe to execute (from 'Makefile', line 215):
+#  recipe to execute (from 'Makefile', line 259):
+	make test-curve-token-v3
 	make test-erc20
 	make test-erc20-crv
-	make test-minter
+	make test-fee-distributor
 	make test-gauge-controller
 	make test-gauge-proxy
+	make test-liquidity-gauge-reward
+	make test-liquidity-gauge-reward-wrapper
+	make test-liquidity-gauge-wrapper
+	make test-minter
 	make test-reward-only-gauge
 	make test-vesting-escrow
 	make test-vesting-escrow-factory
-	make test-voting-escrow
-	make test-fee-distributor
-	make test-liquidity-gauge-reward
 	make test-vesting-escrow-simple
-	make test-liquidity-gauge-reward-wrapper
-	make test-liquidity-gauge-wrapper
-	make test-curve-token-v1
-	make test-curve-token-v2
-	make test-curve-token-v3
+	make test-voting-escrow
 	make test-ownable
+	make test-i-reward-distribution-recipient
+	make test-lp-token-wrapper
+	make test-curve-rewards
 
 test-gauge-proxy:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 183):
+#  recipe to execute (from 'Makefile', line 220):
 	make build-contract-gauge-proxy && make copy-wasm-file-gauge-proxy && make test-only-gauge-proxy
 
-build-contract-curve-token-v1:
+test-only-ownable:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 65):
-	cargo build --release -p curve_token_v1 --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v1.wasm 2>/dev/null | true
+#  recipe to execute (from 'Makefile', line 123):
+	cargo test -p ownable-tests -- --nocapture
 
 test-liquidity-gauge-reward-wrapper:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 201):
-	make build-contract-erc20 && make build-contract-minter && make build-contract-liquidity-gauge-reward && make build-liquidity-gauge-reward-wrapper-session-code && make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
+#  recipe to execute (from 'Makefile', line 224):
+	make build-contract-liquidity-gauge-reward-wrapper && make copy-wasm-file-liquidity-gauge-reward-wrapper && make test-only-liquidity-gauge-reward-wrapper
 
 test-liquidity-gauge-reward:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 195):
-	make build-session-code && make build-contract-liquidity-gauge-reward && make copy-wasm-file-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
+#  recipe to execute (from 'Makefile', line 222):
+	make build-contract-liquidity-gauge-reward && make copy-wasm-file-liquidity-gauge-reward && make test-only-liquidity-gauge-reward
 
 copy-wasm-file-vesting-escrow:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 132):
+#  recipe to execute (from 'Makefile', line 188):
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-token.wasm ${vesting_escrow_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-proxy-token.wasm ${vesting_escrow_des_wasm}
@@ -447,15 +425,22 @@ build-contract-ownable-test-contract:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 76):
+#  recipe to execute (from 'Makefile', line 80):
 	cargo build --release -p test --target wasm32-unknown-unknown
 
 build-contract-ownable:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 74):
+#  recipe to execute (from 'Makefile', line 78):
 	cargo build --release -p ownable --target wasm32-unknown-unknown
+
+build-lp-token-wrapper-session-code:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 82):
+	cargo build --release -p lp-token-wrapper-session-code --target wasm32-unknown-unknown
 
 # Not a target:
 .SUFFIXES:
@@ -467,20 +452,29 @@ test-only-gauge-proxy:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 83):
+#  recipe to execute (from 'Makefile', line 101):
 	cargo test -p gauge-proxy-tests
 
 test-only-vesting-escrow-factory:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 89):
+#  recipe to execute (from 'Makefile', line 115):
 	cargo test -p vesting-escrow-factory-tests
+
+copy-wasm-file-curve-rewards:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 215):
+	cp ${wasm_src_path}/erc20-token.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/curve-rewards-session-code.wasm ${curve_rewards_des_wasm}
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-01 19:13:18.14977647
+#  Last modified 2022-06-14 11:13:14.203613755
 #  File has been updated.
 #  Successfully updated.
 
@@ -488,132 +482,154 @@ test-only-liquidity-gauge-reward:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 95):
+#  recipe to execute (from 'Makefile', line 103):
 	cargo test -p liquidity-gauge-reward-tests
 
-test-only-curve-token-v2:
+test-only-erc20-crv:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 109):
-	cargo test -p curve_token_v2_tests -- --nocapture
-
-test-only-gauge-controller:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 81):
-	cargo test -p gauge-controller-tests
+#  recipe to execute (from 'Makefile', line 95):
+	cargo test -p erc20_crv_tests
 
 build-liquidity-gauge-wrapper-session-code:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 28):
+#  recipe to execute (from 'Makefile', line 34):
 	cargo build --release -p liquidity-gauge-wrapper-session-code --target wasm32-unknown-unknown	
+
+test-i-reward-distribution-recipient:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 252):
+	make build-i-reward-distribution-recipient && make copy-wasm-file-i-reward-distribution-recipient && make test-only-i-reward-distribution-recipient
 
 clippy:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 257):
+#  recipe to execute (from 'Makefile', line 309):
 	cargo clippy --all-targets --all -- -D warnings
 
 build-contract-gauge-proxy:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 38):
+#  recipe to execute (from 'Makefile', line 48):
 	cargo build --release -p gauge-proxy --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/gauge-proxy.wasm 2>/dev/null | true
 
 prepare:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 19):
+#  recipe to execute (from 'Makefile', line 24):
 	rustup target add wasm32-unknown-unknown
+
+test-fee-distributor:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 244):
+	make build-contract-fee-distributor && make copy-wasm-file-fee-distributor && make test-only-fee-distributor
 
 build-contract-vesting-escrow-factory:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 44):
-	cargo build --release -p vesting-escrow-factory -p vesting-escrow-factory-proxy --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 69):
+	cargo build --release -p erc20 -p vesting-escrow-factory -p vesting-escrow-factory-proxy --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-factory.wasm 2>/dev/null | true
 
 build-contract-liquidity-gauge-reward:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 50):
-	cargo build --release -p liquidity-gauge-reward --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 51):
+	cargo build --release -p curve-rewards -p session-code -p erc20_crv -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy -p minter -p minter-proxy -p liquidity-gauge-reward --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward.wasm 2>/dev/null | true
 
-build-contract-curve-token-v2:
+test-only-erc20:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 68):
-	cargo build --release -p curve_token_v2 --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v2.wasm 2>/dev/null | true
+#  recipe to execute (from 'Makefile', line 93):
+	cargo test -p erc20-tests
+
+build-contract-gauge-controller:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 45):
+	cargo build --release -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/gauge-controller-token.wasm 2>/dev/null | true
 
 test-erc20:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 205):
+#  recipe to execute (from 'Makefile', line 240):
 	make build-contract-erc20 && make copy-wasm-file-erc20 && make test-only-erc20
 
 test-gauge-controller:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 181):
+#  recipe to execute (from 'Makefile', line 246):
 	make build-contract-gauge-controller && make copy-wasm-file-gauge-controller && make test-only-gauge-controller
 
-build-contract-gauge-controller:
+build-contract-erc20-crv:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 36):
-	cargo build --release -p gauge-controller -p gauge-controller-proxy --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 39):
+	cargo build --release -p erc20-crv-session-code -p erc20_crv --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/erc20_crv.wasm 2>/dev/null | true
 
 copy-wasm-file-liquidity-gauge-reward-wrapper:
- 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 151):
+#  recipe to execute (from 'Makefile', line 161):
 	cp ${wasm_src_path}/erc20-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward-wrapper.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward-wrapper-session-code.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/minter-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/gauge-controller-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+ 
+	cp ${wasm_src_path}/voting-escrow.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/erc20_crv.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 
 test-curve-token-v3:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 211):
+#  recipe to execute (from 'Makefile', line 238):
 	make build-contract-curve-token-v3 && make copy-wasm-file-curve-token-v3 && make test-only-curve-token-v3
 
 test-minter:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 179):
-	make build-contract-gauge-controller && make build-contract-minter && make copy-wasm-file-minter && make test-only-minter
+#  recipe to execute (from 'Makefile', line 228):
+	make build-contract-minter && make copy-wasm-file-minter && make test-only-minter
 
 copy-wasm-file-curve-token-v3:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 171):
-	cp ${wasm_src_path}/*.wasm curve-token-v3/curve-token-v3-tests/wasm
+#  recipe to execute (from 'Makefile', line 130):
+	cp ${wasm_src_path}/curve-token-v3.wasm ${curve_token_v3_des_wasm}
 
 copy-wasm-file-reward-only-gauge:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 128):
+#  recipe to execute (from 'Makefile', line 184):
 	cp ${wasm_src_path}/erc20-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-proxy-token.wasm ${reward_only_gauge_des_wasm}
@@ -622,75 +638,106 @@ build-contract-erc20:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 32):
-	cargo build --release -p erc20 -p erc20-proxy --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 36):
+	cargo build --release -p erc20-proxy -p erc20 --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/erc20-token.wasm 2>/dev/null | true
 
-test-curve-token-v2:
+copy-wasm-file-i-reward-distribution-recipient:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 209):
-	make build-contract-curve-token-v2 && make copy-wasm-file-curve-token-v2 && make test-only-curve-token-v2
+	cp ${wasm_src_path}/i-reward-distribution-recipient.wasm ${i_reward_distribution_recipient_des_wasm}
 
 test-only-vesting-escrow:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 87):
+#  recipe to execute (from 'Makefile', line 113):
 	cargo test -p vesting-escrow-tests
 
 test-ownable:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 213):
+#  recipe to execute (from 'Makefile', line 250):
 	make build-contract-ownable && make build-contract-ownable-test-contract && make copy-wasm-file-ownable && make test-only-ownable
 
 test-liquidity-gauge-wrapper:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 203):
-	make build-contract-erc20 && make build-contract-minter && make build-contract-liquidity-gauge-reward && make build-liquidity-gauge-wrapper-session-code && make build-contract-liquidity-gauge-wrapper && make copy-wasm-file-liquidity-gauge-wrapper && make test-only-liquidity-gauge-wrapper
+#  recipe to execute (from 'Makefile', line 226):
+	make build-contract-liquidity-gauge-wrapper && make copy-wasm-file-liquidity-gauge-wrapper && make test-only-liquidity-gauge-wrapper
 
 copy-wasm-file-vesting-escrow-simple:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 165):
-	cp ${wasm_src_path}/*.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm
+#  recipe to execute (from 'Makefile', line 196):
+	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_simple_des_wasm}
+	cp ${wasm_src_path}/vesting-escrow-simple.wasm ${vesting_escrow_simple_des_wasm}
+	cp ${wasm_src_path}/vesting-escrow-simple-proxy.wasm ${vesting_escrow_simple_des_wasm}
+	# cp ${wasm_src_path}/*.wasm vesting-escrow-simple/vesting-escrow-simple-tests/wasm
+
+copy-wasm-file-gauge-controller:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 143):
+	cp ${wasm_src_path}/erc20-token.wasm ${gauge_controller_des_wasm}
+	cp ${wasm_src_path}/voting-escrow.wasm ${gauge_controller_des_wasm}
+	cp ${wasm_src_path}/gauge-controller-proxy-token.wasm ${gauge_controller_des_wasm}
+	cp ${wasm_src_path}/gauge-controller-token.wasm ${gauge_controller_des_wasm}
 
 test-reward-only-gauge:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 185):
+#  recipe to execute (from 'Makefile', line 230):
 	make build-contract-reward-only-gauge && make copy-wasm-file-reward-only-gauge && make test-only-reward-only-gauge
 
 test-only-minter:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 79):
+#  recipe to execute (from 'Makefile', line 109):
 	cargo test -p minter-tests
 
 copy-wasm-file-minter:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 116):
+#  recipe to execute (from 'Makefile', line 177):
+	cp ${wasm_src_path}/erc20-token.wasm ${minter_des_wasm}
+	cp ${wasm_src_path}/voting-escrow.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/minter-token.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/minter-proxy-token.wasm ${minter_des_wasm}
-	cp ${wasm_src_path}/*.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-token.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-proxy-token.wasm ${minter_des_wasm}
+
+test-only-curve-rewards:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 127):
+	cargo test -p curve-rewards-tests -- --nocapture
+
+copy-wasm-file-lp-token-wrapper:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 211):
+	cp ${wasm_src_path}/erc20-token.wasm ${lp_token_wrapper_des_wasm}
+	cp ${wasm_src_path}/lp-token-wrapper.wasm ${lp_token_wrapper_des_wasm}
+	cp ${wasm_src_path}/lp-token-wrapper-session-code.wasm ${lp_token_wrapper_des_wasm}
 
 test-voting-escrow:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 191):
-	make build-session-code && make build-contract-voting-escrow && make copy-wasm-file-voting-escrow && make test-only-voting-escrow
+#  recipe to execute (from 'Makefile', line 248):
+	make build-contract-voting-escrow && make copy-wasm-file-voting-escrow && make test-only-voting-escrow
 
 # Not a target:
 .DEFAULT:
@@ -702,177 +749,155 @@ build-contract-vesting-escrow:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 42):
-	cargo build --release -p vesting-escrow -p vesting-escrow-proxy --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 66):
+	cargo build --release -p erc20 -p vesting-escrow -p vesting-escrow-proxy --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow.wasm 2>/dev/null | true
+
+build-curve-rewards:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 88):
+	cargo build --release -p erc20 -p curve-rewards --target wasm32-unknown-unknown
 
 check-lint: clippy
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 254):
+#  recipe to execute (from 'Makefile', line 306):
 	cargo fmt --all -- --check
 
 build-contract-minter:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 34):
-	cargo build --release -p minter -p minter-proxy --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 60):
+	cargo build --release -p erc20 -p voting-escrow -p gauge-controller -p gauge-controller-proxy -p minter -p minter-proxy --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/minter-token.wasm 2>/dev/null | true
 
 copy-wasm-file-liquidity-gauge-wrapper:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 157):
+#  recipe to execute (from 'Makefile', line 171):
 	cp ${wasm_src_path}/erc20-token.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-wrapper.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-wrapper-session-code.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/minter-token.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward.wasm ${liquidity_gauge_wrapper_des_wasm}
 
-test-only-erc20:
+test-only-gauge-controller:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 101):
-	cargo test -p erc20-tests	
-
-test-fee-distributor:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 193):
-	make build-session-code && make build-contract-fee-distributor && make copy-wasm-file-fee-distributor && make test-only-fee-distributor
+#  recipe to execute (from 'Makefile', line 99):
+	cargo test -p gauge-controller-tests
 
 copy-wasm-file-voting-escrow:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 140):
+#  recipe to execute (from 'Makefile', line 201):
+	cp ${wasm_src_path}/session-code.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${voting_escrow_des_wasm}
+	cp ${wasm_src_path}/voting-escrow.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/*.wasm ${voting_escrow_des_wasm}
-
-build-erc20-crv-session-code:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 55):
-	cargo build --release -p erc20-crv-session-code --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/erc20-crv-session-code.wasm 2>/dev/null | true
-
-build-gauge-controller-session-code:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 30):
-	cargo build --release -p gauge-controller-session-code --target wasm32-unknown-unknown
-
-build-session-code:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 22):
-	cargo build --release -p session-code --target wasm32-unknown-unknown
-
-test-only-liquidity-gauge-reward-wrapper:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 103):
-	cargo test -p liquidity-gauge-reward-wrapper-tests
-
-build-contract-erc20-crv:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 52):
-	cargo build --release -p erc20_crv --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/erc20_crv.wasm 2>/dev/null | true
-
-test-only-curve-token-v3:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 111):
-	cargo test -p curve_token_v3_tests -- --nocapture
-
-test-erc20-crv:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 197):
-	make build-contract-erc20-crv && make build-erc20-crv-session-code && make copy-wasm-file-erc20-crv && make test-only-erc20-crv
-
-copy-wasm-file-curve-token-v1:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 167):
-	cp ${wasm_src_path}/*.wasm curve-token-v1/curve-token-v1-tests/wasm
-
-test-only-reward-only-gauge:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 85):
-	cargo test -p reward-only-gauge-tests
-
-build-contract-liquidity-gauge-reward-wrapper:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 61):
-	cargo build --release -p liquidity-gauge-reward-wrapper --target wasm32-unknown-unknown
-
-test-only-ownable:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 113):
-	cargo test -p ownable-tests -- --nocapture
 
 copy-wasm-file-fee-distributor:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 143):
+#  recipe to execute (from 'Makefile', line 138):
+	cp ${wasm_src_path}/session-code.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${fee_distributor_des_wasm}
-	cp ${wasm_src_path}/*.wasm ${fee_distributor_des_wasm}
+	cp ${wasm_src_path}/voting-escrow.wasm ${fee_distributor_des_wasm}
+	cp ${wasm_src_path}/fee-distributor.wasm ${fee_distributor_des_wasm}
+
+test-only-liquidity-gauge-reward-wrapper:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 105):
+	cargo test -p liquidity-gauge-reward-wrapper-tests -- --nocapture
+
+test-lp-token-wrapper:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 254):
+	make build-contract-erc20 && make build-lp-token-wrapper-session-code && make build-lp-token-wrapper && make copy-wasm-file-lp-token-wrapper && make test-only-lp-token-wrapper
+
+test-only-curve-token-v3:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 91):
+	cargo test -p curve-token-v3-tests
+
+test-erc20-crv:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 242):
+	make build-contract-erc20-crv && make copy-wasm-file-erc20-crv && make test-only-erc20-crv
+
+test-only-reward-only-gauge:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 111):
+	cargo test -p reward-only-gauge-tests
+
+test-only-i-reward-distribution-recipient:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 121):
+	cargo test -p i-reward-distribution-recipient-tests
+
+build-contract-liquidity-gauge-reward-wrapper:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 54):
+	cargo build --release -p erc20_crv -p erc20 -p minter -p voting-escrow -p gauge-controller -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p curve-rewards --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward-wrapper.wasm 2>/dev/null | true
 
 build-i-reward-distribution-recipient:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 26):
+#  recipe to execute (from 'Makefile', line 32):
 	cargo build --release -p i-reward-distribution-recipient --target wasm32-unknown-unknown
 
 lint: clippy
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 251):
+#  recipe to execute (from 'Makefile', line 303):
 	cargo fmt --all
 
 test-only-vesting-escrow-simple:
 #  Implicit rule search has not been done.
+ 
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 99):
-	cargo test -p vesting-escrow-simple-tests -- --nocapture
+#  recipe to execute (from 'Makefile', line 117):
+	cargo test -p vesting-escrow-simple-tests
 
 build-contract-curve-token-v3:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 71):
-	cargo build --release -p curve_token_v3 --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/curve_token_v3.wasm 2>/dev/null | true
+#  recipe to execute (from 'Makefile', line 27):
+	cargo build --release -p curve-token-v3 --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/curve-token-v3.wasm 2>/dev/null | true
 
 copy-wasm-file-ownable:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 173):
+#  recipe to execute (from 'Makefile', line 206):
 	cp ${wasm_src_path}/ownable_test.wasm ${ownable_des_wasm}
 	cp ${wasm_src_path}/ownable.wasm ${ownable_des_wasm}
 
@@ -880,77 +905,106 @@ build-contract-reward-only-gauge:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 40):
-	cargo build --release -p reward-only-gauge -p reward-only-gauge-proxy --target wasm32-unknown-unknown
+#  recipe to execute (from 'Makefile', line 63):
+	cargo build --release -p erc20 -p reward-only-gauge -p reward-only-gauge-proxy --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/reward-only-gauge.wasm 2>/dev/null | true
 
 test-vesting-escrow-factory:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 189):
+#  recipe to execute (from 'Makefile', line 234):
 	make build-contract-vesting-escrow-factory && make copy-wasm-file-vesting-escrow-factory && make test-only-vesting-escrow-factory
 
-copy-wasm-file-erc20-crv:
+test-only-lp-token-wrapper:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 163):
-	cp ${wasm_src_path}/*.wasm erc20-crv/erc20_crv_tests/wasm
+#  recipe to execute (from 'Makefile', line 125):
+	cargo test -p lp-token-wrapper-tests
 
 test-vesting-escrow:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 187):
+#  recipe to execute (from 'Makefile', line 232):
 	make build-contract-vesting-escrow && make copy-wasm-file-vesting-escrow && make test-only-vesting-escrow
 
 build-contract-vesting-escrow-simple:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 58):
-	cargo build --release -p vesting_escrow_simple --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
+#  recipe to execute (from 'Makefile', line 72):
+	cargo build --release -p erc20 -p vesting-escrow-simple-proxy -p vesting-escrow-simple --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true
+
+build-lp-token-wrapper:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 84):
+	cargo build --release -p lp-token-wrapper --target wasm32-unknown-unknown
+
+test-curve-rewards:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 256):
+	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
+
+build-curve-rewards-session-code:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 86):
+	cargo build --release -p curve-rewards-session-code --target wasm32-unknown-unknown
 
 test-only-liquidity-gauge-wrapper:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 105):
+#  recipe to execute (from 'Makefile', line 107):
 	cargo test -p liquidity-gauge-wrapper-tests
 
 copy-wasm-file-gauge-proxy:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 126):
+#  recipe to execute (from 'Makefile', line 148):
 	cp ${wasm_src_path}/gauge-proxy.wasm ${gauge_proxy_des_wasm}
 
 clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 235):
+#  recipe to execute (from 'Makefile', line 280):
 	cargo clean
 	rm -rf Cargo.lock
-	rm -rf ${minter_des_wasm}/*.wasm
+	rm -rf ${curve_token_v3_des_wasm}/*.wasm
+	rm -rf ${erc20_des_wasm}/*.wasm
+	rm -rf ${erc20_crv_des_wasm}/*.wasm
+	rm -rf ${fee_distributor_des_wasm}/*.wasm
 	rm -rf ${gauge_controller_des_wasm}/*.wasm
+	rm -rf ${gauge_proxy_des_wasm}/*.wasm
+	rm -rf ${liquidity_gauge_reward_des_wasm}/*.wasm
+	rm -rf ${liquidity_gauge_reward_wrapper_des_wasm}/*.wasm
+	rm -rf ${liquidity_gauge_wrapper_des_wasm}/*.wasm
+	rm -rf ${minter_des_wasm}/*.wasm
 	rm -rf ${reward_only_gauge_des_wasm}/*.wasm
 	rm -rf ${vesting_escrow_des_wasm}/*.wasm
 	rm -rf ${vesting_escrow_factory_des_wasm}/*.wasm
+	rm -rf ${vesting_escrow_simple_des_wasm}/*.wasm
 	rm -rf ${voting_escrow_des_wasm}/*.wasm
-	rm -rf ${fee_distributor_des_wasm}*.wasm
-	rm -rf ${voting_escrow_des_wasm}*.wasm
-	rm -rf ${liquidity_gauge_reward_des_wasm}*.wasm
-	rm -rf ${erc20_des_wasm}/*.wasm
-	rm -rf ${liquidity_gauge_reward_wrapper_des_wasm}/*.wasm
-	rm -rf ${liquidity_gauge_wrapper_des_wasm}/*.wasm
+	rm -rf ${ownable_des_wasm}/*.wasm
+	rm -rf ${i_reward_distribution_recipient_des_wasm}/*.wasm
+	rm -rf ${lp_token_wrapper_des_wasm}/*.wasm
+	rm -rf ${curve_rewards_des_wasm}/*.wasm
 
 copy-wasm-file-vesting-escrow-factory:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 136):
+#  recipe to execute (from 'Makefile', line 192):
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-factory-token.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-factory-proxy-token.wasm ${vesting_escrow_factory_des_wasm}
@@ -959,45 +1013,46 @@ test-only-voting-escrow:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 91):
+#  recipe to execute (from 'Makefile', line 119):
 	cargo test -p voting-escrow-tests
 
 copy-wasm-file-liquidity-gauge-reward:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 146):
-	cp ${wasm_src_path}/*.wasm ${liquidity_gauge_reward_des_wasm}
+#  recipe to execute (from 'Makefile', line 150):
+	cp ${wasm_src_path}/session-code.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/erc20_crv.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/erc20-token.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/voting-escrow.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/gauge-controller-proxy-token.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/gauge-controller-token.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/minter-token.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/minter-proxy-token.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/liquidity-gauge-reward.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${liquidity_gauge_reward_des_wasm}
 
 test-only-fee-distributor:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 93):
+#  recipe to execute (from 'Makefile', line 97):
 	cargo test -p fee-distributor-tests
 
-copy-wasm-file-curve-token-v2:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 169):
-	cp ${wasm_src_path}/*.wasm curve-token-v2/curve-token-v2-tests/wasm
-
 # files hash-table stats:
-# Load=88/1024=9%, Rehash=0, Collisions=28/104=27%
+# Load=90/1024=9%, Rehash=0, Collisions=26/105=25%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 122 / storage = 2759 B / avg = 22 B
-# current buf: size = 8162 B / used = 2759 B / count = 122 / avg = 22 B
+# strcache buffers: 1 (0) / strings = 125 / storage = 2876 B / avg = 23 B
+# current buf: size = 8162 B / used = 2876 B / count = 125 / avg = 23 B
 
-# strcache performance: lookups = 217 / hit rate = 43%
+# strcache performance: lookups = 220 / hit rate = 43%
 # hash-table stats:
- 
-# Load=122/8192=1%, Rehash=0, Collisions=3/217=1%
-# Finished Make data base on Fri Jun  3 09:06:34 2022
+# Load=125/8192=2%, Rehash=0, Collisions=5/220=2%
+# Finished Make data base on Tue Jun 14 12:06:23 2022
 
  

@@ -20,7 +20,13 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
         0,
     )
 }
-fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract,TestContract) {
+fn deploy() -> (
+    TestEnv,
+    AccountHash,
+    TestContract,
+    TestContract,
+    TestContract,
+) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let erc20 = deploy_erc20(&env, owner);
@@ -55,12 +61,12 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract,TestContract) {
         0,
     );
 
-    (env, owner, contract, proxy,erc20)
+    (env, owner, contract, proxy, erc20)
 }
 
 #[test]
 fn test_deploy() {
-    let (env,owner,contract,__,_) = deploy();
+    let (env, owner, contract, __, _) = deploy();
     let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
     // assert_eq!(contract.start_time(), 0.into());
     // assert_eq!(contract.end_time(), 0.into());
@@ -68,24 +74,24 @@ fn test_deploy() {
 
 #[test]
 fn toggle_disable() {
-    let (env, owner, contract, proxy,erc20) = deploy();
+    let (env, owner, contract, proxy, erc20) = deploy();
     let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
     let proxy = VESTINGESCROWSIMPLEInstance::contract_instance(proxy);
     let recipient: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap();
-    let recipient:Key=Key::from_formatted_str(
+    let recipient: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap();
-    let spender:Key=Key::from_formatted_str(
+    let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000001".into(),
     )
     .unwrap();
-    let to:Key=proxy.package_hash().into();
-    let amount:U256=1000000000.into();
-     erc20.call_contract(
+    let to: Key = proxy.package_hash().into();
+    let amount: U256 = 1000000000.into();
+    erc20.call_contract(
         owner,
         "mint",
         runtime_args! {"to" => to, "amount" => amount},
@@ -97,26 +103,35 @@ fn toggle_disable() {
         runtime_args! {"spender" => spender , "amount" => amount},
         0,
     );
-    proxy.initialize(owner, proxy.package_hash().into(),Key::Hash(erc20.package_hash()),recipient, amount, 0.into(),5.into(), true);
-   // let _recipient_arg: Key = Key::Account(owner);
+    proxy.initialize(
+        owner,
+        proxy.package_hash().into(),
+        Key::Hash(erc20.package_hash()),
+        recipient,
+        amount,
+        0.into(),
+        5.into(),
+        true,
+    );
+    // let _recipient_arg: Key = Key::Account(owner);
     proxy.toggle_disable(owner, recipient);
 }
 //#[test]
 fn disable_can_disable() {
-    let (env, owner, contract, proxy,erc20) = deploy();
+    let (env, owner, contract, proxy, erc20) = deploy();
     let contract = VESTINGESCROWSIMPLEInstance::contract_instance(contract);
     let proxy = VESTINGESCROWSIMPLEInstance::contract_instance(proxy);
-    let recipient:Key=Key::from_formatted_str(
+    let recipient: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap();
-    let spender:Key=Key::from_formatted_str(
+    let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000001".into(),
     )
     .unwrap();
-    let to:Key=proxy.package_hash().into();
-    let amount:U256=1000000000.into();
-     erc20.call_contract(
+    let to: Key = proxy.package_hash().into();
+    let amount: U256 = 1000000000.into();
+    erc20.call_contract(
         owner,
         "mint",
         runtime_args! {"to" => to, "amount" => amount},
@@ -128,7 +143,16 @@ fn disable_can_disable() {
         runtime_args! {"spender" => spender , "amount" => amount},
         0,
     );
-    proxy.initialize(owner, proxy.package_hash().into(),Key::Hash(erc20.package_hash()),recipient, amount, 0.into(),5.into(), true);
+    proxy.initialize(
+        owner,
+        proxy.package_hash().into(),
+        Key::Hash(erc20.package_hash()),
+        recipient,
+        amount,
+        0.into(),
+        5.into(),
+        true,
+    );
     contract.disable_can_disable(owner);
 }
 // //#[test]
