@@ -88,7 +88,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn deposit(&self, owner: AccountHash, addr: Key, value: U256) {
+    pub fn deposit(&self, owner: AccountHash, addr: Option<Key>, value: U256) {
         self.0.call_contract(
             owner,
             "deposit",
@@ -112,7 +112,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn claim_rewards(&self, owner: AccountHash, addr: Key) {
+    pub fn claim_rewards(&self, owner: AccountHash, addr: Option<Key>) {
         self.0.call_contract(
             owner,
             "claim_rewards",

@@ -1,13 +1,13 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{collections::BTreeSet, format, vec};
+use alloc::{boxed::Box, collections::BTreeSet, format, vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
+    runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
     U256,
 };
@@ -129,7 +129,7 @@ fn set_approve_deposit() {
 #[no_mangle]
 fn deposit() {
     let value: U256 = runtime::get_named_arg("value");
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     LiquidityGaugeReward::default().deposit(value, addr);
 }
 
@@ -142,7 +142,7 @@ fn withdraw() {
 
 #[no_mangle]
 fn claim_rewards() {
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     LiquidityGaugeReward::default().claim_rewards(addr);
 }
 
@@ -418,7 +418,7 @@ fn get_entry_points() -> EntryPoints {
         "deposit",
         vec![
             Parameter::new("value", U256::cl_type()),
-            Parameter::new("addr", Key::cl_type()),
+            Parameter::new("addr", CLType::Option(Box::new(CLType::Key))),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -436,7 +436,10 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claim_rewards",
-        vec![Parameter::new("addr", Key::cl_type())],
+        vec![Parameter::new(
+            "addr",
+            CLType::Option(Box::new(CLType::Key)),
+        )],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

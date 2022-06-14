@@ -36,6 +36,25 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
     )
 }
 
+fn deploy_curve_rewards(
+    env: &TestEnv,
+    sender: AccountHash,
+    token: Key,
+    reward: Key,
+) -> TestContract {
+    TestContract::new(
+        env,
+        "curve-rewards.wasm",
+        "curve-rewards",
+        sender,
+        runtime_args! {
+            "token" => token,
+            "reward" => reward
+        },
+        0,
+    )
+}
+
 fn deploy_voting_escrow(
     env: &TestEnv,
     sender: AccountHash,
@@ -122,50 +141,49 @@ fn deploy() -> (
         Key::Hash(gauge_controller.package_hash()),
         Key::Hash(erc20_crv.package_hash()),
     );
+    let curve_rewards = deploy_curve_rewards(
+        &env,
+        owner,
+        Key::Hash(deploy_erc20(&env, owner).package_hash()),
+        Key::Hash(deploy_erc20(&env, owner).package_hash()),
+    );
     let instance = LIQUIDITYGAUGEREWARDInstance::new(
         &env,
         "Liquidity Gauge Reward",
         owner,
         Key::Hash(erc20.package_hash()),
         Key::Hash(minter.package_hash()),
-        Key::Hash(erc20.package_hash()),
+        Key::Hash(curve_rewards.package_hash()),
         Key::Hash(erc20.package_hash()),
         Key::Account(owner),
     );
     (env, owner, instance, erc20)
 }
 
-// #[test]
+#[test]
 fn test_deploy() {
     let (_, _, _, _) = deploy();
 }
 
-// #[test]
+#[test]
 fn test_user_checkpoint() {
     let (_, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     instance.user_checkpoint(owner, addr);
 }
 
-// #[test]
+#[test]
 fn test_claimable_tokens() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     instance.claimable_tokens(owner, addr);
 }
 
-// #[test]
+#[test]
 fn test_claimable_reward() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     instance.claimable_reward(owner, addr);
-}
-
-// #[test]
-fn test_kick() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(owner);
-    instance.kick(owner, addr);
 }
 
 #[test]
@@ -176,27 +194,62 @@ fn test_set_approve_deposit() {
     instance.set_approve_deposit(owner, addr, can_deposit);
 }
 
-// #[test]
+#[test]
 fn test_deposit() {
-    let (env, owner, instance, _) = deploy();
-    let value: U256 = 10.into();
-    let addr: Key = Key::Account(owner);
-    instance.deposit(owner, addr, value);
+    let (env, owner, instance, erc20) = deploy();
+    let value: U256 = 100.into();
+    erc20.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value
+        },
+        0,
+    );
+    erc20.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::Hash(instance.package_hash()),
+            "amount" => value
+        },
+        0,
+    );
+    instance.deposit(owner, None, value);
 }
 
-// #[test]
+#[test]
 fn test_withdraw() {
-    let (env, owner, instance, _) = deploy();
+    let (env, owner, instance, erc20) = deploy();
     let claim_rewards: bool = true;
-    let value: U256 = 10.into();
+    let value: U256 = 100.into();
+    erc20.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Key::Account(owner),
+            "amount" => value
+        },
+        0,
+    );
+    erc20.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+            "spender" => Key::Hash(instance.package_hash()),
+            "amount" => value
+        },
+        0,
+    );
+    instance.deposit(owner, None, value);
     instance.withdraw(owner, claim_rewards, value);
 }
 
-// #[test]
+#[test]
 fn test_claim_rewards() {
     let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(owner);
-    instance.claim_rewards(owner, addr);
+    instance.claim_rewards(owner, None);
 }
 
 #[test]
