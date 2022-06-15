@@ -36,7 +36,7 @@ impl VESTINGESCROWSIMPLEInstance {
     ) -> TestContract {
         TestContract::new(
             env,
-            "vesting-escrow-simple-proxy-token.wasm",
+            "vesting-escrow-simple-proxy.wasm",
             contract_name,
             sender,
             runtime_args! {
