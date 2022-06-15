@@ -63,7 +63,7 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             0,
         );
     }
-    pub fn claim_tokens(&self, owner: AccountHash, addr: Key) {
+    pub fn claim_tokens(&self, owner: AccountHash, addr: Option<Key>) {
         self.0.call_contract(
             owner,
             "claim_tokens",
@@ -84,7 +84,7 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             0,
         );
     }
-    pub fn deposit(&self, owner: AccountHash, value: U256, addr: Key) {
+    pub fn deposit(&self, owner: AccountHash, value: U256, addr: Option<Key>) {
         self.0.call_contract(
             owner,
             "deposit",
@@ -105,6 +105,92 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             },
             0,
         );
+    }
+    pub fn allowance(&self, owner: AccountHash, key: Key, spender: Key) {
+        self.0.call_contract(
+            owner,
+            "allowance",
+            runtime_args! {
+                "owner" => key,
+                "spender" => spender,
+            },
+            0,
+        );
+    }
+    pub fn transfer(&self, owner: AccountHash, recipient: Key, amount: U256) {
+        self.0.call_contract(
+            owner,
+            "transfer",
+            runtime_args! {
+                "recipient" => recipient,
+                "amount" => amount,
+            },
+            0,
+        );
+    }
+    pub fn transfer_from(&self, owner: AccountHash,key:Key, recipient: Key, amount: U256) {
+        self.0.call_contract(
+            owner,
+            "transfer_from",
+            runtime_args! {
+                "owner" => key,
+                "recipient" => recipient,
+                "amount" => amount,
+            },
+            0,
+        );
+    }
+    pub fn approve(&self, owner: AccountHash, spender: Key, amount: U256) {
+        self.0.call_contract(
+            owner,
+            "approve",
+            runtime_args! {
+                "spender" => spender,
+                "amount" => amount,
+            },
+            0,
+        );
+    }
+    pub fn increase_allowance(&self, owner: AccountHash, spender: Key, amount: U256) {
+        self.0.call_contract(
+            owner,
+            "increase_allowance",
+            runtime_args! {
+                "spender" => spender,
+                "amount" => amount,
+            },
+            0,
+        );
+    }
+    pub fn decrease_allowance(&self, owner: AccountHash, spender: Key, amount: U256) {
+        self.0.call_contract(
+            owner,
+            "decrease_allowance",
+            runtime_args! {
+                "spender" => spender,
+                "amount" => amount,
+            },
+            0,
+        );
+    }
+    pub fn kill_me(&self, owner: AccountHash) {
+        self.0.call_contract(owner, "kill_me", runtime_args! {}, 0);
+    }
+
+    pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key) {
+        self.0.call_contract(
+            owner,
+            "commit_transfer_ownership",
+            runtime_args! {
+                "addr" => addr
+            },
+            0,
+        );
+    }
+
+    pub fn apply_transfer_ownership(&self, owner: AccountHash) {
+        self.0
+            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, 0);
     }
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()

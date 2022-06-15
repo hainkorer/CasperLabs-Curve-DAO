@@ -78,6 +78,20 @@ pub extern "C" fn call() {
             );
             store(CLAIMABLE_REWARD, ret);
         }
+        ALLOWANCE => {
+            let owner: Key = runtime::get_named_arg("owner");
+            let spender: Key = runtime::get_named_arg("spender");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                ALLOWANCE,
+                runtime_args! {
+                    "owner" => owner,
+                    "spender" => spender,
+                },
+            );
+            store(ALLOWANCE, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

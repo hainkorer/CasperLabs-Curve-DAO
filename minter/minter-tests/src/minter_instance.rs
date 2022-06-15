@@ -164,7 +164,7 @@ impl MINTERInstance {
                 "decimal" => 9 as u8,
                 "supply" => U256::from(0)
             },
-            0,
+            200000000000,
         )
     }
     pub fn constructor(

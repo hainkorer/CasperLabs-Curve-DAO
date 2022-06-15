@@ -13,7 +13,7 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
+use contract_utils::{ContractContext, ContractStorage, set_key};
 
 pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
     // @notice Contract constructor
@@ -299,11 +299,15 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             .checked_div(U256::from(TEN_E_NINE))
             .unwrap_or_revert_with(Error::RewardWrapperDivisionError8);
     }
-    fn claim_tokens(&self, addr: Key) {
+    fn claim_tokens(&self,  addr: Option<Key>) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::RewardWrapperIsLocked1));
         }
         set_lock(true);
+        let addr: Key = match addr {
+            Some(val) => val,
+            None => self.get_caller(),
+        };
         self._checkpoint(addr);
         let ret: Result<(), u32> = runtime::call_versioned_contract(
             get_crv_token().into_hash().unwrap_or_revert().into(),
@@ -344,11 +348,15 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     /// @notice Deposit `_value` LP tokens
     /// @param _value Number of tokens to deposit
     /// @param addr Address to deposit for
-    fn deposit(&self, value: U256, addr: Key) {
+    fn deposit(&self, value: U256, addr: Option<Key>) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::RewardWrapperIsLocked2));
         }
         set_lock(true);
+        let addr: Key = match addr {
+            Some(val) => val,
+            None => self.get_caller(),
+        };
         if get_is_killed() {
             runtime::revert(ApiError::from(Error::RewardWrapperIsKilled1));
         }
