@@ -4,13 +4,13 @@ use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::{
     contract_api::{
-        runtime::{self, get_blocktime},
+        runtime,
         storage,
     },
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef,U256,
 };
 use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
@@ -184,11 +184,15 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     }
     // @notice Claim mintable CR
     // @param addr Address to claim for
-    fn claim_tokens(&self, addr: Key) {
+    fn claim_tokens(&self,addr: Option<Key>) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::GaugeWrapperIsLocked1));
         }
         set_lock(true);
+        let addr: Key = match addr {
+            Some(val) => val,
+            None => self.get_caller(),
+        };
         self._checkpoint(addr);
         let ret: Result<(), u32> = runtime::call_versioned_contract(
             get_crv_token().into_hash().unwrap_or_revert().into(),
@@ -216,11 +220,15 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @notice Deposit `_value` LP tokens
     /// @param _value Number of tokens to deposit
     /// @param addr Address to deposit for
-    fn deposit(&self, value: U256, addr: Key) {
+    fn deposit(&self, value: U256, addr: Option<Key>) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::GaugeWrapperIsLocked2));
         }
         set_lock(true);
+        let addr: Key = match addr {
+            Some(val) => val,
+            None => self.get_caller(),
+        };
         if get_is_killed() {
             runtime::revert(ApiError::from(Error::GaugeWrapperIsKilled1));
         }

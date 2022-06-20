@@ -401,3 +401,45 @@ fn test_approve() {
         LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
     liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
 }
+#[test]
+fn test_increase_allowance() {
+    let (_, owner, instance) = deploy();
+    let liquidity_gauge_reward_wrapper_instance =
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
+    liquidity_gauge_reward_wrapper_instance.increase_allowance(owner,Key::Account(owner), U256::from(TEN_E_NINE * 10));
+}
+#[test]
+fn test_decrease_allowance() {
+    let (_, owner, instance) = deploy();
+    let liquidity_gauge_reward_wrapper_instance =
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
+    liquidity_gauge_reward_wrapper_instance.decrease_allowance(owner,Key::Account(owner), U256::from(TEN_E_NINE * 10));
+}
+#[test]
+fn test_kill_me() {
+    let (_, owner, instance) = deploy();
+    let liquidity_gauge_reward_wrapper_instance =
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
+    liquidity_gauge_reward_wrapper_instance.kill_me(owner);
+}
+#[test]
+fn test_commit_transfer_ownership() {
+    let (_, owner, instance) = deploy();
+    let liquidity_gauge_reward_wrapper_instance =
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+    let addr: Key = Key::Account(owner);
+    liquidity_gauge_reward_wrapper_instance.commit_transfer_ownership(owner, addr);
+}
+
+#[test]
+fn test_apply_transfer_ownership() {
+    let (_, owner, instance) = deploy();
+    let addr: Key = Key::Account(owner);
+    let liquidity_gauge_reward_wrapper_instance =
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_reward_wrapper_instance.commit_transfer_ownership(owner, addr);
+    liquidity_gauge_reward_wrapper_instance.apply_transfer_ownership(owner);
+}

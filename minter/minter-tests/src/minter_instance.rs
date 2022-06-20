@@ -6,7 +6,7 @@ use blake2::{
 };
 use casper_types::{
     account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
-    RuntimeArgs, U256,
+    RuntimeArgs, U256, U128,
 };
 use test_env::{TestContract, TestEnv};
 
@@ -256,7 +256,7 @@ impl MINTERInstance {
     }
     pub fn contract_package_hash(&self) -> ContractPackageHash {
         self.0
-            .query_named_key(String::from("contract_package_hash"))
+            .query_named_key(String::from("self_contract_package_hash"))
     }
     pub fn contract_hash(&self) -> Key {
         self.0.query_named_key(String::from("self_contract_hash"))
@@ -270,6 +270,25 @@ pub fn key_to_str(key: &Key) -> String {
         _ => panic!("Unexpected key type"),
     }
 }
+
+pub fn add_gauge<T: Into<Key>>(
+        gauge_controller: &TestContract,
+        sender: AccountHash,
+        addr: T,
+        gauge_type: U128,
+        weight: Option<U256>,
+    ) {
+        gauge_controller.call_contract(
+            sender,
+            "add_gauge",
+            runtime_args! {
+                "addr" => addr.into(),
+                "gauge_type" => gauge_type,
+                "weight"=>weight
+            },
+            0,
+        );
+    }
 
 pub fn keys_to_str(key_a: &Key, key_b: &Key) -> String {
     let mut hasher = VarBlake2b::new(32).unwrap();

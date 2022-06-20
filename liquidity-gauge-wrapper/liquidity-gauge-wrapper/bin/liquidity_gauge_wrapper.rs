@@ -8,7 +8,7 @@ use casper_contract::{
 };
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
     U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
@@ -93,7 +93,7 @@ fn claimable_tokens_js_client() {
 }
 #[no_mangle]
 fn claim_tokens() {
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     LiquidityGaugeWrapper::default().claim_tokens(addr);
 }
 #[no_mangle]
@@ -106,7 +106,7 @@ fn set_approve_deposit() {
 #[no_mangle]
 fn deposit() {
     let value: U256 = runtime::get_named_arg("value");
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     LiquidityGaugeWrapper::default().deposit(value, addr);
 }
 
@@ -288,7 +288,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claim_tokens",
-        vec![Parameter::new("addr", Key::cl_type())],
+        vec![Parameter::new("addr",CLType::Option(Box::new(CLType::Key)))],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -307,7 +307,7 @@ fn get_entry_points() -> EntryPoints {
         "deposit",
         vec![
             Parameter::new("value", U256::cl_type()),
-            Parameter::new("addr", Key::cl_type()),
+            Parameter::new("addr", CLType::Option(Box::new(CLType::Key))),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
