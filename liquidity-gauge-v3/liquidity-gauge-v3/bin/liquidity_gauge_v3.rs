@@ -12,7 +12,7 @@ use casper_types::{
 };
 
 use contract_utils::{ContractContext, OnChainContractStorage};
-use liquidity_gauge_v3_crate::{self, LIQUIDITYTGAUGEV3};
+use liquidity_gauge_v3_crate::{self, LIQUIDITYTGAUGEV3,data};
 
 #[derive(Default)]
 struct LiquidityGaugeV3(OnChainContractStorage);
@@ -47,7 +47,19 @@ fn constructor() {
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     LiquidityGaugeV3::default().constructor(lp_addr, minter, admin, contract_hash, package_hash);
 }
+#[no_mangle]
+fn crv_token() {
+    runtime::ret(CLValue::from_t(data::get_crv_token()).unwrap_or_revert());
+}
 
+#[no_mangle]
+fn lp_token() {
+    runtime::ret(CLValue::from_t(data::get_lp_token()).unwrap_or_revert());
+}
+#[no_mangle]
+fn minter() {
+    runtime::ret(CLValue::from_t(data::get_minter()).unwrap_or_revert());
+}
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(
@@ -63,7 +75,27 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
         EntryPointType::Contract,
     ));
-
+    entry_points.add_entry_point(EntryPoint::new(
+        "crv_token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "lp_token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "minter",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
     entry_points
 }
 
