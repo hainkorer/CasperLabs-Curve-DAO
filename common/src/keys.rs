@@ -32,6 +32,7 @@ pub const TOTAL_CLAIMED_DICT: &str = "total_claimed";
 pub const DISABLED_AT_DICT: &str = "disabled_at";
 pub const FUND_ADMINS_DICT: &str = "fund_admins";
 pub const CAN_DISABLE: &str = "can_disable";
+pub const FUND_ADMINS_ENABLED: &str = "fund_admins_enabled";
 pub const END_TIME: &str = "end_time";
 // Voting Escrow
 pub const GET_LAST_USER_SLOPE: &str = "get_last_user_slope";
@@ -155,6 +156,9 @@ pub const ALLOWANCES: &str = "allownances";
 pub const CLAIMABLE_CRV: &str = "claimable_crv";
 pub const CRV_INTEGRAL_FOR: &str = "crv_integral_for";
 pub const CLAIMABLE_REWARDS: &str = "claimable_rewards";
+pub const USER_CHECKPOINT: &str = "user_checkpoint";
+pub const CLAIMABLE_TOKENS: &str = "claimable_tokens";
+pub const CLAIMABLE_REWARD: &str = "claimable_reward";
 // Gauge Controller Wasm Keys
 pub const GAUGE_TYPES: &str = "gauge_types";
 pub const GAUGE_RELATIVE_WEIGHT: &str = "gauge_relative_weight";
@@ -163,6 +167,29 @@ pub const GET_GAUGE_WEIGHT: &str = "get_gauge_weight";
 pub const GET_TYPE_WEIGHT: &str = "get_type_weight";
 pub const GET_TOTAL_WEIGHT: &str = "get_total_weight";
 pub const GET_WEIGHTS_SUM_PER_TYPE: &str = "get_weights_sum_per_type";
-
+//IRewardDistributionRecipient
+pub const REWARDDISTRIBUTION: &str = "reward_distribution";
+//LpTokenWrapper
+pub const UNI: &str = "uni";
+pub const BALANCES: &str = "balances";
+//CruveRewards
+pub const SNX: &str = "snx";
+pub const PERIOD_FINISH: &str = "period_finish";
+pub const REWARD_RATE: &str = "reward_rate";
+pub const LAST_UPDATE_TIME: &str = "last_update_time";
+pub const REWARD_PER_TOKEN_STORED: &str = "reward_per_token_stored";
+pub const USER_REWARD_PER_TOKEN_PAID_DICT: &str = "user_reward_per_token_paid";
+pub const REWARDS_DICT: &str = "rewards";
+pub const LAST_TIME_REWARD_APPLICABLE: &str = "last_time_reward_applicable";
+pub const REWARD_PER_TOKEN: &str = "reward_per_token";
+pub const EARNED: &str = "earned";
 //Liqudity Guage v3 keys
 pub const MYVEC: &str = "myvec";
+
+//VESTING ES
+pub const APPLY_TRANSFER_OWNERSHIP: &str = "apply_transfer_ownership";
+pub const COMMIT_TRANSFER_OWNERSHIP: &str = "commit_transfer_ownership";
+pub const VESTED_SUPPLY: &str = "vested_supply";
+pub const LOCKED_SUPPLY: &str = "locked_supply";
+pub const VESTED_OF: &str = "vested_of";
+pub const LOCKED_OF: &str = "locked_of";

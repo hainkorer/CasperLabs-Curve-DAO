@@ -19,3 +19,6 @@ blake2 = "0.9.1"
 
 [features]
 default = ["casper-contract/std", "casper-types/std", "casper-contract/test-support"]
+
+[lib]
+doctest = false

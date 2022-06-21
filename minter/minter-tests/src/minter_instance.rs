@@ -6,7 +6,7 @@ use blake2::{
 };
 use casper_types::{
     account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
-    RuntimeArgs, U256,
+    RuntimeArgs, U256, U128,
 };
 use test_env::{TestContract, TestEnv};
 
@@ -108,7 +108,31 @@ impl MINTERInstance {
             0,
         )
     }
-
+    pub fn deploy_liquidity_gauge_reward(
+        env: &TestEnv,
+        contract_name: &str,
+        sender: AccountHash,
+        lp_addr: Key,
+        minter: Key,
+        reward_contract: Key,
+        rewarded_token: Key,
+        admin: Key,
+    ) -> TestContract {
+        TestContract::new(
+            env,
+            "liquidity-gauge-reward.wasm",
+            contract_name,
+            sender,
+            runtime_args! {
+                "lp_addr" => lp_addr,
+                "minter" => minter,
+                "reward_contract" => reward_contract,
+                "rewarded_token" => rewarded_token,
+                "admin" => admin,
+            },
+            0,
+        )
+    }
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
@@ -128,7 +152,21 @@ impl MINTERInstance {
             0,
         )
     }
-
+    pub fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
+        TestContract::new(
+            env,
+            "erc20_crv.wasm",
+            "erc20-crv",
+            sender,
+            runtime_args! {
+                "name" => "CRV",
+                "symbol" => "ERC20CRV",
+                "decimal" => 9 as u8,
+                "supply" => U256::from(0)
+            },
+            200000000000,
+        )
+    }
     pub fn constructor(
         &self,
         sender: AccountHash,
@@ -218,7 +256,7 @@ impl MINTERInstance {
     }
     pub fn contract_package_hash(&self) -> ContractPackageHash {
         self.0
-            .query_named_key(String::from("contract_package_hash"))
+            .query_named_key(String::from("self_contract_package_hash"))
     }
     pub fn contract_hash(&self) -> Key {
         self.0.query_named_key(String::from("self_contract_hash"))
@@ -232,6 +270,25 @@ pub fn key_to_str(key: &Key) -> String {
         _ => panic!("Unexpected key type"),
     }
 }
+
+pub fn add_gauge<T: Into<Key>>(
+        gauge_controller: &TestContract,
+        sender: AccountHash,
+        addr: T,
+        gauge_type: U128,
+        weight: Option<U256>,
+    ) {
+        gauge_controller.call_contract(
+            sender,
+            "add_gauge",
+            runtime_args! {
+                "addr" => addr.into(),
+                "gauge_type" => gauge_type,
+                "weight"=>weight
+            },
+            0,
+        );
+    }
 
 pub fn keys_to_str(key_a: &Key, key_b: &Key) -> String {
     let mut hasher = VarBlake2b::new(32).unwrap();

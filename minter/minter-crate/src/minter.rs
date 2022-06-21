@@ -82,9 +82,8 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             gauge_addr_package_hash,
             None,
             "integrate_fraction",
-            runtime_args! {"addr" => _for},
+            runtime_args! {"key" => _for},
         );
-
         let minted = self.minted(_for, gauge_addr);
         let to_mint: U256 = total_mint - minted;
         if to_mint != U256::from(0) {
@@ -125,7 +124,7 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::MinterLocked2);
         }
         data::set_lock(1);
-        for i in 0..(gauge_addrs.len() - 1) {
+        for i in 0..(gauge_addrs.len()) {
             self._mint_for(gauge_addrs[i], self.get_caller())
         }
         data::set_lock(0);

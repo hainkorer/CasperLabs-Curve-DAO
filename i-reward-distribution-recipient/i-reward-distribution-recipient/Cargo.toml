@@ -1,0 +1,25 @@
+[package]
+authors = ["Muhammad Saad Majeed <saad.majeed@scytalelabs.com>"]
+edition = "2018"
+name = "i-reward-distribution-recipient"
+version = "0.2.0"
+
+[dependencies]
+i-reward-distribution-recipient-crate = { path = "../i-reward-distribution-recipient-crate" }
+casper-contract = "1.4.4"
+casper-types = "1.5.0"
+contract-utils = { path = "../../utils/contract-utils" }
+ownable-crate ={path="../../ownable/ownable-crate"}
+cryptoxide = "0.3.3"
+hex = { version = "0.4.3", default-features = false }
+renvm-sig = "0.1.1 "
+
+[[bin]]
+bench = false
+doctest = false
+name = "i-reward-distribution-recipient"
+path = "bin/i_reward_distribution_recipient.rs"
+test = false
+
+[features]
+default = ["casper-contract/std", "casper-types/std"]

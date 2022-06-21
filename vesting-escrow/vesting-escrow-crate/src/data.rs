@@ -114,7 +114,7 @@ pub fn get_lock() -> u64 {
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str(
-        "_hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap()
 }
@@ -151,7 +151,7 @@ pub fn set_future_admin(future_admin: Key) {
 }
 
 pub fn start_time() -> U256 {
-    get_key(START_TIME).unwrap_or_revert()
+    get_key(START_TIME).unwrap_or_default()
 }
 
 pub fn set_start_time(value: U256) {
@@ -159,7 +159,7 @@ pub fn set_start_time(value: U256) {
 }
 
 pub fn end_time() -> U256 {
-    get_key(END_TIME).unwrap_or_revert()
+    get_key(END_TIME).unwrap_or_default()
 }
 
 pub fn set_end_time(value: U256) {
@@ -167,7 +167,7 @@ pub fn set_end_time(value: U256) {
 }
 
 pub fn initial_locked_supply() -> U256 {
-    get_key(INITIAL_LOCKED_SUPPLY).unwrap_or_revert()
+    get_key(INITIAL_LOCKED_SUPPLY).unwrap_or_default()
 }
 
 pub fn set_initial_locked_supply(value: U256) {
@@ -175,7 +175,7 @@ pub fn set_initial_locked_supply(value: U256) {
 }
 
 pub fn unallocated_supply() -> U256 {
-    get_key(UNALLOCATED_SUPPLY).unwrap_or_revert()
+    get_key(UNALLOCATED_SUPPLY).unwrap_or_default()
 }
 
 pub fn set_unallocated_supply(value: U256) {
@@ -183,7 +183,7 @@ pub fn set_unallocated_supply(value: U256) {
 }
 
 pub fn can_disable() -> bool {
-    get_key(CAN_DISABLE).unwrap_or_revert()
+    get_key(CAN_DISABLE).unwrap_or_default()
 }
 
 pub fn set_can_disable(value: bool) {
@@ -191,11 +191,11 @@ pub fn set_can_disable(value: bool) {
 }
 
 pub fn fund_admins_enabled() -> bool {
-    get_key(CAN_DISABLE).unwrap_or_revert()
+    get_key(FUND_ADMINS_ENABLED).unwrap_or_default()
 }
 
 pub fn set_fund_admins_enabled(value: bool) {
-    set_key(CAN_DISABLE, value);
+    set_key(FUND_ADMINS_ENABLED, value);
 }
 
 pub fn set_hash(contract_hash: Key) {

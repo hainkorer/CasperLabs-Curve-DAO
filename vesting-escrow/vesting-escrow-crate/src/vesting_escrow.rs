@@ -294,11 +294,11 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-        let _ret: bool = runtime::call_versioned_contract(
+        let _ret: Result<(), u32> = runtime::call_versioned_contract(
             token_package_hash,
             None,
             "transfer_from",
-            runtime_args! {"_from" => self.get_caller(),"_to" =>  data::get_package_hash(),"_value" => _amount},
+            runtime_args! {"owner" => self.get_caller(),"recipient" =>  Key::from(data::get_package_hash()),"amount" => _amount},
         );
         let unallocated_supply = self.unallocated_supply();
         let res = unallocated_supply
@@ -329,7 +329,7 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             }
         }
         let mut _total_amount: U256 = 0.into();
-        for i in 0..(recipients.len() - 1) {
+        for i in 0..(recipients.len()) {
             let amount = _amounts[i];
             let recipient = recipients[i];
             if recipient == zero_address() || recipient == account_zero_address() {

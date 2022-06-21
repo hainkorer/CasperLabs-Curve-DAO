@@ -74,15 +74,13 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
         set_package_hash(package_hash);
     }
     fn _checkpoint(&self, addr: Key) {
-        let gauge: Key = get_gauge();
-        let mut token: Key = get_crv_token();
-        let total_balance: U256 = get_total_supply();
+        let crv_token: Key = get_crv_token();
         let mut d_reward: U256 = runtime::call_versioned_contract(
-            token.into_hash().unwrap_or_revert().into(),
+            crv_token.into_hash().unwrap_or_revert().into(),
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" =>  Key::from(get_package_hash())
             },
         );
         let () = runtime::call_versioned_contract(
@@ -90,27 +88,32 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             None,
             "mint",
             runtime_args! {
-                "gauge_addr" => gauge
+                "gauge_addr" => get_gauge()
             },
         );
-        let mut d_reward_updated: U256 = runtime::call_versioned_contract(
-            token.into_hash().unwrap_or_revert().into(),
+        let d_reward_updated: U256 = runtime::call_versioned_contract(
+            crv_token.into_hash().unwrap_or_revert().into(),
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" =>  Key::from(get_package_hash())
             },
         );
-        d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
+        d_reward = d_reward_updated
+            .checked_sub(d_reward)
+            .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError1);
+        let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
                 .checked_mul(d_reward)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::GaugeWrapperMultiplyError1)
                 .checked_div(total_balance)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::GaugeWrapperDivisionError1);
         }
-        let mut i: U256 = get_crv_integral().checked_add(di).unwrap_or_revert();
+        let i: U256 = get_crv_integral()
+            .checked_add(di)
+            .unwrap_or_revert_with(Error::GaugeWrapperAdditionError1);
         set_crv_integral(i);
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
@@ -119,66 +122,23 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             ClaimableCrv::instance()
                 .get(&addr)
                 .checked_add(balance_of)
-                .unwrap_or_revert()
-                .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert())
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::GaugeWrapperAdditionError2)
+                .checked_mul(
+                    i.checked_sub(crv_integral_for)
+                        .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError2),
+                )
+                .unwrap_or_revert_with(Error::GaugeWrapperMultiplyError2)
                 .checked_div(U256::from(TEN_E_NINE))
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::GaugeWrapperDivisionError2),
         );
         CrvIntegralFor::instance().set(&addr, i);
-        //token = get_rewarded_token();
-        d_reward = runtime::call_versioned_contract(
-            token.into_hash().unwrap_or_revert().into(),
-            None,
-            "balance_of",
-            runtime_args! {
-                "owner" => self.get_caller()
-            },
-        );
-        let () = runtime::call_versioned_contract(
-            gauge.into_hash().unwrap_or_revert().into(),
-            None,
-            "claim_rewards",
-            runtime_args! {},
-        );
-        d_reward_updated = runtime::call_versioned_contract(
-            token.into_hash().unwrap_or_revert().into(),
-            None,
-            "balance_of",
-            runtime_args! {
-                "owner" => self.get_caller()
-            },
-        );
-        d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
-        if total_balance > 0.into() {
-            di = U256::from(TEN_E_NINE)
-                .checked_mul(d_reward)
-                .unwrap_or_revert()
-                .checked_div(total_balance)
-                .unwrap_or_revert();
-        }
-        // i = get_reward_integral().checked_add(di).unwrap_or_revert();
-        //set_reward_integral(i);
-        let reward_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
-        // ClaimableRewards::instance().set(
-        //     &addr,
-        //     ClaimableRewards::instance()
-        //         .get(&addr)
-        //         .checked_add(balance_of)
-        //         .unwrap_or_revert()
-        //         .checked_mul(i.checked_sub(reward_integral_for).unwrap_or_revert())
-        //         .unwrap_or_revert()
-        //         .checked_div(U256::from(TEN_E_NINE))
-        //         .unwrap_or_revert(),
-        // );
-        //RewardIntegralFor::instance().set(&addr, i);
     }
     // @notice Record a checkpoint for `addr`
     // @param addr User address
     // @return bool success
     fn user_checkpoint(&self, addr: Key) -> bool {
         if !((self.get_caller() == addr) || (self.get_caller() == get_minter())) {
-            runtime::revert(ApiError::from(Error::RewardWrapperUnauthorized));
+            runtime::revert(ApiError::from(Error::GaugeWrapperUnauthorized));
         }
         self._checkpoint(addr);
         return true;
@@ -192,84 +152,41 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             get_gauge().into_hash().unwrap_or_revert().into(),
             None,
             "claimable_tokens",
-            runtime_args! {},
+            runtime_args! {
+                "addr" => Key::from(get_package_hash())
+            },
         );
         let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
                 .checked_mul(d_reward)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::GaugeWrapperMultiplyError3)
                 .checked_div(total_balance)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::GaugeWrapperDivisionError3);
         }
-        let i: U256 = get_crv_integral().checked_add(di).unwrap_or_revert();
+        let i: U256 = get_crv_integral()
+            .checked_add(di)
+            .unwrap_or_revert_with(Error::GaugeWrapperAdditionError3);
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
         let claimable_crv: U256 = ClaimableCrv::instance().get(&addr);
         return claimable_crv
             .checked_add(balance_of)
-            .unwrap_or_revert()
-            .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert())
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::GaugeWrapperAdditionError4)
+            .checked_mul(
+                i.checked_sub(crv_integral_for)
+                    .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError3),
+            )
+            .unwrap_or_revert_with(Error::GaugeWrapperMultiplyError4)
             .checked_div(U256::from(TEN_E_NINE))
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::GaugeWrapperDivisionError4);
     }
-
-    // @notice Get the number of claimable reward tokens per user
-    // @dev This function should be manually changed to "view" in the ABI
-    // @return uint256 number of claimable tokens per user
-    #[allow(non_snake_case)]
-    fn claimable_reward(&self, addr: Key) -> U256 {
-        let gauge: Key = get_gauge();
-        let claimable_reward: U256 = runtime::call_versioned_contract(
-            gauge.into_hash().unwrap_or_revert().into(),
-            None,
-            "claimable_reward",
-            runtime_args! {
-                "addr" => Key::from(get_package_hash())
-            },
-        );
-        let claimed_rewards_for: U256 = runtime::call_versioned_contract(
-            gauge.into_hash().unwrap_or_revert().into(),
-            None,
-            "claimed_rewards_for",
-            runtime_args! {
-                "addr" => Key::from(get_package_hash())
-            },
-        );
-        let d_reward: U256 = claimable_reward
-            .checked_sub(claimed_rewards_for)
-            .unwrap_or_revert();
-        let total_balance: U256 = get_total_supply();
-        let mut di: U256 = 0.into();
-        if total_balance > 0.into() {
-            di = U256::from(TEN_E_NINE)
-                .checked_mul(d_reward)
-                .unwrap_or_revert()
-                .checked_div(total_balance)
-                .unwrap_or_revert();
-        }
-        //let i: U256 = get_reward_integral().checked_add(di).unwrap_or_revert();
-        let balance_of: U256 = BalanceOf::instance().get(&addr);
-        // let reward_integral_for: U256 = RewardIntegralFor::instance().get(&addr);
-        // let claimable_rewards: U256 = ClaimableRewards::instance().get(&addr);
-        // return claimable_rewards
-        //     .checked_add(balance_of)
-        //     .unwrap_or_revert()
-        //     .checked_mul(i.checked_sub(reward_integral_for).unwrap_or_revert())
-        //     .unwrap_or_revert()
-        //     .checked_div(U256::from(TEN_E_NINE))
-        //     .unwrap_or_revert();
-        0.into()
-    }
-
-    /// @notice Kick `addr` for abusing their boost
-    /// @dev Only if either they had another voting event, or their voting escrow lock expired
-    /// @param addr Address to kick
+    // @notice Claim mintable CR
+    // @param addr Address to claim for
     fn claim_tokens(&self, addr: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked1));
+            runtime::revert(ApiError::from(Error::GaugeWrapperIsLocked1));
         }
         set_lock(true);
         self._checkpoint(addr);
@@ -282,18 +199,6 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 "amount" => ClaimableCrv::instance().get(&addr)
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-        }
-        // let ret: Result<(), u32> = runtime::call_versioned_contract(
-        //     get_rewarded_token().into_hash().unwrap_or_revert().into(),
-        //     None,
-        //     "transfer",
-        //     runtime_args! {
-        //         "recipient" => addr,
-        //         "amount" => ClaimableRewards::instance().get(&addr)
-        //     },
-        // );
         if ret.is_err() {
             runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
         }
@@ -313,15 +218,15 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @param addr Address to deposit for
     fn deposit(&self, value: U256, addr: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked2));
+            runtime::revert(ApiError::from(Error::GaugeWrapperIsLocked2));
         }
         set_lock(true);
         if get_is_killed() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsKilled1));
+            runtime::revert(ApiError::from(Error::GaugeWrapperIsKilled1));
         }
         if addr != self.get_caller() {
             if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
-                runtime::revert(ApiError::from(Error::RewardWrapperNotApproved));
+                runtime::revert(ApiError::from(Error::GaugeWrapperNotApproved));
             }
         }
         self._checkpoint(addr);
@@ -329,8 +234,10 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             let balance: U256 = BalanceOf::instance()
                 .get(&addr)
                 .checked_add(value)
-                .unwrap_or_revert();
-            let supply: U256 = get_total_supply().checked_add(value).unwrap_or_revert();
+                .unwrap_or_revert_with(Error::GaugeWrapperAdditionError5);
+            let supply: U256 = get_total_supply()
+                .checked_add(value)
+                .unwrap_or_revert_with(Error::GaugeWrapperAdditionError6);
             BalanceOf::instance().set(&addr, balance);
             set_total_supply(supply);
             let ret: Result<(), u32> = runtime::call_versioned_contract(
@@ -377,7 +284,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @param _value Number of tokens to withdraw
     fn withdraw(&self, value: U256) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsLocked3));
+            runtime::revert(ApiError::from(Error::GaugeWrapperIsLocked3));
         }
         set_lock(true);
         self._checkpoint(self.get_caller());
@@ -385,8 +292,10 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             let balance: U256 = BalanceOf::instance()
                 .get(&self.get_caller())
                 .checked_sub(value)
-                .unwrap_or_revert();
-            let supply: U256 = get_total_supply().checked_sub(value).unwrap_or_revert();
+                .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError4);
+            let supply: U256 = get_total_supply()
+                .checked_sub(value)
+                .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError5);
             BalanceOf::instance().set(&self.get_caller(), balance);
             set_total_supply(supply);
             let () = runtime::call_versioned_contract(
@@ -437,7 +346,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     }
     fn _transfer(&self, owner: Key, recipient: Key, amount: U256) {
         if get_is_killed() {
-            runtime::revert(ApiError::from(Error::RewardWrapperIsKilled2));
+            runtime::revert(ApiError::from(Error::GaugeWrapperIsKilled2));
         }
         self._checkpoint(owner);
         self._checkpoint(recipient);
@@ -445,12 +354,12 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             let balance_owner: U256 = BalanceOf::instance()
                 .get(&owner)
                 .checked_sub(amount)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError6);
             BalanceOf::instance().set(&owner, balance_owner);
             let balance_recipient: U256 = BalanceOf::instance()
                 .get(&recipient)
                 .checked_add(amount)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::GaugeWrapperAdditionError7);
 
             BalanceOf::instance().set(&recipient, balance_recipient);
         }
@@ -480,7 +389,9 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             Allowances::instance().set(
                 &owner,
                 &self.get_caller(),
-                allowance.checked_sub(amount).unwrap_or_revert(),
+                allowance
+                    .checked_sub(amount)
+                    .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError7),
             );
         }
         self._transfer(owner, recipient, amount);
@@ -516,7 +427,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
         let allowance: U256 = Allowances::instance()
             .get(&self.get_caller(), &spender)
             .checked_add(amount)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::GaugeWrapperAdditionError8);
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         LIQUIDITYGAUGEWRAPPER::emit(
             self,
@@ -538,7 +449,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
         let allowance: U256 = Allowances::instance()
             .get(&self.get_caller(), &spender)
             .checked_sub(amount)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError8);
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         LIQUIDITYGAUGEWRAPPER::emit(
             self,
@@ -552,7 +463,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     }
     fn kill_me(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly1));
+            runtime::revert(ApiError::from(Error::GaugeWrapperAdminOnly1));
         }
         set_is_killed(!get_is_killed());
     }
@@ -561,7 +472,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @param addr Address to have ownership transferred to
     fn commit_transfer_ownership(&self, addr: Key) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly2));
+            runtime::revert(ApiError::from(Error::GaugeWrapperAdminOnly2));
         }
         set_future_admin(addr);
         LIQUIDITYGAUGEWRAPPER::emit(
@@ -573,11 +484,11 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) {
         if !(self.get_caller() == get_admin()) {
-            runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly3));
+            runtime::revert(ApiError::from(Error::GaugeWrapperAdminOnly3));
         }
         let admin: Key = get_future_admin();
         if !(admin != zero_address()) {
-            runtime::revert(ApiError::from(Error::RewardWrapperAdminNotSet));
+            runtime::revert(ApiError::from(Error::GaugeWrapperAdminNotSet));
         }
         set_admin(admin);
         LIQUIDITYGAUGEWRAPPER::emit(self, &LiquidityGaugeWrapperEvent::ApplyOwnership { admin });

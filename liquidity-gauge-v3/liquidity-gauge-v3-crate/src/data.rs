@@ -7,7 +7,6 @@ use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;
 use contract_utils::{get_key, key_to_str, set_key, Dict};
 
-
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
 pub const CLAIM_FREQUENCY: U256 = U256([3600, 0, 0, 0]);

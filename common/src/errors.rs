@@ -101,7 +101,6 @@ pub enum Error {
     Erc20CRVOverFlow18 = 10037,
     /// 65,546 for (ERC20 CRV Over flow19)
     Erc20CRVOverFlow19 = 10038,
-
     /// 65,546 for (Liquidity Gauge Reward Unauthorized)
     LiquidityGaugeRewardUnauthorized = 10101,
     /// 65,546 for (Liquidity Gauge Reward Kick Not Allowed1)
@@ -158,6 +157,86 @@ pub enum Error {
     RewardWrapperIsKilled1 = 10211,
     /// 65,546 for (Reward Wrapper Is Killed2)
     RewardWrapperIsKilled2 = 10212,
+    /// 65,546 for (Reward Wrapper Division Error 1)
+    RewardWrapperDivisionError1 = 10213,
+    /// 65,546 for (Reward Wrapper Division Error 2)
+    RewardWrapperDivisionError2 = 10214,
+    /// 65,546 for (Reward Wrapper Division Error 3)
+    RewardWrapperDivisionError3 = 10215,
+    /// 65,546 for (Reward Wrapper Division Error 4)
+    RewardWrapperDivisionError4 = 10216,
+    /// 65,546 for (Reward Wrapper Division Error 5)
+    RewardWrapperDivisionError5 = 10217,
+    /// 65,546 for (Reward Wrapper Division Error 6)
+    RewardWrapperDivisionError6 = 10218,
+    /// 65,546 for (Reward Wrapper Division Error 7)
+    RewardWrapperDivisionError7 = 10219,
+    /// 65,546 for (Reward Wrapper Division Error 8)
+    RewardWrapperDivisionError8 = 10220,
+    /// 65,546 for (Reward Wrapper Addition Error 1)
+    RewardWrapperAdditionError1 = 10221,
+    /// 65,546 for (Reward Wrapper Addition Error 2)
+    RewardWrapperAdditionError2 = 10222,
+    /// 65,546 for (Reward Wrapper Addition Error 3)
+    RewardWrapperAdditionError3 = 10223,
+    /// 65,546 for (Reward Wrapper Addition Error 4)
+    RewardWrapperAdditionError4 = 10224,
+    /// 65,546 for (Reward Wrapper Addition Error 5)
+    RewardWrapperAdditionError5 = 10225,
+    /// 65,546 for (Reward Wrapper Addition Error 6)
+    RewardWrapperAdditionError6 = 10226,
+    /// 65,546 for (Reward Wrapper Addition Error 7)
+    RewardWrapperAdditionError7 = 10227,
+    /// 65,546 for (Reward Wrapper Addition Error 8)
+    RewardWrapperAdditionError8 = 10228,
+    /// 65,546 for (Reward Wrapper Addition Error 9)
+    RewardWrapperAdditionError9 = 10229,
+    /// 65,546 for (Reward Wrapper Addition Error 10)
+    RewardWrapperAdditionError10 = 10230,
+    /// 65,546 for (Reward Wrapper Addition Error 11)
+    RewardWrapperAdditionError11 = 10231,
+    /// 65,546 for (Reward Wrapper Addition Error 12)
+    RewardWrapperAdditionError12 = 10232,
+    /// 65,546 for (Reward Wrapper Subtraction Error 1)
+    RewardWrapperSubtractionError1 = 10233,
+    /// 65,546 for (Reward Wrapper Subtraction Error 2)
+    RewardWrapperSubtractionError2 = 10234,
+    /// 65,546 for (Reward Wrapper Subtraction Error 3)
+    RewardWrapperSubtractionError3 = 10235,
+    /// 65,546 for (Reward Wrapper Subtraction Error 4)
+    RewardWrapperSubtractionError4 = 10236,
+    /// 65,546 for (Reward Wrapper Subtraction Error 5)
+    RewardWrapperSubtractionError5 = 10237,
+    /// 65,546 for (Reward Wrapper Subtraction Error 6)
+    RewardWrapperSubtractionError6 = 10238,
+    /// 65,546 for (Reward Wrapper Subtraction Error 7)
+    RewardWrapperSubtractionError7 = 10239,
+    /// 65,546 for (Reward Wrapper Subtraction Error 8)
+    RewardWrapperSubtractionError8 = 10240,
+    /// 65,546 for (Reward Wrapper Subtraction Error 9)
+    RewardWrapperSubtractionError9 = 10241,
+    /// 65,546 for (Reward Wrapper Subtraction Error 10)
+    RewardWrapperSubtractionError10 = 10242,
+    /// 65,546 for (Reward Wrapper Subtraction Error 11)
+    RewardWrapperSubtractionError11 = 10243,
+    /// 65,546 for (Reward Wrapper Subtraction Error 12)
+    RewardWrapperSubtractionError12 = 10244,
+    /// 65,546 for (Reward Wrapper Multiply Error 1)
+    RewardWrapperMultiplyError1 = 10245,
+    /// 65,546 for (Reward Wrapper Multiply Error 2)
+    RewardWrapperMultiplyError2 = 10246,
+    /// 65,546 for (Reward Wrapper Multiply Error 3)
+    RewardWrapperMultiplyError3 = 10247,
+    /// 65,546 for (Reward Wrapper Multiply Error 4)
+    RewardWrapperMultiplyError4 = 10248,
+    /// 65,546 for (Reward Wrapper Multiply Error 5)
+    RewardWrapperMultiplyError5 = 10249,
+    /// 65,546 for (Reward Wrapper Multiply Error 6)
+    RewardWrapperMultiplyError6 = 10250,
+    /// 65,546 for (Reward Wrapper Multiply Error 7)
+    RewardWrapperMultiplyError7 = 10251,
+    /// 65,546 for (Reward Wrapper Multiply Error 8)
+    RewardWrapperMultiplyError8 = 10252,
     /// 65,538 for (Curve Token V1 Invalid Minter)
     CurveTokenV1InvalidMinter = 10301,
     /// 65,538 for (Curve Token V1 Invalid Minter)
@@ -516,7 +595,7 @@ pub enum Error {
     /// 65,540 for (Vesting Escrow Simple Initialize Once)
 
     ///Vesting Escrow simple errors
-    /// 65,540 for (Vesting Escrow Simple Only Initialize once)
+    ///
     VestingEscrowSimpleOnlyInitializeOnce = 11201,
     /// 65,540 for (Vesting Escrow Simple Admin Only1)
     VestingEscrowSimpleAdminOnly1 = 11202,
@@ -593,66 +672,184 @@ pub enum Error {
     VotingEscrowTheLockDidntExpire = 11322,
     /// 65,540 for (Voting Escrow Invalid Block Number)
     VotingEscrowInvalidBlockNumber = 11323,
-
+    /// 65,540 for (Liquidity Gauge Wrapper Unauthorized)
+    GaugeWrapperUnauthorized = 11401,
+    /// 65,540 for (Liquidity Gauge Wrapper Is Killed)
+    GaugeWrapperIsKilled1 = 11402,
+    /// 65,546 for (Liquidity Gauge Wrapper Not Approved)
+    GaugeWrapperNotApproved = 11403,
+    /// 65,546 for (Liquidity Gauge Wrapper IsLocked1)
+    GaugeWrapperIsLocked1 = 11404,
+    /// 65,546 for (Liquidity Gauge Wrapper IsLocked2)
+    GaugeWrapperIsLocked2 = 11405,
+    /// 65,546 for (Liquidity Gauge Wrapper Is Locked3)
+    GaugeWrapperIsLocked3 = 11406,
+    /// 65,546 for (Liquidity Gauge Wrapper Admin Only1)
+    GaugeWrapperAdminOnly1 = 11407,
+    /// 65,546 for (Liquidity Gauge Wrapper Admin Only2)
+    GaugeWrapperAdminOnly2 = 11408,
+    /// 65,546 for (Liquidity Gauge Wrapper Admin Only3)
+    GaugeWrapperAdminOnly3 = 11409,
+    /// 65,546 for (Liquidity Gauge Wrapper Admin Not Set)
+    GaugeWrapperAdminNotSet = 11410,
+    /// 65,546 for (Liquidity Gauge Wrapper Zero Address)
+    GaugeWrapperZeroAddress = 11411,
+    /// 65,540 for (Liquidity Gauge Wrapper Is Killed)
+    GaugeWrapperIsKilled2 = 11412,
+    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 1)
+    GaugeWrapperAdditionError1 = 11413,
+    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 2)
+    GaugeWrapperAdditionError2 = 11414,
+    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 3)
+    GaugeWrapperAdditionError3 = 11415,
+    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 4)
+    GaugeWrapperAdditionError4 = 11416,
+    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 5)
+    GaugeWrapperAdditionError5 = 11417,
+    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 6)
+    GaugeWrapperAdditionError6 = 11418,
+    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 7)
+    GaugeWrapperAdditionError7 = 11419,
+    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 8)
+    GaugeWrapperAdditionError8 = 11420,
+    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 1)
+    GaugeWrapperSubtractionError1 = 11421,
+    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 2)
+    GaugeWrapperSubtractionError2 = 11422,
+    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 3)
+    GaugeWrapperSubtractionError3 = 11423,
+    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 4)
+    GaugeWrapperSubtractionError4 = 11424,
+    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 5)
+    GaugeWrapperSubtractionError5 = 11425,
+    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 6)
+    GaugeWrapperSubtractionError6 = 11426,
+    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 7)
+    GaugeWrapperSubtractionError7 = 11427,
+    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 8)
+    GaugeWrapperSubtractionError8 = 11428,
+    /// 65,540 for (Liquidity Gauge Wrapper Division Error 1)
+    GaugeWrapperDivisionError1 = 11429,
+    /// 65,540 for (Liquidity Gauge Wrapper Division Error 2)
+    GaugeWrapperDivisionError2 = 11430,
+    /// 65,540 for (Liquidity Gauge Wrapper Division Error 3)
+    GaugeWrapperDivisionError3 = 11431,
+    /// 65,540 for (Liquidity Gauge Wrapper Division Error 4)
+    GaugeWrapperDivisionError4 = 11432,
+    /// 65,540 for (Liquidity Gauge Wrapper Multiply Error 1)
+    GaugeWrapperMultiplyError1 = 11433,
+    /// 65,540 for (Liquidity Gauge Wrapper Multiply Error 2)
+    GaugeWrapperMultiplyError2 = 11434,
+    /// 65,540 for (Liquidity Gauge Wrapper Multiply Error 3)
+    GaugeWrapperMultiplyError3 = 11435,
+    /// 65,540 for (Liquidity Gauge Wrapper Multiply Error 4)
+    GaugeWrapperMultiplyError4 = 11436,
+    /// 65,546 for (Ownable: caller is not the owner)
+    OwnableNotOwner = 11501,
+    /// 65,540 for (Ownable: new owner is the zero address)
+    OwnableNewOwnerAddressZero = 11502,
+    /// 65,540 for (IRewardDistributionRecipient: Caller is not reward distribution)
+    NotRewardDistribution = 11601,
+    //65,540 for (CurveRewards:Cannot stake 0)
+    CurveRewardsCannotStake = 11701,
+    //65,540 for (CurveRewards:Cannot withdraw 0)
+    CurveRewardsCannotWithdraw = 11702,
+    //65,540 for (CurveRewards:Addition Error 1)
+    CurveRewardsAdditionError1 = 11703,
+    //65,540 for (CurveRewards:Addition Error 2)
+    CurveRewardsAdditionError2 = 11704,
+    //65,540 for (CurveRewards:Addition Error 3)
+    CurveRewardsAdditionError3 = 11705,
+    //65,540 for (CurveRewards:Addition Error 4)
+    CurveRewardsAdditionError4 = 11706,
+    //65,540 for (CurveRewards:Division Error 1)
+    CurveRewardsDivisionError1 = 11707,
+    //65,540 for (CurveRewards:Division Error 2)
+    CurveRewardsDivisionError2 = 11708,
+    //65,540 for (CurveRewards:Division Error 3)
+    CurveRewardsDivisionError3 = 11709,
+    //65,540 for (CurveRewards:Division Error 4)
+    CurveRewardsDivisionError4 = 11710,
+    //65,540 for (CurveRewards:Subtraction Error 1)
+    CurveRewardsSubtractionError1 = 11711,
+    //65,540 for (CurveRewards:Subtraction Error 2)
+    CurveRewardsSubtractionError2 = 11712,
+    //65,540 for (CurveRewards:Subtraction Error 3)
+    CurveRewardsSubtractionError3 = 11713,
+    //65,540 for (CurveRewards:Multiply Error 1)
+    CurveRewardsMultiplyError1 = 11714,
+    //65,540 for (CurveRewards:Multiply Error 2)
+    CurveRewardsMultiplyError2 = 11715,
+    //65,540 for (CurveRewards:Multiply Error 3)
+    CurveRewardsMultiplyError3 = 11716,
+    //65,540 for (CurveRewards:Multiply Error 4)
+    CurveRewardsMultiplyError4 = 11717,
     //LIQUIDITY GUAGE V3
     /// 65,538 for (Liquidity guage v3 OverFlow1)
-    LiquidityGaugeV3OverFlow1 = 11400,
+    LiquidityGaugeV3OverFlow1 = 11800,
     /// 65,539 for (Liquidity guage v3 OverFlow2)
-    LiquidityGaugeV3OverFlow2 = 11401,
+    LiquidityGaugeV3OverFlow2 = 11801,
     /// 65,540 for (Liquidity guage v3 OverFlow3)
-    LiquidityGaugeV3OverFlow3 = 11402,
+    LiquidityGaugeV3OverFlow3 = 11802,
     /// 65,541 for (Liquidity guage v3 OverFlow4)
-    LiquidityGaugeV3OverFlow4 = 11403,
+    LiquidityGaugeV3OverFlow4 = 11803,
     /// 65,541 for (Liquidity guage v3 OverFlow5)
-    LiquidityGaugeV3OverFlow5 = 11404,
+    LiquidityGaugeV3OverFlow5 = 11804,
     /// 65,541 for (Liquidity guage v3 OverFlow6)
-    LiquidityGaugeV3OverFlow6 = 11405,
+    LiquidityGaugeV3OverFlow6 = 11805,
     /// 65,541 for (Liquidity guage v3 OverFlow7)
-    LiquidityGaugeV3OverFlow7 = 11406,
+    LiquidityGaugeV3OverFlow7 = 11806,
     /// 65,542 for (Liquidity guage v3 UnderFlow1)
-    LiquidityGaugeUnderFlow1 = 11407,
+    LiquidityGaugeUnderFlow1 = 11807,
     /// 65,543 for (Liquidity guage v3 UnderFlow2)
-    LiquidityGaugeUnderFlow2 = 11408,
+    LiquidityGaugeUnderFlow2 = 11808,
     /// 65,544 for (Liquidity guage v3 UnderFlow3)
-    LiquidityGaugeUnderFlow3 = 11409,
+    LiquidityGaugeUnderFlow3 = 11809,
     /// 65,545 for (Liquidity guage v3 UnderFlow4)
-    LiquidityGaugeUnderFlow4 = 11410,
+    LiquidityGaugeUnderFlow4 = 11810,
     /// 65,546 for (Liquidity guage v3UnderFlow5)
-    LiquidityGaugeUnderFlow5 = 11412,
+    LiquidityGaugeUnderFlow5 = 11812,
     /// 65,546 for (Liquidity guage v3 UnderFlow6)
-    LiquidityGaugeUnderFlow6 = 11413,
+    LiquidityGaugeUnderFlow6 = 11813,
     /// 65,546 for (Liquidity guage v3UnderFlow7)
-    LiquidityGaugeUnderFlow7 = 11414,
+    LiquidityGaugeUnderFlow7 = 11814,
     /// 65,546 for (Liquidity guage v3UnderFlow8)
-    LiquidityGaugeUnderFlow8 = 11415,
+    LiquidityGaugeUnderFlow8 = 11815,
     /// 65,546 for (Liquidity guage v3 UnderFlow9)
-    LiquidityGaugeUnderFlow9 = 11416,
+    LiquidityGaugeUnderFlow9 = 11816,
     /// 65,540 for (Liquidity guage v3 Only Admin1)
-    LiquidityGaugeOnlyAdmin1 = 11417,
+    LiquidityGaugeOnlyAdmin1 = 11817,
     /// 65,540 for (Liquidity guage v3 Only Admin2)
-    LiquidityGaugeOnlyAdmin2 = 11418,
+    LiquidityGaugeOnlyAdmin2 = 11818,
     /// 65,540 for (Liquidity guage v3 Only Future Admin)
-    LiquidityGaugeOnlyFutureAdmin = 11419,
+    LiquidityGaugeOnlyFutureAdmin = 11819,
     /// 65,540 for (Liquidity guage v3 Cannot Redirect When Claiming For Another User)
-    LiquidityGaugeCannotRedirectWhenClaimingForAnotherUser = 11420,
+    LiquidityGaugeCannotRedirectWhenClaimingForAnotherUser = 11820,
     /// 65,540 for (Liquidity guage v3 Value Is Zero)
-    LiquidityGaugeValueIsZero1 = 11421,
+    LiquidityGaugeValueIsZero1 = 11821,
     /// 65,540 for (Liquidity guage v3 Value Is Zero)
-    LiquidityGaugeValueIsZero2 = 11422,
+    LiquidityGaugeValueIsZero2 = 11822,
     /// 65,540 for (Liquidity guage v3 Reward Token Is Zero)
-    LiquidityGaugeRewardTokenIsZeroAddress = 11423,
+    LiquidityGaugeRewardTokenIsZeroAddress = 11823,
     /// 65,540 for (Liquidity guage v3 Cannot Modify Existing Reward Token)
-    LiquidityGaugeCannotModifyExistingRewardToken = 11424,
+    LiquidityGaugeCannotModifyExistingRewardToken = 11824,
     /// 65,540 for (Liquidity guage locked 1)
-    LiquidityGaugeLocked1 = 11425,
+    LiquidityGaugeLocked1 = 11825,
     /// 65,540 for (Liquidity guage v3 unauthorized)
-    LiquidityGuageV3Unauthorized = 11426,
-    /// 65,540 for (Liquidity guage v3 not allowed)
-    LiquidityGuageV3KickNotAllowed = 11427,
+    LiquidityGuageV3Unauthorized = 11826,
      /// 65,540 for (Liquidity guage v3 Underflow 10)
-     LiquidityGaugeUnderFlow10 = 11429,
+     LiquidityGaugeUnderFlow10 = 11829,
      /// 65,540 for (Liquidity guage v3 Underflow 10)
-     LiquidityGaugeUnderFlow11 = 11430,
+     LiquidityGaugeUnderFlow11 = 11830,
+    LiquidityGuageV3KickNotAllowed = 11827,
+    /// 65,540 for (Lp Token Wrapper Addition Error 1)
+    LpTokenWrapperAdditionError1 = 11901,
+    /// 65,540 for (Lp Token Wrapper Addition Error 2)
+    LpTokenWrapperAdditionError2 = 11902,
+    /// 65,540 for (Lp Token Wrapper Subtraction Error 1)
+    LpTokenWrapperSubtractionError1 = 11903,
+    /// 65,540 for (Lp Token Wrapper Subtraction Error 2)
+    LpTokenWrapperSubtractionError2 = 11904,
 
     Abort = 150,
     SmartContractDepositorsNotAllowed = 151,

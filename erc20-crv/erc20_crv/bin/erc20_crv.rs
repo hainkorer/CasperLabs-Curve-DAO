@@ -167,9 +167,9 @@ fn name() {
     }
     #[no_mangle]
     fn balance_of() {
-        let key: Key = runtime::get_named_arg("key");
+        let owner: Key = runtime::get_named_arg("owner");
         runtime::ret(
-            CLValue::from_t(erc20_data::Balances::instance().get(&key)).unwrap_or_revert(),
+            CLValue::from_t(erc20_data::Balances::instance().get(&owner)).unwrap_or_revert(),
         );
     }
     #[no_mangle]
@@ -189,6 +189,7 @@ fn name() {
     fn admin() {
         runtime::ret(CLValue::from_t(data::get_admin()).unwrap_or_revert());
     }
+
     #[no_mangle]
     fn rate() {
         runtime::ret(CLValue::from_t(data::get_rate()).unwrap_or_revert());
@@ -356,7 +357,7 @@ fn name() {
         ));
         entry_points.add_entry_point(EntryPoint::new(
             "balance_of",
-            vec![Parameter::new("key", Key::cl_type())],
+            vec![Parameter::new("owner", Key::cl_type())],
             U256::cl_type(),
             EntryPointAccess::Public,
             EntryPointType::Contract,
@@ -392,7 +393,6 @@ fn name() {
             EntryPointAccess::Public,
             EntryPointType::Contract,
         ));
-
         entry_points
     }
 

@@ -6,14 +6,12 @@ use common::keys::*;
 use contract_utils::{get_key, set_key, Dict};
 
 pub const TEN_E_NINE: u128 = 1000000000;
-
 pub fn zero_address() -> Key {
     Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap()
 }
-pub const ALLOWANCES: &str = "allownances";
 pub struct Allowances {
     dict: Dict,
 }
@@ -39,7 +37,6 @@ impl Allowances {
 }
 
 // caller -> recipient -> can deposit?
-pub const APPROVED_TO_DEPOSIT: &str = "approved_to_deposit";
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct ApprovedToDeposit {
     dict: Dict,
@@ -64,8 +61,6 @@ impl ApprovedToDeposit {
         self.dict.set_by_keys((key_1, key_2), value);
     }
 }
-
-pub const BALANCE_OF: &str = "balance_of";
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct BalanceOf {
     dict: Dict,
@@ -90,8 +85,6 @@ impl BalanceOf {
         self.dict.set_by_key(key, value);
     }
 }
-
-pub const CLAIMABLE_CRV: &str = "claimable_crv";
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct ClaimableCrv {
     dict: Dict,
@@ -116,8 +109,6 @@ impl ClaimableCrv {
         self.dict.set_by_key(key, value);
     }
 }
-
-pub const CRV_INTEGRAL_FOR: &str = "crv_integral_for";
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct CrvIntegralFor {
     dict: Dict,

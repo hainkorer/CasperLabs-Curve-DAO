@@ -12,7 +12,11 @@ use casper_types::{
     U256,
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
-use liquidity_gauge_wrapper_crate::{self, data::*, LIQUIDITYGAUGEWRAPPER};
+use liquidity_gauge_wrapper_crate::{
+    self,
+    data::{self, *},
+    LIQUIDITYGAUGEWRAPPER,
+};
 
 #[derive(Default)]
 struct LiquidityGaugeWrapper(OnChainContractStorage);
@@ -85,20 +89,6 @@ fn claimable_tokens() {
 fn claimable_tokens_js_client() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = LiquidityGaugeWrapper::default().claimable_tokens(addr);
-    js_ret(ret);
-}
-
-#[no_mangle]
-fn claimable_reward() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeWrapper::default().claimable_reward(addr);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn claimable_reward_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeWrapper::default().claimable_reward(addr);
     js_ret(ret);
 }
 #[no_mangle]
@@ -183,7 +173,75 @@ fn commit_transfer_ownership() {
 fn apply_transfer_ownership() {
     LiquidityGaugeWrapper::default().apply_transfer_ownership();
 }
+//Variables
+#[no_mangle]
+fn minter() {
+    runtime::ret(CLValue::from_t(data::get_minter()).unwrap_or_revert());
+}
 
+#[no_mangle]
+fn crv_token() {
+    runtime::ret(CLValue::from_t(data::get_crv_token()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn lp_token() {
+    runtime::ret(CLValue::from_t(data::get_lp_token()).unwrap_or_revert());
+}
+#[no_mangle]
+fn gauge() {
+    runtime::ret(CLValue::from_t(data::get_gauge()).unwrap_or_revert());
+}
+#[no_mangle]
+fn balance_of() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::BalanceOf::instance().get(&key)).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn total_supply() {
+    runtime::ret(CLValue::from_t(data::get_total_supply()).unwrap_or_revert());
+}
+#[no_mangle]
+fn name() {
+    runtime::ret(CLValue::from_t(data::name()).unwrap_or_revert());
+}
+#[no_mangle]
+fn symbol() {
+    runtime::ret(CLValue::from_t(data::symbol()).unwrap_or_revert());
+}
+#[no_mangle]
+fn decimals() {
+    runtime::ret(CLValue::from_t(data::decimals()).unwrap_or_revert());
+}
+#[no_mangle]
+fn approved_to_deposit() {
+    let key0: Key = runtime::get_named_arg("key0");
+    let key1: Key = runtime::get_named_arg("key1");
+    runtime::ret(
+        CLValue::from_t(data::ApprovedToDeposit::instance().get(&key0, &key1)).unwrap_or_revert(),
+    );
+}
+#[no_mangle]
+fn claimable_crv() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::ClaimableCrv::instance().get(&key)).unwrap_or_revert());
+}
+#[no_mangle]
+fn admin() {
+    runtime::ret(CLValue::from_t(data::get_admin()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn future_admin() {
+    runtime::ret(CLValue::from_t(data::get_future_admin()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn is_killed() {
+    runtime::ret(CLValue::from_t(data::get_is_killed()).unwrap_or_revert());
+}
+//Entry Points
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(
@@ -223,20 +281,6 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claimable_tokens_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_reward",
-        vec![Parameter::new("addr", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_reward_js_client",
         vec![Parameter::new("addr", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -367,6 +411,108 @@ fn get_entry_points() -> EntryPoints {
         "apply_transfer_ownership",
         vec![],
         <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    //Variables
+    entry_points.add_entry_point(EntryPoint::new(
+        "minter",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "crv_token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "lp_token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "gauge",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of",
+        vec![Parameter::new("key", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "total_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "name",
+        vec![],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "symbol",
+        vec![],
+        String::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "decimals",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "approved_to_deposit",
+        vec![
+            Parameter::new("key0", Key::cl_type()),
+            Parameter::new("key1", Key::cl_type()),
+        ],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "claimable_crv",
+        vec![Parameter::new("key", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "is_killed",
+        vec![],
+        bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

@@ -625,7 +625,15 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param addr User wallet address
     /// @param _t Epoch time to return voting power at
     /// @return User voting power
-    fn balance_of(&self, addr: Key, t: U256 /*get_blocktime()*/) -> U256 {
+    fn balance_of(&self, addr: Key, t: Option<U256>) -> U256 {
+        let t: U256 = match t {
+            Some(val) => val,
+            None => {
+                let blocktime: u64 = runtime::get_blocktime().into();
+                blocktime.into()
+            }
+        };
+
         let epoch: U256 = UserPointEpoch::instance().get(&addr);
         if epoch == 0.into() {
             0.into()
@@ -783,7 +791,15 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Calculate total voting power
     /// @dev Adheres to the ERC20 `totalSupply` interface for Aragon compatibility
     /// @return Total voting power
-    fn total_supply(&self, t: U256 /*get_blocktime()*/) -> U256 {
+    fn total_supply(&self, t: Option<U256>) -> U256 {
+        let t: U256 = match t {
+            Some(val) => val,
+            None => {
+                let blocktime: u64 = runtime::get_blocktime().into();
+                blocktime.into()
+            }
+        };
+
         let epoch: U256 = get_epoch();
         let last_point: Point = PointHistory::instance().get(&epoch);
         self._supply_at(last_point, t)

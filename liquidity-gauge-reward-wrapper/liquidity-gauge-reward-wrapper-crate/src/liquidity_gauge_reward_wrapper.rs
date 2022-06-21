@@ -4,13 +4,13 @@ use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::{
     contract_api::{
-        runtime::{self, get_blocktime},
+        runtime::{self},
         storage,
     },
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
@@ -91,7 +91,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" => Key::from(get_package_hash())
             },
         );
         let () = runtime::call_versioned_contract(
@@ -107,19 +107,23 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" =>Key::from(get_package_hash())
             },
         );
-        d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
+        d_reward = d_reward_updated
+            .checked_sub(d_reward)
+            .unwrap_or_revert_with(Error::RewardWrapperSubtractionError1);
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
                 .checked_mul(d_reward)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::RewardWrapperMultiplyError1)
                 .checked_div(total_balance)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardWrapperDivisionError1);
         }
-        let mut i: U256 = get_crv_integral().checked_add(di).unwrap_or_revert();
+        let mut i: U256 = get_crv_integral()
+            .checked_add(di)
+            .unwrap_or_revert_with(Error::RewardWrapperAdditionError1);
         set_crv_integral(i);
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
@@ -128,11 +132,14 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             ClaimableCrv::instance()
                 .get(&addr)
                 .checked_add(balance_of)
-                .unwrap_or_revert()
-                .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert())
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::RewardWrapperAdditionError2)
+                .checked_mul(
+                    i.checked_sub(crv_integral_for)
+                        .unwrap_or_revert_with(Error::RewardWrapperSubtractionError2),
+                )
+                .unwrap_or_revert_with(Error::RewardWrapperMultiplyError2)
                 .checked_div(U256::from(TEN_E_NINE))
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::RewardWrapperDivisionError2),
         );
         CrvIntegralFor::instance().set(&addr, i);
         token = get_rewarded_token();
@@ -141,32 +148,38 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" => Key::from(get_package_hash()),
             },
         );
         let () = runtime::call_versioned_contract(
             gauge.into_hash().unwrap_or_revert().into(),
             None,
             "claim_rewards",
-            runtime_args! {},
+            runtime_args! {
+                "addr" => None::<Key>
+            },
         );
         d_reward_updated = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" =>Key::from(get_package_hash())
             },
         );
-        d_reward = d_reward_updated.checked_sub(d_reward).unwrap_or_revert();
+        d_reward = d_reward_updated
+            .checked_sub(d_reward)
+            .unwrap_or_revert_with(Error::RewardWrapperSubtractionError3);
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
                 .checked_mul(d_reward)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::RewardWrapperMultiplyError3)
                 .checked_div(total_balance)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardWrapperDivisionError3);
         }
-        i = get_reward_integral().checked_add(di).unwrap_or_revert();
+        i = get_reward_integral()
+            .checked_add(di)
+            .unwrap_or_revert_with(Error::RewardWrapperAdditionError3);
         set_reward_integral(i);
         let reward_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
         ClaimableRewards::instance().set(
@@ -174,11 +187,14 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             ClaimableRewards::instance()
                 .get(&addr)
                 .checked_add(balance_of)
-                .unwrap_or_revert()
-                .checked_mul(i.checked_sub(reward_integral_for).unwrap_or_revert())
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::RewardWrapperAdditionError4)
+                .checked_mul(
+                    i.checked_sub(reward_integral_for)
+                        .unwrap_or_revert_with(Error::RewardWrapperSubtractionError4),
+                )
+                .unwrap_or_revert_with(Error::RewardWrapperMultiplyError4)
                 .checked_div(U256::from(TEN_E_NINE))
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::RewardWrapperDivisionError4),
         );
         RewardIntegralFor::instance().set(&addr, i);
     }
@@ -201,28 +217,35 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             get_gauge().into_hash().unwrap_or_revert().into(),
             None,
             "claimable_tokens",
-            runtime_args! {},
+            runtime_args! {
+                "addr" => Key::from(get_package_hash())
+            },
         );
         let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
                 .checked_mul(d_reward)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::RewardWrapperMultiplyError5)
                 .checked_div(total_balance)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardWrapperDivisionError5);
         }
-        let i: U256 = get_crv_integral().checked_add(di).unwrap_or_revert();
+        let i: U256 = get_crv_integral()
+            .checked_add(di)
+            .unwrap_or_revert_with(Error::RewardWrapperAdditionError5);
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
         let claimable_crv: U256 = ClaimableCrv::instance().get(&addr);
         return claimable_crv
             .checked_add(balance_of)
-            .unwrap_or_revert()
-            .checked_mul(i.checked_sub(crv_integral_for).unwrap_or_revert())
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::RewardWrapperAdditionError6)
+            .checked_mul(
+                i.checked_sub(crv_integral_for)
+                    .unwrap_or_revert_with(Error::RewardWrapperSubtractionError5),
+            )
+            .unwrap_or_revert_with(Error::RewardWrapperMultiplyError6)
             .checked_div(U256::from(TEN_E_NINE))
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardWrapperDivisionError6);
     }
 
     // @notice Get the number of claimable reward tokens per user
@@ -244,37 +267,38 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "claimed_rewards_for",
             runtime_args! {
-                "addr" => Key::from(get_package_hash())
+                "key" => Key::from(get_package_hash())
             },
         );
         let d_reward: U256 = claimable_reward
             .checked_sub(claimed_rewards_for)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardWrapperSubtractionError6);
         let total_balance: U256 = get_total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
                 .checked_mul(d_reward)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::RewardWrapperMultiplyError7)
                 .checked_div(total_balance)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardWrapperDivisionError7);
         }
-        let i: U256 = get_reward_integral().checked_add(di).unwrap_or_revert();
+        let i: U256 = get_reward_integral()
+            .checked_add(di)
+            .unwrap_or_revert_with(Error::RewardWrapperAdditionError7);
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let reward_integral_for: U256 = RewardIntegralFor::instance().get(&addr);
         let claimable_rewards: U256 = ClaimableRewards::instance().get(&addr);
         return claimable_rewards
             .checked_add(balance_of)
-            .unwrap_or_revert()
-            .checked_mul(i.checked_sub(reward_integral_for).unwrap_or_revert())
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::RewardWrapperAdditionError8)
+            .checked_mul(
+                i.checked_sub(reward_integral_for)
+                    .unwrap_or_revert_with(Error::RewardWrapperSubtractionError7),
+            )
+            .unwrap_or_revert_with(Error::RewardWrapperMultiplyError8)
             .checked_div(U256::from(TEN_E_NINE))
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardWrapperDivisionError8);
     }
-
-    /// @notice Kick `addr` for abusing their boost
-    /// @dev Only if either they had another voting event, or their voting escrow lock expired
-    /// @param addr Address to kick
     fn claim_tokens(&self, addr: Key) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::RewardWrapperIsLocked1));
@@ -338,8 +362,10 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             let balance: U256 = BalanceOf::instance()
                 .get(&addr)
                 .checked_add(value)
-                .unwrap_or_revert();
-            let supply: U256 = get_total_supply().checked_add(value).unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardWrapperAdditionError9);
+            let supply: U256 = get_total_supply()
+                .checked_add(value)
+                .unwrap_or_revert_with(Error::RewardWrapperAdditionError10);
             BalanceOf::instance().set(&addr, balance);
             set_total_supply(supply);
             let ret: Result<(), u32> = runtime::call_versioned_contract(
@@ -360,7 +386,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 None,
                 "deposit",
                 runtime_args! {
-                    "value" => value
+                    "value" => value,
+                    "addr" => None::<Key>,
+
                 },
             );
         }
@@ -394,8 +422,10 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             let balance: U256 = BalanceOf::instance()
                 .get(&self.get_caller())
                 .checked_sub(value)
-                .unwrap_or_revert();
-            let supply: U256 = get_total_supply().checked_sub(value).unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardWrapperSubtractionError8);
+            let supply: U256 = get_total_supply()
+                .checked_sub(value)
+                .unwrap_or_revert_with(Error::RewardWrapperSubtractionError9);
             BalanceOf::instance().set(&self.get_caller(), balance);
             set_total_supply(supply);
             let () = runtime::call_versioned_contract(
@@ -454,12 +484,12 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             let balance_owner: U256 = BalanceOf::instance()
                 .get(&owner)
                 .checked_sub(amount)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardWrapperSubtractionError10);
             BalanceOf::instance().set(&owner, balance_owner);
             let balance_recipient: U256 = BalanceOf::instance()
                 .get(&recipient)
                 .checked_add(amount)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardWrapperSubtractionError11);
 
             BalanceOf::instance().set(&recipient, balance_recipient);
         }
@@ -489,7 +519,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             Allowances::instance().set(
                 &owner,
                 &self.get_caller(),
-                allowance.checked_sub(amount).unwrap_or_revert(),
+                allowance
+                    .checked_sub(amount)
+                    .unwrap_or_revert_with(Error::RewardWrapperSubtractionError11),
             );
         }
         self._transfer(owner, recipient, amount);
@@ -525,7 +557,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let allowance: U256 = Allowances::instance()
             .get(&self.get_caller(), &spender)
             .checked_add(amount)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardWrapperAdditionError12);
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,
@@ -547,7 +579,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let allowance: U256 = Allowances::instance()
             .get(&self.get_caller(), &spender)
             .checked_sub(amount)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardWrapperSubtractionError12);
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,
