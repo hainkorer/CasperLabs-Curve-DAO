@@ -78,6 +78,7 @@ members = [
   #LIQUIDITY GAUGE V3
   "liquidity-gauge-v3/liquidity-gauge-v3",
   "liquidity-gauge-v3/liquidity-gauge-v3-crate",
+  "liquidity-gauge-v3/liquidity-gauge-v3-tests",
 
 ]
 

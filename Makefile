@@ -15,6 +15,7 @@ liquidity_gauge_reward_wrapper_des_wasm = ./liquidity-gauge-reward-wrapper/liqui
 liquidity_gauge_wrapper_des_wasm = ./liquidity-gauge-wrapper/liquidity-gauge-wrapper-tests/wasm/
 curve_token_v3_des_wasm=./curve-token-v3/curve-token-v3-tests/wasm
 vesting_escrow_simple_des_wasm = ./vesting-escrow-simple/vesting-escrow-simple-tests/wasm
+liquidity_gauge_v3_des_wasm = ./liquidity-gauge-v3/liquidity-gauge-v3-tests/wasm/
 
 prepare:
 	rustup target add wasm32-unknown-unknown
@@ -62,6 +63,8 @@ build-contract-liquidity-gauge-wrapper:
 	cargo build --release -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
 build-contract-curve-token-v3:
 	cargo build --release -p curve-token-v3 -p curve-token-v3-proxy --target wasm32-unknown-unknown
+build-contract-liquidity-gauge-v3:
+	cargo build --release -p liquidity-gauge-v3 -p erc20 -p minter -p voting-escrow -p gauge-controller -p erc20_crv  --target wasm32-unknown-unknown
 
 test-only-minter:
 	cargo test -p minter-tests
@@ -93,6 +96,8 @@ test-only-liquidity-gauge-wrapper:
 	cargo test -p liquidity-gauge-wrapper-tests
 test-only-curve-token-v3:
 	cargo test -p curve-token-v3-tests
+test-only-liquidity-gauge-v3:
+	cargo test -p liquidity-gauge-v3-tests
 
 copy-wasm-file-minter:
 	cp ${wasm_src_path}/minter-token.wasm ${minter_des_wasm}
@@ -149,6 +154,13 @@ copy-wasm-file-vesting-escrow-simple:
 copy-wasm-file-curve-token-v3:
 	cp ${root_directory}${wasm_src_path}curve-token-v3.wasm ${curve_token_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}crv3-proxy-token.wasm ${curve_token_v3_des_wasm}
+copy-wasm-file-liquidity-gauge-v3:
+	cp ${root_directory}${wasm_src_path}liquidity-gauge-v3.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}erc20_crv.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}gauge-controller-token.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}minter-token.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}voting-escrow.wasm ${liquidity_gauge_v3_des_wasm}
 
 test-minter:
 	make build-contract-minter && make copy-wasm-file-minter && make test-only-minter
@@ -181,6 +193,8 @@ test-erc20:
 test-curve-token-v3: 
 	make build-contract-curve-token-v3 && make copy-wasm-file-curve-token-v3 && make test-only-curve-token-v3
 
+test-liquidity-gauge-v3: 
+	make build-contract-liquidity-gauge-v3 && make copy-wasm-file-liquidity-gauge-v3 && make test-only-liquidity-gauge-v3
 all:
 	make test-erc20
 	make test-erc20-crv

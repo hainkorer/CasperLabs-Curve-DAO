@@ -100,7 +100,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             value: data::get_init_supply(),
         });
         let blocktime_u64: u64 = runtime::get_blocktime().into();
-        let blocktime: U256 = U256::from(blocktime_u64); 
+        let blocktime: U256 = U256::from(blocktime_u64);
 
         let start_eporch_time: U256 = blocktime
             .checked_add(data::INFLATION_DELAY)
@@ -122,12 +122,16 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 .unwrap_or_revert_with(Error::Erc20CRVOverFlow9),
         );
 
-        if (data::get_is_updated()==true){
-            data::set_mining_epoch(data::get_mining_epoch().checked_add(1.into()).unwrap_or_revert_with(Error::Erc20CRVOverFlow10));
-        }else{
+        if (data::get_is_updated() == true) {
+            data::set_mining_epoch(
+                data::get_mining_epoch()
+                    .checked_add(1.into())
+                    .unwrap_or_revert_with(Error::Erc20CRVOverFlow10),
+            );
+        } else {
             data::set_is_updated(true);
         }
-       
+
         if rate == 0.into() {
             rate = data::INITIAL_RATE;
         } else {
@@ -198,7 +202,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         let blocktime_sub_st_epoch: U256 = U256::from(blocktime)
             .checked_sub(data::get_start_epoch_time())
             .unwrap_or_revert_with(Error::Erc20CRVUnderFlow4);
-        let ans: U256 = blocktime_sub_st_epoch.checked_mul(data::get_rate()).unwrap_or_revert();
+        let ans: U256 = blocktime_sub_st_epoch
+            .checked_mul(data::get_rate())
+            .unwrap_or_revert();
         data::get_start_epoch_supply()
             .checked_add(ans)
             .unwrap_or_revert_with(Error::Erc20CRVOverFlow16)
@@ -229,8 +235,12 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         }
         erc20_data::set_total_supply(total_supply);
         let existing_balance: U256 = erc20_data::Balances::instance().get(&to);
-        erc20_data::Balances::instance()
-            .set(&to, existing_balance.checked_add(value).unwrap_or_revert_with(Error::Erc20CRVOverFlow19));
+        erc20_data::Balances::instance().set(
+            &to,
+            existing_balance
+                .checked_add(value)
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow19),
+        );
         self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
             from: data::zero_address(),
             to: to,
@@ -320,11 +330,14 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 } else if current_start < current_epoch_time {
                     current_start = current_epoch_time;
                 }
-                let current_end_sub_current_st: U256 = current_end.checked_sub(current_start).unwrap_or_revert_with(Error::Erc20CRVOverFlow7);
-                to_mint=to_mint.checked_add(current_rate)
-                .unwrap_or_revert()
-                .checked_mul(current_end_sub_current_st)
-                .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError2);
+                let current_end_sub_current_st: U256 = current_end
+                    .checked_sub(current_start)
+                    .unwrap_or_revert_with(Error::Erc20CRVOverFlow7);
+                to_mint = to_mint
+                    .checked_add(current_rate)
+                    .unwrap_or_revert()
+                    .checked_mul(current_end_sub_current_st)
+                    .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError2);
                 if start >= current_epoch_time {
                     break;
                 }
@@ -343,7 +356,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 runtime::revert(ApiError::from(Error::Erc20CRVCurrRateLessThanInitRate));
             }
         }
-         to_mint
+        to_mint
     }
     fn erc20_crv_emit(&self, erc20_crv_event: &ERC20CRV_EVENT) {
         let mut events = Vec::new();

@@ -18,7 +18,9 @@ use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
 use core::convert::TryInto;
 
+
 pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> {
+    
     fn init(
         &mut self,
         lp_token: Key,
@@ -47,41 +49,55 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             runtime_args! {},
         );
         let mut name: String = "Curve.fi ".to_string();
-        let post_name: &str = "RewardGauge Deposit";
+        let post_name: &str = "Gauge Deposit";
         name.push_str(symbol.as_str());
         name.push_str(post_name);
-        let decimals: u8 = 9;
-        let total_supply: U256 = 0.into();
         data::set_name(name);
         data::set_symbol(symbol + "-gauge");
-        data::set_total_supply(total_supply);
-        data::set_decimals(decimals);
-        data::set_lp_token(lp_token);
-        data::set_admin(admin);
-        data::set_minter(minter);
-        let crv_addr: Key = runtime::call_versioned_contract(
+
+        let crv_token: Key = runtime::call_versioned_contract(
             minter.into_hash().unwrap_or_revert().into(),
             None,
             "token",
             runtime_args! {},
         );
-        data::set_crv_token(crv_addr);
-
+        
+        let controller_addr: Key = runtime::call_versioned_contract(
+            minter.into_hash().unwrap_or_revert().into(),
+            None,
+            "controller",
+            runtime_args! {},
+        );
+        data::set_lp_token(lp_token);
+        data::set_minter(minter);
+        data::set_admin(admin);
+        data::set_crv_token(crv_token);
+        data::set_controller(controller_addr);
+        data::set_voting_escrow(runtime::call_versioned_contract(
+            controller_addr.into_hash().unwrap_or_revert().into(),
+            None,
+            "voting_escrow",
+            runtime_args! {},
+        ));
         let block_timestamp: u64 = runtime::get_blocktime().into();
-        // data::PeriodTimestamp::instance().set(&U256::from(0), block_timestamp.into());
+        data::PeriodTimestamp::instance().set(&U256::from(0), block_timestamp.into());
         data::set_inflation_rate(runtime::call_versioned_contract(
-            crv_addr.into_hash().unwrap_or_revert().into(),
+            crv_token.into_hash().unwrap_or_revert().into(),
             None,
             "rate",
             runtime_args! {},
         ));
         data::set_future_epoch_time(runtime::call_versioned_contract(
-            crv_addr.into_hash().unwrap_or_revert().into(),
+            crv_token.into_hash().unwrap_or_revert().into(),
             None,
             "future_epoch_time_write",
             runtime_args! {},
         ));
-
+       
+        let decimals: u8 = 9;
+        let total_supply: U256 = 0.into();
+        data::set_total_supply(total_supply);
+        data::set_decimals(decimals);
         data::set_package_hash(package_hash);
         data::set_contract_hash(contract_hash);
         data::set_lock(false);
@@ -273,14 +289,17 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             None,
             "balance_of",
             runtime_args! {
-                "owner" => addr
+                "addr" => addr,
+                "t" => None::<Key>
             },
         );
         let voting_total: U256 = runtime::call_versioned_contract(
             voting_escrow.into_hash().unwrap_or_revert().into(),
             None,
             "total_supply",
-            runtime_args! {},
+            runtime_args! {
+                "t" => None::<U256>
+            },
         );
         let mut lim: U256 = l
             .checked_mul(data::TOKENLESS_PRODUCTION)
@@ -482,7 +501,148 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         );
         true
     }
-    fn _checkpoint(&mut self, addr: Key) {}
+    fn _checkpoint(&mut self, addr: Key) {
+        let token: Key = data::get_crv_token();
+        let controller: Key = data::get_controller();
+        let mut period: U128 = data::get_period();
+        let period_time: U256 =
+            data::PeriodTimestamp::instance().get(&U256::from(period.as_u128()));
+        let mut integrate_inv_supply: U256 =
+            data::IntegrateInvSupply::instance().get(&U256::from(period.as_u128()));
+        let mut rate: U256 = data::get_inflation_rate();
+        let mut new_rate: U256 = rate;
+        let prev_future_epoch: U256 = data::get_future_epoch_time();
+        if prev_future_epoch >= period_time {
+            data::set_future_epoch_time(runtime::call_versioned_contract(
+                token.into_hash().unwrap_or_revert().into(),
+                None,
+                "future_epoch_time_write",
+                runtime_args! {},
+            ));
+            new_rate = runtime::call_versioned_contract(
+                token.into_hash().unwrap_or_revert().into(),
+                None,
+                "rate",
+                runtime_args! {},
+            );
+            data::set_inflation_rate(new_rate);
+        }
+        if data::get_is_killed() {
+            rate = 0.into();
+        }
+        let block_timestamp: u64 = runtime::get_blocktime().into();
+        let mut prev_week_time: U256 = 0.into();
+        let mut working_supply: U256 = 0.into();
+        let mut week_time: U256 = 0.into();
+        if U256::from(block_timestamp) > period_time {
+            working_supply = data::get_working_supply();
+            let () = runtime::call_versioned_contract(
+                controller.into_hash().unwrap_or_revert().into(),
+                None,
+                "checkpoint_gauge",
+                runtime_args! {
+                    "addr" => Key::from(data::get_package_hash())
+                },
+            );
+            prev_week_time = period_time;
+            week_time = U256::min(
+                (period_time.checked_add(data::WEEK).unwrap_or_revert())
+                    .checked_div(data::WEEK)
+                    .unwrap_or_revert()
+                    .checked_mul(data::WEEK)
+                    .unwrap_or_revert(),
+                U256::from(block_timestamp),
+            );
+        }
+
+        for _ in 0..500 {
+            let dt: U256 = week_time.checked_sub(prev_week_time).unwrap_or_revert();
+            let w: U256 = runtime::call_versioned_contract(
+                controller.into_hash().unwrap_or_revert().into(),
+                None,
+                "gauge_relative_weight",
+                runtime_args! {
+                    "addr" => Key::from(data::get_package_hash()),
+                    "time" => prev_week_time.checked_div(data::WEEK).unwrap_or_revert().checked_mul(data::WEEK).unwrap_or_revert()
+                },
+            );
+            if working_supply > 0.into() {
+                if (prev_future_epoch >= prev_week_time) && (prev_future_epoch < week_time) {
+                    integrate_inv_supply = integrate_inv_supply
+                        .checked_add(
+                            rate.checked_mul(w)
+                                .unwrap_or_revert()
+                                .checked_mul(
+                                    prev_future_epoch
+                                        .checked_sub(prev_week_time)
+                                        .unwrap_or_revert(),
+                                )
+                                .unwrap_or_revert()
+                                .checked_div(working_supply)
+                                .unwrap_or_revert(),
+                        )
+                        .unwrap_or_revert();
+                    rate = new_rate;
+                    integrate_inv_supply = integrate_inv_supply
+                        .checked_add(
+                            rate.checked_mul(w)
+                                .unwrap_or_revert()
+                                .checked_mul(
+                                    week_time.checked_sub(prev_future_epoch).unwrap_or_revert(),
+                                )
+                                .unwrap_or_revert()
+                                .checked_div(working_supply)
+                                .unwrap_or_revert(),
+                        )
+                        .unwrap_or_revert();
+                } else {
+                    integrate_inv_supply = integrate_inv_supply
+                        .checked_add(
+                            rate.checked_mul(w)
+                                .unwrap_or_revert()
+                                .checked_mul(dt)
+                                .unwrap_or_revert()
+                                .checked_div(working_supply)
+                                .unwrap_or_revert(),
+                        )
+                        .unwrap_or_revert();
+                }
+            }
+            if week_time == block_timestamp.into() {
+                break;
+            }
+            prev_week_time = week_time;
+            week_time = U256::min(
+                week_time.checked_add(data::WEEK).unwrap_or_revert(),
+                block_timestamp.into(),
+            );
+        }
+        period = period.checked_add(1.into()).unwrap_or_revert();
+        data::set_period(period);
+        data::PeriodTimestamp::instance()
+            .set(&U256::from(period.as_u128()), block_timestamp.into());
+        data::IntegrateInvSupply::instance()
+            .set(&U256::from(period.as_u128()), integrate_inv_supply);
+        let working_balance: U256 = data::WorkingBalances::instance().get(&addr);
+        data::IntegrateFraction::instance().set(
+            &addr,
+            data::IntegrateFraction::instance()
+                .get(&addr)
+                .checked_add(working_balance)
+                .unwrap_or_revert()
+                .checked_mul(
+                    integrate_inv_supply
+                        .checked_sub(data::IntegrateInvSupplyOf::instance().get(&addr))
+                        .unwrap_or_revert(),
+                )
+                .unwrap_or_revert()
+                .checked_div(U256::from(10).pow(18.into()))
+                .unwrap_or_revert(),
+        );
+        data::IntegrateInvSupplyOf::instance().set(&addr, integrate_inv_supply);
+        data::IntegrateCheckpointOf::instance().set(&addr, block_timestamp.into());
+    }
+
     fn claimable_tokens(&mut self, addr: Key) -> U256 {
         self._checkpoint(addr);
         data::IntegrateFraction::instance()
@@ -659,19 +819,86 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         });
         data::set_lock(false);
     }
-    // fn withdraw(&mut self, _value: U256, _claim_rewards: Option<bool>) {
-    //     let lock = data::get_lock();
-    //     if lock != false {
-    //         //Locked
-    //         runtime::revert(Error::LiquidityGaugeLocked1);
-    //     }
-    //     data::set_lock(true);
-    //     self._checkpoint(self.get_caller());
-    //     if _value != 0.into() {
-    //         // Reward Only Gauge Value Is Zero
-    //         runtime::revert(Error::RewardOnlyGaugeValueIsZero1);
-    //     }
-    // }
+    fn withdraw(&mut self, _value: U256, _claim_rewards: Option<bool>) {
+        let lock = data::get_lock();
+        if lock != false {
+            runtime::revert(Error::LiquidityGaugeLocked1);
+        }
+        data::set_lock(true);
+        let claim_rewards: bool;
+        if _claim_rewards.is_none() {
+            claim_rewards = false;
+        } else {
+            claim_rewards = true;
+        }
+        self._checkpoint(self.get_caller());
+        let mut is_rewards: bool = false;
+        let mut total_supply: U256 = 0.into();
+        if _value != 0.into() {
+            if data::RewardTokens::instance().get(&0.into()) != zero_address() {
+                is_rewards = true;
+            } else {
+                is_rewards = false;
+            }
+            total_supply = data::get_total_supply();
+            if (is_rewards) {
+                self._checkpoint_rewards(
+                    self.get_caller(),
+                    total_supply,
+                    claim_rewards,
+                    zero_address(),
+                )
+            }
+            total_supply = total_supply
+                .checked_sub(_value)
+                .ok_or(Error::LiquidityGaugeUnderFlow10)
+                .unwrap_or_revert();
+            let balance = self.balance_of(self.get_caller());
+            let new_balance = balance
+                .checked_sub(_value)
+                .ok_or(Error::LiquidityGaugeUnderFlow11)
+                .unwrap_or_revert();
+            data::BalanceOf::instance().set(&self.get_caller(), new_balance);
+            data::set_total_supply(total_supply);
+            self._update_liquidity_limit(self.get_caller(), new_balance, total_supply);
+            let mut reward_data: U256 = 0.into();
+            if is_rewards {
+                reward_data = self.reward_data().time_stamp;
+                //  if reward_data > 0:
+                //  withdraw_sig: Bytes[4] = slice(self.reward_sigs, 4, 4)
+                //  if convert(withdraw_sig, uint256) != 0:
+                //      raw_call(
+                //          convert(reward_data % 2**160, address),
+                //          concat(withdraw_sig, convert(_value, bytes32))
+                //      )
+
+                // }
+                let lp_token = self.lp_token();
+                let token_hash_add_array = match lp_token {
+                    Key::Hash(package) => package,
+                    _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+                };
+                let token_package_hash = ContractPackageHash::new(token_hash_add_array);
+                let _result: () = runtime::call_versioned_contract(
+                    token_package_hash,
+                    None,
+                    "transfer",
+                    runtime_args! {"_to" => self.get_caller(),"_value" => _value},
+                );
+            }
+        }
+
+        self.emit(&LiquidityGaugeV3Event::Withdraw {
+            provider: self.get_caller(),
+            value: _value,
+        });
+        self.emit(&LiquidityGaugeV3Event::Transfer {
+            from: self.get_caller(),
+            to: zero_address(),
+            value: _value,
+        });
+        data::set_lock(false);
+    }
     fn _transfer(&mut self, _from: Key, _to: Key, _value: U256) {
         // self._checkpoint(_from);
         // self._checkpoint(_to);
