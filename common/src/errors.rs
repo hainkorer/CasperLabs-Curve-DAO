@@ -806,6 +806,9 @@ pub enum Error {
     LiquidityGuageV3Unauthorized = 11826,
     /// 65,540 for (Liquidity guage v3 not allowed)
     LiquidityGuageV3KickNotAllowed = 11827,
+    LiquidityGaugeUnderFlow10 = 11829,
+     /// 65,540 for (Liquidity guage v3 Underflow 10)
+     LiquidityGaugeUnderFlow11 = 11830,
     /// 65,540 for (Lp Token Wrapper Addition Error 1)
     LpTokenWrapperAdditionError1 = 11901,
     /// 65,540 for (Lp Token Wrapper Addition Error 2)

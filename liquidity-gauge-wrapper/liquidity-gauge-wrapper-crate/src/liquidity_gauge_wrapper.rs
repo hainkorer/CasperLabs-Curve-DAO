@@ -266,7 +266,9 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 None,
                 "deposit",
                 runtime_args! {
-                    "value" => value
+                    "value" => value,
+                    "addr" => None::<Key>,
+                    "claim_rewards" => None::<bool>,
                 },
             );
         }
@@ -312,7 +314,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 "withdraw",
                 runtime_args! {
                     "value" => value,
-                    "claim_rewards" => true
+                    "claim_rewards" => None::<bool>
                 },
             );
             let ret: Result<(), u32> = runtime::call_versioned_contract(

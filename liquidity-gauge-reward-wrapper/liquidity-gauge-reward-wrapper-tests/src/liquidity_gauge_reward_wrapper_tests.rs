@@ -198,13 +198,6 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let to = Key::Hash(liquidity_gauge_reward_wrapper_instance.package_hash());
     let amount: U256 = U256::from(TEN_E_NINE * 100000000000000000000);
     let amount_1: U256 = U256::from(TEN_E_NINE * 100);
-    // deploy_liquidity_gauge_reward.call_contract(
-    //     owner,
-    //     "set_approve_deposit",
-    //     runtime_args! {"addr" => Key::Hash(deploy_liquidity_gauge_reward.package_hash()) , "can_deposit" => true},
-    //     0,
-    // );
-    let blocktime: u64 = (TEN_E_NINE * 10000000000) as u64;
     erc20.call_contract(
         owner,
         "mint",

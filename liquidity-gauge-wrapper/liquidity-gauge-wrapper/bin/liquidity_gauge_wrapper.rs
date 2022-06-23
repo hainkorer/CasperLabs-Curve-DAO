@@ -118,7 +118,7 @@ fn withdraw() {
 #[no_mangle]
 fn allowance() {
     let owner: Key = runtime::get_named_arg("owner");
-    let spender: Key = runtime::get_named_arg("recipient");
+    let spender: Key = runtime::get_named_arg("spender");
     let ret = LiquidityGaugeWrapper::default().allowance(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }

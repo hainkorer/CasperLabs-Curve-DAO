@@ -1,14 +1,14 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{collections::BTreeSet, format, vec};
+use alloc::{collections::BTreeSet, format, vec, boxed::Box};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
     runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256, CLType,
 };
 
 use contract_utils::{ContractContext, OnChainContractStorage};
@@ -37,7 +37,6 @@ impl LiquidityGaugeV3 {
         LIQUIDITYTGAUGEV3::init(self, lp_addr, minter, admin, contract_hash, package_hash);
     }
 }
-
 #[no_mangle]
 fn constructor() {
     let lp_addr: Key = runtime::get_named_arg("lp_addr");
@@ -46,6 +45,32 @@ fn constructor() {
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     LiquidityGaugeV3::default().constructor(lp_addr, minter, admin, contract_hash, package_hash);
+}
+#[no_mangle]
+fn user_checkpoint() {
+    let addr: Key = runtime::get_named_arg("addr");
+    let ret: bool = LiquidityGaugeV3::default().user_checkpoint(addr);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn claimable_tokens() {
+    let addr: Key = runtime::get_named_arg("addr");
+    let ret: U256 = LiquidityGaugeV3::default().claimable_tokens(addr);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn deposit() {
+    let value: U256 = runtime::get_named_arg("value");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
+    let claim_rewards: Option<bool> = runtime::get_named_arg("claim_rewards");
+    LiquidityGaugeV3::default().deposit(value, addr,claim_rewards);
+}
+#[no_mangle]
+fn withdraw() {
+    let value: U256 = runtime::get_named_arg("value");
+    let claim_rewards: Option<bool> = runtime::get_named_arg("claim_rewards");
+    
+     LiquidityGaugeV3::default().withdraw(value, claim_rewards);
 }
 #[no_mangle]
 fn crv_token() {
@@ -93,6 +118,41 @@ fn get_entry_points() -> EntryPoints {
         "minter",
         vec![],
         Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "user_checkpoint",
+        vec![Parameter::new("addr", Key::cl_type())],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "claimable_tokens",
+        vec![Parameter::new("addr", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "deposit",
+        vec![
+            Parameter::new("value", U256::cl_type()),
+            Parameter::new("addr", CLType::Option(Box::new(CLType::Key))),
+            Parameter::new("claim_rewards", CLType::Option(Box::new(CLType::Bool))),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "withdraw",
+        vec![
+            Parameter::new("value", U256::cl_type()),
+            Parameter::new("claim_rewards", CLType::Option(Box::new(bool::cl_type()))),
+        ],
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

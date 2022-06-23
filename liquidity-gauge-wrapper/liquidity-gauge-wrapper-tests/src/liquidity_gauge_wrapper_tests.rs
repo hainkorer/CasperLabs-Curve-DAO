@@ -1,7 +1,7 @@
 use crate::liquidity_gauge_wrapper_instance::LIQUIDITYGAUGEWRAPPERInstance;
-use blake2::digest::consts::U128;
-use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256,U128};
 use test_env::{TestContract, TestEnv};
+use common::keys::*;
 //Const
 pub const TEN_E_NINE: u128 = 1000000000;
 const NAME: &str = "LiquidityGuageWrapper";
@@ -79,22 +79,6 @@ fn deploy_gauge_controller(
         0,
     )
 }
-//Reward
-fn deploy_reward(env: &TestEnv, owner: AccountHash) -> TestContract {
-    TestContract::new(
-        &env,
-        "erc20-token.wasm",
-        "reward token",
-        owner,
-        runtime_args! {
-            "name" => "reward token",
-            "symbol" => "RT",
-            "decimals" => 9 as u8,
-            "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
-        },
-        0,
-    )
-}
 //Minter
 fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key) -> TestContract {
     TestContract::new(
@@ -167,92 +151,183 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         Key::Account(owner),
     );
     // For Minting Purpose
-    let to = Key::Hash(deploy_liquidity_gauge_v3.package_hash());
+    let to = Key::Hash(liquidity_gauge_wrapper_instance.package_hash());
     let amount: U256 = U256::from(TEN_E_NINE * 100000000000000000000);
     let amount_1: U256 = U256::from(TEN_E_NINE * 100);
-    // deploy_liquidity_gauge_reward.call_contract(
+    erc20.call_contract(
+        owner,
+        "mint",
+        runtime_args! {"to" => to , "amount" => amount},
+        0,
+    );
+    erc20.call_contract(
+        owner,
+        "approve",
+        runtime_args! {"spender" => to , "amount" => amount},
+        0,
+    );
+    erc20_crv.call_contract(
+        owner,
+        "set_minter",
+        runtime_args! {"_minter" => Key::Account(owner)},
+        0,
+    );
+    // deploy_liquidity_gauge_v3.call_contract(
     //     owner,
-    //     "set_approve_deposit",
-    //     runtime_args! {"addr" => Key::Hash(deploy_liquidity_gauge_reward.package_hash()) , "can_deposit" => true},
-    //     0,
-    // );
-    // let blocktime: u64 = (TEN_E_NINE * 10000000000) as u64;
-    // erc20.call_contract(
-    //     owner,
-    //     "mint",
-    //     runtime_args! {"to" => to , "amount" => amount},
-    //     0,
-    // );
-    // erc20.call_contract(
-    //     owner,
-    //     "approve",
-    //     runtime_args! {"spender" => to , "amount" => amount},
-    //     0,
-    // );
-    // reward.call_contract(
-    //     owner,
-    //     "mint",
-    //     runtime_args! {"to" => to , "amount" => amount},
-    //     0,
-    // );
-    // erc20_crv.call_contract(
-    //     owner,
-    //     "set_minter",
-    //     runtime_args! {"_minter" => Key::Account(owner)},
-    //     0,
-    // );
-    // erc20_crv.call_contract(
-    //     owner,
-    //     "mint",
+    //     "set_rewards",
     //     runtime_args! {"to" => to , "value" => amount_1},
-    //     2000000000000000000,
+    //     0,
     // );
+    erc20_crv.call_contract(
+        owner,
+        "mint",
+        runtime_args! {"to" => to , "value" => amount_1},
+        2000000000000000000,
+    );
 
-    // let _name: String = "type".to_string();
-    // gauge_controller.call_contract(owner, "add_type", runtime_args! {"_name" => _name }, 0);
-    // let addr: Key = Key::Account(owner);
-    // let gauge_type: U128 = 0.into();
-    // gauge_controller.call_contract(
-    //     owner,
-    //     "add_gauge",
-    //     runtime_args! {
-    //         "addr" => addr,
-    //         "gauge_type" => gauge_type,
-    //         "weight"=>None::<U256>
-    //     },
-    //     0,
-    // );
-    // let _name_1: String = "type1".to_string();
-    // gauge_controller.call_contract(owner, "add_type", runtime_args! {"_name" => _name_1 }, 0);
-    // let addr1: Key = Key::Hash(deploy_liquidity_gauge_reward.package_hash());
-    // let gauge_type_1: U128 = 1.into();
-    // gauge_controller.call_contract(
-    //     owner,
-    //     "add_gauge",
-    //     runtime_args! {
-    //         "addr" => addr1,
-    //         "gauge_type" => gauge_type_1,
-    //         "weight"=>None::<U256>
-    //     },
-    //     0,
-    // );
+    let _name: String = "type".to_string();
+    gauge_controller.call_contract(owner, "add_type", runtime_args! {"_name" => _name }, 0);
+    let addr: Key = Key::Account(owner);
+    let gauge_type: U128 = 0.into();
+    gauge_controller.call_contract(
+        owner,
+        "add_gauge",
+        runtime_args! {
+            "addr" => addr,
+            "gauge_type" => gauge_type,
+            "weight"=>None::<U256>
+        },
+        0,
+    );
+    let _name_1: String = "type1".to_string();
+    gauge_controller.call_contract(owner, "add_type", runtime_args! {"_name" => _name_1 }, 0);
+    let addr1: Key = Key::Hash(deploy_liquidity_gauge_v3.package_hash());
+    let gauge_type_1:U128 = 1.into();
+    gauge_controller.call_contract(
+        owner,
+        "add_gauge",
+        runtime_args! {
+            "addr" => addr1,
+            "gauge_type" => gauge_type_1,
+            "weight"=>None::<U256>
+        },
+        0,
+    );
     (env, owner, liquidity_gauge_wrapper_instance)
 }
 #[test]
 fn test_deploy() {
     let (_, _, _) = deploy();
-    //let (env, token, owner) = deploy();
-    // let user = env.next_user();
-    // assert_eq!(token.name(), NAME);
-    // assert_eq!(token.symbol(), SYMBOL);
-    // // assert_eq!(token.meta(), meta::contract_meta());
-    // assert_eq!(
-    //     token.total_supply(),
-    //     (INIT_TOTAL_SUPPLY + INIT_TOTAL_SUPPLY).into()
-    // );
-    // assert_eq!(token.decimals(), DECIMALS);
-    // assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-    // assert_eq!(token.balance_of(user), 0.into());
-    // assert_eq!(token.allowance(owner, user), 0.into());
-    // assert_eq!(token.allowance(user, owner), 0.into());
+}
+#[test]
+fn test_user_checkpoint() {
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    let addr: Key = Key::Account(owner);
+    TestContract::new(
+        &env,
+        "liquidity-gauge-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(USER_CHECKPOINT),
+            "package_hash" => package_hash,
+            "addr" => addr,
+        },
+        300,
+    );
+}
+#[test]
+fn test_claimable_tokens() {
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    let addr: Key = Key::Account(owner);
+    TestContract::new(
+        &env,
+        "liquidity-gauge-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMABLE_TOKENS),
+            "package_hash" => package_hash,
+            "addr" => addr,
+        },
+        300,
+    );
+}
+#[test]
+fn test_claim_tokens() {
+    let (_, owner, instance) = deploy();
+    let liquidity_gauge_wrapper_instance =
+        LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_wrapper_instance.claim_tokens(owner, None);
+}
+#[test]
+fn test_set_approve_deposit() {
+    let (_, owner, instance) = deploy();
+    let addr: Key = Key::Account(owner);
+    let liquidity_gauge_wrapper_instance =
+        LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_wrapper_instance.set_approve_deposit(owner, addr, true);
+}
+#[test]
+fn test_deposit() {
+    let (_, owner, instance) = deploy();
+    let liquidity_gauge_wrapper_instance =
+        LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 10 ), None);
+}
+#[test]
+fn test_withdraw() {
+    let (_, owner, instance) = deploy();
+    let addr: Key = Key::Account(owner);
+    let liquidity_gauge_wrapper_instance =
+        LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
+    liquidity_gauge_wrapper_instance.withdraw(owner, U256::from(TEN_E_NINE * 10), addr);
+}
+#[test]
+fn test_allowance() {
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    let user_1: Key = env.next_user().into();
+    TestContract::new(
+        &env,
+        "liquidity-gauge-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(ALLOWANCE),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner),
+            "spender" => user_1
+        },
+        300,
+    );
+}
+#[test]
+fn test_transfer() {
+    let (env, owner, instance) = deploy();
+    let recipient: Key = env.next_user().into();
+    let liquidity_gauge_wrapper_instance =
+        LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
+    liquidity_gauge_wrapper_instance.transfer(owner, recipient,U256::from(TEN_E_NINE * 10));
+}
+#[test]
+fn test_transfer_from() {
+    let (env, owner, instance) = deploy();
+    let recipient: Key = env.next_user().into();
+    let liquidity_gauge_wrapper_instance =
+        LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
+    liquidity_gauge_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
+    liquidity_gauge_wrapper_instance.transfer_from(owner,Key::Account(owner), recipient,0.into());
+}
+#[test]
+fn test_approve() {
+    let (_, owner, instance) = deploy();
+    let liquidity_gauge_wrapper_instance =
+        LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
+    liquidity_gauge_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
 }

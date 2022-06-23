@@ -13,7 +13,7 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage, set_key};
+use contract_utils::{ContractContext, ContractStorage};
 
 pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
     // @notice Contract constructor

@@ -105,7 +105,7 @@ impl RewardTokens {
     }
 
     pub fn get(&self, indx: &U256) -> Key {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_revert()
+        self.dict.get(indx.to_string().as_str()).unwrap_or(zero_address())
     }
 
     pub fn set(&self, indx: &U256, value: Key) {
@@ -544,7 +544,7 @@ pub fn set_working_supply(working_supply: U256) {
 }
 
 pub fn get_working_supply() -> U256 {
-    get_key(WORKING_SUPPLY).unwrap_or_revert()
+    get_key(WORKING_SUPPLY).unwrap_or_default()
 }
 
 pub fn set_period(period: U128) {
