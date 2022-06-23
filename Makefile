@@ -24,7 +24,7 @@ curve_rewards_des_wasm = ./curve-rewards/curve-rewards-tests/wasm/
 prepare:
 	rustup target add wasm32-unknown-unknown
 build-contract-curve-token-v3:
-	cargo build --release -p curve-token-v3 -p curve-token-v3-proxy --target wasm32-unknown-unknown
+	cargo build --release -p curve-token-v3 -p erc20 -p curve-rewards -p curve-token-v3-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/curve-token-v3.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-v3:
 	cargo build --release -p liquidity-gauge-v3 --target wasm32-unknown-unknown
@@ -137,6 +137,8 @@ test-only-curve-rewards:
 copy-wasm-file-curve-token-v3:
 	cp ${wasm_src_path}/curve-token-v3.wasm ${curve_token_v3_des_wasm}
 	cp ${wasm_src_path}/crv3-proxy-token.wasm ${curve_token_v3_des_wasm}
+	cp ${wasm_src_path}/erc20-token.wasm ${curve_token_v3_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${curve_token_v3_des_wasm}
 copy-wasm-file-erc20:
 	cp ${wasm_src_path}/erc20-proxy-token.wasm ${erc20_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${erc20_des_wasm}
