@@ -271,10 +271,10 @@ all:
 	# make test-liquidity-gauge-reward-wrapper
 	# make test-liquidity-gauge-wrapper
 	# make test-minter
-	make test-reward-only-gauge
+	# make test-reward-only-gauge
 	# make test-vesting-escrow
-	# make test-vesting-escrow-factory
-	# make test-vesting-escrow-simple
+	make test-vesting-escrow-factory
+	make test-vesting-escrow-simple
 	# make test-voting-escrow
 	# make test-ownable
 	# make test-i-reward-distribution-recipient

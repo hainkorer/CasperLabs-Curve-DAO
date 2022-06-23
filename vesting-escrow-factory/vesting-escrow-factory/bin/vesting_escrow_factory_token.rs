@@ -72,6 +72,12 @@ fn admin() {
 }
 
 #[no_mangle]
+fn target() {
+    let ret: Key = Token::default().target();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
 fn future_admin() {
     let ret: Key = Token::default().future_admin();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
@@ -255,6 +261,13 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
+        "target",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
         "future_admin",
         vec![],
         Key::cl_type(),
@@ -292,5 +305,104 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
 
+
+    // ENTRYPOINTS OF VESTING ESCROW SIMPLE
+    entry_points.add_entry_point(EntryPoint::new(
+        "constructor",
+        vec![
+            Parameter::new("token", Key::cl_type()),
+            Parameter::new("contract_hash", ContractHash::cl_type()),
+            Parameter::new("package_hash", ContractPackageHash::cl_type()),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Groups(vec![Group::new("constructor")]),
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "initialize",
+        vec![
+            Parameter::new("admin", Key::cl_type()),
+            Parameter::new("token", Key::cl_type()),
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+            Parameter::new("start_time", U256::cl_type()),
+            Parameter::new("end_time", U256::cl_type()),
+            Parameter::new("can_disable", bool::cl_type()),
+        ],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "toggle_disable",
+        vec![Parameter::new("recipient", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "disable_can_disable",
+        vec![],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "vested_of",
+        vec![Parameter::new("recipient", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "vested_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "locked_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
+    entry_points.add_entry_point(EntryPoint::new(
+        "locked_of",
+        vec![Parameter::new("recipient", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "commit_transfer_ownership",
+        vec![Parameter::new("addr", Key::cl_type())],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "apply_transfer_ownership",
+        vec![],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "balance_of_vest",
+        vec![Parameter::new("recipient", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "claim",
+        vec![Parameter::new("addr", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
     entry_points
 }

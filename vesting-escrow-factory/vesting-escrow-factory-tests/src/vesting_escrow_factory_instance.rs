@@ -5,7 +5,8 @@ use blake2::{
     VarBlake2b,
 };
 use casper_types::{
-    account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
+    account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
+    RuntimeArgs, U256,
 };
 use test_env::{TestContract, TestEnv};
 
@@ -141,173 +142,40 @@ impl VESTINGESCROWFACTORYInstance {
     //     );
     // }
 
-    // pub fn transfer_from(&self, sender: AccountHash, owner: Key, recipient: Key, amount: U256) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "transfer_from",
-    //         runtime_args! {
-    //             "owner" => owner,
-    //             "recipient" => recipient,
-    //             "amount" => amount
-    //         },
-    //         0,
-    //     );
-    // }
+    pub fn apply_transfer_ownership(&self, sender: AccountHash) {
+        self.0
+            .call_contract(sender, "apply_transfer_ownership", runtime_args! {}, 0);
+    }
 
-    // pub fn approve<T: Into<Key>>(&self, sender: AccountHash, spender: T, amount: U256) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "approve",
-    //         runtime_args! {
-    //             "spender" => spender.into(),
-    //             "amount" => amount
-    //         },
-    //         0,
-    //     );
-    // }
+    pub fn commit_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash, addr: T) {
+        self.0.call_contract(
+            sender,
+            "commit_transfer_ownership",
+            runtime_args! {
+                "addr" => addr.into(),
+            },
+            0,
+        );
+    }
 
-    // pub fn increase_allowance<T: Into<Key>>(&self, sender: AccountHash, spender: T, amount: U256) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "increase_allowance",
-    //         runtime_args! {
-    //             "spender" => spender.into(),
-    //             "amount" => amount
-    //         },
-    //         0,
-    //     );
-    // }
+    pub fn admin(&self) -> Key {
+        self.0.query_named_key(String::from("admin"))
+    }
+    pub fn future_admin(&self) -> Key {
+        self.0.query_named_key(String::from("future_admin"))
+    }
 
-    // pub fn allowance_fn(&self, sender: AccountHash, owner: Key, spender: Key) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "allowance",
-    //         runtime_args! {
-    //             "owner" => owner,
-    //             "spender" => spender,
-    //         },
-    //         0,
-    //     );
-    // }
+    pub fn target(&self) -> Key {
+        self.0.query_named_key(String::from("target"))
+    }
 
-    // pub fn decrease_allowance<T: Into<Key>>(&self, sender: AccountHash, spender: T, amount: U256) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "decrease_allowance",
-    //         runtime_args! {
-    //             "spender" => spender.into(),
-    //             "amount" => amount
-    //         },
-    //         0,
-    //     );
-    // }
-
-    // pub fn mint<T: Into<Key>>(&self, sender: AccountHash, to: T, amount: U256) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "mint",
-    //         runtime_args! {
-    //             "to" => to.into(),
-    //             "amount" => amount
-    //         },
-    //         0,
-    //     );
-    // }
-    // pub fn burn<T: Into<Key>>(&self, sender: AccountHash, from: T, amount: U256) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "burn",
-    //         runtime_args! {
-    //             "from" => from.into(),
-    //             "amount" => amount
-    //         },
-    //         0,
-    //     );
-    // }
-
-    // pub fn balance_of<T: Into<Key>>(&self, account: T) -> U256 {
-    //     self.0
-    //         .query_dictionary("balances", key_to_str(&account.into()))
-    //         .unwrap_or_default()
-    // }
-
-    // pub fn nonce<T: Into<Key>>(&self, account: T) -> U256 {
-    //     self.0
-    //         .query_dictionary("nonce", key_to_str(&account.into()))
-    //         .unwrap_or_default()
-    // }
-
-    // pub fn allowance<T: Into<Key>>(&self, owner: T, spender: T) -> U256 {
-    //     let owner: Key = owner.into();
-    //     let spender: Key = spender.into();
-    //     self.0
-    //         .query_dictionary("allowances", keys_to_str(&owner, &spender))
-    //         .unwrap_or_default()
-    // }
-    // pub fn allowance_package_hash<T: Into<Key>>(
-    //     &self,
-    //     owner: ContractPackageHash,
-    //     spender: T,
-    // ) -> U256 {
-    //     let owner: Key = owner.into();
-    //     let spender: Key = spender.into();
-    //     self.0
-    //         .query_dictionary("allowances", keys_to_str(&owner, &spender))
-    //         .unwrap_or_default()
-    // }
-
-    // pub fn name(&self) -> String {
-    //     self.0.query_named_key(String::from("name"))
-    // }
-
-    // pub fn symbol(&self) -> String {
-    //     self.0.query_named_key(String::from("symbol"))
-    // }
-
-    // pub fn decimals(&self) -> u8 {
-    //     self.0.query_named_key(String::from("decimals"))
-    // }
-
-    // pub fn total_supply(&self) -> U256 {
-    //     self.0.query_named_key(String::from("total_supply"))
-    // }
-
-    // pub fn contract_package_hash(&self) -> ContractPackageHash {
-    //     self.0
-    //         .query_named_key(String::from("contract_package_hash"))
-    // }
-    // pub fn contract_hash(&self) -> Key {
-    //     self.0.query_named_key(String::from("self_contract_hash"))
-    // }
-
-    // // Result methods
-    // pub fn transfer_result(&self) -> Result<(), u32> {
-    //     self.0.query_named_key("transfer_result".to_string())
-    // }
-
-    // pub fn package_hash_result(&self) -> ContractPackageHash {
-    //     self.0.query_named_key("package_hash".to_string())
-    // }
-
-    // pub fn transfer_from_result(&self) -> Result<(), u32> {
-    //     self.0.query_named_key("transfer_from_result".to_string())
-    // }
-    // pub fn allowance_res(&self) -> U256 {
-    //     self.0.query_named_key("allowance".to_string())
-    // }
-
-    // pub fn increase_allowance_res(&self) -> Result<(), u32> {
-    //     self.0
-    //         .query_named_key("increase_allowance_result".to_string())
-    // }
-    // pub fn decrease_allowance_res(&self) -> Result<(), u32> {
-    //     self.0
-    //         .query_named_key("decrease_allowance_result".to_string())
-    // }
-
-    // pub fn meta(&self) -> Meta {
-    //     self.0.query_named_key(String::from("meta"))
-    // }
+    pub fn contract_package_hash(&self) -> ContractPackageHash {
+        self.0
+            .query_named_key(String::from("self_contract_package_hash"))
+    }
+    pub fn contract_hash(&self) -> Key {
+        self.0.query_named_key(String::from("self_contract_hash"))
+    }
 }
 
 pub fn key_to_str(key: &Key) -> String {

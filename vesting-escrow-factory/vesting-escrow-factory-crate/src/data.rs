@@ -36,7 +36,7 @@ pub fn account_zero_address() -> Key {
 }
 
 pub fn admin() -> Key {
-    get_key(ADMIN).unwrap_or_revert()
+    get_key(ADMIN).unwrap_or(zero_address())
 }
 
 pub fn set_admin(admin: Key) {
@@ -44,7 +44,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn target() -> Key {
-    get_key(TARGET).unwrap_or_revert()
+    get_key(TARGET).unwrap_or(zero_address())
 }
 
 pub fn set_target(value: Key) {
@@ -52,7 +52,7 @@ pub fn set_target(value: Key) {
 }
 
 pub fn future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or_revert()
+    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
 }
 
 pub fn set_future_admin(future_admin: Key) {
