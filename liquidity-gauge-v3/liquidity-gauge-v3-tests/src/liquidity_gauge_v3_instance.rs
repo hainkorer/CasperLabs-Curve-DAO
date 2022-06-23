@@ -19,8 +19,6 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     }
 
    
-   
-
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
@@ -43,25 +41,79 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
             0,
         )
     }
-    
-
-  
-   
-pub fn key_to_str(key: &Key) -> String {
-    match key {
-        Key::Account(account) => account.to_string(),
-        Key::Hash(package) => hex::encode(package),
-        _ => panic!("Unexpected key type"),
+    pub fn commit_transfer_ownership(&self, sender: AccountHash, addr:Key) {
+        self.0.call_contract(
+            sender,
+            "commit_transfer_ownership",
+            runtime_args! {
+                "addr" => addr,
+            },
+            0,
+        );
     }
-}
+     pub fn accept_transfer_ownership(&self, sender: AccountHash){
+        self.0.call_contract(
+            sender,
+            "accept_transfer_ownership",
+            runtime_args! {
+            },
+            0,
+        );
+    }
+    pub fn set_killed(&self, sender: AccountHash,is_killed:bool){
+        self.0.call_contract(
+            sender,
+            "set_killed",
+            runtime_args! {
+                "is_killed"=>is_killed,
+            },
+            0,
+        );
+    }
+    pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256) {
+        self.0.call_contract(
+            sender,
+            "approve",
+            runtime_args! {
+                "spender" => spender,
+                "amount" => amount
 
-pub fn package_hash(&self) -> [u8; 32] {
-    self.0.package_hash()
-}
+            },
+            0,
+        );
+    }
+    pub fn increase_allowance(&self, sender: AccountHash, spender: Key, amount: U256) {
+        self.0.call_contract(
+            sender,
+            "increase_allowance",
+            runtime_args! {
+                "spender" => spender,
+                "amount" => amount,
 
-// Get stored key values
-pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
-    self.0.query_named_key(key)
-}
+            },
+            0,
+        );
+    }
+    pub fn decrease_allowance(&self, sender: AccountHash, spender: Key, amount: U256) {
+        self.0.call_contract(
+            sender,
+            "decrease_allowance",
+            runtime_args! {
+                "spender" => spender,
+                "amount" => amount
+
+            },
+            0,
+        );
+    }
+    
+    pub fn package_hash(&self) -> [u8; 32] {
+        self.0.package_hash()
+    }
+
+    // Get stored key values
+    pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
+        self.0.query_named_key(key)
+    }
 
 }

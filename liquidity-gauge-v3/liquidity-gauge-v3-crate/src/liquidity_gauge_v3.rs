@@ -36,6 +36,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         data::IntegrateInvSupplyOf::init();
         data::PeriodTimestamp::init();
         data::WorkingBalances::init();
+        data::Allowance::init();
 
         let _lp_token_hash_add_array = match lp_token {
             Key::Hash(package) => package,
@@ -758,7 +759,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         } else {
             addr = _addr.unwrap();
         }
-        //self.checpoint(_addr);
+       self._checkpoint(addr);
         let lock = data::get_lock();
         if lock != false {
             //Locked
@@ -781,7 +782,6 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             .unwrap_or_revert();
         BalanceOf::instance().set(&self.get_caller(), new_balance);
         data::set_total_supply(total_supply);
-
         self._update_liquidity_limit(addr, new_balance, total_supply);
 
         let lp_token = self.lp_token();
@@ -958,57 +958,55 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                 .checked_sub(_value)
                 .ok_or(Error::LiquidityGaugeUnderFlow2)
                 .unwrap_or_revert();
-            self._approve(_from, self.get_caller(), new_allowance);
+        
         }
         self._transfer(_from, _to, _value);
         data::set_lock(false);
         return true;
     }
 
-    fn approve(&mut self, spender: Key, _value: U256) -> bool {
-        self._approve(self.get_caller(), spender, _value)
-    }
-
-    fn _approve(&mut self, _owner: Key, _spender: Key, _value: U256) -> bool {
-        Allowance::instance().set(&_owner, &_spender, _value);
+    fn approve(&self, spender: Key, amount: U256) {
+        Allowance::instance().set(&self.get_caller(), &spender, amount);
         self.emit(&LiquidityGaugeV3Event::Approval {
-            owner: _owner,
-            spender: _spender,
-            value: _value,
+            owner: self.get_caller(),
+            spender: spender,
+            value: amount,
         });
-        return true;
     }
-    fn increase_allowance(&mut self, _spender: Key, _added_value: U256) -> bool {
-        let allowances = Allowance::instance();
-        let owner: Key = self.get_caller();
-
-        let spender_allowance: U256 = allowances.get(&owner, &_spender);
-        let new_allowance: U256 = spender_allowance
-            .checked_add(_added_value)
+    fn increase_allowance(&self, spender: Key, amount: U256) -> Result<(), u32> {
+        let allowance: U256 = Allowance::instance()
+            .get(&self.get_caller(), &spender)
+            .checked_add(amount)
             .ok_or(Error::LiquidityGaugeV3OverFlow1)
             .unwrap_or_revert();
-        self._approve(owner, _spender, new_allowance);
-        return true;
+        Allowance::instance().set(&self.get_caller(), &spender, allowance);
+        self.emit(&LiquidityGaugeV3Event::Approval {
+            owner: self.get_caller(),
+            spender: spender,
+            value: amount,
+        });
+        Ok(())
     }
-    fn decrease_allowance(&mut self, _spender: Key, _subtracted_value: U256) -> bool {
-        let allowances = Allowance::instance();
-
-        let owner: Key = self.get_caller();
-
-        let spender_allowance: U256 = allowances.get(&owner, &_spender);
-
-        let new_allowance: U256 = spender_allowance
-            .checked_sub(_subtracted_value)
+    fn decrease_allowance(&self, spender: Key, amount: U256) -> Result<(), u32> {
+        let allowance: U256 = Allowance::instance()
+            .get(&self.get_caller(), &spender)
+            .checked_sub(amount)
             .ok_or(Error::LiquidityGaugeUnderFlow1)
             .unwrap_or_revert();
-        self._approve(owner, _spender, new_allowance);
-
-        return true;
+        Allowance::instance().set(&self.get_caller(), &spender, allowance);
+        self.emit(&LiquidityGaugeV3Event::Approval {
+            owner: self.get_caller(),
+            spender: spender,
+            value: amount,
+        });
+        Ok(())
     }
+
+
+    
 
     fn commit_transfer_ownership(&mut self, addr: Key) {
         if self.get_caller() != self.admin() {
-            //Reward Only Gauge Only Admin
             runtime::revert(Error::LiquidityGaugeOnlyAdmin1);
         }
         data::set_future_admin(addr);
@@ -1018,7 +1016,6 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
     fn accept_transfer_ownership(&mut self) {
         let _admin = self.future_admin();
         if self.get_caller() != _admin {
-            //Reward Only Gauge Only Future Admin
             runtime::revert(Error::LiquidityGaugeOnlyFutureAdmin);
         }
         data::set_admin(_admin);

@@ -209,9 +209,71 @@ fn deploy() -> (TestEnv, AccountHash,TestContract) {
     (env, owner,liquidity_gauge_v3_instance)
 }
 
-
 #[test]
 fn test_deploy() {
     let (_, _,_) = deploy();
-  
 }
+#[test]
+fn test_commit_transfer_ownership(){
+    let (env, owner, contract) = deploy();
+   let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let addr: Key = Key::Account(owner);
+    contract.commit_transfer_ownership(owner, addr);
+}
+#[test]
+fn test_accept_transfer_ownership(){
+    let (env, owner, contract) = deploy();
+   let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+   let addr: Key = Key::Account(owner);
+   contract.commit_transfer_ownership(owner, addr);
+   contract.accept_transfer_ownership(owner);
+}
+#[test]
+fn test_set_killed(){
+    let (env, owner, contract) = deploy();
+   let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+   let is_killed: bool = true;
+   contract.set_killed(owner, is_killed);
+}
+#[test]
+fn test_increase_allowance() {
+    let (env, owner, contract) = deploy();
+    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let spender: Key = Key::from_formatted_str(
+        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+    )
+    .unwrap();
+    let amount:U256=50000000.into();
+    contract.increase_allowance(owner, spender, amount);
+   
+}
+#[test]
+fn test_decrease_allowance() {
+    let (env, owner, contract) = deploy();
+    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let spender: Key = Key::from_formatted_str(
+        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+    )
+    .unwrap();
+    let approve_amount:U256=500000.into();
+    contract.approve(owner,spender,approve_amount);
+    let amount:U256=100000.into();
+    contract.decrease_allowance(owner, spender, amount);
+}
+#[test]
+fn test_approve() {
+    let (env, owner, contract) = deploy();
+    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let spender: Key = Key::from_formatted_str(
+        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+    )
+    .unwrap();
+    let approve_amount:U256=500000.into();
+    contract.approve(owner,spender,approve_amount);
+}
+
+
+
+
+
+
