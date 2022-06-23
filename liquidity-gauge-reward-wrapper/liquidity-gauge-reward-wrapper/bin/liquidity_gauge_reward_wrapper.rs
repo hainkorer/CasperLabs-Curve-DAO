@@ -106,7 +106,7 @@ fn claimable_reward_js_client() {
 }
 #[no_mangle]
 fn claim_tokens() {
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     LiquidityGaugeRewardWrapper::default().claim_tokens(addr);
 }
 #[no_mangle]
@@ -119,7 +119,7 @@ fn set_approve_deposit() {
 #[no_mangle]
 fn deposit() {
     let value: U256 = runtime::get_named_arg("value");
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     LiquidityGaugeRewardWrapper::default().deposit(value, addr);
 }
 
@@ -131,7 +131,7 @@ fn withdraw() {
 #[no_mangle]
 fn allowance() {
     let owner: Key = runtime::get_named_arg("owner");
-    let spender: Key = runtime::get_named_arg("recipient");
+    let spender: Key = runtime::get_named_arg("spender");
     let ret = LiquidityGaugeRewardWrapper::default().allowance(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -334,7 +334,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claim_tokens",
-        vec![Parameter::new("addr", Key::cl_type())],
+        vec![Parameter::new("addr",CLType::Option(Box::new(CLType::Key)))],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -353,7 +353,7 @@ fn get_entry_points() -> EntryPoints {
         "deposit",
         vec![
             Parameter::new("value", U256::cl_type()),
-            Parameter::new("addr", Key::cl_type()),
+            Parameter::new("addr", CLType::Option(Box::new(CLType::Key))),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

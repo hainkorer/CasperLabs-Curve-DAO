@@ -37,6 +37,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         data::PeriodTimestamp::init();
         data::WorkingBalances::init();
         data::Allowance::init();
+        data::RewardTokens::init();
 
         let _lp_token_hash_add_array = match lp_token {
             Key::Hash(package) => package,
@@ -491,7 +492,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
     }
 
     fn user_checkpoint(&mut self, addr: Key) -> bool {
-        if (self.get_caller() == addr || self.get_caller() == data::get_minter()) {
+        if !(self.get_caller() == addr || self.get_caller() == data::get_minter()) {
             runtime::revert(Error::LiquidityGuageV3Unauthorized);
         }
         self._checkpoint(addr);
@@ -653,8 +654,8 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                 None,
                 "minted",
                 runtime_args! {
-                    "user" => addr,
-                    "gauge" => Key::from(data::get_package_hash())
+                    "key0" => addr,
+                    "key1" => Key::from(data::get_package_hash())
                 },
             ))
             .unwrap_or_revert()
@@ -790,24 +791,28 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-        let _result: () = runtime::call_versioned_contract(
+        let ret: Result<(), u32> = runtime::call_versioned_contract(
             token_package_hash,
             None,
             "transfer_from",
-            runtime_args! {"_from" => self.get_caller(),"_to" =>  data::get_package_hash(),"_value" => _value},
+            runtime_args! {
+                "owner" => self.get_caller(),
+                "recipient" => Key::from(data::get_package_hash()),
+                "amount" => _value
+            },
         );
-        if (is_rewards) {
-            let mut reward_data: RewardData = self.reward_data();
-            if (reward_data.time_stamp > 0.into()) {
+        // if (is_rewards) {
+        //     let mut reward_data: RewardData = self.reward_data();
+        //     if (reward_data.time_stamp > 0.into()) {
 
-                // let deposit_sig:Bytes=self.reward_sigs
-                // if convert(deposit_sig, uint256) != 0:
-                //     raw_call(
-                //         convert(reward_data % 2**160, address),
-                //         concat(deposit_sig, convert(_value, bytes32))
-                //     )
-            }
-        }
+        //         // let deposit_sig:Bytes=self.reward_sigs
+        //         // if convert(deposit_sig, uint256) != 0:
+        //         //     raw_call(
+        //         //         convert(reward_data % 2**160, address),
+        //         //         concat(deposit_sig, convert(_value, bytes32))
+        //         //     )
+        //     }
+        // }
         self.emit(&LiquidityGaugeV3Event::Deposit {
             provider: self.get_caller(),
             value: _value,

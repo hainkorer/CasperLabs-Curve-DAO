@@ -321,7 +321,7 @@ fn test_balance_of_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
     let t: U256 = 123.into();
-    instance.balance_of_js_client(owner, addr, t);
+    instance.balance_of_js_client(owner, addr, Some(t));
     let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default balance");
 }
@@ -382,7 +382,7 @@ fn test_total_supply() {
 fn test_total_supply_js_client() {
     let (_, owner, instance, _) = deploy();
     let t: U256 = 123.into();
-    instance.total_supply_js_client(owner, t);
+    instance.total_supply_js_client(owner, Some(t));
     let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default total supply");
 }
