@@ -15,6 +15,7 @@ use casper_types::{
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
 use vesting_escrow_factory_crate::VESTINGESCROWFACTORY;
+use vesting_escrow_simple_crate::VESTINGESCROWSIMPLE;
 
 #[derive(Default)]
 struct Token(OnChainContractStorage);
@@ -24,10 +25,10 @@ impl ContractContext<OnChainContractStorage> for Token {
         &self.0
     }
 }
-
+impl VESTINGESCROWSIMPLE<OnChainContractStorage> for Token {}
 impl VESTINGESCROWFACTORY<OnChainContractStorage> for Token {}
 impl Token {
-    fn constructor(
+    fn constructor_vef(
         &mut self,
         _target: Key,
         _admin: Key,
@@ -51,13 +52,13 @@ impl Token {
 /// """
 
 #[no_mangle]
-fn constructor() {
+fn constructor_vef() {
     let _target: Key = runtime::get_named_arg::<Key>("_target");
     let _admin: Key = runtime::get_named_arg("_admin");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
 
-    Token::default().constructor(_target, _admin, contract_hash, package_hash);
+    Token::default().constructor_vef(_target, _admin, contract_hash, package_hash);
 }
 
 #[no_mangle]
@@ -88,7 +89,7 @@ fn future_admin() {
 /// """
 
 #[no_mangle]
-fn apply_transfer_ownership() {
+fn apply_transfer_ownership_vef() {
     let ret: bool = Token::default().apply_transfer_ownership();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -99,7 +100,7 @@ fn apply_transfer_ownership() {
 /// """
 
 #[no_mangle]
-fn commit_transfer_ownership() {
+fn commit_transfer_ownership_vef() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: bool = Token::default().commit_transfer_ownership(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
@@ -126,8 +127,8 @@ fn deploy_vesting_contract() {
     let _can_disable: bool = runtime::get_named_arg("_can_disable");
     let _vesting_duration: U256 = runtime::get_named_arg("_vesting_duration");
     let _vesting_start: Option<U256> = runtime::get_named_arg("_vesting_start");
-    let _vesting_escrow_simple_contract: Key =
-        runtime::get_named_arg("_vesting_escrow_simple_contract");
+    // let _vesting_escrow_simple_contract: Key =
+        // runtime::get_named_arg("_vesting_escrow_simple_contract");
     let ret: Key = Token::default().deploy_vesting_contract(
         _token,
         _recipient,
@@ -135,9 +136,100 @@ fn deploy_vesting_contract() {
         _can_disable,
         _vesting_duration,
         _vesting_start,
-        _vesting_escrow_simple_contract,
+        // _vesting_escrow_simple_contract,
     );
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+//VESTING ESCROW SIMPLE NO MANGLE
+
+#[no_mangle]
+fn constructor() {
+    let token: Key = runtime::get_named_arg("token");
+    let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
+    let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
+    VESTINGESCROWSIMPLE::init(
+        &Token::default(),
+        token,
+        Key::from(contract_hash),
+        package_hash,
+    );
+}
+#[no_mangle]
+fn initialize() {
+    let admin: Key = runtime::get_named_arg("admin");
+    let token: Key = runtime::get_named_arg("token");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let start_time: U256 = runtime::get_named_arg("start_time");
+    let end_time: U256 = runtime::get_named_arg("end_time");
+    let can_disable: bool = runtime::get_named_arg("can_disable");
+    let ret = VESTINGESCROWSIMPLE::initialize(
+        &Token::default(),
+        admin,
+        token,
+        recipient,
+        amount,
+        start_time,
+        end_time,
+        can_disable,
+    );
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn toggle_disable() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    VESTINGESCROWSIMPLE::toggle_disable(&Token::default(), recipient);
+}
+
+#[no_mangle]
+fn disable_can_disable() {
+    VESTINGESCROWSIMPLE::disable_can_disable(&Token::default());
+}
+#[no_mangle]
+fn vested_of() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret = VESTINGESCROWSIMPLE::vested_of(&Token::default(), recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn balance_of_vest() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret = VESTINGESCROWSIMPLE::balance_of_vest(&Token::default(), recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn vested_supply() {
+    let ret = VESTINGESCROWSIMPLE::vested_supply(&Token::default());
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn locked_supply() {
+    let ret = VESTINGESCROWSIMPLE::locked_supply(&Token::default());
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn locked_of() {
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret = VESTINGESCROWSIMPLE::locked_of(&Token::default(), recipient);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn commit_transfer_ownership() {
+    let addr: Key = runtime::get_named_arg("addr");
+    let ret = VESTINGESCROWSIMPLE::commit_transfer_ownership(&Token::default(), addr);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn apply_transfer_ownership() {
+    let ret = VESTINGESCROWSIMPLE::apply_transfer_ownership(&Token::default());
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn claim() {
+    let addr: Key = runtime::get_named_arg("addr");
+    VESTINGESCROWSIMPLE::claim(&Token::default(), addr);
 }
 
 #[no_mangle]
@@ -173,7 +265,7 @@ fn call() {
 
         // Call the constructor entry point
         let _: () =
-            runtime::call_versioned_contract(package_hash, None, "constructor", constructor_args);
+            runtime::call_versioned_contract(package_hash, None, "constructor_vef", constructor_args);
 
         // Remove all URefs from the constructor group, so no one can call it for the second time.
         let mut urefs = BTreeSet::new();
@@ -230,7 +322,7 @@ fn call() {
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(
-        "constructor",
+        "constructor_vef",
         vec![
             Parameter::new("_token", Key::cl_type()),
             Parameter::new("_start_time", U256::cl_type()),
@@ -276,14 +368,14 @@ fn get_entry_points() -> EntryPoints {
     ));
 
     entry_points.add_entry_point(EntryPoint::new(
-        "commit_transfer_ownership",
+        "commit_transfer_ownership_vef",
         vec![Parameter::new("addr", Key::cl_type())],
         bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "apply_transfer_ownership",
+        "apply_transfer_ownership_vef",
         vec![],
         bool::cl_type(),
         EntryPointAccess::Public,
@@ -298,13 +390,12 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("_can_disable", bool::cl_type()),
             Parameter::new("_vesting_duration", U256::cl_type()),
             Parameter::new("_vesting_start", CLType::Option(Box::new(U256::cl_type()))),
-            Parameter::new("_vesting_escrow_simple_contract", Key::cl_type()),
+            // Parameter::new("_vesting_escrow_simple_contract", Key::cl_type()),
         ],
         Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-
 
     // ENTRYPOINTS OF VESTING ESCROW SIMPLE
     entry_points.add_entry_point(EntryPoint::new(

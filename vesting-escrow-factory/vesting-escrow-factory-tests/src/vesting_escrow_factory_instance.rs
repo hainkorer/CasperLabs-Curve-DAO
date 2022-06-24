@@ -158,6 +158,31 @@ impl VESTINGESCROWFACTORYInstance {
         );
     }
 
+    pub fn deploy_vesting_contract<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        _token: T,
+        _recipient: T,
+        _amount: U256,
+        _can_disable: bool,
+        _vesting_duration: U256,
+        _vesting_start: Option<U256>,
+    ) {
+        self.0.call_contract(
+            sender,
+            "deploy_vesting_contract",
+            runtime_args! {
+                "_token" => _token.into(),
+                "_recipient" => _recipient.into(),
+                "_amount" => _amount,
+                "_can_disable" => _can_disable,
+                "_vesting_duration" => _vesting_duration,
+                "_vesting_start" => _vesting_start,
+            },
+            0,
+        );
+    }
+
     pub fn admin(&self) -> Key {
         self.0.query_named_key(String::from("admin"))
     }
