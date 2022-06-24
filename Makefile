@@ -321,11 +321,11 @@ clean:
 	rm -rf ${vesting_escrow_factory_des_wasm}/*.wasm
 	rm -rf ${vesting_escrow_simple_des_wasm}/*.wasm
 	rm -rf ${voting_escrow_des_wasm}/*.wasm
-	rm -rf ${ownable_des_wasm}/*.wasm
-	rm -rf ${i_reward_distribution_recipient_des_wasm}/*.wasm
-	rm -rf ${lp_token_wrapper_des_wasm}/*.wasm
-	rm -rf ${curve_rewards_des_wasm}/*.wasm
-	rm -rf ${liquidity_gauge_v3_des_wasm}/*.wasm
+	rm -rf ${ownable_des_wasm}*.wasm
+	rm -rf ${i_reward_distribution_recipient_des_wasm}*.wasm
+	rm -rf ${lp_token_wrapper_des_wasm}*.wasm
+	rm -rf ${curve_rewards_des_wasm}*.wasm
+	rm -rf ${liquidity_gauge_v3_des_wasm}*.wasm
 
 lint: clippy
 	cargo fmt --all
