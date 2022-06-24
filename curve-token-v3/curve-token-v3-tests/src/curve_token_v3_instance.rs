@@ -17,8 +17,8 @@ pub type Meta = BTreeMap<String, String>;
 pub struct CURVETOKENV3Instance(TestContract);
 
 impl CURVETOKENV3Instance {
-    pub fn instance(erc20: TestContract) -> CURVETOKENV3Instance {
-        CURVETOKENV3Instance(erc20)
+    pub fn instance(curvetokenv3: TestContract) -> CURVETOKENV3Instance {
+        CURVETOKENV3Instance(curvetokenv3)
     }
 
     pub fn proxy(env: &TestEnv, curve_token_v3: Key, sender: AccountHash) -> TestContract {

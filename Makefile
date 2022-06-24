@@ -14,6 +14,7 @@ reward_only_gauge_des_wasm = ./reward-only-gauge/reward-only-gauge-tests/wasm
 vesting_escrow_des_wasm = ./vesting-escrow/vesting-escrow-tests/wasm
 vesting_escrow_factory_des_wasm = ./vesting-escrow-factory/vesting-escrow-factory-tests/wasm
 vesting_escrow_simple_des_wasm = ./vesting-escrow-simple/vesting-escrow-simple-tests/wasm
+liquidity_gauge_v3_des_wasm = ./liquidity-gauge-v3/liquidity-gauge-v3-tests/wasm/
 voting_escrow_des_wasm = ./voting-escrow/voting-escrow-tests/wasm
 ownable_des_wasm = ./ownable/ownable-tests/wasm/
 i_reward_distribution_recipient_des_wasm = ./i-reward-distribution-recipient/i-reward-distribution-recipient-tests/wasm/
@@ -70,6 +71,9 @@ build-contract-vesting-escrow:
 build-contract-vesting-escrow-factory:
 	cargo build --release -p erc20 -p vesting-escrow-factory -p vesting-escrow-factory-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-factory.wasm 2>/dev/null | true
+
+build-contract-liquidity-gauge-v3:
+	cargo build --release -p liquidity-gauge-v3 -p erc20 -p minter -p voting-escrow -p gauge-controller -p erc20_crv  --target wasm32-unknown-unknown
 build-contract-vesting-escrow-simple:
 	cargo build --release -p erc20 -p vesting-escrow-simple-proxy -p vesting-escrow-simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true
@@ -119,6 +123,8 @@ test-only-vesting-escrow-simple:
 	cargo test -p vesting-escrow-simple-tests
 test-only-voting-escrow:
 	cargo test -p voting-escrow-tests
+test-only-liquidity-gauge-v3:
+	cargo test -p liquidity-gauge-v3-tests
 test-only-i-reward-distribution-recipient:
 	cargo test -p i-reward-distribution-recipient-tests
 test-only-ownable:
@@ -212,6 +218,14 @@ copy-wasm-file-voting-escrow:
 	cp ${wasm_src_path}/erc20-token.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/*.wasm ${voting_escrow_des_wasm}
+
+copy-wasm-file-liquidity-gauge-v3:
+	cp ${root_directory}${wasm_src_path}liquidity-gauge-v3.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}erc20_crv.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}gauge-controller-token.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}minter-token.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}voting-escrow.wasm ${liquidity_gauge_v3_des_wasm}
 copy-wasm-file-ownable:
 	cp ${wasm_src_path}/ownable_test.wasm ${ownable_des_wasm}
 	cp ${wasm_src_path}/ownable.wasm ${ownable_des_wasm}
@@ -265,12 +279,14 @@ test-lp-token-wrapper:
 test-curve-rewards:
 	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
 
+test-liquidity-gauge-v3: 
+	make build-contract-liquidity-gauge-v3 && make copy-wasm-file-liquidity-gauge-v3 && make test-only-liquidity-gauge-v3
 all:
 	make test-curve-token-v3
 	make test-erc20
 	make test-erc20-crv
 	make test-fee-distributor
-	make test-gauge-controller
+	# make test-gauge-controller
 	make test-gauge-proxy
 	make test-liquidity-gauge-reward
 	make test-liquidity-gauge-reward-wrapper
@@ -285,6 +301,7 @@ all:
 	make test-i-reward-distribution-recipient
 	make test-lp-token-wrapper
 	make test-curve-rewards
+	make test-liquidity-gauge-v3
 
 clean:
 	cargo clean
@@ -304,10 +321,11 @@ clean:
 	rm -rf ${vesting_escrow_factory_des_wasm}/*.wasm
 	rm -rf ${vesting_escrow_simple_des_wasm}/*.wasm
 	rm -rf ${voting_escrow_des_wasm}/*.wasm
-	rm -rf ${ownable_des_wasm}*.wasm
-	rm -rf ${i_reward_distribution_recipient_des_wasm}*.wasm
-	rm -rf ${lp_token_wrapper_des_wasm}*.wasm
-	rm -rf ${curve_rewards_des_wasm}*.wasm
+	rm -rf ${ownable_des_wasm}/*.wasm
+	rm -rf ${i_reward_distribution_recipient_des_wasm}/*.wasm
+	rm -rf ${lp_token_wrapper_des_wasm}/*.wasm
+	rm -rf ${curve_rewards_des_wasm}/*.wasm
+	rm -rf ${liquidity_gauge_v3_des_wasm}/*.wasm
 
 lint: clippy
 	cargo fmt --all

@@ -24,6 +24,7 @@ pub enum Error {
     UniswapV2CoreERC20UnderFlow4 = 9,
     /// 65,546 for (ERC20 UnderFlow5)
     UniswapV2CoreERC20UnderFlow5 = 10,
+    ///ERC20 ERRORS
     /// 65,546 for (ERC20 CRV Invalid Minter)
     Erc20CRVInvalidMinter = 10001,
     /// 65,546 for (ERC20 CRV Only Minter Allowed1)
@@ -255,25 +256,45 @@ pub enum Error {
     /// 65,538 for (Curve Token V1 Invalid Minter)
     CurveTokenV2ZeroAddressNotAllowed = 10409,
     ///Curve token v3 errors
+    /// 65,538 for (Curve Token V3 Only Minter Can Set)
     CurveTokenV3OnlyMinterCanSet = 10501,
+    /// 65,538 for (Curve Token V3 Under Fow1)
     CurveTokenV3UnderFlow1 = 10502,
+    /// 65,538 for (Curve Token V3 Over Flow1)
     CurveTokenV3OverFlow1 = 10503,
+    /// 65,538 for (Curve Token V3 Under Flow2)
     CurveTokenV3UnderFlow2 = 10504,
+    /// 65,538 for (Curve Token V3 Over Flow2)
     CurveTokenV3OverFlow2 = 10505,
+    /// 65,538 for (Curve Token V3 Reduce Spender AllowanceToZero )
     CurveTokenV3ReduceSpenderAllowanceToZero = 10506,
+    /// 65,538 for (Curve Token V3 Only Minter Allowed )
     CurveTokenV3OnlyMinterAllowed = 10507,
+    /// 65,538 for (Curve Token V3 Only Address not Allowed)
     CurveTokenV3ZeroAddressNotAllowed = 10508,
+    /// 65,538 for (Curve Token V3  OverFlow3)
     CurveTokenV3OverFlow3 = 10509,
+    /// 65,538 for (Curve Token V3  OverFlow4)
     CurveTokenV3OverFlow4 = 10510,
+    /// 65,538 for (Curve Token V3  Zero address)
     CurveTokenV3ZeroAddress = 10511,
+    /// 65,538 for (Curve Token V3  Under Flow5)
     CurveTokenV3UnderFlow5 = 10512,
+    /// 65,538 for (Curve Token V3  Under Flow6)
     CurveTokenV3UnderFlow6 = 10513,
+    /// 65,538 for (Curve Token V3  Only Minter Allowed1)
     CurveTokenV3OnlyMinterAllowed1 = 10514,
+    /// 65,538 for (Curve Token V3  Only Minter Allowed2)
     CurveTokenV3OnlyMinterAllowed2 = 10515,
+    /// 65,538 for (Curve Token V3  Over Flow6)
     CurveTokenV3OverFlow6 = 10516,
+    /// 65,538 for (Curve Token V3 Under Flow7)
     CurveTokenV3UnderFlow7 = 10517,
+    /// 65,538 for (Curve Token V3 Not Authorized)
     CurveTokenV3NotAuthorized = 10518,
+    /// 65,538 for (Curve Token V3 Under Flow8)
     CurveTokenV3UnderFlow8 = 10519,
+    /// 65,538 for (Curve Token V3 Under Flow9)
     CurveTokenV3UnderFlow9 = 10520,
     //FeeDistributor
     FeeDistributorInvalidTokenCheckpointUpdate = 10601,
@@ -592,6 +613,18 @@ pub enum Error {
     VestingEscrowSimpleLocked1 = 11208,
     /// 65,540 for (Vesting Escrow Simple Is Locked2)
     VestingEscrowSimpleLocked2 = 11209,
+    /// 65,540 for (Vesting Escrow Simple Airthmetic Error1)
+    VestingEscrowSimpleAirthmeticError1 = 11210,
+    /// 65,540 for (Vesting Escrow Simple Airthmetic Error2)
+    VestingEscrowSimpleAirthmeticError2 = 11211,
+    /// 65,540 for (Vesting Escrow Simple Under flow1)
+    VestingEscrowSimpleUnderFlow1 = 11212,
+    /// 65,540 for (Vesting Escrow Simple Under flow2)
+    VestingEscrowSimpleUnderFlow2 = 11213,
+    /// 65,540 for (Vesting Escrow Simple Under flow3)
+    VestingEscrowSimpleUnderFlow3 = 11214,
+    /// 65,540 for (Vesting Escrow Simple Under flow4)
+    VestingEscrowSimpleUnderFlow4 = 11215,
 
     /// 65,540 for (Voting Escrow Invalid Decimals)
     VotingEscrowInvalidDecimals = 11301,
@@ -804,11 +837,12 @@ pub enum Error {
     LiquidityGaugeLocked1 = 11825,
     /// 65,540 for (Liquidity guage v3 unauthorized)
     LiquidityGuageV3Unauthorized = 11826,
-    /// 65,540 for (Liquidity guage v3 not allowed)
-    LiquidityGuageV3KickNotAllowed = 11827,
-    LiquidityGaugeUnderFlow10 = 11829,
+     /// 65,540 for (Liquidity guage v3 Underflow 10)
+     LiquidityGaugeUnderFlow10 = 11829,
      /// 65,540 for (Liquidity guage v3 Underflow 10)
      LiquidityGaugeUnderFlow11 = 11830,
+     /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    LiquidityGuageV3KickNotAllowed = 11827,
     /// 65,540 for (Lp Token Wrapper Addition Error 1)
     LpTokenWrapperAdditionError1 = 11901,
     /// 65,540 for (Lp Token Wrapper Addition Error 2)
