@@ -13,7 +13,7 @@ use casper_types::{
     ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 
 pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(

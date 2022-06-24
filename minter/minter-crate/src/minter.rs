@@ -8,7 +8,7 @@ use casper_types::{
     runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 pub enum MINTEREvent {
     Minted {
         recipient: Key,

@@ -6,7 +6,7 @@ use casper_contract::{
 };
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
 use common::keys::*;
-use contract_utils::{get_key, set_key, Dict};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 
 pub struct Minted {
     dict: Dict,

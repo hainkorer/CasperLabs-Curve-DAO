@@ -7,10 +7,11 @@ version = "0.1.0"
 [dependencies]
 casper-contract = "1.4.3"
 casper-types = "1.4.4"
-contract-utils = { path = "../../utils/contract-utils" }
+casperlabs-contract-utils = "0.1.0"
 hex = {version = "0.4.3", default-features = false}
 renvm-sig = "0.1.1"
-erc20-crate = { path = "../../erc20/erc20-crate" }
+# erc20-crate = "0.2.0"
+casperlabs-erc20 = "0.2.1"
 common = { path = "../../common" }
 
 [[bin]]

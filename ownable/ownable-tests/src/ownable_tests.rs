@@ -1,6 +1,6 @@
 use crate::ownable_instance::OWNABLEInstance;
 use casper_types::{account::AccountHash, Key};
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();

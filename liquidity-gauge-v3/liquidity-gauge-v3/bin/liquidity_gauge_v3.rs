@@ -13,7 +13,7 @@ use casper_types::{
     URef, U128, U256,
 };
 
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use liquidity_gauge_v3_crate::{self, data, LIQUIDITYTGAUGEV3};
 
 #[derive(Default)]

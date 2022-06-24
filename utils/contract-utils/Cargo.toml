@@ -1,5 +1,5 @@
 [package]
-name = "contract-utils"
+name = "casperlabs-contract-utils"
 version = "0.1.0"
 authors = ["Maciej Zielinski <maciek.s.zielinski@gmail.com>"]
 edition = "2018"

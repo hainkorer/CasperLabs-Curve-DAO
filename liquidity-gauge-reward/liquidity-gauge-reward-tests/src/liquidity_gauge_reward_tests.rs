@@ -2,7 +2,7 @@ use crate::liquidity_gauge_reward_instance::LIQUIDITYGAUGEREWARDInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use common::keys::*;
 use liquidity_gauge_reward_crate::data::*;
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(

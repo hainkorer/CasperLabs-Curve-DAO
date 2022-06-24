@@ -7,7 +7,7 @@ use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use common::errors::*;
 use common::keys::*;
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 pub enum VESTINGESCROWFACTORYEvent {
     CommitOwnership { admin: Key },
     ApplyOwnership { admin: Key },

@@ -1,5 +1,5 @@
 use casper_types::{account::AccountHash, Key};
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::reward_only_gauge_instance::REWARDONLYGAUGEInstance;
 

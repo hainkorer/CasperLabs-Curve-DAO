@@ -4,7 +4,7 @@ use casper_types::{
     U512,
 };
 use common::keys::*;
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance) {
     let env = TestEnv::new();

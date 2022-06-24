@@ -6,7 +6,7 @@ use casper_contract::{
 };
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
 use common::keys::*;
-use contract_utils::{get_key, set_key};
+use casperlabs_contract_utils::{get_key, set_key};
 
 pub const MIN_VESTING_DURATION: U256 = U256([56400 * 360, 0, 0, 0]);
 
