@@ -10,6 +10,7 @@ use casper_types::{
     bytesrepr::{Bytes, ToBytes},
     runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U256,
 };
+use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub type TokenId = U256;

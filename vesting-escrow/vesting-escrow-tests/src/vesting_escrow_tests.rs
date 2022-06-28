@@ -1,6 +1,7 @@
 use crate::vesting_escrow_instance::VESTINGESCROWInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
+use common::keys::*;
 
 const NAME: &str = "VESTINGESCROW";
 

@@ -1,4 +1,4 @@
-use casper_types::{account::AccountHash, Key};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::reward_only_gauge_instance::REWARDONLYGAUGEInstance;
