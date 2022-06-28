@@ -98,42 +98,42 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
                 },
             );
 
-            // Remove all URefs from the constructor group, so no one can call it for the second time.
-            let mut urefs = BTreeSet::new();
-            urefs.insert(constructor_access);
-            storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
-                .unwrap_or_revert();
+            // // Remove all URefs from the constructor group, so no one can call it for the second time.
+            // let mut urefs = BTreeSet::new();
+            // urefs.insert(constructor_access);
+            // storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
+            //     .unwrap_or_revert();
 
-            let token_hash_add_array = match _token {
-                Key::Hash(package) => package,
-                _ => runtime::revert(ApiError::UnexpectedKeyVariant),
-            };
+            // let token_hash_add_array = match _token {
+            //     Key::Hash(package) => package,
+            //     _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+            // };
 
-            let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-            let _ret: () = runtime::call_versioned_contract(
-                token_package_hash,
-                None,
-                "approve",
-                runtime_args! {"spender" =>  Key::from(package_hash),"amount" => _amount},
-            );
+            // let token_package_hash = ContractPackageHash::new(token_hash_add_array);
+            // let _ret: () = runtime::call_versioned_contract(
+            //     token_package_hash,
+            //     None,
+            //     "approve",
+            //     runtime_args! {"spender" =>  Key::from(package_hash),"amount" => _amount},
+            // );
 
-            let end_time = vesting_start
-                .checked_add(_vesting_duration)
-                .ok_or(Error::VestingEscrowFactoryOverFlow1)
-                .unwrap_or_revert();
-            let _ret: bool = runtime::call_versioned_contract(
-                package_hash,
-                None,
-                "initialize",
-                runtime_args! {
-                "admin" => self.admin(),
-                "token" =>  _token,
-                "recipient" =>  _recipient,
-                "amount" => _amount,
-                "start_time" => vesting_start,
-                "end_time" => end_time,
-                "can_disable" => _can_disable},
-            );
+            // let end_time = vesting_start
+            //     .checked_add(_vesting_duration)
+            //     .ok_or(Error::VestingEscrowFactoryOverFlow1)
+            //     .unwrap_or_revert();
+            // let _ret: bool = runtime::call_versioned_contract(
+            //     package_hash,
+            //     None,
+            //     "initialize",
+            //     runtime_args! {
+            //     "admin" => self.admin(),
+            //     "token" =>  _token,
+            //     "recipient" =>  _recipient,
+            //     "amount" => _amount,
+            //     "start_time" => vesting_start,
+            //     "end_time" => end_time,
+            //     "can_disable" => _can_disable},
+            // );
             return Key::from(package_hash);
         }
     }

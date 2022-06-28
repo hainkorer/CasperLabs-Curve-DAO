@@ -197,7 +197,6 @@ pub const VESTED_SUPPLY: &str = "vested_supply";
 pub const LOCKED_SUPPLY: &str = "locked_supply";
 pub const VESTED_OF: &str = "vested_of";
 pub const LOCKED_OF: &str = "locked_of";
-
 // REWARD_ONLY_GAUGE
 pub const TRANSFER: &str = "transfer";
 pub const TRANSFER_FROM: &str = "transfer_from";
