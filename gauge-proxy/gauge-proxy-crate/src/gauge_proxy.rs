@@ -8,7 +8,7 @@ use casper_types::bytesrepr::Bytes;
 use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef,
 };
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 
 #[repr(u16)]
 pub enum Error {

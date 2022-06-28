@@ -8,7 +8,7 @@ use alloc::{
     vec::Vec,
 };
 use casper_contract::contract_api::storage;
-use contract_utils::get_key;
+use casperlabs_contract_utils::get_key;
 
 pub enum WiseEvents {
     StakeStart {

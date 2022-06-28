@@ -8,8 +8,8 @@ edition = "2018"
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
 casper-engine-test-support = "2.1.0"
-contract-utils = { path = "../../utils/contract-utils" }
-test-env = { path = "../../utils/test-env" }
+casperlabs-contract-utils = "0.1.0"
+casperlabs-test-env = "0.1.0"
 blake2 = "0.9.1"
 hex = "0.4.3"
 

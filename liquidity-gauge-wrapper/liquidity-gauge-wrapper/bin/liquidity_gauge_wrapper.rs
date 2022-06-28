@@ -11,7 +11,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
     U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use liquidity_gauge_wrapper_crate::{
     self,
     data::{self, *},

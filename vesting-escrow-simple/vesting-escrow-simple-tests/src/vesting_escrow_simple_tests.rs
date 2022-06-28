@@ -1,7 +1,7 @@
 use casper_types::{
     account::AccountHash, runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U256, U512,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::vesting_escrow_simple_instance::VESTINGESCROWSIMPLEInstance;
 pub const TEN_E_NINE: u128 = 1000000000;

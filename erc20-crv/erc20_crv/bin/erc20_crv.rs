@@ -10,8 +10,8 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{set_key, ContractContext, OnChainContractStorage};
-use erc20_crate::{self, data as erc20_data, ERC20};
+use casperlabs_contract_utils::{set_key, ContractContext, OnChainContractStorage};
+use casperlabs_erc20::{self, data as erc20_data, ERC20};
 use erc20_crv::{self, data, ERC20CRV};
 
 #[derive(Default)]

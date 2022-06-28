@@ -11,7 +11,7 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use curve_token_v3_crate::{data, CURVETOKENV3};
 
 #[derive(Default)]
