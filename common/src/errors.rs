@@ -837,11 +837,11 @@ pub enum Error {
     LiquidityGaugeLocked1 = 11825,
     /// 65,540 for (Liquidity guage v3 unauthorized)
     LiquidityGuageV3Unauthorized = 11826,
-     /// 65,540 for (Liquidity guage v3 Underflow 10)
-     LiquidityGaugeUnderFlow10 = 11829,
-     /// 65,540 for (Liquidity guage v3 Underflow 10)
-     LiquidityGaugeUnderFlow11 = 11830,
-     /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 Underflow 10)
+    LiquidityGaugeUnderFlow10 = 11829,
+    /// 65,540 for (Liquidity guage v3 Underflow 10)
+    LiquidityGaugeUnderFlow11 = 11830,
+    /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGuageV3KickNotAllowed = 11827,
     /// 65,540 for (Lp Token Wrapper Addition Error 1)
     LpTokenWrapperAdditionError1 = 11901,
