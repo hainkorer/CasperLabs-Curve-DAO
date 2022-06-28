@@ -15,7 +15,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use vesting_escrow_factory_crate::VESTINGESCROWFACTORY;
-use vesting_escrow_simple_crate::VESTINGESCROWSIMPLE;
+use vesting_escrow_simple_crate::{data as ves_data, VESTINGESCROWSIMPLE};
 
 #[derive(Default)]
 struct Token(OnChainContractStorage);
@@ -67,7 +67,7 @@ fn package_hash() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn admin() {
+fn admin_vef() {
     let ret: Key = Token::default().admin();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -79,7 +79,7 @@ fn target() {
 }
 
 #[no_mangle]
-fn future_admin() {
+fn future_admin_vef() {
     let ret: Key = Token::default().future_admin();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -128,7 +128,7 @@ fn deploy_vesting_contract() {
     let _vesting_duration: U256 = runtime::get_named_arg("_vesting_duration");
     let _vesting_start: Option<U256> = runtime::get_named_arg("_vesting_start");
     // let _vesting_escrow_simple_contract: Key =
-        // runtime::get_named_arg("_vesting_escrow_simple_contract");
+    // runtime::get_named_arg("_vesting_escrow_simple_contract");
     let ret: Key = Token::default().deploy_vesting_contract(
         _token,
         _recipient,
@@ -142,15 +142,27 @@ fn deploy_vesting_contract() {
 }
 
 //VESTING ESCROW SIMPLE NO MANGLE
-
 #[no_mangle]
 fn constructor() {
+    let admin: Key = runtime::get_named_arg("admin");
     let token: Key = runtime::get_named_arg("token");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let start_time: U256 = runtime::get_named_arg("start_time");
+    let end_time: U256 = runtime::get_named_arg("end_time");
+    let can_disable: bool = runtime::get_named_arg("can_disable");
+
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     VESTINGESCROWSIMPLE::init(
         &Token::default(),
+        admin,
         token,
+        recipient,
+        amount,
+        start_time,
+        end_time,
+        can_disable,
         Key::from(contract_hash),
         package_hash,
     );
@@ -193,9 +205,9 @@ fn vested_of() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn balance_of_vest() {
+fn balance_of() {
     let recipient: Key = runtime::get_named_arg("recipient");
-    let ret = VESTINGESCROWSIMPLE::balance_of_vest(&Token::default(), recipient);
+    let ret = VESTINGESCROWSIMPLE::balance_of(&Token::default(), recipient);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
@@ -231,6 +243,50 @@ fn claim() {
     let addr: Key = runtime::get_named_arg("addr");
     VESTINGESCROWSIMPLE::claim(&Token::default(), addr);
 }
+//[no_mangle] of public variables
+#[no_mangle]
+fn token() {
+    runtime::ret(CLValue::from_t(ves_data::get_token()).unwrap_or_revert());
+}
+#[no_mangle]
+fn start_time() {
+    runtime::ret(CLValue::from_t(ves_data::get_start_time()).unwrap_or_revert());
+}
+#[no_mangle]
+fn end_time() {
+    runtime::ret(CLValue::from_t(ves_data::get_end_time()).unwrap_or_revert());
+}
+#[no_mangle]
+fn initial_locked_supply() {
+    runtime::ret(CLValue::from_t(ves_data::get_initial_locked_supply()).unwrap_or_revert());
+}
+#[no_mangle]
+fn can_disable() {
+    runtime::ret(CLValue::from_t(ves_data::get_can_disable()).unwrap_or_revert());
+}
+#[no_mangle]
+fn admin() {
+    runtime::ret(CLValue::from_t(ves_data::get_admin()).unwrap_or_revert());
+}
+#[no_mangle]
+fn future_admin() {
+    runtime::ret(CLValue::from_t(ves_data::get_future_admin()).unwrap_or_revert());
+}
+#[no_mangle]
+fn initial_locked() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(ves_data::InitialLocked::instance().get(&key)).unwrap_or_revert());
+}
+#[no_mangle]
+fn total_claimed() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(ves_data::TotalClaimed::instance().get(&key)).unwrap_or_revert());
+}
+#[no_mangle]
+fn disabled_at() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(ves_data::DisableddAt::instance().get(&key)).unwrap_or_revert());
+}
 
 #[no_mangle]
 fn call() {
@@ -264,8 +320,12 @@ fn call() {
                 .unwrap_or_revert();
 
         // Call the constructor entry point
-        let _: () =
-            runtime::call_versioned_contract(package_hash, None, "constructor_vef", constructor_args);
+        let _: () = runtime::call_versioned_contract(
+            package_hash,
+            None,
+            "constructor_vef",
+            constructor_args,
+        );
 
         // Remove all URefs from the constructor group, so no one can call it for the second time.
         let mut urefs = BTreeSet::new();
@@ -346,7 +406,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "admin",
+        "admin_vef",
         vec![],
         Key::cl_type(),
         EntryPointAccess::Public,
@@ -360,7 +420,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "future_admin",
+        "future_admin_vef",
         vec![],
         Key::cl_type(),
         EntryPointAccess::Public,
