@@ -10,7 +10,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
+    ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256, runtime_args,
 };
 use common::errors::*;
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
@@ -247,15 +247,15 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @dev set name and symbol
     // @param _name.
     fn set_name(&self, _name: String, _symbol: String) {
-        // if self.get_caller() == runtime::call_versioned_contract(
-        //     get_token().into_hash().unwrap_or_revert().into(),
-        //     None,
-        //     "owner",
-        //     runtime_args! {
-        //     },
-        // ){
-        //     runtime::revert(ApiError::from(Error::CurveTokenV3NotAuthorized));
-        // }
+        if !(self.get_caller() == runtime::call_versioned_contract(
+            get_minter().into_hash().unwrap_or_revert().into(),
+            None,
+            "owner",
+            runtime_args! {
+            },
+        )){
+            runtime::revert(ApiError::from(Error::CurveTokenV3NotAuthorized));
+        }
         set_name(_name);
         set_symbol(_symbol);
     }

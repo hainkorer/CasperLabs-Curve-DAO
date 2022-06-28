@@ -94,7 +94,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             runtime_args! {},
         );
         let mut name: String = "Curve.fi ".to_string();
-        let post_name: &str = "RewardGauge Deposit";
+        let post_name: &str = " RewardGauge Deposit";
         name.push_str(symbol.as_str());
         name.push_str(post_name);
         let decimals: u8 = 9;

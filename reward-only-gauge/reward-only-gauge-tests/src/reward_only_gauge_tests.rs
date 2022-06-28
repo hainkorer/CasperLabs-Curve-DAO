@@ -2,6 +2,14 @@ use casper_types::{account::AccountHash, Key};
 use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::reward_only_gauge_instance::REWARDONLYGAUGEInstance;
+use casper_types_derive::{CLTyped, FromBytes, ToBytes};
+use common::keys::*;
+
+#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
+pub struct ClaimDataStruct {
+    pub claimable_amount: U256,
+    pub claimed_amount: U256,
+}
 
 const NAME: &str = "REWARDONLYGAUGE";
 
@@ -10,16 +18,10 @@ const TOKEN_SYMBOL: &str = "ERC";
 const DECIMALS: u8 = 8;
 const INIT_TOTAL_SUPPLY: u64 = 0;
 
-fn deploy() -> (
-    TestEnv,
-    REWARDONLYGAUGEInstance,
-    AccountHash,
-    // REWARDONLYGAUGEInstance,
-    // REWARDONLYGAUGEInstance,
-) {
+fn deploy() -> (TestEnv, REWARDONLYGAUGEInstance, TestContract, AccountHash) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let lp_token: TestContract = REWARDONLYGAUGEInstance::erc20(
+    let lp_token: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
         &env,
         owner,
         TOKEN_NAME,
@@ -27,247 +29,374 @@ fn deploy() -> (
         DECIMALS,
         INIT_TOTAL_SUPPLY.into(),
     );
-    let token: TestContract = REWARDONLYGAUGEInstance::new(
+    let reward_only_gauge: TestContract = REWARDONLYGAUGEInstance::new(
         &env,
         NAME,
         owner,
         Key::from(owner),
         Key::Hash(lp_token.package_hash()),
     );
-    // let test_contract: TestContract =
-    //     REWARDONLYGAUGEInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
-    // let test_contract2: TestContract =
-    //     REWARDONLYGAUGEInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
     (
         env,
-        REWARDONLYGAUGEInstance::instance(token),
+        REWARDONLYGAUGEInstance::instance(reward_only_gauge),
+        lp_token,
         owner,
-        // REWARDONLYGAUGEInstance::instance(test_contract),
-        // REWARDONLYGAUGEInstance::instance(test_contract2),
     )
 }
 
 #[test]
 fn test_deploy() {
-    let (env, _token, _owner) = deploy();
-    let _user = env.next_user();
-    // assert_eq!(token.name(), NAME);
-    // assert_eq!(token.symbol(), SYMBOL);
-    // // assert_eq!(token.meta(), meta::contract_meta());
-    // assert_eq!(
-    //     token.total_supply(),
-    //     (INIT_TOTAL_SUPPLY + INIT_TOTAL_SUPPLY).into()
-    // );
-    // assert_eq!(token.decimals(), DECIMALS);
-    // assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-    // assert_eq!(token.balance_of(user), 0.into());
-    // assert_eq!(token.allowance(owner, user), 0.into());
-    // assert_eq!(token.allowance(user, owner), 0.into());
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
 }
 
-// #[test]
-// fn test_reward_only_gauge_approve() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     token.approve(owner, user, amount);
-//     assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-//     assert_eq!(token.balance_of(user), 0.into());
-//     assert_eq!(token.allowance(owner, user), amount);
-//     assert_eq!(token.allowance(user, owner), 0.into());
-// }
+#[test]
+fn test_set_rewards_receiver() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
 
-// #[test]
-// fn test_reward_only_gauge_mint() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     token.mint(owner, user, amount);
-//     assert_eq!(token.balance_of(owner), INIT_TOTAL_SUPPLY.into());
-//     assert_eq!(token.balance_of(user), amount);
-//     assert_eq!(token.balance_of(user), 10.into());
-// }
+    reward_only_gauge.set_rewards_receiver(owner, user);
+    assert_eq!(reward_only_gauge.rewards_receiver(owner), Key::from(user));
+}
 
-// #[test]
-// fn test_reward_only_gauge_burn() {
-//     let (env, token, owner, _, _) = deploy();
-//     let user = env.next_user();
-//     let amount = 10.into();
-//     assert_eq!(token.balance_of(owner), U256::from(INIT_TOTAL_SUPPLY));
-//     token.burn(owner, owner, amount);
-//     assert_eq!(
-//         token.balance_of(owner),
-//         U256::from(INIT_TOTAL_SUPPLY) - amount
-//     );
-//     assert_eq!(token.balance_of(user), 0.into());
-// }
+#[test]
+fn test_commit_transfer_ownership() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
 
-// #[test]
-// fn test_reward_only_gauge_transfer() {
-//     let (env, token, owner, proxy, _proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let user = env.next_user();
-//     let amount: U256 = 100.into();
+    reward_only_gauge.commit_transfer_ownership(owner, user);
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(reward_only_gauge.future_admin(), user.into());
+    // assert_eq!(reward_only_gauge.rewards_receiver(owner), Key::from(user));
+}
 
-//     // TRASNFER CALL IN PROXY USES:- runtime::call_contract() so transfer is being done from proxy to a recipient
+#[test]
+fn test_accept_transfer_ownership() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
 
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, amount);
+    reward_only_gauge.commit_transfer_ownership(owner, user);
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(reward_only_gauge.future_admin(), user.into());
+    reward_only_gauge.accept_transfer_ownership(user);
+    assert_eq!(reward_only_gauge.admin(), user.into());
 
-//     assert_eq!(token.balance_of(package_hash), amount);
-//     assert_eq!(token.balance_of(user), U256::from(0));
+    // assert_eq!(reward_only_gauge.rewards_receiver(owner), Key::from(user));
+}
+#[test]
+fn test_reward_contract() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
 
-//     // // Transfering to user from the proxy contract
-//     proxy.transfer(owner, user, amount);
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
-//     assert_eq!(token.balance_of(package_hash), U256::from(0));
-//     assert_eq!(token.balance_of(user), amount);
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(REWARD_CONTRACT),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+        },
+        0,
+    );
 
-//     let ret: Result<(), u32> = proxy.transfer_result();
+    let ret: Key = env.query_account_named_key(owner, &[REWARD_CONTRACT.into()]);
+    assert_eq!(
+        ret,
+        Key::from_formatted_str(
+            "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        )
+        .unwrap()
+    );
+}
 
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
+#[test]
+fn test_last_claim() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
 
-// #[test]
-// #[should_panic]
-// fn test_reward_only_gauge_transfer_with_same_sender_and_recipient() {
-//     let (env, token, owner, proxy, _proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let user = env.next_user();
-//     let amount: U256 = 100.into();
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
-//     // TRASNFER CALL IN PROXY USES:- runtime::call_contract() so transfer is being done from proxy to a recipient
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(LAST_CLAIM),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+        },
+        0,
+    );
 
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, amount);
+    let ret: U256 = env.query_account_named_key(owner, &[LAST_CLAIM.into()]);
+    assert_eq!(ret, 0.into());
+}
 
-//     assert_eq!(token.balance_of(package_hash), amount);
-//     assert_eq!(token.balance_of(user), U256::from(0));
-//     assert_eq!(token.balance_of(owner), 1000.into());
+#[test]
+fn test_claimed_reward() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
 
-//     // Transfering to user from the proxy contract
-//     proxy.transfer(owner, package_hash, amount);
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
-//     assert_eq!(token.balance_of(package_hash), U256::from(100));
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMED_REWARD),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "_addr"=>Key::from(user),
+            "_token"=>Key::from(user)
+        },
+        0,
+    );
 
-//     assert_eq!(token.balance_of(owner), U256::from(1000));
+    let ret: U256 = env.query_account_named_key(owner, &[CLAIMED_REWARD.into()]);
+    assert_eq!(ret, 0.into());
+}
 
-//     let ret: Result<(), u32> = proxy.transfer_result();
+#[test]
+fn test_claimable_reward() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
 
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
-// #[test]
-// fn test_reward_only_gauge_transfer_from() {
-//     let (env, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let recipient = env.next_user();
-//     let user = env.next_user();
-//     let mint_amount = 100.into();
-//     let allowance = 10.into();
-//     let amount: U256 = 1.into();
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, mint_amount);
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMABLE_REWARD),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "_addr"=>Key::from(user),
+            "_token"=>Key::from(user)
+        },
+        0,
+    );
 
-//     proxy.approve(owner, package_hash2, allowance);
-//     assert_eq!(token.balance_of(owner), 1000.into());
+    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
+    assert_eq!(ret, 0.into());
+}
 
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 10.into());
+#[test]
+fn test_approve() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
 
-//     proxy2.transfer_from(owner, package_hash.into(), user.into(), amount);
+    let amount = 10.into();
+    reward_only_gauge.approve(owner, user, amount);
+    assert_eq!(
+        reward_only_gauge.balance_of(owner),
+        INIT_TOTAL_SUPPLY.into()
+    );
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.allowance(owner, user), amount);
+    assert_eq!(reward_only_gauge.allowance(user, owner), 0.into());
+}
 
-//     assert_eq!(token.nonce(owner), 0.into());
-//     assert_eq!(token.nonce(recipient), 0.into());
-//     assert_eq!(token.balance_of(owner), 1000.into());
-//     assert_eq!(token.balance_of(user), amount);
+#[test]
+fn test_increase_allowance() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
 
-//     let ret: Result<(), u32> = proxy2.transfer_from_result();
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+    let amount: U256 = 100.into();
 
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
-//     }
-// }
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(INCREASE_ALLOWANCE),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "spender"=>Key::from(user),
+            "amount"=>amount
+        },
+        0,
+    );
 
-// #[test]
-// #[should_panic]
-// fn test_reward_only_gauge_transfer_from_too_much() {
-//     let (env, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let user = env.next_user();
-//     let mint_amount = 100.into();
-//     let allowance = 10.into();
-//     let amount: U256 = 12.into();
-//     // Minting to proxy contract as it is the intermediate caller to transfer
-//     token.mint(owner, package_hash, mint_amount);
+    let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
+    match ret {
+        Ok(()) => {}
+        Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
+    }
+    assert_eq!(reward_only_gauge.allowance(owner, user), 100.into());
+}
 
-//     proxy.approve(owner, package_hash2, allowance);
-//     assert_eq!(token.balance_of(owner), 1000.into());
+#[test]
+fn test_decrease_allowance() {
+    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let user = env.next_user();
 
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 10.into());
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+    let amount: U256 = 100.into();
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(INCREASE_ALLOWANCE),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "spender"=>Key::from(user),
+            "amount"=>amount
+        },
+        0,
+    );
+    let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
+    match ret {
+        Ok(()) => {}
+        Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
+    }
+    assert_eq!(reward_only_gauge.allowance(owner, user), 100.into());
+    let amount2: U256 = 10.into();
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(DECREASE_ALLOWANCE),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "spender"=>Key::from(user),
+            "amount"=>amount2
+        },
+        0,
+    );
 
-//     proxy2.transfer_from(owner, package_hash.into(), user.into(), amount);
-// }
-
-// #[test]
-// fn test_reward_only_gauge_increase_allowance() {
-//     let (_, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let amount: U256 = 100.into();
-
-//     proxy.increase_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 100.into());
-
-//     proxy.increase_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 200.into());
-
-//     let ret: Result<(), u32> = proxy.increase_allowance_res();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
-//     }
-// }
-
-// #[test]
-// fn test_reward_only_gauge_decrease_allowance() {
-//     let (_, token, owner, proxy, proxy2) = deploy();
-//     let package_hash = proxy.package_hash_result();
-//     let package_hash2 = proxy2.package_hash_result();
-//     let amount: U256 = 100.into();
-
-//     proxy.increase_allowance(owner, package_hash2, amount + amount);
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 200.into());
-
-//     proxy.decrease_allowance(owner, package_hash2, amount);
-//     assert_eq!(token.balance_of(owner), 1000.into());
-
-//     proxy.allowance_fn(owner, Key::from(package_hash), Key::from(package_hash2));
-//     assert_eq!(proxy.allowance_res(), 100.into());
-
-//     let ret: Result<(), u32> = proxy.decrease_allowance_res();
-
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => assert!(false, "Decrease Allowance Failed ERROR:{}", e),
-//     }
-// }
+    let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
+    match ret {
+        Ok(()) => {}
+        Err(e) => assert!(false, "Decrease Allowance Failed ERROR:{}", e),
+    }
+    assert_eq!(reward_only_gauge.allowance(owner, user), 90.into());
+}

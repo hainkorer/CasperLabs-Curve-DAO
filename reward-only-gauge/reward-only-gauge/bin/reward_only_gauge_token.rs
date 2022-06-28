@@ -226,7 +226,7 @@ fn transfer_from() {
 ///         transaction ordering. This may be mitigated with the use of
 ///         {incraseAllowance} and {decreaseAllowance}.
 ///         https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-/// @param _spender The address which will transfer the funds
+/// @param spender The address which will transfer the funds
 /// @param _value The amount of tokens that may be transferred
 /// @return bool success
 /// """
@@ -238,11 +238,11 @@ fn approve() {
 }
 
 /// """
-/// @notice Increase the allowance granted to `_spender` by the caller
+/// @notice Increase the allowance granted to `spender` by the caller
 /// @dev This is alternative to {approve} that can be used as a mitigation for
 ///      the potential race condition
-/// @param _spender The address which will transfer the funds
-/// @param _added_value The amount of to increase the allowance
+/// @param spender The address which will transfer the funds
+/// @param amount The amount of to increase the allowance
 /// @return bool success
 /// """
 #[no_mangle]
@@ -254,11 +254,11 @@ fn increase_allowance() {
 }
 
 /// """
-/// @notice Decrease the allowance granted to `_spender` by the caller
+/// @notice Decrease the allowance granted to `spender` by the caller
 /// @dev This is alternative to {approve} that can be used as a mitigation for
 ///      the potential race condition
-/// @param _spender The address which will transfer the funds
-/// @param _subtracted_value The amount of to decrease the allowance
+/// @param spender The address which will transfer the funds
+/// @param amount The amount of to decrease the allowance
 /// @return bool success
 /// """
 #[no_mangle]
@@ -677,8 +677,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "decrease_allowance",
         vec![
-            Parameter::new("_spender", Key::cl_type()),
-            Parameter::new("_subtracted_value", U256::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
         bool::cl_type(),
         EntryPointAccess::Public,
@@ -687,8 +687,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "increase_allowance",
         vec![
-            Parameter::new("_spender", Key::cl_type()),
-            Parameter::new("_added_value", U256::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
         CLType::Result {
             ok: Box::new(CLType::Unit),

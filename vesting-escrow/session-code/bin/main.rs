@@ -4,13 +4,13 @@
 // We need to explicitly import the std alloc crate and `alloc::string::String` as we're in a
 // `no_std` environment.
 extern crate alloc;
-use alloc::{string::String, vec::Vec};
+use alloc::string::String;
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U128, U256,
+    bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U256,
 };
 use common::keys::*;
 
@@ -26,14 +26,6 @@ fn store<T: CLTyped + ToBytes>(key: &str, value: T) {
     runtime::put_key(key, value_key);
 }
 
-// pub const APPLY_TRANSFER_OWNERSHIP: &str = "apply_transfer_ownership";
-// pub const COMMIT_TRANSFER_OWNERSHIP: &str = "commit_transfer_ownership";
-// pub const VESTED_SUPPLY: &str = "vested_supply";
-// pub const LOCKED_SUPPLY: &str = "locked_supply";
-// pub const VESTED_OF: &str = "vested_of";
-// pub const BALANCE_OF: &str = "balance_of";
-// pub const LOCKED_OF: &str = "locked_of";
-
 #[no_mangle]
 pub extern "C" fn call() {
     let entrypoint: String = runtime::get_named_arg("entrypoint");
@@ -45,8 +37,7 @@ pub extern "C" fn call() {
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 APPLY_TRANSFER_OWNERSHIP,
-                runtime_args! {
-                },
+                runtime_args! {},
             );
             store(APPLY_TRANSFER_OWNERSHIP, ret);
         }
@@ -67,8 +58,7 @@ pub extern "C" fn call() {
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 VESTED_SUPPLY,
-                runtime_args! {
-                },
+                runtime_args! {},
             );
             store(VESTED_SUPPLY, ret);
         }
@@ -77,8 +67,7 @@ pub extern "C" fn call() {
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 LOCKED_SUPPLY,
-                runtime_args! {
-                },
+                runtime_args! {},
             );
             store(LOCKED_SUPPLY, ret);
         }

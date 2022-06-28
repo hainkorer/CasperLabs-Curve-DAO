@@ -223,9 +223,13 @@ impl ClaimData {
     }
 
     pub fn get(&self, user: &Key, claiming_address: &Key) -> ClaimDataStruct {
+        let data = ClaimDataStruct {
+            claimable_amount: 0.into(),
+            claimed_amount: 0.into(),
+        };
         self.dict
             .get_by_keys((user, claiming_address))
-            .unwrap_or_revert()
+            .unwrap_or(data)
     }
 
     pub fn set(&self, user: &Key, claiming_address: &Key, claimed_amount: ClaimDataStruct) {
@@ -282,7 +286,13 @@ pub fn set_total_supply(total_supply: U256) {
     set_key(TOTAL_SUPPLY, total_supply);
 }
 pub fn reward_data() -> RewardData {
-    get_key(REWARD_DATA).unwrap_or_revert()
+    let data = RewardData {
+        address: zero_address(),
+        time_stamp: 0.into(),
+    };
+    // data.address = zero_address();
+    // data.time_stamp = 0.into();
+    get_key(REWARD_DATA).unwrap_or(data)
 }
 
 pub fn set_reward_data(reward_data: RewardData) {

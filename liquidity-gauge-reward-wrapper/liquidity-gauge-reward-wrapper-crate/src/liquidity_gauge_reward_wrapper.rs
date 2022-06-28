@@ -299,7 +299,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             .checked_div(U256::from(TEN_E_NINE))
             .unwrap_or_revert_with(Error::RewardWrapperDivisionError8);
     }
-    fn claim_tokens(&self,  addr: Option<Key>) {
+    fn claim_tokens(&self, addr: Option<Key>) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::RewardWrapperIsLocked1));
         }
