@@ -52,12 +52,11 @@ members = [
   # REWARD ONLY GAUGE
   "reward-only-gauge/reward-only-gauge",
   "reward-only-gauge/reward-only-gauge-crate",
-  "reward-only-gauge/reward-only-gauge-proxy",
   "reward-only-gauge/reward-only-gauge-tests",
+  "reward-only-gauge/session-code",
   # VESTING ESCROW
   "vesting-escrow/vesting-escrow",
   "vesting-escrow/vesting-escrow-crate",
-  "vesting-escrow/vesting-escrow-proxy",
   "vesting-escrow/vesting-escrow-tests",
   "vesting-escrow/session-code",
   # VESTING ESCROW FACTORY
