@@ -18,9 +18,7 @@ use common::errors::*;
 use contract_utils::{ContractContext, ContractStorage};
 use core::convert::TryInto;
 
-
 pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> {
-    
     fn init(
         &mut self,
         lp_token: Key,
@@ -63,7 +61,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             "token",
             runtime_args! {},
         );
-        
+
         let controller_addr: Key = runtime::call_versioned_contract(
             minter.into_hash().unwrap_or_revert().into(),
             None,
@@ -95,7 +93,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             "future_epoch_time_write",
             runtime_args! {},
         ));
-       
+
         let decimals: u8 = 9;
         let total_supply: U256 = 0.into();
         data::set_total_supply(total_supply);
@@ -760,7 +758,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         } else {
             addr = _addr.unwrap();
         }
-       self._checkpoint(addr);
+        self._checkpoint(addr);
         let lock = data::get_lock();
         if lock != false {
             //Locked
@@ -963,7 +961,6 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                 .checked_sub(_value)
                 .ok_or(Error::LiquidityGaugeUnderFlow2)
                 .unwrap_or_revert();
-        
         }
         self._transfer(_from, _to, _value);
         data::set_lock(false);
@@ -1006,9 +1003,6 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         });
         Ok(())
     }
-
-
-    
 
     fn commit_transfer_ownership(&mut self, addr: Key) {
         if self.get_caller() != self.admin() {
