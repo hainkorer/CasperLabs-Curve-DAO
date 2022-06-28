@@ -2,14 +2,13 @@
 #![no_std]
 
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec, vec::Vec};
+use alloc::{collections::BTreeSet, format};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
+    runtime_args, CLValue, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use casperlabs_erc20::{self, ERC20};

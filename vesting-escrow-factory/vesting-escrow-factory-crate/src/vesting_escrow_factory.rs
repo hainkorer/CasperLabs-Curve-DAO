@@ -9,8 +9,7 @@ use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
-use common::keys::*;
-use vesting_escrow_simple_crate::{entry_points::get_entry_points, VESTINGESCROWSIMPLE};
+use vesting_escrow_simple_crate::entry_points::get_entry_points;
 pub enum VESTINGESCROWFACTORYEvent {
     CommitOwnership { admin: Key },
     ApplyOwnership { admin: Key },
@@ -86,19 +85,30 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             .pop()
             .unwrap_or_revert();
 
+            let end_time = vesting_start
+                .checked_add(_vesting_duration)
+                .ok_or(Error::VestingEscrowFactoryOverFlow1)
+                .unwrap_or_revert();
+
             // Call the constructor entry point
             let _: () = runtime::call_versioned_contract(
                 package_hash,
                 None,
                 "constructor",
                 runtime_args! {
+                    "admin"=> self.admin(),
                     "token" => _token,
+                    "recipient" => _recipient,
+                    "amount" => _amount,
+                    "start_time" => vesting_start,
+                    "end_time" => end_time,
+                    "can_disable" => _can_disable,
                     "contract_hash" => contract_hash,
                     "package_hash"=> package_hash
                 },
             );
 
-            // Remove all URefs from the constructor group, so no one can call it for the second time.
+            // // Remove all URefs from the constructor group, so no one can call it for the second time.
             let mut urefs = BTreeSet::new();
             urefs.insert(constructor_access);
             storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
@@ -117,23 +127,19 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
                 runtime_args! {"spender" =>  Key::from(package_hash),"amount" => _amount},
             );
 
-            let end_time = vesting_start
-                .checked_add(_vesting_duration)
-                .ok_or(Error::VestingEscrowFactoryOverFlow1)
-                .unwrap_or_revert();
-            let _ret: bool = runtime::call_versioned_contract(
-                package_hash,
-                None,
-                "initialize",
-                runtime_args! {
-                "admin" => self.admin(),
-                "token" =>  _token,
-                "recipient" =>  _recipient,
-                "amount" => _amount,
-                "start_time" => vesting_start,
-                "end_time" => end_time,
-                "can_disable" => _can_disable},
-            );
+            // let _ret: bool = runtime::call_versioned_contract(
+            //     package_hash,
+            //     None,
+            //     "initialize",
+            //     runtime_args! {
+            //     "admin" => self.admin(),
+            //     "token" =>  _token,
+            //     "recipient" =>  _recipient,
+            //     "amount" => _amount,
+            //     "start_time" => vesting_start,
+            //     "end_time" => end_time,
+            //     "can_disable" => _can_disable},
+            // );
             return Key::from(package_hash);
         }
     }

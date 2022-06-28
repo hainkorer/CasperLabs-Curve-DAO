@@ -494,11 +494,11 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             runtime::revert(Error::LiquidityGuageV3Unauthorized);
         }
         self._checkpoint(addr);
-        self._update_liquidity_limit(
-            addr,
-            BalanceOf::instance().get(&addr),
-            data::get_total_supply(),
-        );
+        // self._update_liquidity_limit(
+        //     addr,
+        //     BalanceOf::instance().get(&addr),
+        //     data::get_total_supply(),
+        // );
         true
     }
     fn _checkpoint(&mut self, addr: Key) {

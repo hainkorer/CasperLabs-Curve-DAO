@@ -488,14 +488,14 @@ pub fn set_future_epoch_time(future_epoch_time: U256) {
 }
 
 pub fn get_future_epoch_time() -> U256 {
-    get_key(FUTURE_EPOCH_TIME).unwrap_or_revert()
+    get_key(FUTURE_EPOCH_TIME).unwrap_or_default()
 }
 pub fn set_total_supply(total_supply: U256) {
     set_key(TOTAL_SUPPLY, total_supply);
 }
 
 pub fn get_total_supply() -> U256 {
-    get_key(TOTAL_SUPPLY).unwrap_or_revert()
+    get_key(TOTAL_SUPPLY).unwrap_or_default()
 }
 
 pub fn get_name() -> String {
@@ -526,7 +526,7 @@ pub fn set_period(period: U128) {
 }
 
 pub fn get_period() -> U128 {
-    get_key(PERIOD).unwrap_or_revert()
+    get_key(PERIOD).unwrap_or_default()
 }
 
 pub fn set_inflation_rate(inflation_rate: U256) {
@@ -534,7 +534,7 @@ pub fn set_inflation_rate(inflation_rate: U256) {
 }
 
 pub fn get_inflation_rate() -> U256 {
-    get_key(INFLATION_RATE).unwrap_or_revert()
+    get_key(INFLATION_RATE).unwrap_or_default()
 }
 
 pub fn set_admin(admin: Key) {
@@ -558,7 +558,7 @@ pub fn set_is_killed(is_killed: bool) {
 }
 
 pub fn get_is_killed() -> bool {
-    get_key(IS_KILLED).unwrap_or_revert()
+    get_key(IS_KILLED).unwrap_or_default()
 }
 
 pub fn set_contract_hash(contract_hash: ContractHash) {

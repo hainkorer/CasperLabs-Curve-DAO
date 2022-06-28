@@ -1,5 +1,5 @@
 use casper_types::{
-    account::AccountHash, runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U256, U512,
+    account::AccountHash, runtime_args, Key, RuntimeArgs,  U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
 
@@ -67,12 +67,12 @@ fn deploy() -> (
 
 #[test]
 fn test_deploy() {
-    let (env, owner, contract, __, _) = deploy();
+    let (_env, _owner, _contract, __, _) = deploy();
 }
 
 #[test]
 fn toggle_disable() {
-    let (env, owner, contract, _, _) = deploy();
+    let (_env, owner, contract, _, _) = deploy();
     let recipient: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
@@ -82,12 +82,12 @@ fn toggle_disable() {
 }
 #[test]
 fn disable_can_disable() {
-    let (env, owner, contract, _, _) = deploy();
+    let (_env, owner, contract, _, _) = deploy();
     contract.disable_can_disable(owner);
 }
 #[test]
 fn vested_of() {
-    let (env, owner, _, proxy, _) = deploy();
+    let (_env, owner, _, proxy, _) = deploy();
     let recipient: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
@@ -98,21 +98,21 @@ fn vested_of() {
 }
 #[test]
 fn vested_supply() {
-    let (env, owner, _, proxy, _) = deploy();
+    let (_env, owner, _, proxy, _) = deploy();
     proxy.vested_supply(owner);
     let res: U256 = proxy.result();
     assert_eq!(res, 1000000000.into());
 }
 #[test]
 fn locked_supply() {
-    let (env, owner, _, proxy, _) = deploy();
+    let (_env, owner, _, proxy, _) = deploy();
     proxy.locked_supply(owner);
     let res: U256 = proxy.result();
     assert_eq!(res, 1000000000.into());
 }
 #[test]
 fn balance_of() {
-    let (env, owner, _, proxy, _) = deploy();
+    let (_env, owner, _, proxy, _) = deploy();
     let recipient: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
@@ -123,7 +123,7 @@ fn balance_of() {
 }
 #[test]
 fn commit_transfer_ownership() {
-    let (env, owner, contract, proxy, _) = deploy();
+    let (_env, owner, contract, _proxy, _) = deploy();
     let addr: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000001".into(),
     )
@@ -132,7 +132,7 @@ fn commit_transfer_ownership() {
 }
 #[test]
 fn apply_transfer_ownership() {
-    let (env, owner, contract, proxy, _) = deploy();
+    let (_env, owner, contract, _proxy, _) = deploy();
     let addr: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000001".into(),
     )
@@ -142,7 +142,7 @@ fn apply_transfer_ownership() {
 }
 #[test]
 fn claim() {
-    let (env, owner, contract, _, erc20) = deploy();
+    let (_env, owner, contract, _, erc20) = deploy();
     let addr: Key = Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )

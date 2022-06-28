@@ -175,10 +175,10 @@ fn kick() {
 /// """
 #[no_mangle]
 fn deposit() {
-    let _value: U256 = runtime::get_named_arg("_value");
-    let _addr: Option<Key> = runtime::get_named_arg("_addr");
-    let _claim_rewards: Option<bool> = runtime::get_named_arg("_claim_rewards");
-    LiquidityGaugeV3::default().deposit(_value, _addr, _claim_rewards);
+    let value: U256 = runtime::get_named_arg("value");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
+    let claim_rewards: Option<bool> = runtime::get_named_arg("claim_rewards");
+    LiquidityGaugeV3::default().deposit(value, addr, claim_rewards);
 }
 /// """
 /// @notice Withdraw `value` LP tokens

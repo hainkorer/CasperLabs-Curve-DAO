@@ -7,17 +7,14 @@ use alloc::{
 };
 use casper_contract::{
     contract_api::{runtime, storage},
-    unwrap_or_revert::{self, UnwrapOrRevert},
+    unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{
-    runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
-};
-use common::errors::*;
+use casper_types::{ApiError, ContractPackageHash, Key, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-// use erc20_crate::{self, data as erc20_data, ERC20};
+use common::errors::*;
 use casperlabs_erc20::{self, data as erc20_data, ERC20};
 
-pub enum ERC20CRV_EVENT {
+pub enum Erc20CrvEvent {
     Transfer {
         from: Key,
         to: Key,
@@ -41,26 +38,26 @@ pub enum ERC20CRV_EVENT {
     },
 }
 
-impl ERC20CRV_EVENT {
+impl Erc20CrvEvent {
     pub fn type_name(&self) -> String {
         match self {
-            ERC20CRV_EVENT::Transfer {
+            Erc20CrvEvent::Transfer {
                 from: _,
                 to: _,
                 value: _,
             } => "transfer",
-            ERC20CRV_EVENT::Approval {
+            Erc20CrvEvent::Approval {
                 owner: _,
                 spender: _,
                 value: _,
             } => "approval",
-            ERC20CRV_EVENT::UpdateMiningParameters {
+            Erc20CrvEvent::UpdateMiningParameters {
                 time: _,
                 rate: _,
                 supply: _,
             } => "update_mining_parameters",
-            ERC20CRV_EVENT::SetMinter { minter: _ } => "set_minter",
-            ERC20CRV_EVENT::SetAdmin { admin: _ } => "set_admin",
+            Erc20CrvEvent::SetMinter { minter: _ } => "set_minter",
+            Erc20CrvEvent::SetAdmin { admin: _ } => "set_admin",
         }
         .to_string()
     }
@@ -95,7 +92,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         erc20_data::Balances::instance().set(&self.get_caller(), data::get_init_supply());
         erc20_data::set_total_supply(data::get_init_supply());
 
-        self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
+        self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
             from: data::zero_address(),
             to: self.get_caller(),
             value: data::get_init_supply(),
@@ -123,7 +120,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 .unwrap_or_revert_with(Error::Erc20CRVOverFlow9),
         );
 
-        if (data::get_is_updated() == true) {
+        if data::get_is_updated() == true {
             data::set_mining_epoch(
                 data::get_mining_epoch()
                     .checked_add(1.into())
@@ -149,7 +146,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         }
         data::set_rate(rate);
         let blocktime: u64 = runtime::get_blocktime().into();
-        self.erc20_crv_emit(&ERC20CRV_EVENT::UpdateMiningParameters {
+        self.erc20_crv_emit(&Erc20CrvEvent::UpdateMiningParameters {
             time: U256::from(blocktime),
             rate: rate,
             supply: data::get_start_epoch_supply(),
@@ -181,7 +178,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         }
     }
     fn future_epoch_time_write(&self) -> U256 {
-        let mut start_epoch_time = data::get_start_epoch_time();
+        let start_epoch_time = data::get_start_epoch_time();
         let blocktime: u64 = runtime::get_blocktime().into();
         if U256::from(blocktime)
             >= data::get_start_epoch_time()
@@ -242,7 +239,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 .checked_add(value)
                 .unwrap_or_revert_with(Error::Erc20CRVOverFlow19),
         );
-        self.erc20_crv_emit(&ERC20CRV_EVENT::Transfer {
+        self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
             from: data::zero_address(),
             to: to,
             value: value,
@@ -255,7 +252,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
         }
         data::set_minter(_minter);
-        self.erc20_crv_emit(&ERC20CRV_EVENT::SetMinter { minter: _minter });
+        self.erc20_crv_emit(&Erc20CrvEvent::SetMinter { minter: _minter });
     }
     fn set_name(&self, _name: String, _symbol: String) {
         if !(data::get_minter() == self.get_caller()) {
@@ -309,7 +306,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         let mut current_end: U256;
         let mut current_start: U256;
 
-        for i in 0..999 {
+        for _i in 0..999 {
             if end >= current_epoch_time {
                 current_end = end;
                 if current_end
@@ -359,11 +356,11 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         }
         to_mint
     }
-    fn erc20_crv_emit(&self, erc20_crv_event: &ERC20CRV_EVENT) {
+    fn erc20_crv_emit(&self, erc20_crv_event: &Erc20CrvEvent) {
         let mut events = Vec::new();
         let package = data::get_package_hash();
         match erc20_crv_event {
-            ERC20CRV_EVENT::Transfer { from, to, value } => {
+            Erc20CrvEvent::Transfer { from, to, value } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", erc20_crv_event.type_name());
@@ -372,7 +369,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 event.insert("value", value.to_string());
                 events.push(event);
             }
-            ERC20CRV_EVENT::Approval {
+            Erc20CrvEvent::Approval {
                 owner,
                 spender,
                 value,
@@ -385,7 +382,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 event.insert("value", value.to_string());
                 events.push(event);
             }
-            ERC20CRV_EVENT::UpdateMiningParameters { time, rate, supply } => {
+            Erc20CrvEvent::UpdateMiningParameters { time, rate, supply } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", erc20_crv_event.type_name());
@@ -394,14 +391,14 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 event.insert("supply", supply.to_string());
                 events.push(event);
             }
-            ERC20CRV_EVENT::SetMinter { minter } => {
+            Erc20CrvEvent::SetMinter { minter } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", erc20_crv_event.type_name());
                 event.insert("minter", minter.to_string());
                 events.push(event);
             }
-            ERC20CRV_EVENT::SetAdmin { admin } => {
+            Erc20CrvEvent::SetAdmin { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", erc20_crv_event.type_name());

@@ -9,11 +9,9 @@ use casper_contract::{
     },
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{
-    ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256, runtime_args,
-};
-use common::errors::*;
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
+use common::errors::*;
 
 pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(
@@ -105,7 +103,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
                 .unwrap_or_revert(),
         );
         let allowance: U256 = Allowances::instance().get(&owner, &self.get_caller());
-        if (allowance != U256::MAX) {
+        if allowance != U256::MAX {
             Allowances::instance().set(
                 &owner,
                 &self.get_caller(),
@@ -247,13 +245,14 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @dev set name and symbol
     // @param _name.
     fn set_name(&self, _name: String, _symbol: String) {
-        if !(self.get_caller() == runtime::call_versioned_contract(
-            get_minter().into_hash().unwrap_or_revert().into(),
-            None,
-            "owner",
-            runtime_args! {
-            },
-        )){
+        if !(self.get_caller()
+            == runtime::call_versioned_contract(
+                get_minter().into_hash().unwrap_or_revert().into(),
+                None,
+                "owner",
+                runtime_args! {},
+            ))
+        {
             runtime::revert(ApiError::from(Error::CurveTokenV3NotAuthorized));
         }
         set_name(_name);

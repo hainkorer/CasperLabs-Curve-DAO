@@ -124,7 +124,6 @@ fn test_accept_transfer_ownership() {
     assert_eq!(reward_only_gauge.future_admin(), user.into());
     reward_only_gauge.accept_transfer_ownership(user);
     assert_eq!(reward_only_gauge.admin(), user.into());
-
 }
 #[test]
 fn test_reward_contract() {

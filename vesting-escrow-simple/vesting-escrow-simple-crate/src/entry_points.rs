@@ -92,7 +92,7 @@ pub fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "balance_of_vest",
+        "balance_of",
         vec![Parameter::new("recipient", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
