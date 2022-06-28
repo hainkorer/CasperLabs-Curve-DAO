@@ -1,6 +1,6 @@
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key};
 use common::keys::*;
-use contract_utils::{get_key, set_key};
+use casperlabs_contract_utils::{get_key, set_key};
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str(

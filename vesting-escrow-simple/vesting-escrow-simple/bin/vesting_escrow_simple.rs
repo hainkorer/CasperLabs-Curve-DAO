@@ -11,9 +11,9 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
-use erc20_crate::{self, ERC20};
-use vesting_escrow_simple_crate::{data, VESTINGESCROWSIMPLE};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_erc20::{self, ERC20};
+use vesting_escrow_simple_crate::{data, entry_points, VESTINGESCROWSIMPLE};
 
 #[derive(Default)]
 struct VestingEscrowSimple(OnChainContractStorage);
@@ -197,187 +197,15 @@ fn disabled_at() {
     runtime::ret(CLValue::from_t(data::DisableddAt::instance().get(&key)).unwrap_or_revert());
 }
 
-fn get_entry_points() -> EntryPoints {
-    let mut entry_points = EntryPoints::new();
-    entry_points.add_entry_point(EntryPoint::new(
-        "constructor",
-        vec![
-            Parameter::new("token", Key::cl_type()),
-            Parameter::new("contract_hash", ContractHash::cl_type()),
-            Parameter::new("package_hash", ContractPackageHash::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Groups(vec![Group::new("constructor")]),
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "initialize",
-        vec![
-            Parameter::new("admin", Key::cl_type()),
-            Parameter::new("token", Key::cl_type()),
-            Parameter::new("recipient", Key::cl_type()),
-            Parameter::new("amount", U256::cl_type()),
-            Parameter::new("start_time", U256::cl_type()),
-            Parameter::new("end_time", U256::cl_type()),
-            Parameter::new("can_disable", bool::cl_type()),
-        ],
-        bool::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "toggle_disable",
-        vec![Parameter::new("recipient", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "disable_can_disable",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "vested_of",
-        vec![Parameter::new("recipient", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "vested_supply",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "locked_supply",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-
-    entry_points.add_entry_point(EntryPoint::new(
-        "locked_of",
-        vec![Parameter::new("recipient", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "commit_transfer_ownership",
-        vec![Parameter::new("addr", Key::cl_type())],
-        bool::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "apply_transfer_ownership",
-        vec![],
-        bool::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "balance_of",
-        vec![Parameter::new("recipient", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claim",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-
-    //entry point of public variables
-    entry_points.add_entry_point(EntryPoint::new(
-        "token",
-        vec![],
-        Key::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "start_time",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "end_time",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "initial_locked_supply",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "can_disable",
-        vec![],
-        bool::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "admin",
-        vec![],
-        Key::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "future_admin",
-        vec![],
-        Key::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "initial_locked",
-        vec![Parameter::new("key", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "total_claimed",
-        vec![Parameter::new("key", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "disabled_at",
-        vec![Parameter::new("key", Key::cl_type())],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-
-    entry_points
-}
-
 #[no_mangle]
 fn call() {
     // Build new package with initial a first version of the contract.
     let (package_hash, access_token) = storage::create_contract_package_at_hash();
-    let (contract_hash, _) =
-        storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+    let (contract_hash, _) = storage::add_contract_version(
+        package_hash,
+        entry_points::get_entry_points(),
+        Default::default(),
+    );
     let admin: Key = runtime::get_named_arg("admin");
     let token: Key = runtime::get_named_arg("token");
     let recipient: Key = runtime::get_named_arg("recipient");

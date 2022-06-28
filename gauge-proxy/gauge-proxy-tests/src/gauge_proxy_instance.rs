@@ -3,7 +3,7 @@ use casper_types::{
     bytesrepr::{Bytes, FromBytes},
     runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct GAUGEPROXYInstance(TestContract);
 

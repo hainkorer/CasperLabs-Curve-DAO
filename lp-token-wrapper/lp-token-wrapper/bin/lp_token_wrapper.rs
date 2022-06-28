@@ -11,8 +11,8 @@ use casper_types::{
     runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
-use lp_token_wrapper_crate::{self, data::*, LPTOKENWRAPPER};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_lp_token_wrapper::{self, data::*, LPTOKENWRAPPER};
 #[derive(Default)]
 struct LpTokenWrapper(OnChainContractStorage);
 

@@ -5,9 +5,23 @@ use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
 use casper_types::{ApiError, ContractHash, ContractPackageHash, Key, URef};
-use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 //Events
+
+#[repr(u16)]
+pub enum Error {
+    /// 65,546 for (Ownable: caller is not the owner)
+    OwnableNotOwner = 11501,
+    /// 65,540 for (Ownable: new owner is the zero address)
+    OwnableNewOwnerAddressZero = 11502,
+}
+
+impl From<Error> for ApiError {
+    fn from(error: Error) -> ApiError {
+        ApiError::User(error as u16)
+    }
+}
+
 pub enum OwnableEvent {
     OwnershipTransferred { previous_owner: Key, new_owner: Key },
 }

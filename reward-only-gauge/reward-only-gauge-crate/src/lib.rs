@@ -5,7 +5,7 @@ pub mod data;
 pub mod event;
 mod reward_only_gauge;
 
-pub use contract_utils;
+pub use casperlabs_contract_utils;
 pub use reward_only_gauge::REWARDONLYGAUGE;
 
 use alloc::{collections::BTreeMap, string::String};

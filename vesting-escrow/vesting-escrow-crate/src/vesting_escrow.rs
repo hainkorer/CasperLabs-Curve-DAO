@@ -8,7 +8,7 @@ use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 pub enum VESTINGESCROWEvent {
     Fund { recipient: Key, amount: U256 },
     Claim { recipient: Key, claimed: U256 },

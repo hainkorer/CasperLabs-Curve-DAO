@@ -7,7 +7,7 @@ use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U128, 
 use core::{convert::TryInto, f32::MIN};
 
 use common::keys::*;
-use contract_utils::{get_key, set_key, Dict};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 
 pub const YEAR: U256 = U256([31536000, 0, 0, 0]);
 pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);

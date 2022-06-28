@@ -3,7 +3,7 @@ use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;
-use contract_utils::{get_key, set_key, Dict};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 
 pub const TEN_E_NINE: u128 = 1000000000;
 pub fn zero_address() -> Key {

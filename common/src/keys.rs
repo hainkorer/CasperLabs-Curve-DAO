@@ -82,6 +82,9 @@ pub const REWARD_INTEGRAL_FOR_DICT: &str = "reward_integral_for";
 pub const CLAIM_DATA_DICT: &str = "claim_data";
 pub const CLAIM_SIG: &str = "claim_sig";
 pub const REWARD_DATA: &str = "reward_data";
+pub const METHOD: &str = "method";
+pub const PARAMS: &str = "params";
+
 // Vesting Escrow
 pub const INITIAL_LOCKED_SUPPLY: &str = "initial_locked_supply";
 pub const UNALLOCATED_SUPPLY: &str = "unallocated_supply";
@@ -187,10 +190,21 @@ pub const EARNED: &str = "earned";
 //Liqudity Guage v3 keys
 pub const MYVEC: &str = "myvec";
 
-//VESTING ES
+//VESTING ESCROW
 pub const APPLY_TRANSFER_OWNERSHIP: &str = "apply_transfer_ownership";
 pub const COMMIT_TRANSFER_OWNERSHIP: &str = "commit_transfer_ownership";
 pub const VESTED_SUPPLY: &str = "vested_supply";
 pub const LOCKED_SUPPLY: &str = "locked_supply";
 pub const VESTED_OF: &str = "vested_of";
 pub const LOCKED_OF: &str = "locked_of";
+
+// REWARD_ONLY_GAUGE
+pub const TRANSFER: &str = "transfer";
+pub const TRANSFER_FROM: &str = "transfer_from";
+pub const INCREASE_ALLOWANCE: &str = "increase_allowance";
+pub const DECREASE_ALLOWANCE: &str = "decrease_allowance";
+// pub const REWARD_CONTRACT: &str = "reward_contract";
+pub const LAST_CLAIM: &str = "last_claim";
+pub const CLAIMED_REWARD: &str = "claimed_reward";
+pub const CLAIMEABLE_REWARD: &str = "claimable_reward";
+pub const CLAIMEABLE_REWARD_WRITE: &str = "claimable_reward_write";

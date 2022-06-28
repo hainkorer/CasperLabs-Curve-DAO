@@ -1,6 +1,6 @@
 use crate::liquidity_gauge_v3_instance::LIQUIDITYGUAGEV3INSTANCEInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256,U128};
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 //Const
 pub const TEN_E_NINE: u128 = 1000000000;
 const NAME: &str = "LiquidityGaugeV3";

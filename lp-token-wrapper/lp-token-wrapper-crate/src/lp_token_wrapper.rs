@@ -1,8 +1,26 @@
 use crate::data::*;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256};
-use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
+// use common::errors::*;
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
+use casper_types::ApiError;
+#[repr(u16)]
+pub enum Error {
+    /// 65,540 for (Lp Token Wrapper Addition Error 1)
+    LpTokenWrapperAdditionError1 = 11901,
+    /// 65,540 for (Lp Token Wrapper Addition Error 2)
+    LpTokenWrapperAdditionError2 = 11902,
+    /// 65,540 for (Lp Token Wrapper Subtraction Error 1)
+    LpTokenWrapperSubtractionError1 = 11903,
+    /// 65,540 for (Lp Token Wrapper Subtraction Error 2)
+    LpTokenWrapperSubtractionError2 = 11904,
+}
+
+impl From<Error> for ApiError {
+    fn from(error: Error) -> ApiError {
+        ApiError::User(error as u16)
+    }
+}
 
 pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(&self, uni: Key, contract_hash: ContractHash, package_hash: ContractPackageHash) {

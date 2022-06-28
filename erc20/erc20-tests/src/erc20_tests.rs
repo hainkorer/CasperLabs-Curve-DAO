@@ -1,5 +1,5 @@
 use casper_types::{account::AccountHash, Key, U256};
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::erc20_instance::ERC20Instance;
 

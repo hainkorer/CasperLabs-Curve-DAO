@@ -1,7 +1,7 @@
 use crate::voting_escrow_instance::VOTINGESCROWInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use common::keys::*;
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 use voting_escrow_crate::data::WEEK;
 
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {

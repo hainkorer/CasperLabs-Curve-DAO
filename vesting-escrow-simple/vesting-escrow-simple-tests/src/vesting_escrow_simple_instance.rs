@@ -2,8 +2,8 @@ use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, URef, U256,
 };
-use contract_utils::key_to_str;
-use test_env::{TestContract, TestEnv};
+use casperlabs_contract_utils::key_to_str;
+use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct VESTINGESCROWSIMPLEInstance(TestContract);
 

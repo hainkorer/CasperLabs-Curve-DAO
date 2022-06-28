@@ -9,7 +9,7 @@ use casper_types::{
     URef, U256,
 };
 use common::errors::*;
-use contract_utils::{set_key, ContractContext, ContractStorage};
+use casperlabs_contract_utils::{set_key, ContractContext, ContractStorage};
 use cryptoxide::ed25519;
 use hex::encode;
 use renvm_sig::{hash_message, keccak256};

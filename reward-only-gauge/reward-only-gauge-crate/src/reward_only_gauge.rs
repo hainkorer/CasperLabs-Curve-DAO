@@ -11,7 +11,7 @@ use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::bytesrepr::Bytes;
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 
 pub enum REWARDONLYGAUGEEvent {
     Withdraw {
@@ -94,7 +94,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             runtime_args! {},
         );
         let mut name: String = "Curve.fi ".to_string();
-        let post_name: &str = "RewardGauge Deposit";
+        let post_name: &str = " RewardGauge Deposit";
         name.push_str(symbol.as_str());
         name.push_str(post_name);
         let decimals: u8 = 9;
