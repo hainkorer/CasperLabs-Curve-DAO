@@ -10,8 +10,8 @@ use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::bytesrepr::Bytes;
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
-use common::errors::*;
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
+use common::errors::*;
 
 pub enum REWARDONLYGAUGEEvent {
     Withdraw {
@@ -325,7 +325,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             self._checkpoint_rewards(_addr, total_supply, false, account_zero_address());
         }
         data::set_lock(0);
-        self.claim_data(_addr, _addr).claimable_amount
+        self.claim_data(_addr, _token).claimable_amount
     }
 
     // lock
@@ -403,11 +403,11 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-        let _result: () = runtime::call_versioned_contract(
+        let _result: Result<(), u32> = runtime::call_versioned_contract(
             token_package_hash,
             None,
             "transfer",
-            runtime_args! {"_to" => self.get_caller(),"_value" => _value},
+            runtime_args! {"recipient" => self.get_caller(),"amount" => _value},
         );
 
         self.emit(&REWARDONLYGAUGEEvent::Withdraw {
@@ -465,11 +465,11 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-        let _result: () = runtime::call_versioned_contract(
+        let _result: Result<(), u32> = runtime::call_versioned_contract(
             token_package_hash,
             None,
             "transfer_from",
-            runtime_args! {"owner" => self.get_caller(),"recipient" =>  data::get_package_hash(),"amount" => _value},
+            runtime_args! {"owner" => self.get_caller(),"recipient" =>  Key::from(data::get_package_hash()),"amount" => _value},
         );
 
         self.emit(&REWARDONLYGAUGEEvent::Deposit {
@@ -512,7 +512,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             account_zero_address(),
         );
         if _reward_contract != zero_address() {
-            let reward_token = self.reward_tokens(0.into());
+            let reward_token = reward_tokens[0];
             if reward_token == zero_address() {
                 //Reward Only Gauge Reward Token Is Zero Address
                 runtime::revert(Error::RewardOnlyGaugeRewardTokenIsZeroAddress);
@@ -595,7 +595,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             let () = runtime::call_versioned_contract(
                 reward_contract_package_hash,
                 None,
-                "claim_sig",
+                "get_reward",
                 runtime_args! {},
             );
             reward_data.address = reward_contract;
@@ -605,7 +605,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         if _claim && receiver == account_zero_address() {
             // # if receiver is not explicitly declared, check for default receiver
             receiver = self.rewards_receiver(_user);
-            if receiver == account_zero_address() {
+            if receiver == account_zero_address() || receiver == zero_address() {
                 receiver = _user;
             }
         }

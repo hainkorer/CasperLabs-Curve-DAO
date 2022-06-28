@@ -333,6 +333,33 @@ fn name() {
             EntryPointAccess::Public,
             EntryPointType::Contract,
         ));
+        entry_points.add_entry_point(EntryPoint::new(
+            "approve",
+            vec![
+                Parameter::new("spender", Key::cl_type()),
+                Parameter::new("amount", U256::cl_type()),
+            ],
+            CLType::Result {
+                ok: Box::new(CLType::Unit),
+                err: Box::new(CLType::U32),
+            },
+            EntryPointAccess::Public,
+            EntryPointType::Contract,
+        ));
+        entry_points.add_entry_point(EntryPoint::new(
+            "transfer_from",
+            vec![
+                Parameter::new("owner", Key::cl_type()),
+                Parameter::new("recipient", Key::cl_type()),
+                Parameter::new("amount", U256::cl_type()),
+            ],
+            CLType::Result {
+                ok: Box::new(CLType::Unit),
+                err: Box::new(CLType::U32),
+            },
+            EntryPointAccess::Public,
+            EntryPointType::Contract,
+        ));
         //entry points of public variables
         entry_points.add_entry_point(EntryPoint::new(
             "name",

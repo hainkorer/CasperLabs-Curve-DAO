@@ -95,7 +95,7 @@ impl RewardTokens {
     }
 
     pub fn get(&self, indx: &U256) -> Key {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_revert()
+        self.dict.get(indx.to_string().as_str()).unwrap_or(zero_address())
     }
 
     pub fn set(&self, indx: &U256, value: Key) {
@@ -148,7 +148,7 @@ impl RewardsReceiver {
     }
 
     pub fn get(&self, owner: &Key) -> Key {
-        self.dict.get(&key_to_str(owner)).unwrap_or_revert()
+        self.dict.get(&key_to_str(owner)).unwrap_or(zero_address())
     }
 
     pub fn set(&self, owner: &Key, value: Key) {
@@ -308,7 +308,7 @@ pub fn zero_address() -> Key {
 
 pub fn account_zero_address() -> Key {
     Key::from_formatted_str(
-        "_account-hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "account-hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap()
 }
