@@ -1,6 +1,5 @@
 #![no_main]
 #![no_std]
-
 extern crate alloc;
 use alloc::{collections::BTreeSet, format, vec};
 use casper_contract::{

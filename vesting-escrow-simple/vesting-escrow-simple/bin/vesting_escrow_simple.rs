@@ -13,7 +13,7 @@ use casper_types::{
 };
 use contract_utils::{ContractContext, OnChainContractStorage};
 use erc20_crate::{self, ERC20};
-use vesting_escrow_simple_crate::VESTINGESCROWSIMPLE;
+use vesting_escrow_simple_crate::{data, VESTINGESCROWSIMPLE};
 
 #[derive(Default)]
 struct VestingEscrowSimple(OnChainContractStorage);
@@ -28,20 +28,54 @@ impl VESTINGESCROWSIMPLE<OnChainContractStorage> for VestingEscrowSimple {}
 impl VestingEscrowSimple {
     fn constructor(
         &mut self,
+        admin: Key,
         token: Key,
+        recipient: Key,
+        amount: U256,
+        start_time: U256,
+        end_time: U256,
+        can_disable: bool,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-        VESTINGESCROWSIMPLE::init(self, token, Key::from(contract_hash), package_hash);
+        VESTINGESCROWSIMPLE::init(
+            self,
+            admin,
+            token,
+            recipient,
+            amount,
+            start_time,
+            end_time,
+            can_disable,
+            Key::from(contract_hash),
+            package_hash,
+        );
     }
 }
 
 #[no_mangle]
 fn constructor() {
+    let admin: Key = runtime::get_named_arg("admin");
     let token: Key = runtime::get_named_arg("token");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let start_time: U256 = runtime::get_named_arg("start_time");
+    let end_time: U256 = runtime::get_named_arg("end_time");
+    let can_disable: bool = runtime::get_named_arg("can_disable");
+
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    VestingEscrowSimple::default().constructor(token, contract_hash, package_hash);
+    VestingEscrowSimple::default().constructor(
+        admin,
+        token,
+        recipient,
+        amount,
+        start_time,
+        end_time,
+        can_disable,
+        contract_hash,
+        package_hash,
+    );
 }
 #[no_mangle]
 fn initialize() {
@@ -80,9 +114,9 @@ fn vested_of() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn balance_of_vest() {
+fn balance_of() {
     let recipient: Key = runtime::get_named_arg("recipient");
-    let ret = VestingEscrowSimple::default().balance_of_vest(recipient);
+    let ret = VestingEscrowSimple::default().balance_of(recipient);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
@@ -117,6 +151,50 @@ fn apply_transfer_ownership() {
 fn claim() {
     let addr: Key = runtime::get_named_arg("addr");
     VestingEscrowSimple::default().claim(addr);
+}
+//[no_mangle] of public variables
+#[no_mangle]
+fn token() {
+    runtime::ret(CLValue::from_t(data::get_token()).unwrap_or_revert());
+}
+#[no_mangle]
+fn start_time() {
+    runtime::ret(CLValue::from_t(data::get_start_time()).unwrap_or_revert());
+}
+#[no_mangle]
+fn end_time() {
+    runtime::ret(CLValue::from_t(data::get_end_time()).unwrap_or_revert());
+}
+#[no_mangle]
+fn initial_locked_supply() {
+    runtime::ret(CLValue::from_t(data::get_initial_locked_supply()).unwrap_or_revert());
+}
+#[no_mangle]
+fn can_disable() {
+    runtime::ret(CLValue::from_t(data::get_can_disable()).unwrap_or_revert());
+}
+#[no_mangle]
+fn admin() {
+    runtime::ret(CLValue::from_t(data::get_admin()).unwrap_or_revert());
+}
+#[no_mangle]
+fn future_admin() {
+    runtime::ret(CLValue::from_t(data::get_future_admin()).unwrap_or_revert());
+}
+#[no_mangle]
+fn initial_locked() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::InitialLocked::instance().get(&key)).unwrap_or_revert());
+}
+#[no_mangle]
+fn total_claimed() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::TotalClaimed::instance().get(&key)).unwrap_or_revert());
+}
+#[no_mangle]
+fn disabled_at() {
+    let key: Key = runtime::get_named_arg("key");
+    runtime::ret(CLValue::from_t(data::DisableddAt::instance().get(&key)).unwrap_or_revert());
 }
 
 fn get_entry_points() -> EntryPoints {
@@ -205,7 +283,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "balance_of_vest",
+        "balance_of",
         vec![Parameter::new("recipient", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -219,6 +297,78 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
 
+    //entry point of public variables
+    entry_points.add_entry_point(EntryPoint::new(
+        "token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "start_time",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "end_time",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "initial_locked_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "can_disable",
+        vec![],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "initial_locked",
+        vec![Parameter::new("key", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "total_claimed",
+        vec![Parameter::new("key", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "disabled_at",
+        vec![Parameter::new("key", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+
     entry_points
 }
 
@@ -228,9 +378,21 @@ fn call() {
     let (package_hash, access_token) = storage::create_contract_package_at_hash();
     let (contract_hash, _) =
         storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+    let admin: Key = runtime::get_named_arg("admin");
     let token: Key = runtime::get_named_arg("token");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let start_time: U256 = runtime::get_named_arg("start_time");
+    let end_time: U256 = runtime::get_named_arg("end_time");
+    let can_disable: bool = runtime::get_named_arg("can_disable");
     let constructor_args = runtime_args! {
+        "admin"=>admin,
         "token" => token,
+        "recipient" => recipient,
+        "amount" => amount,
+        "start_time" => start_time,
+        "end_time" => end_time,
+        "can_disable" => can_disable,
         "contract_hash" => contract_hash,
         "package_hash"=> package_hash
     };

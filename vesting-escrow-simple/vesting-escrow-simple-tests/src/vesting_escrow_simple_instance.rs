@@ -8,14 +8,20 @@ use test_env::{TestContract, TestEnv};
 pub struct VESTINGESCROWSIMPLEInstance(TestContract);
 
 impl VESTINGESCROWSIMPLEInstance {
-    pub fn contract_instance(contract: TestContract) -> VESTINGESCROWSIMPLEInstance {
+    pub fn instance(contract: TestContract) -> VESTINGESCROWSIMPLEInstance {
         VESTINGESCROWSIMPLEInstance(contract)
     }
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
+        admin: Key,
         token: Key,
+        recipient: Key,
+        amount: U256,
+        start_time: U256,
+        end_time: U256,
+        can_disable: bool,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -23,7 +29,13 @@ impl VESTINGESCROWSIMPLEInstance {
             contract_name,
             sender,
             runtime_args! {
-                "token"=>token
+            "admin"=>admin,
+            "token" => token,
+            "recipient" => recipient,
+            "amount" => amount,
+            "start_time" => start_time,
+            "end_time" => end_time,
+            "can_disable" => can_disable,
             },
             0,
         )
@@ -87,7 +99,7 @@ impl VESTINGESCROWSIMPLEInstance {
     }
     pub fn vested_supply(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "vested_supply", runtime_args! {}, 0);
+            .call_contract(sender, "vested_supply", runtime_args! {}, 6000);
     }
     pub fn vested_of(&self, sender: AccountHash, recipient: Key) {
         self.0.call_contract(
@@ -96,22 +108,22 @@ impl VESTINGESCROWSIMPLEInstance {
             runtime_args! {
                 "recipient" => recipient
             },
-            0,
+            6000,
         );
     }
     //queries
     pub fn locked_supply(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "locked_supply", runtime_args! {}, 0);
+            .call_contract(sender, "locked_supply", runtime_args! {}, 1000);
     }
-    pub fn balance_of_vest(&self, sender: AccountHash, recipient: Key) {
+    pub fn balance_of(&self, sender: AccountHash, recipient: Key) {
         self.0.call_contract(
             sender,
-            "balance_of_vest",
+            "balance_of",
             runtime_args! {
                 "recipient" => recipient
             },
-            0,
+            6000,
         );
     }
     pub fn commit_transfer_ownership(&self, sender: AccountHash, addr: Key) {

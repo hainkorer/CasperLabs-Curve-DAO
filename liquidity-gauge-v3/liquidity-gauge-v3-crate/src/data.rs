@@ -13,39 +13,13 @@ pub const CLAIM_FREQUENCY: U256 = U256([3600, 0, 0, 0]);
 pub const WEEK: U256 = U256([604800, 0, 0, 0]);
 
 #[allow(non_snake_case)]
+
 pub fn zero_address() -> Key {
     Key::from_formatted_str(
         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
     )
     .unwrap()
 }
-
-// const REWARD_DATA: &str = "reward_data";
-
-// const MINTER: &str = "minter";
-// const CRV_TOKEN: &str = "crv_token";
-// const LP_TOKEN: &str = "lp_token";
-// const CONTROLLER: &str = "controller";
-// const VOTING_ESCROW: &str = "voting_escrow";
-// const FUTURE_EPOCH_TIME: &str = "future_epoch_time";
-// const TOTAL_SUPPLY: &str = "total_supply";
-// const DECIMALS: &str = "decimals";
-
-// const NAME: &str = "name";
-// const SYMBOL: &str = "symbol";
-
-// const WORKING_SUPPLY: &str = "working_supply";
-// const PERIOD: &str = "period";
-// const INFLATION_RATE: &str = "inflation_rate";
-// const ADMIN: &str = "admin";
-// const FUTURE_ADMIN: &str = "future_admin";
-// const IS_KILLED: &str = "is_killed";
-// const CLAIM_SIG: &str = "claim_sig";
-
-// const CONTRACT_HASH: &str = "contract_hash";
-// const PACKAGE_HASH: &str = "package_hash";
-// const LOCK: &str = "lock";
-// const MYVEC: &str = "myvec";
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
 pub struct RewardData {
@@ -105,7 +79,7 @@ impl RewardTokens {
     }
 
     pub fn get(&self, indx: &U256) -> Key {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_revert()
+        self.dict.get(indx.to_string().as_str()).unwrap_or(zero_address())
     }
 
     pub fn set(&self, indx: &U256, value: Key) {
@@ -544,7 +518,7 @@ pub fn set_working_supply(working_supply: U256) {
 }
 
 pub fn get_working_supply() -> U256 {
-    get_key(WORKING_SUPPLY).unwrap_or_revert()
+    get_key(WORKING_SUPPLY).unwrap_or_default()
 }
 
 pub fn set_period(period: U128) {
