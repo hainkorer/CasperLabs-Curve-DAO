@@ -8,7 +8,7 @@ use casper_types::{
     account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;

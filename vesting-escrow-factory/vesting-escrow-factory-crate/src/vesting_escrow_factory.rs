@@ -7,9 +7,9 @@ use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
-// use vesting_escrow_simple::{self,vesting_escrow_simple};
+use common::keys::*;
 use vesting_escrow_simple_crate::{entry_points::get_entry_points, VESTINGESCROWSIMPLE};
 pub enum VESTINGESCROWFACTORYEvent {
     CommitOwnership { admin: Key },
@@ -126,13 +126,13 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
                 None,
                 "initialize",
                 runtime_args! {
-                    "admin" => self.admin(),
-                    "token" =>  _token,
-                    "recipient" =>  _recipient,
-                    "amount" => _amount,
-                    "start_time" => vesting_start,
-                    "end_time" => end_time,
-                    "can_disable" => _can_disable},
+                "admin" => self.admin(),
+                "token" =>  _token,
+                "recipient" =>  _recipient,
+                "amount" => _amount,
+                "start_time" => vesting_start,
+                "end_time" => end_time,
+                "can_disable" => _can_disable},
             );
             return Key::from(package_hash);
         }

@@ -11,8 +11,8 @@ casper-contract = "1.4.4"
 casper-types = "1.5.0"
 casper-engine-test-support = "2.1.0"
 common = { path = "../../common" }
-test-env = { path = "../../utils/test-env" }
-contract-utils = { path = "../../utils/contract-utils" }
+casperlabs-test-env = "0.1.0"
+casperlabs-contract-utils = "0.1.0"
 gauge-proxy-crate = { path = "../gauge-proxy-crate" }
 hex = "0.4.3"
 blake2 = "0.9.1"

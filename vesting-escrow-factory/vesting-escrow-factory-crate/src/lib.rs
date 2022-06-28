@@ -5,7 +5,7 @@ pub mod data;
 pub mod event;
 mod vesting_escrow_factory;
 
-pub use contract_utils;
+pub use casperlabs_contract_utils;
 pub use vesting_escrow_factory::VESTINGESCROWFACTORY;
 
 use alloc::{collections::BTreeMap, string::String};

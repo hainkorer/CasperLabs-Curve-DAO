@@ -11,8 +11,8 @@ use casper_types::{
     runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
-use ownable_crate::{data::*, OWNABLE};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_ownable::{data::*, OWNABLE};
 
 #[derive(Default)]
 struct Ownable(OnChainContractStorage);

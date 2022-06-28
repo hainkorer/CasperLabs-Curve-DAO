@@ -3,9 +3,13 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key};
-use common::keys::*;
-use contract_utils::{get_key, set_key};
+use casperlabs_contract_utils::{get_key, set_key};
 use core::convert::TryInto;
+
+pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
+pub const SELF_CONTRACT_PACKAGE_HASH: &str = "self_contract_package_hash";
+pub const RESULT: &str = "result";
+pub const OWNER: &str = "owner";
 //Zero Address
 pub fn zero_address() -> Key {
     Key::from_formatted_str(
@@ -13,6 +17,7 @@ pub fn zero_address() -> Key {
     )
     .unwrap()
 }
+
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {
         Some(key) => {

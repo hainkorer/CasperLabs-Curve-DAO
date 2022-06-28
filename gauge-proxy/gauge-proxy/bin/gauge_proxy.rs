@@ -10,7 +10,7 @@ use casper_types::{
     bytesrepr::Bytes, runtime_args, CLTyped, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use gauge_proxy_crate::{self, GAUGEPROXY};
 
 #[derive(Default)]

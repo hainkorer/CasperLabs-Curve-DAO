@@ -10,7 +10,7 @@ use casper_types::CLTyped;
 use casper_types::{ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;
-use contract_utils::{get_key, key_to_str, set_key, Dict};
+use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(CURVE_TOKEN_V3_RESULT) {

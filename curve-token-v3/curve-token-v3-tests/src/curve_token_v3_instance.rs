@@ -9,7 +9,7 @@ use casper_types::{
     bytesrepr::{FromBytes, ToBytes},
     runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U256,
 };
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
@@ -17,8 +17,8 @@ pub type Meta = BTreeMap<String, String>;
 pub struct CURVETOKENV3Instance(TestContract);
 
 impl CURVETOKENV3Instance {
-    pub fn instance(erc20: TestContract) -> CURVETOKENV3Instance {
-        CURVETOKENV3Instance(erc20)
+    pub fn instance(curvetokenv3: TestContract) -> CURVETOKENV3Instance {
+        CURVETOKENV3Instance(curvetokenv3)
     }
 
     pub fn proxy(env: &TestEnv, curve_token_v3: Key, sender: AccountHash) -> TestContract {

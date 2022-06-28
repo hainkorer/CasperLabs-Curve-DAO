@@ -5,10 +5,10 @@ name = "lp-token-wrapper"
 version = "0.2.0"
 
 [dependencies]
-lp-token-wrapper-crate = { path = "../lp-token-wrapper-crate" }
+casperlabs-lp-token-wrapper = "0.1.0"
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
-contract-utils = { path = "../../utils/contract-utils" }
+casperlabs-contract-utils = "0.1.0"
 cryptoxide = "0.3.3"
 hex = { version = "0.4.3", default-features = false }
 renvm-sig = "0.1.1 "

@@ -14,7 +14,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
     U256,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use gauge_controller_crate::data::{Point, VotedSlope};
 use gauge_controller_crate::GAUGECONLTROLLER;
 

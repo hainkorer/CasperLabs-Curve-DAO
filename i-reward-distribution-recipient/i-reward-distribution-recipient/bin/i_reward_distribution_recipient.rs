@@ -11,9 +11,9 @@ use casper_types::{
     runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
 };
-use contract_utils::{ContractContext, OnChainContractStorage};
-use i_reward_distribution_recipient_crate::{data::*, IREWARDDISTRIBUTIONRECIPIENT};
-use ownable_crate::OWNABLE;
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use casperlabs_i_reward_distribution_recipient::{data::*, IREWARDDISTRIBUTIONRECIPIENT};
+use casperlabs_ownable::OWNABLE;
 
 #[derive(Default)]
 struct IRewardDistributionRecipient(OnChainContractStorage);

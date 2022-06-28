@@ -13,8 +13,9 @@ use casper_types::{
     runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
-use erc20_crate::{self, data as erc20_data, ERC20};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
+// use erc20_crate::{self, data as erc20_data, ERC20};
+use casperlabs_erc20::{self, data as erc20_data, ERC20};
 
 pub enum ERC20CRV_EVENT {
     Transfer {

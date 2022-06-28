@@ -11,7 +11,7 @@ use casper_contract::{
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U128, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;
-use contract_utils::{get_key, key_and_value_to_str, key_to_str, set_key, values_to_str, Dict};
+use casperlabs_contract_utils::{get_key, key_and_value_to_str, key_to_str, set_key, values_to_str, Dict};
 
 pub const WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
 pub const WEIGHT_VOTE_DELAY: U256 = U256([864000, 0, 0, 0]);

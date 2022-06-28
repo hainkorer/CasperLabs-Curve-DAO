@@ -5,7 +5,7 @@ use casper_contract::{
 };
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U256};
 use common::keys::*;
-use contract_utils::{get_key, set_key, Dict};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 use core::{convert::TryInto, f32::MIN};
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {

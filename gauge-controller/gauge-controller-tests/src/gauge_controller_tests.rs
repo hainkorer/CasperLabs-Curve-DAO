@@ -1,5 +1,5 @@
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
-use test_env::{TestContract, TestEnv};
+use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::gauge_controller_instance::GAUGECONLTROLLERInstance;
 use common::keys::*;

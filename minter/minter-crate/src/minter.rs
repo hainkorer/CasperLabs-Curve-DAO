@@ -8,7 +8,7 @@ use casper_types::{
     runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use common::errors::*;
-use contract_utils::{ContractContext, ContractStorage};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 pub enum MINTEREvent {
     Minted {
         recipient: Key,
@@ -78,34 +78,34 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             "user_checkpoint",
             runtime_args! {"addr" => _for},
         );
-        let total_mint: U256 = runtime::call_versioned_contract(
-            gauge_addr_package_hash,
-            None,
-            "integrate_fraction",
-            runtime_args! {"key" => _for},
-        );
-        let minted = self.minted(_for, gauge_addr);
-        let to_mint: U256 = total_mint - minted;
-        if to_mint != U256::from(0) {
-            let token = self.token();
-            let token_hash_add_array = match token {
-                Key::Hash(package) => package,
-                _ => runtime::revert(ApiError::UnexpectedKeyVariant),
-            };
-            let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-            let _result: () = runtime::call_versioned_contract(
-                token_package_hash,
-                None,
-                "mint",
-                runtime_args! {"to" => _for,"amount" => to_mint},
-            );
-            Minted::instance().set(&_for, &gauge_addr, total_mint);
-            self.emit(&MINTEREvent::Minted {
-                recipient: _for,
-                gauge: gauge_addr,
-                minted: total_mint,
-            });
-        }
+        // let total_mint: U256 = runtime::call_versioned_contract(
+        //     gauge_addr_package_hash,
+        //     None,
+        //     "integrate_fraction",
+        //     runtime_args! {"key" => _for},
+        // );
+        // let minted = self.minted(_for, gauge_addr);
+        // let to_mint: U256 = total_mint - minted;
+        // if to_mint != U256::from(0) {
+        //     let token = self.token();
+        //     let token_hash_add_array = match token {
+        //         Key::Hash(package) => package,
+        //         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+        //     };
+        //     let token_package_hash = ContractPackageHash::new(token_hash_add_array);
+        //     let _result: () = runtime::call_versioned_contract(
+        //         token_package_hash,
+        //         None,
+        //         "mint",
+        //         runtime_args! {"to" => _for,"amount" => to_mint},
+        //     );
+        //     Minted::instance().set(&_for, &gauge_addr, total_mint);
+        //     self.emit(&MINTEREvent::Minted {
+        //         recipient: _for,
+        //         gauge: gauge_addr,
+        //         minted: total_mint,
+        //     });
+        // }
     }
     fn mint(&mut self, gauge_addr: Key) {
         let lock = data::get_lock();
