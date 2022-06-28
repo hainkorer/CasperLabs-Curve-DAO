@@ -1,13 +1,16 @@
 use crate::alloc::string::ToString;
 use crate::data::{self, MIN_VESTING_DURATION};
 use alloc::collections::BTreeMap;
+use alloc::collections::BTreeSet;
+use alloc::format;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
 use common::keys::*;
-use casperlabs_contract_utils::{ContractContext, ContractStorage};
+use vesting_escrow_simple_crate::{entry_points::get_entry_points, VESTINGESCROWSIMPLE};
 pub enum VESTINGESCROWFACTORYEvent {
     CommitOwnership { admin: Key },
     ApplyOwnership { admin: Key },
@@ -45,9 +48,9 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
         _can_disable: bool,
         _vesting_duration: U256,
         _vesting_start: Option<U256>,
-        _vesting_escrow_simple_contract: Key,
+        // _vesting_escrow_simple_contract: Key,
     ) -> Key {
-        data::set_vesting_escrow_simple_contract(_vesting_escrow_simple_contract);
+        // data::set_vesting_escrow_simple_contract(_vesting_escrow_simple_contract);
         let vesting_start: U256;
         if _vesting_start.is_some() {
             vesting_start = _vesting_start.unwrap();
@@ -65,42 +68,79 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             //Vesting Escrow Duration Too Soon
             runtime::revert(Error::VestingEscrowFactoryDurationTooShort);
         } else {
-            let _contract: Key = _vesting_escrow_simple_contract;
+            // let _contract: Key = _vesting_escrow_simple_contract;
+            let name: String = "VESTINGESCROWSIMPLE".to_string();
+            let (package_hash, _) = storage::create_contract_package_at_hash();
+            let (contract_hash, _) =
+                storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+            runtime::put_key(&format!("{}_contract", name), contract_hash.into());
+            // info.staking_rewards = Key::from(package_hash);
+            // Access
+            let constructor_access: URef = storage::create_contract_user_group(
+                package_hash,
+                "constructor",
+                1,
+                Default::default(),
+            )
+            .unwrap_or_revert()
+            .pop()
+            .unwrap_or_revert();
+
+            // Call the constructor entry point
+            let _: () = runtime::call_versioned_contract(
+                package_hash,
+                None,
+                "constructor",
+                runtime_args! {
+                    "token" => _token,
+                    "contract_hash" => contract_hash,
+                    "package_hash"=> package_hash
+                },
+            );
+
+            // Remove all URefs from the constructor group, so no one can call it for the second time.
+            let mut urefs = BTreeSet::new();
+            urefs.insert(constructor_access);
+            storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
+                .unwrap_or_revert();
 
             let token_hash_add_array = match _token {
                 Key::Hash(package) => package,
                 _ => runtime::revert(ApiError::UnexpectedKeyVariant),
             };
+
             let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-            let _ret: bool = runtime::call_versioned_contract(
+            let _ret: () = runtime::call_versioned_contract(
                 token_package_hash,
                 None,
                 "approve",
-                runtime_args! {"spender" =>  _contract,"value" => _amount},
+                runtime_args! {"spender" =>  Key::from(package_hash),"amount" => _amount},
             );
 
-            let _contract_hash_add_array = match _contract {
-                Key::Hash(package) => package,
-                _ => runtime::revert(ApiError::UnexpectedKeyVariant),
-            };
-            let _contract_package_hash = ContractPackageHash::new(_contract_hash_add_array);
             let end_time = vesting_start
                 .checked_add(_vesting_duration)
                 .ok_or(Error::VestingEscrowFactoryOverFlow1)
                 .unwrap_or_revert();
             let _ret: bool = runtime::call_versioned_contract(
-                _contract_package_hash,
+                package_hash,
                 None,
                 "initialize",
-                runtime_args! {"_token" => _token,"_recipient" =>  _recipient,"_amount" => _amount,"_vesting_start" => _vesting_start,"_end_time" => end_time,"_can_disable" => _can_disable},
+                runtime_args! {
+                "admin" => self.admin(),
+                "token" =>  _token,
+                "recipient" =>  _recipient,
+                "amount" => _amount,
+                "start_time" => vesting_start,
+                "end_time" => end_time,
+                "can_disable" => _can_disable},
             );
-            return _contract;
+            return Key::from(package_hash);
         }
     }
 
     fn commit_transfer_ownership(&mut self, addr: Key) -> bool {
         if self.get_caller() != self.admin() {
-            //Vesting Escrow Only Admin
+            //Vesting Escrow Factroy Only Admin
             runtime::revert(Error::VestingEscrowFactoryOnlyAdmin1);
         }
         data::set_future_admin(addr);
