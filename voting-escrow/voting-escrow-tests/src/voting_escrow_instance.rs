@@ -136,7 +136,7 @@ impl VOTINGESCROWInstance {
             .call_contract(owner, "withdraw", runtime_args! {}, time);
     }
 
-    pub fn balance_of_js_client(&self, owner: AccountHash, addr: Key, t: U256) {
+    pub fn balance_of_js_client(&self, owner: AccountHash, addr: Key, t: Option<U256>) {
         self.0.call_contract(
             owner,
             "balance_of_js_client",
@@ -160,7 +160,7 @@ impl VOTINGESCROWInstance {
         );
     }
 
-    pub fn total_supply_js_client(&self, owner: AccountHash, t: U256) {
+    pub fn total_supply_js_client(&self, owner: AccountHash, t: Option<U256> ) {
         self.0.call_contract(
             owner,
             "total_supply_js_client",
@@ -170,7 +170,16 @@ impl VOTINGESCROWInstance {
             0,
         );
     }
-
+    pub fn total_supply(&self, owner: AccountHash, t: Option<U256> ) {
+        self.0.call_contract(
+            owner,
+            "total_supply",
+            runtime_args! {
+                "t" => t
+            },
+            0,
+        );
+    }
     pub fn total_supply_at_js_client(&self, owner: AccountHash, block: U256) {
         self.0.call_contract(
             owner,

@@ -107,13 +107,13 @@ fn locked_supply() {
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn balance_of_vest() {
+fn balance_of() {
     let vesting_escrow_simple_address: ContractHash =
         mappings::get_key(&mappings::vesting_escrow_simple_key());
     let recipient: Key = runtime::get_named_arg("recipient");
     let ret: U256 = runtime::call_contract(
         vesting_escrow_simple_address,
-        "balance_of_vest",
+        "balance_of",
         runtime_args! {
             "recipient" => recipient
         },
@@ -204,7 +204,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "balance_of_vest",
+        "balance_of",
         vec![Parameter::new("recipient", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,

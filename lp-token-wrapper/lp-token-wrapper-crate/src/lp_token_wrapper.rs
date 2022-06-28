@@ -30,7 +30,7 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
                 .checked_add(amount)
                 .unwrap_or_revert_with(Error::LpTokenWrapperAdditionError2),
         );
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let _ret: Result<(), u32> = runtime::call_versioned_contract(
             get_uni().into_hash().unwrap_or_revert().into(),
             None,
             "transfer_from",
@@ -54,7 +54,7 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
                 .checked_sub(amount)
                 .unwrap_or_revert_with(Error::LpTokenWrapperSubtractionError2),
         );
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let _ret: Result<(), u32> = runtime::call_versioned_contract(
             get_uni().into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
