@@ -1,4 +1,4 @@
-use core::{convert::TryInto, f32::MIN};
+use core::convert::TryInto;
 
 use alloc::string::String;
 use casper_contract::{
@@ -8,9 +8,8 @@ use casper_contract::{
 use casper_types::bytesrepr::ToBytes;
 use casper_types::CLTyped;
 use casper_types::{ContractPackageHash, Key, U256};
-use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use common::keys::*;
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
+use common::keys::*;
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(CURVE_TOKEN_V3_RESULT) {

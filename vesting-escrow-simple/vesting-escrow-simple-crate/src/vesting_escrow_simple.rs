@@ -12,7 +12,7 @@ use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs
 use common::errors::*;
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 
-pub enum VESTINGESCROWSIMPLE_EVENT {
+pub enum VestingEscrowSimpleEvent {
     Fund { recipient: Key, amount: U256 },
     Claim { recipient: Key, claimed: U256 },
     ToggleDisable { recipient: Key, disabled: bool },
@@ -20,23 +20,23 @@ pub enum VESTINGESCROWSIMPLE_EVENT {
     ApplyOwnership { admin: Key },
 }
 
-impl VESTINGESCROWSIMPLE_EVENT {
+impl VestingEscrowSimpleEvent {
     pub fn type_name(&self) -> String {
         match self {
-            VESTINGESCROWSIMPLE_EVENT::Fund {
+            VestingEscrowSimpleEvent::Fund {
                 recipient: _,
                 amount: _,
             } => "fund",
-            VESTINGESCROWSIMPLE_EVENT::Claim {
+            VestingEscrowSimpleEvent::Claim {
                 recipient: _,
                 claimed: _,
             } => "claim",
-            VESTINGESCROWSIMPLE_EVENT::ToggleDisable {
+            VestingEscrowSimpleEvent::ToggleDisable {
                 recipient: _,
                 disabled: _,
             } => "toggle_disable",
-            VESTINGESCROWSIMPLE_EVENT::CommitOwnership { admin: _ } => "commit_ownership",
-            VESTINGESCROWSIMPLE_EVENT::ApplyOwnership { admin: _ } => "apply_ownership",
+            VestingEscrowSimpleEvent::CommitOwnership { admin: _ } => "commit_ownership",
+            VestingEscrowSimpleEvent::ApplyOwnership { admin: _ } => "apply_ownership",
         }
         .to_string()
     }
@@ -118,7 +118,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         ret.unwrap_or_revert();
         InitialLocked::instance().set(&recipient, amount);
         set_initial_locked_supply(amount);
-        self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::Fund {
+        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Fund {
             recipient: recipient,
             amount: amount,
         });
@@ -148,7 +148,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         } else {
             DisableddAt::instance().set(&recipient, U256::from(0))
         }
-        self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::ToggleDisable {
+        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::ToggleDisable {
             recipient: recipient,
             disabled: is_disabled,
         });
@@ -245,7 +245,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly3));
         }
         set_future_admin(addr);
-        self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::CommitOwnership {
+        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::CommitOwnership {
             admin: addr,
         });
 
@@ -287,7 +287,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             Err(e) => runtime::revert(ApiError::User(e as u16)),
         }
 
-        self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::Claim {
+        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Claim {
             recipient: addr,
             claimed: claimable,
         });
@@ -303,17 +303,17 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminNotSet));
         }
         set_admin(_admin);
-        self.vesting_escrow_simple_emit(&VESTINGESCROWSIMPLE_EVENT::ApplyOwnership {
+        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::ApplyOwnership {
             admin: _admin,
         });
         return true;
     }
 
-    fn vesting_escrow_simple_emit(&self, vesting_escrow_simple_event: &VESTINGESCROWSIMPLE_EVENT) {
+    fn vesting_escrow_simple_emit(&self, vesting_escrow_simple_event: &VestingEscrowSimpleEvent) {
         let mut events = Vec::new();
         let package = get_package_hash();
         match vesting_escrow_simple_event {
-            VESTINGESCROWSIMPLE_EVENT::Fund { recipient, amount } => {
+            VestingEscrowSimpleEvent::Fund { recipient, amount } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", vesting_escrow_simple_event.type_name());
@@ -321,7 +321,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 event.insert("amount", amount.to_string());
                 events.push(event);
             }
-            VESTINGESCROWSIMPLE_EVENT::Claim { recipient, claimed } => {
+            VestingEscrowSimpleEvent::Claim { recipient, claimed } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", vesting_escrow_simple_event.type_name());
@@ -329,7 +329,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 event.insert("claimed", claimed.to_string());
                 events.push(event);
             }
-            VESTINGESCROWSIMPLE_EVENT::ToggleDisable {
+            VestingEscrowSimpleEvent::ToggleDisable {
                 recipient,
                 disabled,
             } => {
@@ -340,14 +340,14 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 event.insert("disabled", disabled.to_string());
                 events.push(event);
             }
-            VESTINGESCROWSIMPLE_EVENT::CommitOwnership { admin } => {
+            VestingEscrowSimpleEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", vesting_escrow_simple_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
-            VESTINGESCROWSIMPLE_EVENT::ApplyOwnership { admin } => {
+            VestingEscrowSimpleEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", vesting_escrow_simple_event.type_name());

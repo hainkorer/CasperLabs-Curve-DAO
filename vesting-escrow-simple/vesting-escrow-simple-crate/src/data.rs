@@ -1,12 +1,11 @@
-use alloc::string::String;
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U256};
-use common::keys::*;
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use core::{convert::TryInto, f32::MIN};
+use common::keys::*;
+use core::convert::TryInto;
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {

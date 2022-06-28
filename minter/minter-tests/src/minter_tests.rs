@@ -131,10 +131,10 @@ fn test_deploy() {
         env,
         minter,
         _owner,
-        token,
+        _token,
         _voting_escrow,
         gauge_controller,
-        liquidity_gauge_reward,
+        _liquidity_gauge_reward,
         erc20_crv,
     ) = deploy();
     let _user = env.next_user();
@@ -155,7 +155,7 @@ fn test_minter_mint() {
         _voting_escrow,
         gauge_controller,
         liquidity_gauge_reward,
-        erc20_crv,
+        _erc20_crv,
     ) = deploy();
     let _user = env.next_user();
     minter.toggle_approve_mint(owner, Key::from(owner));
@@ -296,7 +296,7 @@ fn test_minter_mint_for() {
         _voting_escrow,
         gauge_controller,
         liquidity_gauge_reward,
-        erc20_crv,
+        _erc20_crv,
     ) = deploy();
     minter.toggle_approve_mint(owner, Key::from(owner));
     let name: String = "type".to_string();
@@ -368,8 +368,8 @@ fn test_minter_toggle_approve_mint() {
         token,
         _voting_escrow,
         _gauge_controller,
-        liquidity_gauge_reward,
-        erc20_crv,
+        _liquidity_gauge_reward,
+        _erc20_crv,
     ) = deploy();
 
     minter.toggle_approve_mint(owner, Key::Hash(token.package_hash()));

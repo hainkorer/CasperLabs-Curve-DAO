@@ -284,26 +284,26 @@ test-curve-rewards:
 test-liquidity-gauge-v3: 
 	make build-contract-liquidity-gauge-v3 && make copy-wasm-file-liquidity-gauge-v3 && make test-only-liquidity-gauge-v3
 all:
-	# make test-curve-token-v3
-	# make test-erc20
-	# make test-erc20-crv
-	# make test-fee-distributor
-	# # make test-gauge-controller
-	# make test-gauge-proxy
-	# # make test-liquidity-gauge-reward
-	# make test-liquidity-gauge-reward-wrapper
-	# make test-liquidity-gauge-wrapper
-	# make test-minter
-	# make test-reward-only-gauge
-	# make test-vesting-escrow
-	# # # # # # make test-vesting-escrow-factory
-	# # # # # # make test-vesting-escrow-simple
-	# make test-voting-escrow
-	# make test-ownable
-	# make test-i-reward-distribution-recipient
-	# make test-lp-token-wrapper
-	# make test-curve-rewards
-	# make test-liquidity-gauge-v3
+	make test-curve-token-v3
+	make test-erc20
+	make test-erc20-crv
+	make test-fee-distributor
+	make test-gauge-controller
+	make test-gauge-proxy
+	make test-liquidity-gauge-reward
+	make test-liquidity-gauge-reward-wrapper
+	make test-liquidity-gauge-wrapper
+	make test-minter
+	make test-reward-only-gauge
+	make test-vesting-escrow
+	make test-vesting-escrow-factory
+	make test-vesting-escrow-simple
+	make test-voting-escrow
+	make test-ownable
+	make test-i-reward-distribution-recipient
+	make test-lp-token-wrapper
+	make test-curve-rewards
+	make test-liquidity-gauge-v3
 
 clean:
 	cargo clean
