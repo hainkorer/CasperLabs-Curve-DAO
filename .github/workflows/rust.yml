@@ -16,5 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build
+    - name: Prepare
+      run: make prepare
+    - name: Run tests
       run: make all
