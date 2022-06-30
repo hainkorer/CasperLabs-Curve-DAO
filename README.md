@@ -1,3 +1,4 @@
+[![Rust](https://github.com/Scytalelabs-official/CasperLabs-Curve-DAO/actions/workflows/build.yml/badge.svg)](https://github.com/Scytalelabs-official/CasperLabs-Curve-DAO/actions/workflows/build.yml)
 # CasperLabs-Curve-DAO
 
 Implementation of following contracts for the CasperLabs platform.
