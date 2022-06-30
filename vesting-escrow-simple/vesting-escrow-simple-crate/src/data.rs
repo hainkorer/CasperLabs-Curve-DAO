@@ -2,7 +2,7 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U256};
+use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
 use common::keys::*;
 use core::convert::TryInto;
@@ -153,11 +153,11 @@ pub fn zero_address() -> Key {
     .unwrap()
 }
 
-pub fn set_hash(contract_hash: Key) {
+pub fn set_hash(contract_hash: ContractHash) {
     set_key(SELF_CONTRACT_HASH, contract_hash);
 }
 
-pub fn get_hash() -> Key {
+pub fn get_hash() -> ContractHash {
     get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 

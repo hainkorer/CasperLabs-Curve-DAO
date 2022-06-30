@@ -1,12 +1,8 @@
-use std::collections::BTreeMap;
-use blake2::{
-    digest::{Update, VariableOutput},
-    VarBlake2b,
-};
 use casper_types::{
-    account::AccountHash, bytesrepr::{ToBytes, FromBytes}, runtime_args, CLTyped, Key, RuntimeArgs, U256,
+    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::collections::BTreeMap;
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
@@ -18,7 +14,6 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
         LIQUIDITYGUAGEV3INSTANCEInstance(liquidity_gauge_v3)
     }
 
-   
     pub fn new(
         env: &TestEnv,
         contract_name: &str,
@@ -26,7 +21,6 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
         lp_addr: Key,
         minter: Key,
         admin: Key,
-        
     ) -> TestContract {
         TestContract::new(
             env,
@@ -41,7 +35,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
             0,
         )
     }
-    pub fn commit_transfer_ownership(&self, sender: AccountHash, addr:Key) {
+    pub fn commit_transfer_ownership(&self, sender: AccountHash, addr: Key) {
         self.0.call_contract(
             sender,
             "commit_transfer_ownership",
@@ -51,16 +45,11 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
             0,
         );
     }
-     pub fn accept_transfer_ownership(&self, sender: AccountHash){
-        self.0.call_contract(
-            sender,
-            "accept_transfer_ownership",
-            runtime_args! {
-            },
-            0,
-        );
+    pub fn accept_transfer_ownership(&self, sender: AccountHash) {
+        self.0
+            .call_contract(sender, "accept_transfer_ownership", runtime_args! {}, 0);
     }
-    pub fn set_killed(&self, sender: AccountHash,is_killed:bool){
+    pub fn set_killed(&self, sender: AccountHash, is_killed: bool) {
         self.0.call_contract(
             sender,
             "set_killed",
@@ -106,7 +95,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
             0,
         );
     }
-    
+
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
     }
@@ -115,5 +104,4 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
         self.0.query_named_key(key)
     }
-
 }

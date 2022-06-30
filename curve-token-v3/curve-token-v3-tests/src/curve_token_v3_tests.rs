@@ -91,24 +91,24 @@ fn deploy() -> (
 
 #[test]
 fn test_deploy() {
-    let (env, token, owner, _, _, _) = deploy();
+    let (_, _, _, _, _, _) = deploy();
 }
 #[test]
 fn test_decimals() {
-    let (env, token, owner, proxy, _, _) = deploy();
+    let (_, _, owner, proxy, _, _) = deploy();
     proxy.decimals(owner);
     let res: U256 = proxy.result();
     assert_eq!(res, 9.into());
 }
 #[test]
 fn test_set_minter() {
-    let (env, token, owner, _, _, _) = deploy();
+    let (_, token, owner, _, _, _) = deploy();
     let _minter_arg: Key = Key::Account(owner);
     token.set_minter(owner, _minter_arg);
 }
 #[test]
 fn test_mint() {
-    let (env, token, owner, proxy, _, _) = deploy();
+    let (_, token, owner, proxy, _, _) = deploy();
     let _to_arg: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
@@ -121,7 +121,7 @@ fn test_mint() {
 }
 #[test]
 fn test_transfer() {
-    let (env, token, owner, proxy, _, _) = deploy();
+    let (_, token, owner, proxy, _, _) = deploy();
     let _to_arg: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
@@ -138,15 +138,12 @@ fn test_transfer() {
 }
 #[test]
 fn test_transfer_from() {
-    let (env, token, owner, proxy, proxy2, _) = deploy();
+    let (_, token, owner, proxy, proxy2, _) = deploy();
     let to_arg: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
     .unwrap();
-    let mint_to: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000030000".into(),
-    )
-    .unwrap();
+
     token.set_minter(owner, proxy.package_hash().into());
     let _value_arg: U256 = 2000000000.into();
     proxy.mint(owner, proxy.package_hash().into(), _value_arg);
@@ -160,7 +157,7 @@ fn test_transfer_from() {
 }
 #[test]
 fn test_approve() {
-    let (env, token, owner, proxy, _, _) = deploy();
+    let (_, token, owner, proxy, _, _) = deploy();
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
@@ -173,7 +170,7 @@ fn test_approve() {
 }
 #[test]
 fn test_increase_allowance() {
-    let (env, token, owner, proxy, _, _) = deploy();
+    let (_, token, owner, proxy, _, _) = deploy();
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
@@ -192,7 +189,7 @@ fn test_increase_allowance() {
 }
 #[test]
 fn test_decrease_allowance() {
-    let (env, token, owner, proxy, _, _) = deploy();
+    let (_, token, owner, proxy, _, _) = deploy();
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
@@ -212,11 +209,7 @@ fn test_decrease_allowance() {
 }
 #[test]
 fn test_burn_from() {
-    let (env, token, owner, proxy, _, _) = deploy();
-    let burn_from: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
-    )
-    .unwrap();
+    let (_, token, owner, proxy, _, _) = deploy();
 
     token.set_minter(owner, proxy.package_hash().into());
     let mint_amount: U256 = 2000000000.into();
@@ -228,7 +221,7 @@ fn test_burn_from() {
 }
 #[test]
 fn test_set_name() {
-    let (env, token, owner, _, _, curve_reward) = deploy();
+    let (_, token, owner, _, _, curve_reward) = deploy();
     let curve_rewards_package_hash = Key::Hash(curve_reward.package_hash());
     token.set_minter(owner, curve_rewards_package_hash);
     token.set_name(owner, "curve-token-v3".to_string(), "crvtok3".to_string());

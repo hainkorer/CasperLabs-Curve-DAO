@@ -1,7 +1,6 @@
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
 
-
 pub const UNI: &str = "uni";
 pub const BALANCES: &str = "balances";
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";

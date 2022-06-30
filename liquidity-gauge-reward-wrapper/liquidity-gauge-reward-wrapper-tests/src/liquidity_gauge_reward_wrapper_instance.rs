@@ -128,7 +128,7 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
             0,
         );
     }
-    pub fn transfer_from(&self, owner: AccountHash,key:Key, recipient: Key, amount: U256) {
+    pub fn transfer_from(&self, owner: AccountHash, key: Key, recipient: Key, amount: U256) {
         self.0.call_contract(
             owner,
             "transfer_from",

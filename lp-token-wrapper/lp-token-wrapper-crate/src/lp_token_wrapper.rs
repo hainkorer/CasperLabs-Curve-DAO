@@ -2,8 +2,8 @@ use crate::data::*;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256};
 // use common::errors::*;
-use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use casper_types::ApiError;
+use casperlabs_contract_utils::{ContractContext, ContractStorage};
 #[repr(u16)]
 pub enum Error {
     /// 65,540 for (Lp Token Wrapper Addition Error 1)

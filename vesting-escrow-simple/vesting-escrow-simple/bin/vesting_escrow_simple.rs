@@ -25,56 +25,16 @@ impl ERC20<OnChainContractStorage> for VestingEscrowSimple {}
 impl VESTINGESCROWSIMPLE<OnChainContractStorage> for VestingEscrowSimple {}
 
 impl VestingEscrowSimple {
-    fn constructor(
-        &mut self,
-        admin: Key,
-        token: Key,
-        recipient: Key,
-        amount: U256,
-        start_time: U256,
-        end_time: U256,
-        can_disable: bool,
-        contract_hash: ContractHash,
-        package_hash: ContractPackageHash,
-    ) {
-        VESTINGESCROWSIMPLE::init(
-            self,
-            admin,
-            token,
-            recipient,
-            amount,
-            start_time,
-            end_time,
-            can_disable,
-            Key::from(contract_hash),
-            package_hash,
-        );
+    fn constructor(&mut self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
+        VESTINGESCROWSIMPLE::init(self, contract_hash, package_hash);
     }
 }
 
 #[no_mangle]
 fn constructor() {
-    let admin: Key = runtime::get_named_arg("admin");
-    let token: Key = runtime::get_named_arg("token");
-    let recipient: Key = runtime::get_named_arg("recipient");
-    let amount: U256 = runtime::get_named_arg("amount");
-    let start_time: U256 = runtime::get_named_arg("start_time");
-    let end_time: U256 = runtime::get_named_arg("end_time");
-    let can_disable: bool = runtime::get_named_arg("can_disable");
-
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    VestingEscrowSimple::default().constructor(
-        admin,
-        token,
-        recipient,
-        amount,
-        start_time,
-        end_time,
-        can_disable,
-        contract_hash,
-        package_hash,
-    );
+    VestingEscrowSimple::default().constructor(contract_hash, package_hash);
 }
 #[no_mangle]
 fn initialize() {
@@ -85,6 +45,8 @@ fn initialize() {
     let start_time: U256 = runtime::get_named_arg("start_time");
     let end_time: U256 = runtime::get_named_arg("end_time");
     let can_disable: bool = runtime::get_named_arg("can_disable");
+    let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
+    let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     let ret = VestingEscrowSimple::default().initialize(
         admin,
         token,
@@ -93,6 +55,8 @@ fn initialize() {
         start_time,
         end_time,
         can_disable,
+        contract_hash,
+        package_hash,
     );
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }

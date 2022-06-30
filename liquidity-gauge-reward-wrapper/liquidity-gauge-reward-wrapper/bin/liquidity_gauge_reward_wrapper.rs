@@ -334,7 +334,10 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claim_tokens",
-        vec![Parameter::new("addr",CLType::Option(Box::new(CLType::Key)))],
+        vec![Parameter::new(
+            "addr",
+            CLType::Option(Box::new(CLType::Key)),
+        )],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

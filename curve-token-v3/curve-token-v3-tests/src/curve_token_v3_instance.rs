@@ -1,15 +1,9 @@
-use std::collections::BTreeMap;
-
-use blake2::{
-    digest::{Update, VariableOutput},
-    VarBlake2b,
-};
 use casper_types::{
-    account::AccountHash,
-    bytesrepr::{FromBytes, ToBytes},
-    runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U256,
+    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
+    RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::collections::BTreeMap;
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;

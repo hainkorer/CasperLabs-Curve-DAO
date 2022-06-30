@@ -14,8 +14,8 @@ use casper_types::bytesrepr::Bytes;
 use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
-use common::errors::*;
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
+use common::errors::*;
 use core::convert::TryInto;
 
 pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> {

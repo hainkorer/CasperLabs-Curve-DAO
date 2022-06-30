@@ -8,9 +8,11 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
-use common::errors::*;
+use casper_types::{
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
+};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
+use common::errors::*;
 
 pub enum VestingEscrowSimpleEvent {
     Fund { recipient: Key, amount: U256 },
@@ -43,31 +45,14 @@ impl VestingEscrowSimpleEvent {
 }
 
 pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage> {
-    fn init(
-        &self,
-        admin: Key,
-        token: Key,
-        recipient: Key,
-        amount: U256,
-        start_time: U256,
-        end_time: U256,
-        can_disable: bool,
-        contract_hash: Key,
-        package_hash: ContractPackageHash,
-    ) {
+    fn init(&self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
         set_hash(contract_hash);
         set_package_hash(package_hash);
         DisableddAt::init();
         InitialLocked::init();
         TotalClaimed::init();
 
-        set_token(token);
         set_admin(self.get_caller());
-        set_start_time(start_time);
-        set_end_time(end_time);
-        set_can_disable(can_disable);
-        InitialLocked::instance().set(&recipient, amount);
-        set_initial_locked_supply(amount);
     }
 
     // @notice Initialize the contract.
@@ -90,12 +75,16 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         start_time: U256,
         end_time: U256,
         can_disable: bool,
+        contract_hash: ContractHash,
+        package_hash: ContractPackageHash,
     ) -> bool {
         let lock = get_lock();
         if lock != false {
             runtime::revert(Error::VestingEscrowSimpleLocked1);
         }
         set_lock(true);
+        set_hash(contract_hash);
+        set_package_hash(package_hash);
         if !(get_admin() == zero_address()) {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleOnlyInitializeOnce));
         }
@@ -245,9 +234,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly3));
         }
         set_future_admin(addr);
-        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::CommitOwnership {
-            admin: addr,
-        });
+        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::CommitOwnership { admin: addr });
 
         true
     }

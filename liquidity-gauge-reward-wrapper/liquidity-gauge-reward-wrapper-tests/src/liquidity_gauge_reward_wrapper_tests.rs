@@ -1,7 +1,7 @@
 use crate::liquidity_gauge_reward_wrapper_instance::LIQUIDITYGAUGEREWARDWRAPPERInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
-use common::keys::*;
 use casperlabs_test_env::{TestContract, TestEnv};
+use common::keys::*;
 //Const
 pub const TEN_E_NINE: u128 = 1000000000;
 const NAME: &str = "LiquidityGuageRewardWrapper";
@@ -375,7 +375,7 @@ fn test_transfer() {
     let liquidity_gauge_reward_wrapper_instance =
         LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
     liquidity_gauge_reward_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
-    liquidity_gauge_reward_wrapper_instance.transfer(owner, recipient,U256::from(TEN_E_NINE * 10));
+    liquidity_gauge_reward_wrapper_instance.transfer(owner, recipient, U256::from(TEN_E_NINE * 10));
 }
 #[test]
 fn test_transfer_from() {
@@ -384,38 +384,71 @@ fn test_transfer_from() {
     let liquidity_gauge_reward_wrapper_instance =
         LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
     liquidity_gauge_reward_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
-    liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
-    liquidity_gauge_reward_wrapper_instance.transfer_from(owner,Key::Account(owner), recipient,0.into());
+    liquidity_gauge_reward_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
+    liquidity_gauge_reward_wrapper_instance.transfer_from(
+        owner,
+        Key::Account(owner),
+        recipient,
+        0.into(),
+    );
 }
 #[test]
 fn test_approve() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_reward_wrapper_instance =
         LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
+    liquidity_gauge_reward_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
 }
 #[test]
 fn test_increase_allowance() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_reward_wrapper_instance =
         LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
-    liquidity_gauge_reward_wrapper_instance.increase_allowance(owner,Key::Account(owner), U256::from(TEN_E_NINE * 10));
+    liquidity_gauge_reward_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
+    liquidity_gauge_reward_wrapper_instance.increase_allowance(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 10),
+    );
 }
 #[test]
 fn test_decrease_allowance() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_reward_wrapper_instance =
         LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-        liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
-    liquidity_gauge_reward_wrapper_instance.decrease_allowance(owner,Key::Account(owner), U256::from(TEN_E_NINE * 10));
+    liquidity_gauge_reward_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
+    liquidity_gauge_reward_wrapper_instance.decrease_allowance(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 10),
+    );
 }
 #[test]
 fn test_kill_me() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_reward_wrapper_instance =
         LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-        liquidity_gauge_reward_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
+    liquidity_gauge_reward_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
     liquidity_gauge_reward_wrapper_instance.kill_me(owner);
 }
 #[test]
