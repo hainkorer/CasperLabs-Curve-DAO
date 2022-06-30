@@ -35,13 +35,13 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
     }
     fn last_time_reward_applicable(&self) -> U256 {
         let blocktime: u64 = runtime::get_blocktime().into();
-        return U256::min(U256::from(blocktime), get_period_finish());
+        U256::min(U256::from(blocktime), get_period_finish())
     }
     fn reward_per_token(&self) -> U256 {
         if lp_data::get_total_supply() == 0.into() {
             return get_reward_per_token_stored();
         }
-        return get_reward_per_token_stored()
+        get_reward_per_token_stored()
             .checked_add(
                 self.last_time_reward_applicable()
                     .checked_sub(get_last_update_time())
@@ -53,10 +53,10 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
                     .checked_div(lp_data::get_total_supply())
                     .unwrap_or_revert_with(Error::CurveRewardsDivisionError1),
             )
-            .unwrap_or_revert_with(Error::CurveRewardsAdditionError1);
+            .unwrap_or_revert_with(Error::CurveRewardsAdditionError1)
     }
     fn earned(&self, account: Key) -> U256 {
-        return LPTOKENWRAPPER::balance_of(self, account)
+        LPTOKENWRAPPER::balance_of(self, account)
             .checked_mul(
                 self.reward_per_token()
                     .checked_sub(UserRewardPerTokenPaid::instance().get(&account))
@@ -66,11 +66,11 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
             .checked_div(U256::from(TEN_E_NINE))
             .unwrap_or_revert_with(Error::CurveRewardsDivisionError2)
             .checked_add(Rewards::instance().get(&account))
-            .unwrap_or_revert_with(Error::CurveRewardsAdditionError2);
+            .unwrap_or_revert_with(Error::CurveRewardsAdditionError2)
     }
     fn stake(&mut self, amount: U256) {
         self.update_reward(self.get_caller());
-        if !(amount > 0.into()) {
+        if amount <= 0.into() {
             runtime::revert(ApiError::from(Error::CurveRewardsCannotStake));
         }
         LPTOKENWRAPPER::stake(self, amount);
@@ -78,13 +78,13 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
             self,
             &CurveRewardsEvent::Staked {
                 user: self.get_caller(),
-                amount: amount,
+                amount,
             },
         );
     }
     fn withdraw(&mut self, amount: U256) {
         self.update_reward(self.get_caller());
-        if !(amount > 0.into()) {
+        if amount <= 0.into() {
             runtime::revert(ApiError::from(Error::CurveRewardsCannotWithdraw));
         }
         LPTOKENWRAPPER::withdraw(self, amount);
@@ -92,7 +92,7 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
             self,
             &CurveRewardsEvent::Withdrawn {
                 user: self.get_caller(),
-                amount: amount,
+                amount,
             },
         );
     }
@@ -114,7 +114,7 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
                 self,
                 &CurveRewardsEvent::RewardPaid {
                     user: self.get_caller(),
-                    reward: reward,
+                    reward,
                 },
             );
         }
@@ -154,7 +154,7 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
                 .checked_add(DURATION)
                 .unwrap_or_revert_with(Error::CurveRewardsAdditionError4),
         );
-        CURVEREWARDS::emit(self, &CurveRewardsEvent::RewardAdded { reward: reward });
+        CURVEREWARDS::emit(self, &CurveRewardsEvent::RewardAdded { reward });
     }
 
     fn update_reward(&self, account: Key) {

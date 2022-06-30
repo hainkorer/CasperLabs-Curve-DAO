@@ -24,7 +24,7 @@ pub trait IREWARDDISTRIBUTIONRECIPIENT<Storage: ContractStorage>:
         data::set_package_hash(package_hash);
     }
     fn only_reward_distribution(&self) {
-        if !(self.get_caller() == data::get_reward_distribution()) {
+        if self.get_caller() != data::get_reward_distribution() {
             runtime::revert(ApiError::from(Error::NotRewardDistribution));
         }
     }

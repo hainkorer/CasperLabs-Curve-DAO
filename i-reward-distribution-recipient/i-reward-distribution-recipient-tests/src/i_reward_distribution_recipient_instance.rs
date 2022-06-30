@@ -10,12 +10,13 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct IREWARDDISTRIBUTIONRECIPIENTInstance(TestContract);
-
+//#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 impl IREWARDDISTRIBUTIONRECIPIENTInstance {
     pub fn contract_instance(contract: TestContract) -> IREWARDDISTRIBUTIONRECIPIENTInstance {
         IREWARDDISTRIBUTIONRECIPIENTInstance(contract)
     }
-    pub fn new(env: &TestEnv, contract_name: &str, sender: AccountHash) -> TestContract {
+    pub fn new_deploy(env: &TestEnv, contract_name: &str, sender: AccountHash) -> TestContract {
         TestContract::new(
             env,
             "i-reward-distribution-recipient.wasm",

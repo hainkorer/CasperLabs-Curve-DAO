@@ -143,7 +143,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_lock(1);
         self._transfer(self.get_caller(), _to, _value);
         data::set_lock(0);
-        return Ok(());
+        Ok(())
     }
 
     fn approve(&mut self, spender: Key, _value: U256) {
@@ -181,7 +181,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             .ok_or(Error::RewardOnlyGaugeOverFlow1)
             .unwrap_or_revert();
         self._approve(owner, _spender, new_allowance);
-        return Ok(());
+        Ok(())
     }
 
     fn decrease_allowance(&mut self, _spender: Key, _subtracted_value: U256) -> Result<(), u32> {
@@ -197,7 +197,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             .unwrap_or_revert();
         self._approve(owner, _spender, new_allowance);
 
-        return Ok(());
+        Ok(())
     }
 
     fn transfer_from(&mut self, _from: Key, _to: Key, _value: U256) -> Result<(), u32> {
@@ -218,7 +218,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         }
         self._transfer(_from, _to, _value);
         data::set_lock(0);
-        return Ok(());
+        Ok(())
     }
 
     fn _transfer(&mut self, _from: Key, _to: Key, _value: U256) {
@@ -336,23 +336,19 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::RewardOnlyGaugeLocked1);
         }
         data::set_lock(1);
-        let addr: Key;
-        let receiver: Key;
-        if _addr.is_none() {
-            addr = self.get_caller();
+        let addr: Key = if let Some(..) = _addr {
+            _addr.unwrap()
         } else {
-            addr = _addr.unwrap();
-        }
-        if _receiver.is_none() {
-            receiver = zero_address();
+            self.get_caller()
+        };
+        let receiver: Key = if let Some(..) = _receiver {
+            _receiver.unwrap()
         } else {
-            receiver = _receiver.unwrap();
-        }
-        if receiver != zero_address() {
-            if addr != self.get_caller() {
-                // Reward Only Gauge Cannot Redirect When Claiming For Another User
-                runtime::revert(Error::RewardOnlyGaugeCannotRedirectWhenClaimingForAnotherUser);
-            }
+            zero_address()
+        };
+        if receiver != zero_address() && addr != self.get_caller() {
+            // Reward Only Gauge Cannot Redirect When Claiming For Another User
+            runtime::revert(Error::RewardOnlyGaugeCannotRedirectWhenClaimingForAnotherUser);
         }
         let total_supply = self.total_supply();
         self._checkpoint_rewards(addr, total_supply, true, receiver);
@@ -367,12 +363,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::RewardOnlyGaugeLocked1);
         }
         data::set_lock(1);
-        let claim_rewards: bool;
-        if _claim_rewards.is_none() {
-            claim_rewards = false;
-        } else {
-            claim_rewards = true;
-        }
+        let claim_rewards: bool = !matches!(_claim_rewards, Some(..));
         if _value == 0.into() {
             // Reward Only Gauge Value Is Zero
             runtime::revert(Error::RewardOnlyGaugeValueIsZero1);
@@ -428,18 +419,16 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::RewardOnlyGaugeLocked1);
         }
         data::set_lock(1);
-        let claim_rewards: bool;
-        if _claim_rewards.is_none() {
-            claim_rewards = false;
+        let claim_rewards: bool = if let Some(..) = _claim_rewards {
+            _claim_rewards.unwrap()
         } else {
-            claim_rewards = _claim_rewards.unwrap();
-        }
-        let addr: Key;
-        if _addr.is_none() {
-            addr = self.get_caller();
+            false
+        };
+        let addr: Key = if let Some(..) = _addr {
+            _addr.unwrap()
         } else {
-            addr = _addr.unwrap();
-        }
+            self.get_caller()
+        };
         if _value == 0.into() {
             // Reward Only Gauge Value Is Zero
             runtime::revert(Error::RewardOnlyGaugeValueIsZero2);
@@ -499,8 +488,8 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::RewardOnlyGaugeOnlyAdmin2);
         }
         let mut reward_tokens: Vec<Key> = Vec::new();
-        for i in 0..(_reward_tokens.len()) {
-            reward_tokens.push(Key::from_formatted_str(&_reward_tokens[i]).unwrap());
+        for item in &_reward_tokens {
+            reward_tokens.push(Key::from_formatted_str(item).unwrap());
         }
         let _lp_token = self.lp_token();
         let _current_reward_contract = self.reward_data().address;
@@ -522,9 +511,13 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         let mut reward_data = self.reward_data();
         reward_data.address = _reward_contract;
         data::set_claim_sig(_claim_sig);
-        for i in 0..(MAX_REWARDS.as_usize()) {
+        for (i, item) in reward_tokens
+            .iter()
+            .enumerate()
+            .take(MAX_REWARDS.as_usize())
+        {
             let current_token = self.reward_tokens(i.into());
-            let new_token: Key = reward_tokens[i];
+            let new_token: Key = *item;
 
             if current_token != zero_address() {
                 if current_token != new_token {
@@ -635,17 +628,15 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
                         .unwrap_or_revert()
                         / _total_supply);
                 RewardBalances::instance().set(&token, token_balance);
-                if _user == zero_address() {
-                    if d_i != 0.into() {
-                        let reward_integral = self.reward_integral(token);
-                        RewardIntegral::instance().set(
-                            &token,
-                            reward_integral
-                                .checked_add(d_i)
-                                .ok_or(Error::RewardOnlyGaugeOverFlow2)
-                                .unwrap_or_revert(),
-                        )
-                    }
+                if _user == zero_address() && d_i != 0.into() {
+                    let reward_integral = self.reward_integral(token);
+                    RewardIntegral::instance().set(
+                        &token,
+                        reward_integral
+                            .checked_add(d_i)
+                            .ok_or(Error::RewardOnlyGaugeOverFlow2)
+                            .unwrap_or_revert(),
+                    )
                 }
             }
             let integral = self

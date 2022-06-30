@@ -50,12 +50,11 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
         // _vesting_escrow_simple_contract: Key,
     ) -> Key {
         // data::set_vesting_escrow_simple_contract(_vesting_escrow_simple_contract);
-        let vesting_start: U256;
-        if _vesting_start.is_some() {
-            vesting_start = _vesting_start.unwrap();
+        let vesting_start: U256 = if let Some(..) = _vesting_start {
+            _vesting_start.unwrap()
         } else {
-            vesting_start = U256::from(u64::from(runtime::get_blocktime()));
-        }
+            U256::from(u64::from(runtime::get_blocktime()))
+        };
 
         if self.get_caller() != self.admin() {
             //Vesting Escrow Only Admin
@@ -140,7 +139,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             //     "end_time" => end_time,
             //     "can_disable" => _can_disable},
             // );
-            return Key::from(package_hash);
+            Key::from(package_hash)
         }
     }
 
@@ -151,7 +150,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
         }
         data::set_future_admin(addr);
         self.emit(&VESTINGESCROWFACTORYEvent::CommitOwnership { admin: addr });
-        return true;
+        true
     }
 
     fn apply_transfer_ownership(&mut self) -> bool {
@@ -166,7 +165,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
         }
         data::set_admin(_admin);
         self.emit(&VESTINGESCROWFACTORYEvent::ApplyOwnership { admin: _admin });
-        return true;
+        true
     }
 
     fn admin(&mut self) -> Key {

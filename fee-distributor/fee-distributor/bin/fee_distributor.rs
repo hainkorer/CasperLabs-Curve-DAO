@@ -22,6 +22,7 @@ impl ContractContext<OnChainContractStorage> for FeeDistributor {
 }
 
 impl FEEDISTRIBUTOR<OnChainContractStorage> for FeeDistributor {}
+#[allow(clippy::too_many_arguments)]
 impl FeeDistributor {
     fn constructor(
         &mut self,

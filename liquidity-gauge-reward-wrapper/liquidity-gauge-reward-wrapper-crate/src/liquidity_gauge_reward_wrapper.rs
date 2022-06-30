@@ -206,7 +206,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             runtime::revert(ApiError::from(Error::RewardWrapperUnauthorized));
         }
         self._checkpoint(addr);
-        return true;
+        true
     }
 
     // @notice Get the number of claimable tokens per user
@@ -236,7 +236,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
         let claimable_crv: U256 = ClaimableCrv::instance().get(&addr);
-        return claimable_crv
+        claimable_crv
             .checked_add(balance_of)
             .unwrap_or_revert_with(Error::RewardWrapperAdditionError6)
             .checked_mul(
@@ -245,7 +245,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             )
             .unwrap_or_revert_with(Error::RewardWrapperMultiplyError6)
             .checked_div(U256::from(TEN_E_NINE))
-            .unwrap_or_revert_with(Error::RewardWrapperDivisionError6);
+            .unwrap_or_revert_with(Error::RewardWrapperDivisionError6)
     }
 
     // @notice Get the number of claimable reward tokens per user
@@ -288,7 +288,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let reward_integral_for: U256 = RewardIntegralFor::instance().get(&addr);
         let claimable_rewards: U256 = ClaimableRewards::instance().get(&addr);
-        return claimable_rewards
+        claimable_rewards
             .checked_add(balance_of)
             .unwrap_or_revert_with(Error::RewardWrapperAdditionError8)
             .checked_mul(
@@ -297,7 +297,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             )
             .unwrap_or_revert_with(Error::RewardWrapperMultiplyError8)
             .checked_div(U256::from(TEN_E_NINE))
-            .unwrap_or_revert_with(Error::RewardWrapperDivisionError8);
+            .unwrap_or_revert_with(Error::RewardWrapperDivisionError8)
     }
     fn claim_tokens(&self, addr: Option<Key>) {
         if get_lock() {
@@ -360,10 +360,10 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         if get_is_killed() {
             runtime::revert(ApiError::from(Error::RewardWrapperIsKilled1));
         }
-        if addr != self.get_caller() {
-            if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
-                runtime::revert(ApiError::from(Error::RewardWrapperNotApproved));
-            }
+        if addr != self.get_caller()
+            && !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr))
+        {
+            runtime::revert(ApiError::from(Error::RewardWrapperNotApproved));
         }
         self._checkpoint(addr);
         if value != 0.into() {
@@ -515,7 +515,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     // @param _value The amount to be transferred.
     fn transfer(&mut self, recipient: Key, amount: U256) -> Result<(), u32> {
         self._transfer(self.get_caller(), recipient, amount);
-        return Ok(());
+        Ok(())
     }
     // @dev Transfer tokens from one address to another.
     // @param _from address The address which you want to send tokens from
@@ -533,7 +533,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             );
         }
         self._transfer(owner, recipient, amount);
-        return Ok(());
+        Ok(())
     }
     // @notice Approve the passed address to transfer the specified amount of
     //  tokens on behalf of msg.sender
@@ -550,7 +550,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             self,
             &LiquidityGaugeRewardWrapperEvent::Approval {
                 owner: self.get_caller(),
-                spender: spender,
+                spender,
                 value: amount,
             },
         );
@@ -571,11 +571,11 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             self,
             &LiquidityGaugeRewardWrapperEvent::Approval {
                 owner: self.get_caller(),
-                spender: spender,
+                spender,
                 value: allowance,
             },
         );
-        return Ok(());
+        Ok(())
     }
     // @notice Decrease the allowance granted to `_spender` by the caller
     // @dev This is alternative to {approve} that can be used as a mitigation for
@@ -593,14 +593,14 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             self,
             &LiquidityGaugeRewardWrapperEvent::Approval {
                 owner: self.get_caller(),
-                spender: spender,
+                spender,
                 value: allowance,
             },
         );
-        return Ok(());
+        Ok(())
     }
     fn kill_me(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly1));
         }
         set_is_killed(!get_is_killed());
@@ -609,7 +609,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     /// @notice Transfer ownership of GaugeController to `addr`
     /// @param addr Address to have ownership transferred to
     fn commit_transfer_ownership(&self, addr: Key) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly2));
         }
         set_future_admin(addr);
@@ -621,11 +621,11 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
 
     /// @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly3));
         }
         let admin: Key = get_future_admin();
-        if !(admin != zero_address()) {
+        if admin == zero_address() {
             runtime::revert(ApiError::from(Error::RewardWrapperAdminNotSet));
         }
         set_admin(admin);
@@ -638,7 +638,8 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     fn emit(&self, liquidity_gauge_reward_wrapper_event: &LiquidityGaugeRewardWrapperEvent) {
         let mut events = Vec::new();
         let tmp = get_package_hash().to_formatted_string();
-        let tmp: Vec<&str> = tmp.split("-").collect();
+        let split: char = '-';
+        let tmp: Vec<&str> = tmp.split(split).collect();
         let package_hash = tmp[1].to_string();
         match liquidity_gauge_reward_wrapper_event {
             LiquidityGaugeRewardWrapperEvent::Deposit { provider, value } => {

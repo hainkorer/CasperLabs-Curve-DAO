@@ -9,7 +9,8 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct CURVETOKENV3Instance(TestContract);
-
+//#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 impl CURVETOKENV3Instance {
     pub fn instance(curvetokenv3: TestContract) -> CURVETOKENV3Instance {
         CURVETOKENV3Instance(curvetokenv3)
@@ -40,7 +41,7 @@ impl CURVETOKENV3Instance {
         )
     }
 
-    pub fn new(
+    pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,

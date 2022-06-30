@@ -49,7 +49,7 @@ pub trait OWNABLE<Storage: ContractStorage>: ContractContext<Storage> {
     }
     // @dev Returns the address of the current owner.
     fn owner(&self) -> Key {
-        return data::get_owner();
+        data::get_owner()
     }
     // @dev Throws if called by any account other than the owner.
     fn only_owner(&self) {
@@ -59,7 +59,7 @@ pub trait OWNABLE<Storage: ContractStorage>: ContractContext<Storage> {
     }
     // @dev Returns true if the caller is the current owner.
     fn is_owner(&self) -> bool {
-        return self.get_caller() == data::get_owner();
+        self.get_caller() == data::get_owner()
     }
     // * @dev Leaves the contract without owner. It will not be possible to call
     // * `onlyOwner` functions anymore. Can only be called by the current owner.
@@ -81,12 +81,12 @@ pub trait OWNABLE<Storage: ContractStorage>: ContractContext<Storage> {
         self._transfer_ownership(new_owner);
     }
     fn _transfer_ownership(&mut self, new_owner: Key) {
-        if !(new_owner != data::zero_address()) {
+        if new_owner == data::zero_address() {
             runtime::revert(ApiError::from(Error::OwnableNewOwnerAddressZero));
         }
         self.ownable_emit(&OwnableEvent::OwnershipTransferred {
             previous_owner: data::get_owner(),
-            new_owner: new_owner,
+            new_owner,
         });
         data::set_owner(new_owner);
     }

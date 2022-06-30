@@ -19,7 +19,7 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
             "initial_supply" => U256::from(0),
             "name" => "Token",
             "symbol" => "ERC20",
-            "decimals" => 9 as u8
+            "decimals" => 9_u8
         },
         0,
     )
@@ -84,7 +84,7 @@ fn deploy() -> (
         Key::Hash(voting_escrow.package_hash()),
     );
 
-    let minter: TestContract = MINTERInstance::new(
+    let minter: TestContract = MINTERInstance::new_deploy(
         &env,
         NAME,
         owner,

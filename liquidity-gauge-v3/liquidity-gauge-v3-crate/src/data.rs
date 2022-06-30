@@ -15,10 +15,8 @@ pub const WEEK: U256 = U256([604800, 0, 0, 0]);
 #[allow(non_snake_case)]
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
@@ -81,7 +79,7 @@ impl RewardTokens {
     pub fn get(&self, indx: &U256) -> Key {
         self.dict
             .get(indx.to_string().as_str())
-            .unwrap_or(zero_address())
+            .unwrap_or_else(zero_address)
     }
 
     pub fn set(&self, indx: &U256, value: Key) {

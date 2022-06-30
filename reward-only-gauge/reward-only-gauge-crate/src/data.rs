@@ -300,15 +300,13 @@ pub fn set_reward_data(reward_data: RewardData) {
 }
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 pub fn account_zero_address() -> Key {
     Key::from_formatted_str(
-        "_account-hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap()
 }

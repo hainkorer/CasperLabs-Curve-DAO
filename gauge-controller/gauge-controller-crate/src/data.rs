@@ -47,12 +47,12 @@ impl GaugeTypeNames {
         Dict::init(GAUGE_TYPE_NAMES_DICT)
     }
 
-    pub fn get(&self, key: &U128) -> String {
-        self.dict.get(&key.to_string()).unwrap_or_default()
+    pub fn get(&self, owner: &U128) -> String {
+        self.dict.get(&owner.to_string()).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &U128, value: String) {
-        self.dict.set(&key.to_string(), value);
+    pub fn set(&self, owner: &U128, value: String) {
+        self.dict.set(&owner.to_string(), value);
     }
 }
 
@@ -167,13 +167,13 @@ impl PointsWeight {
         Dict::init(POINTS_WEIGHT_DICT)
     }
 
-    pub fn get(&self, key: &Key, _key: &U256) -> Point {
-        let key_: String = key_and_value_to_str(key, _key);
+    pub fn get(&self, owner: &Key, recipient: &U256) -> Point {
+        let key_: String = key_and_value_to_str(owner, recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &Key, _key: &U256, value: Point) {
-        let key_: String = key_and_value_to_str(key, _key);
+    pub fn set(&self, owner: &Key, recipient: &U256, value: Point) {
+        let key_: String = key_and_value_to_str(owner, recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -193,13 +193,13 @@ impl ChangesWeight {
         Dict::init(CHANGES_WEIGHT_DICT)
     }
 
-    pub fn get(&self, key: &Key, _key: &U256) -> U256 {
-        let key_: String = key_and_value_to_str(key, _key);
+    pub fn get(&self, owner: &Key, recipient: &U256) -> U256 {
+        let key_: String = key_and_value_to_str(owner, recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &Key, _key: &U256, value: U256) {
-        let key_: String = key_and_value_to_str(key, _key);
+    pub fn set(&self, owner: &Key, recipient: &U256, value: U256) {
+        let key_: String = key_and_value_to_str(owner, recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -310,13 +310,13 @@ impl PointsSum {
         Dict::init(POINTS_SUM_DICT)
     }
 
-    pub fn get(&self, key: &U128, _key: &U256) -> Point {
-        let key_: String = values_to_str(&U256::from(key.as_u128()), _key);
+    pub fn get(&self, owner: &U128, recipient: &U256) -> Point {
+        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &U128, _key: &U256, value: Point) {
-        let key_: String = values_to_str(&U256::from(key.as_u128()), _key);
+    pub fn set(&self, owner: &U128, recipient: &U256, value: Point) {
+        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -336,13 +336,13 @@ impl ChangeSum {
         Dict::init(CHANGES_SUM_DICT)
     }
 
-    pub fn get(&self, key: &U128, _key: &U256) -> U256 {
-        let key_: String = values_to_str(&U256::from(key.as_u128()), _key);
+    pub fn get(&self, owner: &U128, recipient: &U256) -> U256 {
+        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &U128, _key: &U256, value: U256) {
-        let key_: String = values_to_str(&U256::from(key.as_u128()), _key);
+    pub fn set(&self, owner: &U128, recipient: &U256, value: U256) {
+        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -362,12 +362,12 @@ impl PointsTotal {
         Dict::init(POINTS_TOTAL_DICT)
     }
 
-    pub fn get(&self, key: &U256) -> U256 {
-        self.dict.get(&key.to_string()).unwrap_or_default()
+    pub fn get(&self, owner: &U256) -> U256 {
+        self.dict.get(&owner.to_string()).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &U256, value: U256) {
-        self.dict.set(&key.to_string(), value);
+    pub fn set(&self, owner: &U256, value: U256) {
+        self.dict.set(&owner.to_string(), value);
     }
 }
 
@@ -386,13 +386,13 @@ impl PointsTypeWeight {
         Dict::init(POINTS_TYPE_WEIGHT_DICT)
     }
 
-    pub fn get(&self, key: &U128, _key: &U256) -> U256 {
-        let key_: String = values_to_str(&U256::from(key.as_u128()), _key);
+    pub fn get(&self, owner: &U128, recipient: &U256) -> U256 {
+        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &U128, _key: &U256, value: U256) {
-        let key_: String = values_to_str(&U256::from(key.as_u128()), _key);
+    pub fn set(&self, owner: &U128, recipient: &U256, value: U256) {
+        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -429,14 +429,12 @@ impl TimeTypeWeight {
 }
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 pub fn account_zero_address() -> Key {
     Key::from_formatted_str(
-        "account-hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap()
 }
@@ -449,7 +447,7 @@ pub fn set_time_total(time_total: U256) {
 }
 
 pub fn admin() -> Key {
-    get_key(ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_admin(admin: Key) {
@@ -457,7 +455,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_admin(future_admin: Key) {
@@ -465,7 +463,7 @@ pub fn set_future_admin(future_admin: Key) {
 }
 
 pub fn token() -> Key {
-    get_key(TOKEN).unwrap_or(zero_address())
+    get_key(TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_token(token: Key) {
@@ -488,7 +486,7 @@ pub fn set_n_gauges(n_gauges: U128) {
 }
 
 pub fn voting_escrow() -> Key {
-    get_key(VOTING_ESCROW).unwrap_or(zero_address())
+    get_key(VOTING_ESCROW).unwrap_or_else(zero_address)
 }
 
 pub fn set_voting_escrow(voting_escrow: Key) {

@@ -77,8 +77,8 @@ fn mint() {
 fn mint_many() {
     let _gauge_addrs: Vec<String> = runtime::get_named_arg("gauge_addrs");
     let mut gauge_addrs: Vec<Key> = Vec::new();
-    for i in 0..(_gauge_addrs.len()) {
-        gauge_addrs.push(Key::from_formatted_str(&_gauge_addrs[i]).unwrap());
+    for _gauge_addr in &_gauge_addrs {
+        gauge_addrs.push(Key::from_formatted_str(_gauge_addr).unwrap());
     }
     Token::default().mint_many(gauge_addrs);
 }

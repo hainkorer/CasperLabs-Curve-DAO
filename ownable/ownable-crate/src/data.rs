@@ -12,10 +12,8 @@ pub const RESULT: &str = "result";
 pub const OWNER: &str = "owner";
 //Zero Address
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
@@ -34,7 +32,7 @@ pub fn set_owner(owner: Key) {
     set_key(OWNER, owner);
 }
 pub fn get_owner() -> Key {
-    get_key(OWNER).unwrap_or(zero_address())
+    get_key(OWNER).unwrap_or_else(zero_address)
 }
 
 pub fn set_hash(contract_hash: ContractHash) {

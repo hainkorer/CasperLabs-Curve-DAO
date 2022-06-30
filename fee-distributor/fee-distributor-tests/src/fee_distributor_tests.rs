@@ -2,7 +2,6 @@ use crate::fee_distributor_instance::FEEDISTRIBUTORInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
-use fee_distributor_crate::data::*;
 
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
@@ -14,7 +13,7 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
             "initial_supply" => U256::from(0),
             "name" => "Token",
             "symbol" => "ERC20",
-            "decimals" => 9 as u8
+            "decimals" => 9_u8
         },
         0,
     )
@@ -43,7 +42,7 @@ fn deploy() -> (TestEnv, AccountHash, FEEDISTRIBUTORInstance, TestContract) {
     let erc20 = deploy_erc20(&env, owner);
     let voting_escrow = deploy_voting_escrow(&env, owner, &erc20);
 
-    let instance = FEEDISTRIBUTORInstance::new(
+    let instance = FEEDISTRIBUTORInstance::new_deploy(
         &env,
         "Fee Distributor",
         owner,
@@ -138,10 +137,11 @@ fn test_claim_js_client() {
 #[test]
 fn test_claim_many() {
     let (env, owner, instance, _) = deploy();
-    let mut receivers: Vec<Key> = Vec::new();
-    receivers.push(Key::Account(env.next_user()));
-    receivers.push(Key::Account(env.next_user()));
-    receivers.push(Key::Account(env.next_user()));
+    let receivers: Vec<Key> = vec![
+        Key::Account(env.next_user()),
+        Key::Account(env.next_user()),
+        Key::Account(env.next_user()),
+    ];
     TestContract::new(
         &env,
         SESSION_CODE_WASM,
@@ -155,19 +155,20 @@ fn test_claim_many() {
         0,
     );
     let ret: bool = env.query_account_named_key(owner, &[CLAIM_MANY.into()]);
-    assert_eq!(ret, true, "Claim should come true");
+    assert!(ret, "Claim should come true");
 }
 
 #[test]
 fn test_claim_many_js_client() {
     let (env, owner, instance, _) = deploy();
-    let mut receivers: Vec<Key> = Vec::new();
-    receivers.push(Key::Account(env.next_user()));
-    receivers.push(Key::Account(env.next_user()));
-    receivers.push(Key::Account(env.next_user()));
+    let receivers: Vec<Key> = vec![
+        Key::Account(env.next_user()),
+        Key::Account(env.next_user()),
+        Key::Account(env.next_user()),
+    ];
     instance.claim_many_js_client(owner, receivers);
     let ret: bool = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, true, "Claim should come true");
+    assert!(ret, "Claim should come true");
 }
 
 #[test]
@@ -187,7 +188,7 @@ fn test_burn() {
         0,
     );
     let ret: bool = env.query_account_named_key(owner, &[BURN.into()]);
-    assert_eq!(ret, true, "Claim should come true");
+    assert!(ret, "Claim should come true");
 }
 
 #[test]
@@ -196,7 +197,7 @@ fn test_burn_js_client() {
     let coin: Key = Key::Hash(erc20.package_hash());
     instance.burn_js_client(owner, coin);
     let ret: bool = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, true, "Burn should come true");
+    assert!(ret, "Burn should come true");
 }
 
 #[test]
@@ -261,7 +262,7 @@ fn test_recover_balance() {
         0,
     );
     let ret: bool = env.query_account_named_key(owner, &[RECOVER_BALANCE.into()]);
-    assert_eq!(ret, true, "Balance recovered should be true");
+    assert!(ret, "Balance recovered should be true");
 }
 
 #[test]
@@ -279,5 +280,5 @@ fn test_recover_balance_js_client() {
     );
     instance.recover_balance_js_client(owner, coin);
     let ret: bool = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, true, "Balance recovered should be true");
+    assert!(ret, "Balance recovered should be true");
 }

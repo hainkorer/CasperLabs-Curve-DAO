@@ -11,10 +11,8 @@ pub const WEEK: U256 = U256([604800, 0, 0, 0]);
 pub const TOKEN_CHECKPOINT_DEADLINE: U256 = U256([86400, 0, 0, 0]);
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 // We cannot really do block numbers per se b/c slope is per time, not per block
@@ -167,7 +165,7 @@ pub fn set_last_token_time(last_token_time: U256) {
 }
 
 pub fn get_voting_escrow() -> Key {
-    get_key(VOTING_ESCROW).unwrap_or(zero_address())
+    get_key(VOTING_ESCROW).unwrap_or_else(zero_address)
 }
 
 pub fn set_voting_escrow(voting_escrow: Key) {
@@ -175,7 +173,7 @@ pub fn set_voting_escrow(voting_escrow: Key) {
 }
 
 pub fn get_token() -> Key {
-    get_key(TOKEN).unwrap_or(zero_address())
+    get_key(TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_token(token: Key) {
@@ -199,7 +197,7 @@ pub fn set_token_last_balance(token_last_balance: U256) {
 }
 
 pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_admin(admin: Key) {
@@ -207,7 +205,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn get_future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_admin(future_admin: Key) {
@@ -223,7 +221,7 @@ pub fn set_can_checkpoint_token(can_checkpoint_token: bool) {
 }
 
 pub fn get_emergency_return() -> Key {
-    get_key(EMERGENCY_RETURN).unwrap_or(zero_address())
+    get_key(EMERGENCY_RETURN).unwrap_or_else(zero_address)
 }
 
 pub fn set_emergency_return(emergency_return: Key) {

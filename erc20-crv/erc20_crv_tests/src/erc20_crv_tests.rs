@@ -6,13 +6,13 @@ use common::keys::*;
 fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let instance = ERC20CRVInstance::new(
+    let instance = ERC20CRVInstance::new_deploy(
         &env,
         "ERC20CRV",
         owner,
         "ERC20CRV".to_string(),
         "erc20_crv".to_string(),
-        u8::from(2 as u8),
+        2_u8,
     );
     (env, owner, instance)
 }
@@ -44,7 +44,7 @@ fn burn() {
     );
 
     let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
-    assert_eq!(ret, true);
+    assert!(ret);
 
     contract.burn(owner, value);
 }
@@ -196,7 +196,7 @@ fn test_mint() {
     );
 
     let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
-    assert_eq!(ret, true);
+    assert!(ret);
 }
 #[test]
 fn test_mint_js_client() {
@@ -207,5 +207,5 @@ fn test_mint_js_client() {
     contract.set_minter(owner, minter);
     contract.mint_js_client(owner, to, value);
     let ret: bool = contract.key_value(RESULT.to_string());
-    assert_eq!(ret, true);
+    assert!(ret);
 }

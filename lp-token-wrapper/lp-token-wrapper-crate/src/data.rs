@@ -9,10 +9,8 @@ pub const TOTAL_SUPPLY: &str = "total_supply";
 pub const RESULT: &str = "result";
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 pub struct Balances {
     dict: Dict,
@@ -41,7 +39,7 @@ pub fn set_uni(uni: Key) {
     set_key(UNI, uni);
 }
 pub fn get_uni() -> Key {
-    get_key(UNI).unwrap_or(zero_address())
+    get_key(UNI).unwrap_or_else(zero_address)
 }
 pub fn set_total_supply(total_supply: U256) {
     set_key(TOTAL_SUPPLY, total_supply);

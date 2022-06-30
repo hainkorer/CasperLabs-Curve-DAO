@@ -6,14 +6,14 @@ use common::keys::*;
 pub const TEN_E_NINE: u128 = 1000000000;
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "erc2020",
         owner,
         runtime_args! {
             "name" => "ERC",
             "symbol" => "ERC20",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 10000000000000)
         },
         0,
@@ -23,7 +23,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let erc20 = deploy_erc20(&env, owner);
-    let lp_token_wrapper_instance = LPTOKENWRAPPERInstance::new(
+    let lp_token_wrapper_instance = LPTOKENWRAPPERInstance::new_deploy(
         &env,
         "LPTOKENWRAPPER",
         owner,
@@ -31,7 +31,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     );
     let lp_token_wrapper_package_hash = Key::Hash(lp_token_wrapper_instance.package_hash());
     // For Minting Purpose
-    let to: Key = Key::from(lp_token_wrapper_package_hash);
+    let to: Key = lp_token_wrapper_package_hash;
     let amount: U256 = U256::from(TEN_E_NINE * 1000000000000);
     erc20.call_contract(
         owner,

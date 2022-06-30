@@ -17,7 +17,7 @@ fn deploy() -> (
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let token: TestContract = ERC20Instance::new(
+    let token: TestContract = ERC20Instance::new_deploy(
         &env,
         NAME,
         owner,
@@ -119,7 +119,7 @@ fn test_erc20_transfer() {
 
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
+        Err(e) => panic!("Transfer Failed ERROR:{}", e),
     }
 }
 
@@ -150,7 +150,7 @@ fn test_erc20_transfer_with_same_sender_and_recipient() {
 
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
+        Err(e) => panic!("Transfer Failed ERROR:{}", e),
     }
 }
 
@@ -184,7 +184,7 @@ fn test_erc20_transfer_from() {
 
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
+        Err(e) => panic!("Transfer Failed ERROR:{}", e),
     }
 }
 
@@ -233,7 +233,7 @@ fn test_erc20_increase_allowance() {
 
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
+        Err(e) => panic!("Increase Allowance Failed ERROR:{}", e),
     }
 }
 
@@ -259,6 +259,6 @@ fn test_erc20_decrease_allowance() {
 
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Decrease Allowance Failed ERROR:{}", e),
+        Err(e) => panic!("Decrease Allowance Failed ERROR:{}", e),
     }
 }

@@ -10,12 +10,18 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct LPTOKENWRAPPERInstance(TestContract);
-
+//#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 impl LPTOKENWRAPPERInstance {
     pub fn contract_instance(contract: TestContract) -> LPTOKENWRAPPERInstance {
         LPTOKENWRAPPERInstance(contract)
     }
-    pub fn new(env: &TestEnv, contract_name: &str, sender: AccountHash, uni: Key) -> TestContract {
+    pub fn new_deploy(
+        env: &TestEnv,
+        contract_name: &str,
+        sender: AccountHash,
+        uni: Key,
+    ) -> TestContract {
         TestContract::new(
             env,
             "lp-token-wrapper.wasm",

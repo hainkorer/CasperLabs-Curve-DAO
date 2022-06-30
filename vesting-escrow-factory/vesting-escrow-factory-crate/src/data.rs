@@ -22,21 +22,19 @@ pub fn set_vesting_escrow_simple_contract(vesting_escrow_simple_contract: Key) {
 }
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 pub fn account_zero_address() -> Key {
     Key::from_formatted_str(
-        "account-hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap()
 }
 
 pub fn admin() -> Key {
-    get_key(ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_admin(admin: Key) {
@@ -44,7 +42,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn target() -> Key {
-    get_key(TARGET).unwrap_or(zero_address())
+    get_key(TARGET).unwrap_or_else(zero_address)
 }
 
 pub fn set_target(value: Key) {
@@ -52,7 +50,7 @@ pub fn set_target(value: Key) {
 }
 
 pub fn future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_admin(future_admin: Key) {
