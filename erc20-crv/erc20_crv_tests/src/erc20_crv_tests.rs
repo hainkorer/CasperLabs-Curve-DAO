@@ -1,9 +1,7 @@
 use crate::erc20_crv_instance::ERC20CRVInstance;
-use casper_types::{
-    account::AccountHash, runtime_args, Key, RuntimeArgs, U256
-};
-use common::keys::*;
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
+use common::keys::*;
 
 fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance) {
     let env = TestEnv::new();

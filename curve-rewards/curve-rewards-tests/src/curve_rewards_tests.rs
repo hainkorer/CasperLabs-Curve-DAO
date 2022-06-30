@@ -1,7 +1,7 @@
 use crate::curve_rewards_instance::CURVEREWARDSInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
-use common::keys::*;
 use casperlabs_test_env::{TestContract, TestEnv};
+use common::keys::*;
 //Const
 pub const TEN_E_NINE: u128 = 1000000000;
 fn deploy_token(env: &TestEnv, owner: AccountHash) -> TestContract {

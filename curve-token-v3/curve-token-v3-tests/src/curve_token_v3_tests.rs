@@ -143,7 +143,7 @@ fn test_transfer_from() {
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
     .unwrap();
-   
+
     token.set_minter(owner, proxy.package_hash().into());
     let _value_arg: U256 = 2000000000.into();
     proxy.mint(owner, proxy.package_hash().into(), _value_arg);
@@ -210,7 +210,6 @@ fn test_decrease_allowance() {
 #[test]
 fn test_burn_from() {
     let (_, token, owner, proxy, _, _) = deploy();
-    
 
     token.set_minter(owner, proxy.package_hash().into());
     let mint_amount: U256 = 2000000000.into();

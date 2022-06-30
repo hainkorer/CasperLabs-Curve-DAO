@@ -1,5 +1,5 @@
 use crate::liquidity_gauge_v3_instance::LIQUIDITYGUAGEV3INSTANCEInstance;
-use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256,U128};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 //Const
 pub const TEN_E_NINE: u128 = 1000000000;
@@ -94,7 +94,7 @@ fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key
     )
 }
 
-fn deploy() -> (TestEnv, AccountHash,TestContract) {
+fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let erc20 = deploy_erc20(&env, owner);
@@ -119,7 +119,7 @@ fn deploy() -> (TestEnv, AccountHash,TestContract) {
         Key::Hash(gauge_controller.package_hash()),
         Key::Hash(erc20_crv.package_hash()),
     );
-   
+
     let liquidity_gauge_v3_instance = LIQUIDITYGUAGEV3INSTANCEInstance::new(
         &env,
         NAME,
@@ -144,7 +144,7 @@ fn deploy() -> (TestEnv, AccountHash,TestContract) {
         runtime_args! {"spender" => to , "amount" => amount},
         0,
     );
-    
+
     erc20_crv.call_contract(
         owner,
         "set_minter",
@@ -186,74 +186,67 @@ fn deploy() -> (TestEnv, AccountHash,TestContract) {
         },
         0,
     );
-    (env, owner,liquidity_gauge_v3_instance)
+    (env, owner, liquidity_gauge_v3_instance)
 }
 
 #[test]
 fn test_deploy() {
-    let (_, _,_) = deploy();
+    let (_, _, _) = deploy();
 }
 #[test]
-fn test_commit_transfer_ownership(){
+fn test_commit_transfer_ownership() {
     let (_, owner, contract) = deploy();
-   let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let addr: Key = Key::Account(owner);
     contract.commit_transfer_ownership(owner, addr);
 }
 #[test]
-fn test_accept_transfer_ownership(){
+fn test_accept_transfer_ownership() {
     let (_, owner, contract) = deploy();
-   let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-   let addr: Key = Key::Account(owner);
-   contract.commit_transfer_ownership(owner, addr);
-   contract.accept_transfer_ownership(owner);
+    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let addr: Key = Key::Account(owner);
+    contract.commit_transfer_ownership(owner, addr);
+    contract.accept_transfer_ownership(owner);
 }
 #[test]
-fn test_set_killed(){
+fn test_set_killed() {
     let (_, owner, contract) = deploy();
-   let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-   let is_killed: bool = true;
-   contract.set_killed(owner, is_killed);
+    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let is_killed: bool = true;
+    contract.set_killed(owner, is_killed);
 }
 #[test]
 fn test_increase_allowance() {
     let (_, owner, contract) = deploy();
-    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
     .unwrap();
-    let amount:U256=50000000.into();
+    let amount: U256 = 50000000.into();
     contract.increase_allowance(owner, spender, amount);
-   
 }
 #[test]
 fn test_decrease_allowance() {
     let (_, owner, contract) = deploy();
-    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
     .unwrap();
-    let approve_amount:U256=500000.into();
-    contract.approve(owner,spender,approve_amount);
-    let amount:U256=100000.into();
+    let approve_amount: U256 = 500000.into();
+    contract.approve(owner, spender, approve_amount);
+    let amount: U256 = 100000.into();
     contract.decrease_allowance(owner, spender, amount);
 }
 #[test]
 fn test_approve() {
     let (_, owner, contract) = deploy();
-    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
     )
     .unwrap();
-    let approve_amount:U256=500000.into();
-    contract.approve(owner,spender,approve_amount);
+    let approve_amount: U256 = 500000.into();
+    contract.approve(owner, spender, approve_amount);
 }
-
-
-
-
-
-

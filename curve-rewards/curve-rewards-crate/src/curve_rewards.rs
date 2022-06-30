@@ -7,12 +7,12 @@ use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
-use common::errors::*;
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use casperlabs_i_reward_distribution_recipient::{
     self, data as reward_distribution, IREWARDDISTRIBUTIONRECIPIENT,
 };
 use casperlabs_lp_token_wrapper::{self, data as lp_data, LPTOKENWRAPPER};
+use common::errors::*;
 
 pub trait CURVEREWARDS<Storage: ContractStorage>:
     ContractContext<Storage> + LPTOKENWRAPPER<Storage> + IREWARDDISTRIBUTIONRECIPIENT<Storage>

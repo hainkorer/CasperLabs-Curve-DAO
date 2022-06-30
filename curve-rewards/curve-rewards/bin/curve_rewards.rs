@@ -11,13 +11,13 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{set_key, ContractContext, OnChainContractStorage};
+use casperlabs_i_reward_distribution_recipient::IREWARDDISTRIBUTIONRECIPIENT;
+use casperlabs_lp_token_wrapper::{data as LpToken, LPTOKENWRAPPER};
+use casperlabs_ownable::OWNABLE;
 use curve_rewards_crate::{
     data::{self, *},
     CURVEREWARDS,
 };
-use casperlabs_i_reward_distribution_recipient::IREWARDDISTRIBUTIONRECIPIENT;
-use casperlabs_lp_token_wrapper::{data as LpToken, LPTOKENWRAPPER};
-use casperlabs_ownable::OWNABLE;
 #[derive(Default)]
 struct CurveRewards(OnChainContractStorage);
 

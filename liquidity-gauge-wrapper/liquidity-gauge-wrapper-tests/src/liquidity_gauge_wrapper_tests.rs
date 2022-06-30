@@ -1,5 +1,5 @@
 use crate::liquidity_gauge_wrapper_instance::LIQUIDITYGAUGEWRAPPERInstance;
-use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256,U128};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 //Const
@@ -94,7 +94,13 @@ fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key
     )
 }
 // Liquidity Gauge V3
-fn deploy_liquidity_gauge_v3(env: &TestEnv, sender: AccountHash,lp_addr:Key, minter: Key, admin: Key) -> TestContract {
+fn deploy_liquidity_gauge_v3(
+    env: &TestEnv,
+    sender: AccountHash,
+    lp_addr: Key,
+    minter: Key,
+    admin: Key,
+) -> TestContract {
     TestContract::new(
         env,
         "liquidity-gauge-v3.wasm",
@@ -134,7 +140,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         Key::Hash(gauge_controller.package_hash()),
         Key::Hash(erc20_crv.package_hash()),
     );
-     let deploy_liquidity_gauge_v3 = deploy_liquidity_gauge_v3(
+    let deploy_liquidity_gauge_v3 = deploy_liquidity_gauge_v3(
         &env,
         owner,
         Key::Hash(erc20.package_hash()),
@@ -202,7 +208,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let _name_1: String = "type1".to_string();
     gauge_controller.call_contract(owner, "add_type", runtime_args! {"_name" => _name_1 }, 0);
     let addr1: Key = Key::Hash(deploy_liquidity_gauge_v3.package_hash());
-    let gauge_type_1:U128 = 1.into();
+    let gauge_type_1: U128 = 1.into();
     gauge_controller.call_contract(
         owner,
         "add_gauge",
@@ -275,7 +281,7 @@ fn test_deposit() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 10 ), None);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 10), None);
 }
 #[test]
 fn test_withdraw() {
@@ -312,7 +318,7 @@ fn test_transfer() {
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
     liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
-    liquidity_gauge_wrapper_instance.transfer(owner, recipient,U256::from(TEN_E_NINE * 10));
+    liquidity_gauge_wrapper_instance.transfer(owner, recipient, U256::from(TEN_E_NINE * 10));
 }
 #[test]
 fn test_transfer_from() {
@@ -321,38 +327,66 @@ fn test_transfer_from() {
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
     liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
-    liquidity_gauge_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
-    liquidity_gauge_wrapper_instance.transfer_from(owner,Key::Account(owner), recipient,0.into());
+    liquidity_gauge_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
+    liquidity_gauge_wrapper_instance.transfer_from(owner, Key::Account(owner), recipient, 0.into());
 }
 #[test]
 fn test_approve() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
+    liquidity_gauge_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
 }
 #[test]
 fn test_increase_allowance() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
-    liquidity_gauge_wrapper_instance.increase_allowance(owner,Key::Account(owner), U256::from(TEN_E_NINE * 10));
+    liquidity_gauge_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
+    liquidity_gauge_wrapper_instance.increase_allowance(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 10),
+    );
 }
 #[test]
 fn test_decrease_allowance() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-        liquidity_gauge_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
-    liquidity_gauge_wrapper_instance.decrease_allowance(owner,Key::Account(owner), U256::from(TEN_E_NINE * 10));
+    liquidity_gauge_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
+    liquidity_gauge_wrapper_instance.decrease_allowance(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 10),
+    );
 }
 #[test]
 fn test_kill_me() {
     let (_, owner, instance) = deploy();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-        liquidity_gauge_wrapper_instance.approve(owner,Key::Account(owner), U256::from(TEN_E_NINE * 100));
+    liquidity_gauge_wrapper_instance.approve(
+        owner,
+        Key::Account(owner),
+        U256::from(TEN_E_NINE * 100),
+    );
     liquidity_gauge_wrapper_instance.kill_me(owner);
 }
 #[test]

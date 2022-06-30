@@ -1,6 +1,6 @@
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
-use common::keys::*;
 use casperlabs_contract_utils::{get_key, set_key, Dict};
+use common::keys::*;
 
 pub const TEN_E_NINE: u128 = 1000000000;
 pub const DURATION: U256 = U256([604800, 0, 0, 0]);

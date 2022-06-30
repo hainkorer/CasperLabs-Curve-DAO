@@ -1,8 +1,8 @@
 use crate::fee_distributor_instance::FEEDISTRIBUTORInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
+use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 use fee_distributor_crate::data::*;
-use casperlabs_test_env::{TestContract, TestEnv};
 
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(

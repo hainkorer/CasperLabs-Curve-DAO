@@ -5,7 +5,8 @@ use blake2::{
     VarBlake2b,
 };
 use casper_types::{
-    account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256, ContractPackageHash,
+    account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
+    RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
 
@@ -210,12 +211,7 @@ impl VESTINGESCROWInstance {
             0,
         );
     }
-    pub fn fund(
-        &self,
-        sender: AccountHash,
-        _recipients: Vec<String>,
-        _amounts: Vec<U256>,
-    ) {
+    pub fn fund(&self, sender: AccountHash, _recipients: Vec<String>, _amounts: Vec<U256>) {
         self.0.call_contract(
             sender,
             "fund",
