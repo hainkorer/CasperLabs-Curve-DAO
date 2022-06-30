@@ -19,7 +19,7 @@ jobs:
           rust-version: stable
           components: clippy
       - name: Build | Lint
-        run: cargo clippy
+        run: make clippy
   compile:
     name: Compile
     runs-on: ubuntu-latest
