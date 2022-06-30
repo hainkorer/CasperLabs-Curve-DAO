@@ -1,59 +1,22 @@
-name: Rust
+name: Rust-Lint
 
 on:
   push:
-    branches:
-      - main
+    branches: '**'
   pull_request:
+    branches: '**'
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  lint:
-    name: Lint
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Setup | Checkout
-        uses: actions/checkout@v2
-      - name: Setup | Rust
-        uses: ATiltedTree/setup-rust@v1
-        with:
-          rust-version: stable
-          components: clippy
-      - name: Build | Lint
-        run: make clippy
-  compile:
-    name: Compile
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup | Checkout
-        uses: actions/checkout@v2
-      - name: Setup | Rust
-        uses: ATiltedTree/setup-rust@v1
-        with:
-          rust-version: stable
-      - name: Build | Compile
-        run: cargo check
-  test:
-    name: Test
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-#           - windows-latest
-#           - macOS-latest
-        rust:
-#           - stable
-#           - beta
-          - nightly
-    runs-on: ${{ matrix.os }}
-    needs: [compile]
-    steps:
-      - name: Setup | Checkout
-        uses: actions/checkout@v2
-      - name: Setup | Rust
-        uses: ATiltedTree/setup-rust@v1
-        with:
-          rust-version: ${{ matrix.rust }}
-      - name: Prepare
-        run: make prepare
-      - name: Build | Compile
-        run: make all
+    - uses: actions/checkout@v3
+    - name: Prepare
+      run: make prepare
+    - name: Run lint
+      run: make check-lint
