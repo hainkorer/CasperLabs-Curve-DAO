@@ -4,8 +4,8 @@ use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::bytesrepr::Bytes;
 use casper_types::{ContractHash, ContractPackageHash, Key, U128, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use common::keys::*;
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
+use common::keys::*;
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
@@ -79,7 +79,9 @@ impl RewardTokens {
     }
 
     pub fn get(&self, indx: &U256) -> Key {
-        self.dict.get(indx.to_string().as_str()).unwrap_or(zero_address())
+        self.dict
+            .get(indx.to_string().as_str())
+            .unwrap_or(zero_address())
     }
 
     pub fn set(&self, indx: &U256, value: Key) {

@@ -11,8 +11,8 @@ use casper_contract::{
 };
 use casper_types::{ApiError, ContractPackageHash, Key, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
 use casperlabs_erc20::{self, data as erc20_data, ERC20};
+use common::errors::*;
 
 pub enum Erc20CrvEvent {
     Transfer {

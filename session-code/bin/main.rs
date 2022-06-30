@@ -73,7 +73,7 @@ pub extern "C" fn call() {
         }
         BALANCE_OF => {
             let addr: Key = runtime::get_named_arg("addr");
-            let t: U256  = runtime::get_named_arg("t");
+            let t: U256 = runtime::get_named_arg("t");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
@@ -100,7 +100,7 @@ pub extern "C" fn call() {
             store(BALANCE_OF_AT, ret);
         }
         TOTAL_SUPPLY => {
-            let t: U256  = runtime::get_named_arg("t");
+            let t: U256 = runtime::get_named_arg("t");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,

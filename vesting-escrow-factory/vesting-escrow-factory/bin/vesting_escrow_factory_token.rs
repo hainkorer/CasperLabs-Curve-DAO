@@ -154,18 +154,7 @@ fn constructor() {
 
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    VESTINGESCROWSIMPLE::init(
-        &Token::default(),
-        admin,
-        token,
-        recipient,
-        amount,
-        start_time,
-        end_time,
-        can_disable,
-        Key::from(contract_hash),
-        package_hash,
-    );
+    VESTINGESCROWSIMPLE::init(&Token::default(), contract_hash, package_hash);
 }
 #[no_mangle]
 fn initialize() {
@@ -176,6 +165,8 @@ fn initialize() {
     let start_time: U256 = runtime::get_named_arg("start_time");
     let end_time: U256 = runtime::get_named_arg("end_time");
     let can_disable: bool = runtime::get_named_arg("can_disable");
+    let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
+    let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     let ret = VESTINGESCROWSIMPLE::initialize(
         &Token::default(),
         admin,
@@ -185,6 +176,8 @@ fn initialize() {
         start_time,
         end_time,
         can_disable,
+        contract_hash,
+        package_hash,
     );
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }

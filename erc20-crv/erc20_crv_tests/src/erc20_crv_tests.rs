@@ -1,10 +1,7 @@
 use crate::erc20_crv_instance::ERC20CRVInstance;
-use casper_types::{
-    account::AccountHash, runtime_args, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
-    U512,
-};
-use common::keys::*;
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
+use common::keys::*;
 
 fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance) {
     let env = TestEnv::new();
@@ -65,13 +62,12 @@ fn test_set_minter() {
 }
 #[test]
 fn test_update_mining_parameters() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     contract.update_mining_parameters(owner);
 }
 #[test]
 fn test_start_epoch_time_write() {
     let (env, owner, contract) = deploy();
-    let addr: Key = Key::Account(env.next_user());
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -88,7 +84,7 @@ fn test_start_epoch_time_write() {
 }
 #[test]
 fn test_start_epoch_time_write_js_client() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     contract.start_epoch_time_write_js_client(owner);
     let ret: U256 = contract.key_value(RESULT.to_string());
     assert_eq!(ret, 100086400.into());
@@ -97,7 +93,6 @@ fn test_start_epoch_time_write_js_client() {
 #[test]
 fn test_future_epoch_time_write() {
     let (env, owner, contract) = deploy();
-    let addr: Key = Key::Account(env.next_user());
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -115,7 +110,7 @@ fn test_future_epoch_time_write() {
 }
 #[test]
 fn test_future_epoch_time_write_js_client() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     contract.future_epoch_time_write_js_client(owner);
     let ret: U256 = contract.key_value(RESULT.to_string());
 
@@ -142,7 +137,7 @@ fn test_available_supply() {
 }
 #[test]
 fn test_available_supply_js_client() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     contract.available_supply_js_client(owner);
     let ret: U256 = contract.key_value(RESULT.to_string());
     assert_eq!(ret, 130303030300u128.into());
@@ -172,7 +167,7 @@ fn test_mintable_in_timeframe() {
 }
 #[test]
 fn test_mintable_in_timeframe_js_client() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     let start: U256 = 50000000.into();
     let end: U256 = 100000000.into();
     contract.mintable_in_timeframe_js_client(owner, start, end);
@@ -205,7 +200,7 @@ fn test_mint() {
 }
 #[test]
 fn test_mint_js_client() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
     let value: U256 = 10.into();
     let minter = Key::from(owner);

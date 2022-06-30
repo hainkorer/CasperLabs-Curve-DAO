@@ -7,8 +7,8 @@ use casper_types::{
     bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U128, U256,
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use common::keys::*;
 use casperlabs_contract_utils::{get_key, key_and_value_to_str, set_key, Dict};
+use common::keys::*;
 
 pub const DEPOSIT_FOR_TYPE: U128 = U128([0, 0]);
 pub const CREATE_LOCK_TYPE: U128 = U128([1, 0]);

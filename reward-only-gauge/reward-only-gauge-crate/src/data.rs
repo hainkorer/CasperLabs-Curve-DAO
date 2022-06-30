@@ -12,8 +12,8 @@ use casper_types::{
     bytesrepr::Bytes, system::CallStackElement, ContractPackageHash, Key, URef, U256,
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use common::keys::*;
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
+use common::keys::*;
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const CLAIM_FREQUENCY: U256 = U256([3600, 0, 0, 0]);

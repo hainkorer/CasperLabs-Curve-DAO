@@ -4,8 +4,8 @@ use casper_types::{
     bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U128, U256,
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use common::keys::*;
 use casperlabs_contract_utils::{get_key, set_key, Dict};
+use common::keys::*;
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
 pub const BOOST_WARMUP: U256 = U256([1209600, 0, 0, 0]);
 pub const WEEK: U256 = U256([604800, 0, 0, 0]);
