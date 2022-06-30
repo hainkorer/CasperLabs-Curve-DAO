@@ -93,27 +93,7 @@ fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key
         0,
     )
 }
-// Liquidity Guage V3
-fn deploy_liquidity_gauge_v3(
-    env: &TestEnv,
-    owner: AccountHash,
-    lp_token: Key,
-    minter: Key,
-    admin:Key,
-) -> TestContract {
-    TestContract::new(
-        &env,
-        "liquidity-gauge-v3.wasm",
-        "Liquidity Guage V3",
-        owner,
-        runtime_args! {
-            "lp_token" => lp_token,
-            "minter" => minter,
-            "admin" => admin
-        },
-        0,
-    )
-}
+
 fn deploy() -> (TestEnv, AccountHash,TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
@@ -215,14 +195,14 @@ fn test_deploy() {
 }
 #[test]
 fn test_commit_transfer_ownership(){
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let addr: Key = Key::Account(owner);
     contract.commit_transfer_ownership(owner, addr);
 }
 #[test]
 fn test_accept_transfer_ownership(){
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
    let addr: Key = Key::Account(owner);
    contract.commit_transfer_ownership(owner, addr);
@@ -230,14 +210,14 @@ fn test_accept_transfer_ownership(){
 }
 #[test]
 fn test_set_killed(){
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
    let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
    let is_killed: bool = true;
    contract.set_killed(owner, is_killed);
 }
 #[test]
 fn test_increase_allowance() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
@@ -249,7 +229,7 @@ fn test_increase_allowance() {
 }
 #[test]
 fn test_decrease_allowance() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
@@ -262,7 +242,7 @@ fn test_decrease_allowance() {
 }
 #[test]
 fn test_approve() {
-    let (env, owner, contract) = deploy();
+    let (_, owner, contract) = deploy();
     let contract= LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),

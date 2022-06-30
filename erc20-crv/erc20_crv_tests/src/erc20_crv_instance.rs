@@ -1,6 +1,6 @@
 use casper_types::{
-    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
-    RuntimeArgs, URef, U256,
+    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key,
+    RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
 

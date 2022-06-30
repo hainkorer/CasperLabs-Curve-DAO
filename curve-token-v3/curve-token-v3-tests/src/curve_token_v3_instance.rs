@@ -1,12 +1,7 @@
 use std::collections::BTreeMap;
-
-use blake2::{
-    digest::{Update, VariableOutput},
-    VarBlake2b,
-};
 use casper_types::{
     account::AccountHash,
-    bytesrepr::{FromBytes, ToBytes},
+    bytesrepr::{FromBytes},
     runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
