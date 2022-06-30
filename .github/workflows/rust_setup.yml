@@ -19,4 +19,4 @@ jobs:
     - name: Prepare
       run: make prepare
     - name: Run lint
-      run: make check-lint
+      run: rustup component add clippy && make check-lint
