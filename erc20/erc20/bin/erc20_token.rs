@@ -26,6 +26,7 @@ impl ContractContext<OnChainContractStorage> for Token {
 }
 
 impl ERC20<OnChainContractStorage> for Token {}
+#[allow(clippy::too_many_arguments)]
 impl Token {
     fn constructor(
         &mut self,

@@ -12,7 +12,7 @@
 //         runtime_args! {
 //             "name" => "ERC",
 //             "symbol" => "ERC20",
-//             "decimals" => 9 as u8,
+//             "decimals" => 9_u8,
 //             "initial_supply" => U256::from(TEN_E_NINE*1000)
 //         },
 //         0,
@@ -39,7 +39,7 @@
 //         .unwrap(),
 //         Key::Hash(erc20.package_hash()),
 //         Key::from_formatted_str(
-//             "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+//             "hash-0000000000000000000000000000000000000000000000000000000000000000"
 //         )
 //         .unwrap(),
 //         1000000000.into(),
@@ -72,7 +72,7 @@
 // fn toggle_disable() {
 //     let (_env, owner, contract, _, _) = deploy();
 //     let recipient: Key = Key::from_formatted_str(
-//         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+//         "hash-0000000000000000000000000000000000000000000000000000000000000000"
 //     )
 //     .unwrap();
 
@@ -87,7 +87,7 @@
 // fn vested_of() {
 //     let (_env, owner, _, proxy, _) = deploy();
 //     let recipient: Key = Key::from_formatted_str(
-//         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+//         "hash-0000000000000000000000000000000000000000000000000000000000000000"
 //     )
 //     .unwrap();
 //     proxy.vested_of(owner, recipient);
@@ -112,7 +112,7 @@
 // fn balance_of() {
 //     let (_env, owner, _, proxy, _) = deploy();
 //     let recipient: Key = Key::from_formatted_str(
-//         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+//         "hash-0000000000000000000000000000000000000000000000000000000000000000"
 //     )
 //     .unwrap();
 //     proxy.balance_of(owner, recipient);
@@ -142,7 +142,7 @@
 // fn claim() {
 //     let (_env, owner, contract, _, erc20) = deploy();
 //     let addr: Key = Key::from_formatted_str(
-//         "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+//         "hash-0000000000000000000000000000000000000000000000000000000000000000"
 //     )
 //     .unwrap();
 //     let to: Key = contract.package_hash().into();

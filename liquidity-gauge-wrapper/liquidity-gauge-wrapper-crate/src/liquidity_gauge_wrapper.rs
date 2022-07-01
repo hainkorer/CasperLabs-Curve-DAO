@@ -138,7 +138,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             runtime::revert(ApiError::from(Error::GaugeWrapperUnauthorized));
         }
         self._checkpoint(addr);
-        return true;
+        true
     }
 
     // @notice Get the number of claimable tokens per user
@@ -168,7 +168,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
         let balance_of: U256 = BalanceOf::instance().get(&addr);
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
         let claimable_crv: U256 = ClaimableCrv::instance().get(&addr);
-        return claimable_crv
+        claimable_crv
             .checked_add(balance_of)
             .unwrap_or_revert_with(Error::GaugeWrapperAdditionError4)
             .checked_mul(
@@ -177,7 +177,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             )
             .unwrap_or_revert_with(Error::GaugeWrapperMultiplyError4)
             .checked_div(U256::from(TEN_E_NINE))
-            .unwrap_or_revert_with(Error::GaugeWrapperDivisionError4);
+            .unwrap_or_revert_with(Error::GaugeWrapperDivisionError4)
     }
     // @notice Claim mintable CR
     // @param addr Address to claim for
@@ -229,10 +229,10 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
         if get_is_killed() {
             runtime::revert(ApiError::from(Error::GaugeWrapperIsKilled1));
         }
-        if addr != self.get_caller() {
-            if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
-                runtime::revert(ApiError::from(Error::GaugeWrapperNotApproved));
-            }
+        if addr != self.get_caller()
+            && !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr))
+        {
+            runtime::revert(ApiError::from(Error::GaugeWrapperNotApproved));
         }
         self._checkpoint(addr);
         if value != 0.into() {
@@ -384,7 +384,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     // @param _value The amount to be transferred.
     fn transfer(&mut self, recipient: Key, amount: U256) -> Result<(), u32> {
         self._transfer(self.get_caller(), recipient, amount);
-        return Ok(());
+        Ok(())
     }
     // @dev Transfer tokens from one address to another.
     // @param _from address The address which you want to send tokens from
@@ -402,7 +402,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             );
         }
         self._transfer(owner, recipient, amount);
-        return Ok(());
+        Ok(())
     }
     // @notice Approve the passed address to transfer the specified amount of
     //  tokens on behalf of msg.sender
@@ -419,7 +419,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             self,
             &LiquidityGaugeWrapperEvent::Approval {
                 owner: self.get_caller(),
-                spender: spender,
+                spender,
                 value: amount,
             },
         );
@@ -440,11 +440,11 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             self,
             &LiquidityGaugeWrapperEvent::Approval {
                 owner: self.get_caller(),
-                spender: spender,
+                spender,
                 value: allowance,
             },
         );
-        return Ok(());
+        Ok(())
     }
     // @notice Decrease the allowance granted to `_spender` by the caller
     // @dev This is alternative to {approve} that can be used as a mitigation for
@@ -462,14 +462,14 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
             self,
             &LiquidityGaugeWrapperEvent::Approval {
                 owner: self.get_caller(),
-                spender: spender,
+                spender,
                 value: allowance,
             },
         );
-        return Ok(());
+        Ok(())
     }
     fn kill_me(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::GaugeWrapperAdminOnly1));
         }
         set_is_killed(!get_is_killed());
@@ -478,7 +478,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     /// @notice Transfer ownership of GaugeController to `addr`
     /// @param addr Address to have ownership transferred to
     fn commit_transfer_ownership(&self, addr: Key) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::GaugeWrapperAdminOnly2));
         }
         set_future_admin(addr);
@@ -490,11 +490,11 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
 
     /// @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::GaugeWrapperAdminOnly3));
         }
         let admin: Key = get_future_admin();
-        if !(admin != zero_address()) {
+        if admin == zero_address() {
             runtime::revert(ApiError::from(Error::GaugeWrapperAdminNotSet));
         }
         set_admin(admin);
@@ -504,7 +504,8 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
     fn emit(&self, liquidity_gauge_wrapper_event: &LiquidityGaugeWrapperEvent) {
         let mut events = Vec::new();
         let tmp = get_package_hash().to_formatted_string();
-        let tmp: Vec<&str> = tmp.split("-").collect();
+        let split: char = '-';
+        let tmp: Vec<&str> = tmp.split(split).collect();
         let package_hash = tmp[1].to_string();
         match liquidity_gauge_wrapper_event {
             LiquidityGaugeWrapperEvent::Deposit { provider, value } => {

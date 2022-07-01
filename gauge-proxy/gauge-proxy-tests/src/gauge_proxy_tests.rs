@@ -1,5 +1,5 @@
-use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
-use casperlabs_test_env::{TestContract, TestEnv};
+use casper_types::{account::AccountHash, Key};
+use casperlabs_test_env::TestEnv;
 
 use crate::gauge_proxy_instance::GAUGEPROXYInstance;
 
@@ -9,13 +9,13 @@ fn deploy() -> (TestEnv, GAUGEPROXYInstance, AccountHash) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let gauge_proxy =
-        GAUGEPROXYInstance::new(&env, NAME, owner, Key::from(owner), Key::from(owner));
+        GAUGEPROXYInstance::new_deploy(&env, NAME, owner, Key::from(owner), Key::from(owner));
     (env, gauge_proxy, owner)
 }
 
 #[test]
 fn test_deploy() {
-    let (env, gauge_proxy, owner) = deploy();
+    let (_env, _gauge_proxy, _owner) = deploy();
 }
 
 #[test]

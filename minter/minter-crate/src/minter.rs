@@ -124,8 +124,8 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::MinterLocked2);
         }
         data::set_lock(1);
-        for i in 0..(gauge_addrs.len()) {
-            self._mint_for(gauge_addrs[i], self.get_caller())
+        for item in &gauge_addrs {
+            self._mint_for(*item, self.get_caller())
         }
         data::set_lock(0);
     }
@@ -136,8 +136,8 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::MinterLocked3);
         }
         data::set_lock(1);
-        let is_allowed = self.allowed_to_mint_for(self.get_caller(), _for);
-        if is_allowed == true {
+        let is_allowed: bool = self.allowed_to_mint_for(self.get_caller(), _for);
+        if is_allowed {
             self._mint_for(gauge_addr, _for)
         }
         data::set_lock(0);

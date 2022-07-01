@@ -14,7 +14,7 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
             "initial_supply" => U256::from(0),
             "name" => "Token",
             "symbol" => "ERC20",
-            "decimals" => 9 as u8
+            "decimals" => 9_u8
         },
         0,
     )
@@ -24,7 +24,7 @@ fn deploy() -> (TestEnv, AccountHash, VOTINGESCROWInstance, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let erc20 = deploy_erc20(&env, owner);
-    let instance = VOTINGESCROWInstance::new(
+    let instance = VOTINGESCROWInstance::new_deploy(
         &env,
         "Voting Escrow",
         owner,

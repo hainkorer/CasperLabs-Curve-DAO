@@ -1,8 +1,6 @@
 use crate::liquidity_gauge_reward_instance::LIQUIDITYGAUGEREWARDInstance;
-use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
-use common::keys::*;
-use liquidity_gauge_reward_crate::data::*;
 
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
@@ -14,7 +12,7 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
             "initial_supply" => U256::from(0),
             "name" => "Token",
             "symbol" => "ERC20",
-            "decimals" => 9 as u8
+            "decimals" => 9_u8
         },
         0,
     )
@@ -29,7 +27,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
         runtime_args! {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
-            "decimal" => 9 as u8,
+            "decimal" => 9_u8,
             "supply" => U256::from(0)
         },
         200000000000,
@@ -147,7 +145,7 @@ fn deploy() -> (
         Key::Hash(deploy_erc20(&env, owner).package_hash()),
         Key::Hash(deploy_erc20(&env, owner).package_hash()),
     );
-    let instance = LIQUIDITYGAUGEREWARDInstance::new(
+    let instance = LIQUIDITYGAUGEREWARDInstance::new_deploy(
         &env,
         "Liquidity Gauge Reward",
         owner,
@@ -174,21 +172,21 @@ fn test_user_checkpoint() {
 
 #[test]
 fn test_claimable_tokens() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     instance.claimable_tokens(owner, addr);
 }
 
 #[test]
 fn test_claimable_reward() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     instance.claimable_reward(owner, addr);
 }
 
 #[test]
 fn test_set_approve_deposit() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     let can_deposit: bool = true;
     instance.set_approve_deposit(owner, addr, can_deposit);
@@ -196,7 +194,7 @@ fn test_set_approve_deposit() {
 
 #[test]
 fn test_deposit() {
-    let (env, owner, instance, erc20) = deploy();
+    let (_env, owner, instance, erc20) = deploy();
     let value: U256 = 100.into();
     erc20.call_contract(
         owner,
@@ -221,7 +219,7 @@ fn test_deposit() {
 
 #[test]
 fn test_withdraw() {
-    let (env, owner, instance, erc20) = deploy();
+    let (_env, owner, instance, erc20) = deploy();
     let claim_rewards: bool = true;
     let value: U256 = 100.into();
     erc20.call_contract(
@@ -248,32 +246,32 @@ fn test_withdraw() {
 
 #[test]
 fn test_claim_rewards() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     instance.claim_rewards(owner, None);
 }
 
 #[test]
 fn test_integrate_checkpoint() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     instance.integrate_checkpoint(owner);
 }
 
 #[test]
 fn test_kill_me() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     instance.kill_me(owner);
 }
 
 #[test]
 fn test_commit_transfer_ownership() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     instance.commit_transfer_ownership(owner, addr);
 }
 
 #[test]
 fn test_apply_transfer_ownership() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(owner);
     instance.commit_transfer_ownership(owner, addr);
     instance.apply_transfer_ownership(owner);
@@ -281,7 +279,7 @@ fn test_apply_transfer_ownership() {
 
 #[test]
 fn test_toggle_external_rewards_claim() {
-    let (env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _) = deploy();
     let val: bool = true;
     instance.toggle_external_rewards_claim(owner, val);
 }

@@ -8,14 +8,14 @@ const SYMBOL: &str = "CRV3";
 pub const TEN_E_NINE: u128 = 1000000000;
 fn deploy_token_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "erc20",
         owner,
         runtime_args! {
             "name" => "Token",
             "symbol" => "TK",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 1000000000000000000)
         },
         0,
@@ -23,14 +23,14 @@ fn deploy_token_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
 }
 fn deploy_reward(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "erc20",
         owner,
         runtime_args! {
             "name" => "Reward",
             "symbol" => "RD",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 1000000000000000000000)
         },
         0,
@@ -43,7 +43,7 @@ fn deploy_curve_rewards(
     reward: Key,
 ) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "curve-rewards.wasm",
         "CURVEREWARDS",
         owner,
@@ -73,7 +73,7 @@ fn deploy() -> (
         Key::Hash(reward.package_hash()),
     );
     let token: TestContract =
-        CURVETOKENV3Instance::new(&env, NAME, owner, NAME.to_string(), SYMBOL.to_string());
+        CURVETOKENV3Instance::new_deploy(&env, NAME, owner, NAME.to_string(), SYMBOL.to_string());
     let test_contract: TestContract =
         CURVETOKENV3Instance::proxy(&env, Key::Hash(token.contract_hash()), owner);
     let test_contract2: TestContract =
@@ -110,20 +110,20 @@ fn test_set_minter() {
 fn test_mint() {
     let (_, token, owner, proxy, _, _) = deploy();
     let _to_arg: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     token.set_minter(owner, proxy.package_hash().into());
     let _value_arg: U256 = 2000000000.into();
     proxy.mint(owner, _to_arg, _value_arg);
     let res: bool = proxy.result();
-    assert_eq!(res, true);
+    assert!(res);
 }
 #[test]
 fn test_transfer() {
     let (_, token, owner, proxy, _, _) = deploy();
     let _to_arg: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     token.set_minter(owner, proxy.package_hash().into());
@@ -133,14 +133,14 @@ fn test_transfer() {
     let res: Result<(), u32> = proxy.result();
     match res {
         Ok(()) => {}
-        Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
+        Err(e) => panic!("Transfer Failed ERROR:{}", e),
     }
 }
 #[test]
 fn test_transfer_from() {
     let (_, token, owner, proxy, proxy2, _) = deploy();
     let to_arg: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
 
@@ -152,14 +152,14 @@ fn test_transfer_from() {
     let res: Result<(), u32> = proxy2.result();
     match res {
         Ok(()) => {}
-        Err(e) => assert!(false, "transfer_from Failed ERROR:{}", e),
+        Err(e) => panic!("transfer_from Failed ERROR:{}", e),
     }
 }
 #[test]
 fn test_approve() {
     let (_, token, owner, proxy, _, _) = deploy();
     let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     token.set_minter(owner, proxy.package_hash().into());
@@ -172,7 +172,7 @@ fn test_approve() {
 fn test_increase_allowance() {
     let (_, token, owner, proxy, _, _) = deploy();
     let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     token.set_minter(owner, proxy.package_hash().into());
@@ -184,14 +184,14 @@ fn test_increase_allowance() {
     let res: Result<(), u32> = proxy.result();
     match res {
         Ok(()) => {}
-        Err(e) => assert!(false, "increase_allowance Failed ERROR:{}", e),
+        Err(e) => panic!("increase_allowance Failed ERROR:{}", e),
     }
 }
 #[test]
 fn test_decrease_allowance() {
     let (_, token, owner, proxy, _, _) = deploy();
     let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     token.set_minter(owner, proxy.package_hash().into());
@@ -204,7 +204,7 @@ fn test_decrease_allowance() {
     let res: Result<(), u32> = proxy.result();
     match res {
         Ok(()) => {}
-        Err(e) => assert!(false, "decrease_allowance Failed ERROR:{}", e),
+        Err(e) => panic!("decrease_allowance Failed ERROR:{}", e),
     }
 }
 #[test]
@@ -217,7 +217,7 @@ fn test_burn_from() {
     proxy.mint(owner, proxy.package_hash().into(), mint_amount);
     proxy.burn_from(owner, proxy.package_hash().into(), burn_amount);
     let res: bool = proxy.result();
-    assert_eq!(res, true);
+    assert!(res);
 }
 #[test]
 fn test_set_name() {

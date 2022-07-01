@@ -1,4 +1,5 @@
-use alloc::{format, string::String};
+use crate::alloc::string::ToString;
+use alloc::string::String;
 use core::convert::TryInto;
 
 use casper_contract::{
@@ -35,17 +36,17 @@ pub fn set_key<T: ToBytes + CLTyped>(name: &str, value: T) {
 }
 
 pub fn self_hash_key() -> String {
-    format!("self_hash")
+    "self_hash".to_string()
 }
 
 pub fn self_package_key() -> String {
-    format!("package_hash")
+    "package_hash".to_string()
 }
 
 pub fn vesting_escrow_simple_key() -> String {
-    format!("sbnb")
+    "sbnb".to_string()
 }
 
 pub fn result_key() -> String {
-    format!("result")
+    "result".to_string()
 }

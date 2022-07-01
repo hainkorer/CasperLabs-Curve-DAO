@@ -14,6 +14,7 @@ use casper_types::{
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
 
+#[allow(clippy::too_many_arguments)]
 pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Contract constructor
     /// @param lp_addr Liquidity Pool contract address
@@ -31,13 +32,13 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-        if !(lp_addr != zero_address()) {
+        if lp_addr == zero_address() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardZeroAddress1));
         }
-        if !(minter != zero_address()) {
+        if minter == zero_address() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardZeroAddress2));
         }
-        if !(reward_contract != zero_address()) {
+        if reward_contract == zero_address() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardZeroAddress3));
         }
 
@@ -505,12 +506,12 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         if !(ret == 0.into() || t_ve > t_last) {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardKickNotAllowed1));
         }
-        if !(WorkingBalances::instance().get(&addr)
-            > balance
+        if WorkingBalances::instance().get(&addr)
+            <= balance
                 .checked_mul(TOKENLESS_PRODUCTION)
                 .unwrap_or_revert()
                 .checked_div(100.into())
-                .unwrap_or_revert())
+                .unwrap_or_revert()
         {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardKickNotNeeded2));
         }
@@ -538,10 +539,10 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             None => self.get_caller(),
         };
 
-        if addr != self.get_caller() {
-            if !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr)) {
-                runtime::revert(ApiError::from(Error::LiquidityGaugeRewardNotApproved));
-            }
+        if addr != self.get_caller()
+            && !(ApprovedToDeposit::instance().get(&self.get_caller(), &addr))
+        {
+            runtime::revert(ApiError::from(Error::LiquidityGaugeRewardNotApproved));
         }
         self._checkpoint(addr, true);
         if value != 0.into() {
@@ -666,7 +667,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     }
 
     fn kill_me(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminOnly1));
         }
         set_is_killed(!get_is_killed());
@@ -675,7 +676,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     /// @notice Transfer ownership of GaugeController to `addr`
     /// @param addr Address to have ownership transferred to
     fn commit_transfer_ownership(&self, addr: Key) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminOnly2));
         }
         set_future_admin(addr);
@@ -687,11 +688,11 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
 
     /// @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminOnly3));
         }
         let admin: Key = get_future_admin();
-        if !(admin != zero_address()) {
+        if admin == zero_address() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminNotSet));
         }
         set_admin(admin);
@@ -700,7 +701,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
 
     /// @notice Switch claiming rewards on/off. This is to prevent a malicious rewards contract from preventing CRV claiming
     fn toggle_external_rewards_claim(&self, val: bool) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardAdminOnly4));
         }
         set_is_claiming_rewards(val);
@@ -709,7 +710,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
     fn emit(&self, liquidity_gauge_reward_event: &LiquidityGaugeRewardEvent) {
         let mut events = Vec::new();
         let tmp = get_package_hash().to_formatted_string();
-        let tmp: Vec<&str> = tmp.split("-").collect();
+        let split: char = '-';
+        let tmp: Vec<&str> = tmp.split(split).collect();
         let package_hash = tmp[1].to_string();
         match liquidity_gauge_reward_event {
             LiquidityGaugeRewardEvent::Deposit { provider, value } => {

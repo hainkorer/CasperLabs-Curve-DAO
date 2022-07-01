@@ -8,14 +8,14 @@ const NAME: &str = "LiquidityGuageWrapper";
 //ERC20
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "rewarded_token",
         owner,
         runtime_args! {
             "name" => "rewarded_token",
             "symbol" => "ERA",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
         0,
@@ -31,7 +31,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
         runtime_args! {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
-            "decimal" => 9 as u8,
+            "decimal" => 9_u8,
             "supply" => U256::from(TEN_E_NINE * 10000000000000000)
         },
         200000000000,
@@ -147,7 +147,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         Key::Hash(minter.package_hash()),
         Key::Account(owner),
     );
-    let liquidity_gauge_wrapper_instance = LIQUIDITYGAUGEWRAPPERInstance::new(
+    let liquidity_gauge_wrapper_instance = LIQUIDITYGAUGEWRAPPERInstance::new_deploy(
         &env,
         NAME,
         owner,

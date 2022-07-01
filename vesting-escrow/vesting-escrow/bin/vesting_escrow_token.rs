@@ -25,8 +25,8 @@ impl ContractContext<OnChainContractStorage> for Token {
         &self.0
     }
 }
-
 impl VESTINGESCROW<OnChainContractStorage> for Token {}
+#[allow(clippy::too_many_arguments)]
 impl Token {
     fn constructor(
         &mut self,

@@ -14,7 +14,8 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct MINTERInstance(TestContract);
-
+// //#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 impl MINTERInstance {
     pub fn instance(minter: TestContract) -> MINTERInstance {
         MINTERInstance(minter)
@@ -133,7 +134,7 @@ impl MINTERInstance {
             0,
         )
     }
-    pub fn new(
+    pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
@@ -161,7 +162,7 @@ impl MINTERInstance {
             runtime_args! {
                 "name" => "CRV",
                 "symbol" => "ERC20CRV",
-                "decimal" => 9 as u8,
+                "decimal" => 9_u8,
                 "supply" => U256::from(0)
             },
             200000000000,

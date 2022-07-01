@@ -7,14 +7,14 @@ const NAME: &str = "LiquidityGaugeV3";
 //ERC20
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "rewarded_token",
         owner,
         runtime_args! {
             "name" => "rewarded_token",
             "symbol" => "ERA",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
         0,
@@ -30,7 +30,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
         runtime_args! {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
-            "decimal" => 9 as u8,
+            "decimal" => 9_u8,
             "supply" => U256::from(TEN_E_NINE * 10000000000000000)
         },
         200000000000,
@@ -120,7 +120,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         Key::Hash(erc20_crv.package_hash()),
     );
 
-    let liquidity_gauge_v3_instance = LIQUIDITYGUAGEV3INSTANCEInstance::new(
+    let liquidity_gauge_v3_instance = LIQUIDITYGUAGEV3INSTANCEInstance::new_deploy(
         &env,
         NAME,
         owner,
@@ -220,7 +220,7 @@ fn test_increase_allowance() {
     let (_, owner, contract) = deploy();
     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     let amount: U256 = 50000000.into();
@@ -231,7 +231,7 @@ fn test_decrease_allowance() {
     let (_, owner, contract) = deploy();
     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     let approve_amount: U256 = 500000.into();
@@ -244,7 +244,7 @@ fn test_approve() {
     let (_, owner, contract) = deploy();
     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
     let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000".into(),
+        "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
     let approve_amount: U256 = 500000.into();

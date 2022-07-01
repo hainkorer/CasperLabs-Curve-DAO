@@ -28,7 +28,7 @@ fn deploy() -> (
         DECIMALS,
         INIT_TOTAL_SUPPLY.into(),
     );
-    let vesting_escrow_factory_instance: TestContract = VESTINGESCROWFACTORYInstance::new(
+    let vesting_escrow_factory_instance: TestContract = VESTINGESCROWFACTORYInstance::new_deploy(
         &env,
         NAME,
         owner,
@@ -88,7 +88,7 @@ fn test_accept_transfer_ownership() {
 #[test]
 fn test_deploy_vesting_contract() {
     let (env, vesting_escrow_factory_instance, target, owner) = deploy();
-    let user = env.next_user();
+    let _user = env.next_user();
     assert_eq!(vesting_escrow_factory_instance.admin(), Key::from(owner));
     assert_eq!(
         vesting_escrow_factory_instance.target(),

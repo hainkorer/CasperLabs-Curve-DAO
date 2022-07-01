@@ -7,10 +7,8 @@ use common::keys::*;
 
 pub const TEN_E_NINE: u128 = 1000000000;
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 pub struct Allowances {
     dict: Dict,
@@ -159,7 +157,7 @@ pub fn set_decimals(decimals: u8) {
 }
 
 pub fn get_minter() -> Key {
-    get_key(MINTER).unwrap_or(zero_address())
+    get_key(MINTER).unwrap_or_else(zero_address)
 }
 
 pub fn set_minter(minter: Key) {
@@ -167,7 +165,7 @@ pub fn set_minter(minter: Key) {
 }
 
 pub fn get_crv_token() -> Key {
-    get_key(CRV_TOKEN).unwrap_or(zero_address())
+    get_key(CRV_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_crv_token(crv_token: Key) {
@@ -175,14 +173,14 @@ pub fn set_crv_token(crv_token: Key) {
 }
 
 pub fn get_lp_token() -> Key {
-    get_key(LP_TOKEN).unwrap_or(zero_address())
+    get_key(LP_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_lp_token(lp_token: Key) {
     set_key(LP_TOKEN, lp_token);
 }
 pub fn get_gauge() -> Key {
-    get_key(GAUGE).unwrap_or(zero_address())
+    get_key(GAUGE).unwrap_or_else(zero_address)
 }
 
 pub fn set_gauge(gauge: Key) {
@@ -204,7 +202,7 @@ pub fn set_crv_integral(crv_integral: U256) {
     set_key(CRV_INTEGRAL, crv_integral);
 }
 pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_admin(admin: Key) {
@@ -212,7 +210,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn get_future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_admin(future_admin: Key) {

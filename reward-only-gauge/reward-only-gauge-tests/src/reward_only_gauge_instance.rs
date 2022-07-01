@@ -28,7 +28,8 @@ pub struct RewardData {
     pub time_stamp: U256,
 }
 pub struct REWARDONLYGAUGEInstance(TestContract);
-
+//#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 impl REWARDONLYGAUGEInstance {
     pub fn instance(reward_only_gauge: TestContract) -> REWARDONLYGAUGEInstance {
         REWARDONLYGAUGEInstance(reward_only_gauge)
@@ -56,7 +57,7 @@ impl REWARDONLYGAUGEInstance {
         )
     }
 
-    pub fn new(
+    pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,

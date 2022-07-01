@@ -1,14 +1,15 @@
 use casper_types::{
     account::AccountHash,
     bytesrepr::{Bytes, FromBytes},
-    runtime_args, CLTyped, Key, RuntimeArgs, U256,
+    runtime_args, CLTyped, Key, RuntimeArgs,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct GAUGEPROXYInstance(TestContract);
-
+//#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 impl GAUGEPROXYInstance {
-    pub fn new(
+    pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,

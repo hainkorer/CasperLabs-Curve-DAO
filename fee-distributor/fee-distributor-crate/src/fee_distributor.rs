@@ -13,7 +13,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
-
+#[allow(clippy::too_many_arguments)]
 pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Contract constructor
     /// @param _voting_escrow VotingEscrow contract address
@@ -105,29 +105,28 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                     );
                 }
                 break;
+            } else if since_last == 0.into() && next_week == t {
+                TokensPerWeek::instance().set(
+                    &this_week,
+                    TokensPerWeek::instance()
+                        .get(&this_week)
+                        .checked_add(to_distribute)
+                        .unwrap_or_revert(),
+                );
             } else {
-                if since_last == 0.into() && next_week == t {
-                    TokensPerWeek::instance().set(
-                        &this_week,
-                        TokensPerWeek::instance()
-                            .get(&this_week)
-                            .checked_add(to_distribute)
-                            .unwrap_or_revert(),
-                    );
-                } else {
-                    TokensPerWeek::instance().set(
-                        &this_week,
-                        TokensPerWeek::instance()
-                            .get(&this_week)
-                            .checked_add(to_distribute)
-                            .unwrap_or_revert()
-                            .checked_mul(next_week.checked_sub(t).unwrap_or_revert())
-                            .unwrap_or_revert()
-                            .checked_div(since_last)
-                            .unwrap_or_revert(),
-                    );
-                }
+                TokensPerWeek::instance().set(
+                    &this_week,
+                    TokensPerWeek::instance()
+                        .get(&this_week)
+                        .checked_add(to_distribute)
+                        .unwrap_or_revert()
+                        .checked_mul(next_week.checked_sub(t).unwrap_or_revert())
+                        .unwrap_or_revert()
+                        .checked_div(since_last)
+                        .unwrap_or_revert(),
+                );
             }
+
             t = next_week;
             this_week = next_week;
         }
@@ -599,7 +598,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _coin Address of the coin being received (must be 3CRV)
     /// @return bool success
     fn burn(&self, coin: Key) -> bool {
-        if !(coin == get_token()) {
+        if coin != get_token() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidCoin1));
         }
         if get_is_killed() {
@@ -642,7 +641,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Commit transfer of ownership
     /// @param _addr New admin address
     fn commit_admin(&self, addr: Key) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorAccessDenied));
         }
         set_future_admin(addr);
@@ -651,10 +650,10 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
 
     /// @notice Apply transfer of ownership
     fn apply_admin(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin1));
         }
-        if !(get_future_admin() != zero_address()) {
+        if get_future_admin() == zero_address() {
             runtime::revert(ApiError::from(Error::FeeDistributorZeroFutureAdmin));
         }
         let future_admin: Key = get_future_admin();
@@ -669,7 +668,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
 
     /// @notice Toggle permission for checkpointing by any account
     fn toggle_allow_checkpoint_token(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin2));
         }
         let flag: bool = !get_can_checkpoint_token();
@@ -684,7 +683,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @dev Killing transfers the entire 3CRV balance to the emergency return address
     ///     and blocks the ability to claim or burn. The contract cannot be unkilled.
     fn kill_me(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin3));
         }
         set_is_killed(true);
@@ -716,10 +715,10 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _coin Token address
     /// @return bool success
     fn recover_balance(&self, coin: Key) -> bool {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin4));
         }
-        if !(coin == get_token()) {
+        if coin != get_token() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidCoin2));
         }
         let amount: U256 = runtime::call_versioned_contract(
@@ -748,7 +747,8 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     fn emit(&self, fee_distributor_event: &FeeDistributorEvent) {
         let mut events = Vec::new();
         let tmp = get_package_hash().to_formatted_string();
-        let tmp: Vec<&str> = tmp.split("-").collect();
+        let split: char = '-';
+        let tmp: Vec<&str> = tmp.split(split).collect();
         let package_hash = tmp[1].to_string();
         match fee_distributor_event {
             FeeDistributorEvent::CommitAdmin { admin } => {

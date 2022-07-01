@@ -4,12 +4,13 @@ use casper_types::{
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct LIQUIDITYGAUGEWRAPPERInstance(TestContract);
-
+//#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 impl LIQUIDITYGAUGEWRAPPERInstance {
     pub fn contract_instance(contract: TestContract) -> LIQUIDITYGAUGEWRAPPERInstance {
         LIQUIDITYGAUGEWRAPPERInstance(contract)
     }
-    pub fn new(
+    pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,

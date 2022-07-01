@@ -19,10 +19,8 @@ pub const MAXTIME: U256 = U256([126144000, 0, 0, 0]); // 4 years
 pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 // We cannot really do block numbers per se b/c slope is per time, not per block
@@ -59,12 +57,12 @@ impl Locked {
         Dict::init(LOCKED)
     }
 
-    pub fn get(&self, key: &Key) -> LockedBalance {
-        self.dict.get_by_key(key).unwrap_or_default()
+    pub fn get(&self, owner: &Key) -> LockedBalance {
+        self.dict.get_by_key(owner).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &Key, value: LockedBalance) {
-        self.dict.set_by_key(key, value);
+    pub fn set(&self, owner: &Key, value: LockedBalance) {
+        self.dict.set_by_key(owner, value);
     }
 }
 
@@ -85,13 +83,13 @@ impl UserPointHistory {
         Dict::init(USER_POINT_HISTORY)
     }
 
-    pub fn get(&self, key: &Key, _key: &U256) -> Point {
-        let key_: String = key_and_value_to_str(key, _key);
+    pub fn get(&self, owner: &Key, recipient: &U256) -> Point {
+        let key_: String = key_and_value_to_str(owner, recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &Key, _key: &U256, value: Point) {
-        let key_: String = key_and_value_to_str(key, _key);
+    pub fn set(&self, owner: &Key, recipient: &U256, value: Point) {
+        let key_: String = key_and_value_to_str(owner, recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -113,12 +111,12 @@ impl UserPointEpoch {
         Dict::init(USER_POINT_EPOCH)
     }
 
-    pub fn get(&self, key: &Key) -> U256 {
-        self.dict.get_by_key(key).unwrap_or_default()
+    pub fn get(&self, owner: &Key) -> U256 {
+        self.dict.get_by_key(owner).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &Key, value: U256) {
-        self.dict.set_by_key(key, value);
+    pub fn set(&self, owner: &Key, value: U256) {
+        self.dict.set_by_key(owner, value);
     }
 }
 
@@ -139,12 +137,14 @@ impl SlopeChanges {
         Dict::init(SLOPE_CHANGES)
     }
 
-    pub fn get(&self, key: &U256) -> U128 {
-        self.dict.get(key.to_string().as_str()).unwrap_or_default()
+    pub fn get(&self, owner: &U256) -> U128 {
+        self.dict
+            .get(owner.to_string().as_str())
+            .unwrap_or_default()
     }
 
-    pub fn set(&self, key: &U256, value: U128) {
-        self.dict.set(key.to_string().as_str(), value);
+    pub fn set(&self, owner: &U256, value: U128) {
+        self.dict.set(owner.to_string().as_str(), value);
     }
 }
 
@@ -182,7 +182,7 @@ impl PointHistory {
 }
 
 pub fn get_token() -> Key {
-    get_key(TOKEN).unwrap_or(zero_address())
+    get_key(TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_token(token: Key) {
@@ -198,7 +198,7 @@ pub fn set_supply(supply: U256) {
 }
 
 pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_admin(admin: Key) {
@@ -206,7 +206,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn get_future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_admin(future_admin: Key) {
@@ -214,7 +214,7 @@ pub fn set_future_admin(future_admin: Key) {
 }
 
 pub fn get_controller() -> Key {
-    get_key(CONTROLLER).unwrap_or(zero_address())
+    get_key(CONTROLLER).unwrap_or_else(zero_address)
 }
 
 pub fn set_controller(controller: Key) {
