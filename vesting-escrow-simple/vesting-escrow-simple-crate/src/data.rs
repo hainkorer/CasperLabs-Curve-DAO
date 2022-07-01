@@ -138,7 +138,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or_revert()
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 pub fn set_future_admin(future_admin: Key) {
     set_key(FUTURE_ADMIN, future_admin);
