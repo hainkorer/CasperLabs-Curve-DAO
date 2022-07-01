@@ -1,5 +1,6 @@
 [![Rust](https://github.com/Scytalelabs-official/CasperLabs-Curve-DAO/actions/workflows/rust.yml/badge.svg)](https://github.com/Scytalelabs-official/CasperLabs-Curve-DAO/actions/workflows/rust.yml)
 [![Rust-Lint](https://github.com/Scytalelabs-official/CasperLabs-Curve-DAO/actions/workflows/rust_setup.yml/badge.svg?branch=check-lint)](https://github.com/Scytalelabs-official/CasperLabs-Curve-DAO/actions/workflows/rust_setup.yml)
+
 # CasperLabs-Curve-DAO
 
 Implementation of following contracts for the CasperLabs platform.
