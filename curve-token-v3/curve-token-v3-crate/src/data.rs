@@ -120,7 +120,6 @@ pub fn set_token(token: Key) {
 pub fn set_hash(contract_hash: Key) {
     set_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH, contract_hash);
 }
-
 pub fn get_hash() -> Key {
     get_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH).unwrap_or_revert()
 }

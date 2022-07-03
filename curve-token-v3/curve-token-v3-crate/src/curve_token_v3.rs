@@ -40,19 +40,6 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     fn decimals(&self) -> U256 {
         9.into()
     }
-
-    // @dev set minter for a specified address
-    // @param _minter The address to assign minter role.
-    fn set_minter(&self, _minter: Key) {
-        if self.get_caller() != get_minter() {
-            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterCanSet));
-        }
-        set_minter(_minter);
-    }
-    fn get_total_supply_crv3(&self) -> U256 {
-        get_total_supply()
-    }
-
     // @dev Transfer token for a specified address
     // @param recipient The address to transfer to.
     // @param amount The amount to be transferred.
@@ -80,7 +67,6 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         });
         Ok(())
     }
-
     // @dev Transfer tokens from one address to another.
     //  @param  owner address The address which you want to send tokens from
     //  @param recipient address The address which you want to transfer to
@@ -121,8 +107,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
 
         Ok(())
     }
-
-    // @notice Approve the passed address to transfer the specified amount of
+     // @notice Approve the passed address to transfer the specified amount of
     //         tokens on behalf of self.get_caller
     // @dev Beware that changing an allowance via this method brings the risk
     //      that someone may use both the old and new allowance by unfortunate
@@ -138,67 +123,6 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
             spender,
             value: amount,
         });
-    }
-
-    // @dev mint an amount of the token and assigns it to an account.
-    //      This encapsulates the modification of balances such that the
-    //      proper events are emitted.
-    // @param _to The account that will receive the created tokens.
-    // @param _value The amount that will be created.
-    fn mint(&self, _to: Key, _value: U256) -> bool {
-        if self.get_caller() != get_minter() {
-            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed));
-        }
-        set_total_supply(
-            get_total_supply()
-                .checked_add(_value)
-                .ok_or(Error::CurveTokenV3OverFlow3)
-                .unwrap_or_revert(),
-        );
-        Balances::instance().set(
-            &_to,
-            Balances::instance()
-                .get(&_to)
-                .checked_add(_value)
-                .ok_or(Error::CurveTokenV3OverFlow4)
-                .unwrap_or_revert(),
-        );
-        self.curve_token_v3_emit(&CurveTokenV3Event::Transfer {
-            from: zero_address(),
-            to: _to,
-            value: _value,
-        });
-        true
-    }
-
-    // @dev Burn an amount of the token from a given account.
-    // @param _to The account whose tokens will be burned.
-    // @param _value The amount that will be burned.
-    // @return bool success
-    fn burn_from(&self, _to: Key, _value: U256) -> bool {
-        if self.get_caller() != get_minter() {
-            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed2));
-        }
-        set_total_supply(
-            get_total_supply()
-                .checked_sub(_value)
-                .ok_or(Error::CurveTokenV3UnderFlow5)
-                .unwrap_or_revert(),
-        );
-        Balances::instance().set(
-            &_to,
-            Balances::instance()
-                .get(&_to)
-                .checked_sub(_value)
-                .ok_or(Error::CurveTokenV3UnderFlow6)
-                .unwrap_or_revert(),
-        );
-        self.curve_token_v3_emit(&CurveTokenV3Event::Transfer {
-            from: _to,
-            to: zero_address(),
-            value: _value,
-        });
-        true
     }
     // @notice Increase the allowance granted to `spender` by the caller
     // @dev This is alternative to {approve} that can be used as a mitigation for
@@ -220,7 +144,6 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         });
         Ok(())
     }
-
     // @notice Decrease the allowance granted to `spender` by the caller
     // @dev This is alternative to {approve} that can be used as a mitigation for
     //      the potential race condition
@@ -241,10 +164,78 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         });
         Ok(())
     }
+     // @dev mint an amount of the token and assigns it to an account.
+    //      This encapsulates the modification of balances such that the
+    //      proper events are emitted.
+    // @param to The account that will receive the created tokens.
+    // @param value The amount that will be created.
+    fn mint(&self, to: Key, value: U256) -> bool {
+        if self.get_caller() != get_minter() {
+            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed));
+        }
+        set_total_supply(
+            get_total_supply()
+                .checked_add(value)
+                .ok_or(Error::CurveTokenV3OverFlow3)
+                .unwrap_or_revert(),
+        );
+        Balances::instance().set(
+            &to,
+            Balances::instance()
+                .get(&to)
+                .checked_add(value)
+                .ok_or(Error::CurveTokenV3OverFlow4)
+                .unwrap_or_revert(),
+        );
+        self.curve_token_v3_emit(&CurveTokenV3Event::Transfer {
+            from: zero_address(),
+            to: to,
+            value: value,
+        });
+        true
+    }
+    // @dev Burn an amount of the token from a given account.
+    // @param _to The account whose tokens will be burned.
+    // @param _value The amount that will be burned.
+    // @return bool success
+    fn burn_from(&self, to: Key, value: U256) -> bool {
+        if self.get_caller() != get_minter() {
+            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed2));
+        }
+        set_total_supply(
+            get_total_supply()
+                .checked_sub(value)
+                .ok_or(Error::CurveTokenV3UnderFlow5)
+                .unwrap_or_revert(),
+        );
+        Balances::instance().set(
+            &to,
+            Balances::instance()
+                .get(&to)
+                .checked_sub(value)
+                .ok_or(Error::CurveTokenV3UnderFlow6)
+                .unwrap_or_revert(),
+        );
+        self.curve_token_v3_emit(&CurveTokenV3Event::Transfer {
+            from: to,
+            to: zero_address(),
+            value: value,
+        });
+        true
+    }
 
+
+    // @dev set minter for a specified address
+    // @param _minter The address to assign minter role.
+    fn set_minter(&self, minter: Key) {
+        if self.get_caller() != get_minter() {
+            runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterCanSet));
+        }
+        set_minter(minter);
+    }
     // @dev set name and symbol
     // @param _name.
-    fn set_name(&self, _name: String, _symbol: String) {
+    fn set_name(&self, name: String, symbol: String) {
         if self.get_caller()
             != runtime::call_versioned_contract(
                 get_minter().into_hash().unwrap_or_revert().into(),
@@ -255,9 +246,10 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         {
             runtime::revert(ApiError::from(Error::CurveTokenV3NotAuthorized));
         }
-        set_name(_name);
-        set_symbol(_symbol);
+        set_name(name);
+        set_symbol(symbol);
     }
+    
     fn curve_token_v3_emit(&self, curve_token_v3_event: &CurveTokenV3Event) {
         let mut events = Vec::new();
         let package = get_package_hash();
