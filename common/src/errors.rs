@@ -296,7 +296,7 @@ pub enum Error {
     CurveTokenV3UnderFlow8 = 10519,
     /// 65,538 for (Curve Token V3 Under Flow9)
     CurveTokenV3UnderFlow9 = 10520,
-    //FeeDistributor
+    // FeeDistributor
     FeeDistributorInvalidTokenCheckpointUpdate = 10601,
     /// 65,538 for (Fee Distributor Killed1)
     FeeDistributorKilled1 = 10602,
@@ -324,7 +324,124 @@ pub enum Error {
     FeeDistributorInvalidAdmin3 = 10613,
     /// 65,538 for (Fee Distributor Invalid Admin4)
     FeeDistributorInvalidAdmin4 = 10614,
-    /// 65,538 for (Gauge Controller Address Zero1)
+    /// 65,539 for (Fee Distributor Division1)
+    FeeDistributorDivisionError1 = 10615,
+    /// 65,540 for (Fee Distributor Division2)
+    FeeDistributorDivisionError2 = 10616,
+    /// 65,541 for (Fee Distributor Division3)
+    FeeDistributorDivisionError3 = 10617,
+    /// 65,542 for (Fee Distributor Division4)
+    FeeDistributorDivisionError4 = 10618,
+    /// 65,543 for (Fee Distributor Division5)
+    FeeDistributorDivisionError5 = 10619,
+    /// 65,544 for (Fee Distributor Division6)
+    FeeDistributorDivisionError6 = 10620,
+    /// 65,545 for (Fee Distributor Division7)
+    FeeDistributorDivisionError7 = 10621,
+    /// 65,546 for (Fee Distributor Division8)
+    FeeDistributorDivisionError8 = 10622,
+    /// 65,547 for (Fee Distributor Division9)
+    FeeDistributorDivisionError9 = 10623,
+    /// 65,548 for (Fee Distributor Division10)
+    FeeDistributorDivisionError10 = 10624,
+    /// 65,549 for (Fee Distributor Division11)
+    FeeDistributorDivisionError11 = 10625,
+    /// 65,554 for (Fee Distributor Subtraction1)
+    FeeDistributorSubtractionError1 = 10630,
+    /// 65,555 for (Fee Distributor Subtraction2)
+    FeeDistributorSubtractionError2 = 10631,
+    /// 65,556 for (Fee Distributor Subtraction3)
+    FeeDistributorSubtractionError3 = 10632,
+    /// 65,557 for (Fee Distributor Subtraction4)
+    FeeDistributorSubtractionError4 = 10633,
+    /// 65,558 for (Fee Distributor Subtraction5)
+    FeeDistributorSubtractionError5 = 10634,
+    /// 65,559 for (Fee Distributor Subtraction6)
+    FeeDistributorSubtractionError6 = 10635,
+    /// 65,560 for (Fee Distributor Subtraction7)
+    FeeDistributorSubtractionError7 = 10636,
+    /// 65,561 for (Fee Distributor Subtraction8)
+    FeeDistributorSubtractionError8 = 10637,
+    /// 65,562 for (Fee Distributor Subtraction9)
+    FeeDistributorSubtractionError9 = 10638,
+    /// 65,563 for (Fee Distributor Subtraction10)
+    FeeDistributorSubtractionError10 = 10639,
+    /// 65,564 for (Fee Distributor Subtraction11)
+    FeeDistributorSubtractionError11 = 10640,
+    /// 65,565 for (Fee Distributor Subtraction12)
+    FeeDistributorSubtractionError12 = 10641,
+    /// 65,566 for (Fee Distributor Subtraction13)
+    FeeDistributorSubtractionError13 = 10642,
+    /// 65,567 for (Fee Distributor Subtraction14)
+    FeeDistributorSubtractionError14 = 10643,
+    /// 65,568 for (Fee Distributor Subtraction15)
+    FeeDistributorSubtractionError15 = 10644,
+    /// 65,569 for (Fee Distributor Subtraction16)
+    FeeDistributorSubtractionError16 = 10645,
+    /// 65,570 for (Fee Distributor Subtraction17)
+    FeeDistributorSubtractionError17 = 10646,
+    /// 65,574 for (Fee Distributor Addition1)
+    FeeDistributorAdditionError1 = 10650,
+    /// 65,575 for (Fee Distributor Addition2)
+    FeeDistributorAdditionError2 = 10651,
+    /// 65,576 for (Fee Distributor Addition3)
+    FeeDistributorAdditionError3 = 10652,
+    /// 65,577 for (Fee Distributor Addition4)
+    FeeDistributorAdditionError4 = 10653,
+    /// 65,578 for (Fee Distributor Addition5)
+    FeeDistributorAdditionError5 = 10654,
+    /// 65,579 for (Fee Distributor Addition6)
+    FeeDistributorAdditionError6 = 10655,
+    /// 65,570 for (Fee Distributor Addition7)
+    FeeDistributorAdditionError7 = 10656,
+    /// 65,571 for (Fee Distributor Addition8)
+    FeeDistributorAdditionError8 = 10657,
+    /// 65,572 for (Fee Distributor Addition9)
+    FeeDistributorAdditionError9 = 10658,
+    /// 65,573 for (Fee Distributor Addition10)
+    FeeDistributorAdditionError10 = 10659,
+    /// 65,574 for (Fee Distributor Addition11)
+    FeeDistributorAdditionError11 = 10660,
+    /// 65,575 for (Fee Distributor Addition12)
+    FeeDistributorAdditionError12 = 10661,
+    /// 65,576 for (Fee Distributor Addition13)
+    FeeDistributorAdditionError13 = 10662,
+    /// 65,577 for (Fee Distributor Addition14)
+    FeeDistributorAdditionError14 = 10663,
+    /// 65,578 for (Fee Distributor Addition15)
+    FeeDistributorAdditionError15 = 10664,
+    /// 65,579 for (Fee Distributor Addition16)
+    FeeDistributorAdditionError16 = 10665,
+    /// 65,580 for (Fee Distributor Addition17)
+    FeeDistributorAdditionError17 = 10666,
+    /// 65,581 for (Fee Distributor Addition18)
+    FeeDistributorAdditionError18 = 10667,
+    /// 65,582 for (Fee Distributor Addition19)
+    FeeDistributorAdditionError19 = 10668,
+    /// 65,584 for (Fee Distributor Multiplication1)
+    FeeDistributorMultiplicationError1 = 10670,
+    /// 65,585 for (Fee Distributor Multiplication2)
+    FeeDistributorMultiplicationError2 = 10671,
+    /// 65,586 for (Fee Distributor Multiplication3)
+    FeeDistributorMultiplicationError3 = 10672,
+    /// 65,587 for (Fee Distributor Multiplication4)
+    FeeDistributorMultiplicationError4 = 10673,
+    /// 65,588 for (Fee Distributor Multiplication5)
+    FeeDistributorMultiplicationError5 = 10674,
+    /// 65,589 for (Fee Distributor Multiplication6)
+    FeeDistributorMultiplicationError6 = 10675,
+    /// 65,590 for (Fee Distributor Multiplication7)
+    FeeDistributorMultiplicationError7 = 10676,
+    /// 65,591 for (Fee Distributor Multiplication8)
+    FeeDistributorMultiplicationError8 = 10677,
+    /// 65,592 for (Fee Distributor Multiplication9)
+    FeeDistributorMultiplicationError9 = 10678,
+    /// 65,593 for (Fee Distributor Multiplication10)
+    FeeDistributorMultiplicationError10 = 10679,
+    /// 65,594 for (Fee Distributor Multiplication11)
+    FeeDistributorMultiplicationError11 = 10680,
+    // Gauge Controller
+    /// 76,236 for (Gauge Controller Address Zero1)
     GaugeControllerAddressZero1 = 10701,
     /// 76,237 for (Gauge Controller Address Zero2)
     GaugeControllerAddressZero2 = 10702,
