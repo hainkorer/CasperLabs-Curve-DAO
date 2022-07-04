@@ -141,7 +141,6 @@ fn minter() {
     runtime::ret(CLValue::from_t(data::get_minter()).unwrap_or_revert());
 }
 
-
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(

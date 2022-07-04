@@ -138,7 +138,7 @@ impl CURVETOKENV3Instance {
             0,
         );
     }
-    pub fn mint(&self, sender: AccountHash,to: Key, amount: U256) {
+    pub fn mint(&self, sender: AccountHash, to: Key, amount: U256) {
         self.0.call_contract(
             sender,
             "mint",
