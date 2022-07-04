@@ -32,8 +32,8 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
     fn total_supply(&self) -> U256 {
         get_total_supply()
     }
-    fn balance_of(&self, account: Key) -> U256 {
-        Balances::instance().get(&account)
+    fn balance_of(&self, owner: Key) -> U256 {
+        Balances::instance().get(&owner)
     }
     fn stake(&mut self, amount: U256) {
         set_total_supply(
