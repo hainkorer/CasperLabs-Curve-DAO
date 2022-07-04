@@ -409,7 +409,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             "transfer",
             runtime_args! {"recipient" => self.get_caller(),"amount" => _value},
         );
-
+        _result.unwrap_or_revert();
         self.emit(&REWARDONLYGAUGEEvent::Withdraw {
             provider: self.get_caller(),
             value: _value,
@@ -471,6 +471,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             "transfer_from",
             runtime_args! {"owner" => self.get_caller(),"recipient" =>  Key::from(data::get_package_hash()),"amount" => _value},
         );
+        _result.unwrap_or_revert();
 
         self.emit(&REWARDONLYGAUGEEvent::Deposit {
             provider: self.get_caller(),
