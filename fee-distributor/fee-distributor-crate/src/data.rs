@@ -42,12 +42,12 @@ impl TimeCursorOf {
         Dict::init(TIME_CURSOR_OF)
     }
 
-    pub fn get(&self, key: &Key) -> U256 {
-        self.dict.get_by_key(key).unwrap_or_default()
+    pub fn get(&self, addr: &Key) -> U256 {
+        self.dict.get_by_key(addr).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &Key, value: U256) {
-        self.dict.set_by_key(key, value);
+    pub fn set(&self, addr: &Key, value: U256) {
+        self.dict.set_by_key(addr, value);
     }
 }
 
@@ -67,12 +67,12 @@ impl UserEpochOf {
         Dict::init(USER_EPOCH_OF)
     }
 
-    pub fn get(&self, key: &Key) -> U256 {
-        self.dict.get_by_key(key).unwrap_or_default()
+    pub fn get(&self, addr: &Key) -> U256 {
+        self.dict.get_by_key(addr).unwrap_or_default()
     }
 
-    pub fn set(&self, key: &Key, value: U256) {
-        self.dict.set_by_key(key, value);
+    pub fn set(&self, addr: &Key, value: U256) {
+        self.dict.set_by_key(addr, value);
     }
 }
 
@@ -94,12 +94,12 @@ impl TokensPerWeek {
         Dict::init(TOKENS_PER_WEEK)
     }
 
-    pub fn get(&self, indx: &U256) -> U256 {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_default()
+    pub fn get(&self, week: &U256) -> U256 {
+        self.dict.get(week.to_string().as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, indx: &U256, value: U256) {
-        self.dict.set(indx.to_string().as_str(), value);
+    pub fn set(&self, week: &U256, value: U256) {
+        self.dict.set(week.to_string().as_str(), value);
     }
 
     pub fn push(&mut self, value: U256) {
@@ -126,12 +126,12 @@ impl VeSupply {
         Dict::init(VE_SUPPLY)
     }
 
-    pub fn get(&self, indx: &U256) -> U256 {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_default()
+    pub fn get(&self, week: &U256) -> U256 {
+        self.dict.get(week.to_string().as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, indx: &U256, value: U256) {
-        self.dict.set(indx.to_string().as_str(), value);
+    pub fn set(&self, week: &U256, value: U256) {
+        self.dict.set(week.to_string().as_str(), value);
     }
 
     pub fn push(&mut self, value: U256) {
