@@ -63,8 +63,8 @@ fn total_supply_js_client() {
 }
 #[no_mangle]
 fn balance_of() {
-    let account: Key = runtime::get_named_arg("account");
-    let ret: U256 = LPTOKENWRAPPER::balance_of(&CurveRewards::default(), account);
+    let owner: Key = runtime::get_named_arg("owner");
+    let ret: U256 = LPTOKENWRAPPER::balance_of(&CurveRewards::default(), owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
@@ -200,15 +200,15 @@ fn reward_per_token_stored() {
 }
 #[no_mangle]
 fn user_reward_per_token_paid() {
-    let key: Key = runtime::get_named_arg("key");
+    let account: Key = runtime::get_named_arg("account");
     runtime::ret(
-        CLValue::from_t(data::UserRewardPerTokenPaid::instance().get(&key)).unwrap_or_revert(),
+        CLValue::from_t(data::UserRewardPerTokenPaid::instance().get(&account)).unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn rewards() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::Rewards::instance().get(&key)).unwrap_or_revert());
+    let account: Key = runtime::get_named_arg("account");
+    runtime::ret(CLValue::from_t(data::Rewards::instance().get(&account)).unwrap_or_revert());
 }
 //Entry Points
 fn get_entry_points() -> EntryPoints {
@@ -318,7 +318,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("account", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -431,14 +431,14 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "user_reward_per_token_paid",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("account", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "rewards",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("account", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
