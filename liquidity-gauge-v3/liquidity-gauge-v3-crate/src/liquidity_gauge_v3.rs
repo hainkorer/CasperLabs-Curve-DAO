@@ -658,8 +658,8 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                 None,
                 "minted",
                 runtime_args! {
-                    "key0" => addr,
-                    "key1" => Key::from(data::get_package_hash())
+                    "owner" => addr,
+                    "spender" => Key::from(data::get_package_hash())
                 },
             ))
             .unwrap_or_revert()
