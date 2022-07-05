@@ -251,7 +251,6 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     // @notice Get the number of claimable reward tokens per user
     // @dev This function should be manually changed to "view" in the ABI
     // @return uint256 number of claimable tokens per user
-    #[allow(non_snake_case)]
     fn claimable_reward(&self, addr: Key) -> U256 {
         let gauge: Key = get_gauge();
         let claimable_reward: U256 = runtime::call_versioned_contract(
