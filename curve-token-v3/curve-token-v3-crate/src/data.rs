@@ -75,35 +75,35 @@ pub fn zero_address() -> Key {
         .unwrap()
 }
 pub fn get_name() -> String {
-    get_key(CURVE_TOKEN_V3_NAME).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_NAME).unwrap_or_default()
 }
 
 pub fn set_name(name: String) {
     set_key(CURVE_TOKEN_V3_NAME, name);
 }
 pub fn get_symbol() -> String {
-    get_key(CURVE_TOKEN_V3_SYMBOL).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_SYMBOL).unwrap_or_default()
 }
 
 pub fn set_symbol(symbol: String) {
     set_key(CURVE_TOKEN_V3_SYMBOL, symbol);
 }
 pub fn get_decimals() -> u8 {
-    get_key(CURVE_TOKEN_V3_DECIMALS).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_DECIMALS).unwrap_or_default()
 }
 
 pub fn set_decimals(decimals: u8) {
     set_key(CURVE_TOKEN_V3_DECIMALS, decimals);
 }
 pub fn get_total_supply() -> U256 {
-    get_key(CURVE_TOKEN_V3_TOTAL_SUPPLY).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_TOTAL_SUPPLY).unwrap_or_default()
 }
 
 pub fn set_total_supply(init_supply: U256) {
     set_key(CURVE_TOKEN_V3_TOTAL_SUPPLY, init_supply);
 }
 pub fn get_minter() -> Key {
-    get_key(CURVE_TOKEN_V3_MINTER).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_MINTER).unwrap_or_else(zero_address)
 }
 
 pub fn set_minter(minter: Key) {
@@ -120,15 +120,12 @@ pub fn set_token(token: Key) {
 pub fn set_hash(contract_hash: Key) {
     set_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH, contract_hash);
 }
-
 pub fn get_hash() -> Key {
-    get_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH).unwrap_or_else(zero_address)
 }
-
 pub fn set_package_hash(package_hash: ContractPackageHash) {
     set_key(CURVE_TOKEN_V3_SELF_PACKAGE_HASH, package_hash);
 }
-
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(CURVE_TOKEN_V3_SELF_PACKAGE_HASH).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_SELF_PACKAGE_HASH).unwrap_or_default()
 }

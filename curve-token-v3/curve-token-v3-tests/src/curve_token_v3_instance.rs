@@ -77,23 +77,6 @@ impl CURVETOKENV3Instance {
         self.0
             .call_contract(sender, "decimals", runtime_args! {}, 0);
     }
-
-    pub fn get_total_supply_crv3(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "get_total_supply_crv3", runtime_args! {}, 0);
-    }
-
-    pub fn set_minter(&self, sender: AccountHash, _minter: Key) {
-        self.0.call_contract(
-            sender,
-            "set_minter",
-            runtime_args! {
-                "_minter" => _minter
-            },
-            0,
-        );
-    }
-
     pub fn transfer(&self, sender: AccountHash, recipient: Key, amount: U256) {
         self.0.call_contract(
             sender,
@@ -155,46 +138,46 @@ impl CURVETOKENV3Instance {
             0,
         );
     }
-    pub fn mint(&self, sender: AccountHash, _to: Key, _value: U256) {
+    pub fn mint(&self, sender: AccountHash, to: Key, amount: U256) {
         self.0.call_contract(
             sender,
             "mint",
             runtime_args! {
-                "_to" => _to,
-                "_value"=>_value
+                "to" => to,
+                "amount"=>amount
             },
             0,
         );
     }
-    pub fn burn(&self, sender: AccountHash, _value: U256) {
-        self.0.call_contract(
-            sender,
-            "burn",
-            runtime_args! {
-                "_value"=>_value
-            },
-            0,
-        );
-    }
-    pub fn burn_from(&self, sender: AccountHash, _to: Key, _value: U256) {
+    pub fn burn_from(&self, sender: AccountHash, from: Key, amount: U256) {
         self.0.call_contract(
             sender,
             "burn_from",
             runtime_args! {
-                "_to" => _to,
-                "_value"=>_value
+                "from" => from,
+                "amount"=>amount
 
             },
             0,
         );
     }
-    pub fn set_name(&self, sender: AccountHash, _name: String, _symbol: String) {
+    pub fn set_minter(&self, sender: AccountHash, minter: Key) {
+        self.0.call_contract(
+            sender,
+            "set_minter",
+            runtime_args! {
+                "minter" => minter
+            },
+            0,
+        );
+    }
+    pub fn set_name(&self, sender: AccountHash, name: String, symbol: String) {
         self.0.call_contract(
             sender,
             "set_name",
             runtime_args! {
-                "_name" => _name,
-                "_symbol"=>_symbol
+                "name" => name,
+                "symbol"=>symbol
 
             },
             0,
@@ -210,95 +193,3 @@ impl CURVETOKENV3Instance {
         self.0.package_hash().into()
     }
 }
-
-//     pub fn allowance_package_hash<T: Into<Key>>(
-//         &self,
-//         owner: ContractPackageHash,
-//         spender: T,
-//     ) -> U256 {
-//         let owner: Key = owner.into();
-//         let spender: Key = spender.into();
-//         self.0
-//             .query_dictionary("allowances", keys_to_str(&owner, &spender))
-//             .unwrap_or_default()
-//     }
-
-//     pub fn name(&self) -> String {
-//         self.0.query_named_key(String::from("name"))
-//     }
-
-//     pub fn symbol(&self) -> String {
-//         self.0.query_named_key(String::from("symbol"))
-//     }
-
-//     pub fn decimals(&self) -> u8 {
-//         self.0.query_named_key(String::from("decimals"))
-//     }
-
-//     pub fn total_supply(&self) -> U256 {
-//         self.0.query_named_key(String::from("total_supply"))
-//     }
-
-//     pub fn contract_package_hash(&self) -> ContractPackageHash {
-//         self.0
-//             .query_named_key(String::from("contract_package_hash"))
-//     }
-//     pub fn contract_hash(&self) -> Key {
-//         self.0.query_named_key(String::from("self_contract_hash"))
-//     }
-
-//     // Result methods
-//     pub fn transfer_result(&self) -> Result<(), u32> {
-//         self.0.query_named_key("transfer_result".to_string())
-//     }
-
-//     pub fn package_hash_result(&self) -> ContractPackageHash {
-//         self.0.query_named_key("package_hash".to_string())
-//     }
-
-//     pub fn transfer_from_result(&self) -> Result<(), u32> {
-//         self.0.query_named_key("transfer_from_result".to_string())
-//     }
-//     pub fn allowance_res(&self) -> U256 {
-//         self.0.query_named_key("allowance".to_string())
-//     }
-
-//     pub fn increase_allowance_res(&self) -> Result<(), u32> {
-//         self.0
-//             .query_named_key("increase_allowance_result".to_string())
-//     }
-//     pub fn decrease_allowance_res(&self) -> Result<(), u32> {
-//         self.0
-//             .query_named_key("decrease_allowance_result".to_string())
-//     }
-
-//     pub fn meta(&self) -> Meta {
-//         self.0.query_named_key(String::from("meta"))
-//     }
-// }
-
-// pub fn key_to_str(key: &Key) -> String {
-//     match key {
-//         Key::Account(account) => account.to_string(),
-//         Key::Hash(package) => hex::encode(package),
-//         _ => panic!("Unexpected key type"),
-//     }
-// }
-
-// pub fn keys_to_str(key_a: &Key, key_b: &Key) -> String {
-//     let mut hasher = VarBlake2b::new(32).unwrap();
-//     hasher.update(key_a.to_bytes().unwrap());
-//     hasher.update(key_b.to_bytes().unwrap());
-//     let mut ret = [0u8; 32];
-//     hasher.finalize_variable(|hash| ret.clone_from_slice(hash));
-//     hex::encode(ret)
-// }
-
-// pub fn key_and_value_to_str<T: CLTyped + ToBytes>(key: &Key, value: &T) -> String {
-//     let mut hasher = VarBlake2b::new(32).unwrap();
-//     hasher.update(key.to_bytes().unwrap());
-//     hasher.update(value.to_bytes().unwrap());
-//     let mut ret = [0u8; 32];
-//     hasher.finalize_variable(|hash| ret.clone_from_slice(hash));
-//     hex::encode(ret)
-// }
