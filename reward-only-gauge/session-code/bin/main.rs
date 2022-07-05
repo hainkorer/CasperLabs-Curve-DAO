@@ -50,7 +50,7 @@ pub extern "C" fn call() {
             let owner: Key = runtime::get_named_arg("owner");
             let recipient: Key = runtime::get_named_arg("recipient");
             let amount: U256 = runtime::get_named_arg("amount");
-            let ret: bool = runtime::call_versioned_contract(
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 TRANSFER_FROM,
@@ -124,33 +124,33 @@ pub extern "C" fn call() {
             store(CLAIMED_REWARD, ret);
         }
 
-        CLAIMEABLE_REWARD => {
+        CLAIMABLE_REWARD => {
             let _addr: Key = runtime::get_named_arg("_addr");
             let _token: Key = runtime::get_named_arg("_token");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                CLAIMEABLE_REWARD,
+                CLAIMABLE_REWARD,
                 runtime_args! {
                     "_addr"=>_addr,
                     "_token"=>_token
                 },
             );
-            store(CLAIMEABLE_REWARD, ret);
+            store(CLAIMABLE_REWARD, ret);
         }
-        CLAIMEABLE_REWARD_WRITE => {
+        CLAIMABLE_REWARD_WRITE => {
             let _addr: Key = runtime::get_named_arg("_addr");
             let _token: Key = runtime::get_named_arg("_token");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                CLAIMEABLE_REWARD_WRITE,
+                CLAIMABLE_REWARD_WRITE,
                 runtime_args! {
                     "_addr"=>_addr,
                     "_token"=>_token
                 },
             );
-            store(CLAIMEABLE_REWARD_WRITE, ret);
+            store(CLAIMABLE_REWARD_WRITE, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
