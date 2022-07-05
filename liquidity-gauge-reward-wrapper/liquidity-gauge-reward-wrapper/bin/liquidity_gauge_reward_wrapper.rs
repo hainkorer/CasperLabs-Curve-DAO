@@ -238,7 +238,8 @@ fn approved_to_deposit() {
     let owner: Key = runtime::get_named_arg("owner");
     let spender: Key = runtime::get_named_arg("spender");
     runtime::ret(
-        CLValue::from_t(data::ApprovedToDeposit::instance().get(&owner, &spender)).unwrap_or_revert(),
+        CLValue::from_t(data::ApprovedToDeposit::instance().get(&owner, &spender))
+            .unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -253,12 +254,16 @@ fn reward_integral() {
 #[no_mangle]
 fn reward_integral_for() {
     let account: Key = runtime::get_named_arg("account");
-    runtime::ret(CLValue::from_t(data::RewardIntegralFor::instance().get(&account)).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(data::RewardIntegralFor::instance().get(&account)).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn claimable_rewards() {
     let account: Key = runtime::get_named_arg("account");
-    runtime::ret(CLValue::from_t(data::ClaimableRewards::instance().get(&account)).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(data::ClaimableRewards::instance().get(&account)).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn admin() {
