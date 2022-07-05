@@ -444,7 +444,7 @@ fn test_transfer_from() {
         },
         300,
     );
-    let v: u128 = 99000000000_u128;
+    let v: u128 = 90000000000_u128;
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
     assert_eq!(ret, v.into(), "Invalid result");
 }
