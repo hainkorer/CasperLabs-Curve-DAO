@@ -13,7 +13,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
-
+#[allow(clippy::too_many_arguments)]
 pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Contract constructor
     /// @param _voting_escrow VotingEscrow contract address
@@ -37,9 +37,9 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         VeSupply::init();
         let t: U256 = start_time
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::FeeDistributorDivisionError1)
             .checked_mul(WEEK)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError1);
         set_start_time(t);
         set_last_token_time(t);
         set_time_cursor(t);
@@ -63,21 +63,23 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         );
         let to_distribute: U256 = token_balance
             .checked_sub(get_token_last_balance())
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError1);
         set_token_last_balance(token_balance);
         let mut t: U256 = get_last_token_time();
         let since_last: U256 = U256::from(u64::from(get_blocktime()))
             .checked_sub(t)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError2);
         set_last_token_time(U256::from(u64::from(get_blocktime())));
         let mut this_week: U256 = t
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::FeeDistributorDivisionError2)
             .checked_mul(WEEK)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError2);
         let mut next_week: U256 = 0.into();
         for _ in 0..20 {
-            next_week = this_week.checked_add(WEEK).unwrap_or_revert();
+            next_week = this_week
+                .checked_add(WEEK)
+                .unwrap_or_revert_with(Error::FeeDistributorAdditionError19);
             if U256::from(u64::from(get_blocktime())) < next_week {
                 if since_last == 0.into() && U256::from(u64::from(get_blocktime())) == t {
                     TokensPerWeek::instance().set(
@@ -85,7 +87,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         TokensPerWeek::instance()
                             .get(&this_week)
                             .checked_add(to_distribute)
-                            .unwrap_or_revert(),
+                            .unwrap_or_revert_with(Error::FeeDistributorAdditionError1),
                     );
                 } else {
                     TokensPerWeek::instance().set(
@@ -93,40 +95,42 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         TokensPerWeek::instance()
                             .get(&this_week)
                             .checked_add(to_distribute)
-                            .unwrap_or_revert()
+                            .unwrap_or_revert_with(Error::FeeDistributorAdditionError2)
                             .checked_mul(
                                 U256::from(u64::from(get_blocktime()))
                                     .checked_sub(t)
-                                    .unwrap_or_revert(),
+                                    .unwrap_or_revert_with(Error::FeeDistributorSubtractionError3),
                             )
-                            .unwrap_or_revert()
+                            .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError3)
                             .checked_div(since_last)
-                            .unwrap_or_revert(),
+                            .unwrap_or_revert_with(Error::FeeDistributorDivisionError3),
                     );
                 }
                 break;
+            } else if since_last == 0.into() && next_week == t {
+                TokensPerWeek::instance().set(
+                    &this_week,
+                    TokensPerWeek::instance()
+                        .get(&this_week)
+                        .checked_add(to_distribute)
+                        .unwrap_or_revert_with(Error::FeeDistributorAdditionError3),
+                );
             } else {
-                if since_last == 0.into() && next_week == t {
-                    TokensPerWeek::instance().set(
-                        &this_week,
-                        TokensPerWeek::instance()
-                            .get(&this_week)
-                            .checked_add(to_distribute)
-                            .unwrap_or_revert(),
-                    );
-                } else {
-                    TokensPerWeek::instance().set(
-                        &this_week,
-                        TokensPerWeek::instance()
-                            .get(&this_week)
-                            .checked_add(to_distribute)
-                            .unwrap_or_revert()
-                            .checked_mul(next_week.checked_sub(t).unwrap_or_revert())
-                            .unwrap_or_revert()
-                            .checked_div(since_last)
-                            .unwrap_or_revert(),
-                    );
-                }
+                TokensPerWeek::instance().set(
+                    &this_week,
+                    TokensPerWeek::instance()
+                        .get(&this_week)
+                        .checked_add(to_distribute)
+                        .unwrap_or_revert_with(Error::FeeDistributorAdditionError4)
+                        .checked_mul(
+                            next_week
+                                .checked_sub(t)
+                                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError17),
+                        )
+                        .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError4)
+                        .checked_div(since_last)
+                        .unwrap_or_revert_with(Error::FeeDistributorDivisionError4),
+                );
             }
             t = next_week;
             this_week = next_week;
@@ -150,7 +154,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                 && (U256::from(u64::from(get_blocktime()))
                     > get_last_token_time()
                         .checked_add(TOKEN_CHECKPOINT_DEADLINE)
-                        .unwrap_or_revert())))
+                        .unwrap_or_revert_with(Error::FeeDistributorAdditionError5))))
         {
             runtime::revert(ApiError::from(
                 Error::FeeDistributorInvalidTokenCheckpointUpdate,
@@ -173,23 +177,25 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             }
             let mid: U256 = (min
                 .checked_add(max)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::FeeDistributorAdditionError6)
                 .checked_add(2.into())
-                .unwrap_or_revert())
+                .unwrap_or_revert_with(Error::FeeDistributorAdditionError7))
             .checked_div(2.into())
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorDivisionError5);
             let pt: Point = runtime::call_versioned_contract(
                 ve.into_hash().unwrap_or_revert().into(),
                 None,
                 "point_history",
                 runtime_args! {
-                    "key" => mid
+                    "epoch" => mid
                 },
             );
             if pt.ts <= timestamp {
                 min = mid;
             } else {
-                max = mid.checked_sub(1.into()).unwrap_or_revert();
+                max = mid
+                    .checked_sub(1.into())
+                    .unwrap_or_revert_with(Error::FeeDistributorDivisionError5);
             }
         }
         min
@@ -210,24 +216,26 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             }
             let mid: U256 = (min
                 .checked_add(max)
-                .unwrap_or_revert()
-                .checked_add(2.into()))
-            .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::FeeDistributorAdditionError8)
+                .checked_add(2.into())
+                .unwrap_or_revert_with(Error::FeeDistributorAdditionError9))
             .checked_div(2.into())
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorDivisionError6);
             let pt: Point = runtime::call_versioned_contract(
                 ve.into_hash().unwrap_or_revert().into(),
                 None,
                 "user_point_history",
                 runtime_args! {
-                    "key1" => user,
-                    "key2" => mid
+                    "user" => user,
+                    "user_epoch" => mid
                 },
             );
             if pt.ts <= timestamp {
                 min = mid;
             } else {
-                max = mid.checked_sub(1.into()).unwrap_or_revert();
+                max = mid
+                    .checked_sub(1.into())
+                    .unwrap_or_revert_with(Error::FeeDistributorSubtractionError5);
             }
         }
         min
@@ -244,7 +252,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "user_point_epoch",
             runtime_args! {
-                "key" => user
+                "user" => user
             },
         );
         let epoch: U256 = self._find_timestamp_user_epoch(ve, user, timestamp, max_user_epoch);
@@ -253,22 +261,22 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "user_point_history",
             runtime_args! {
-                "key1" => user,
-                "key2" => epoch
+                "user" => user,
+                "user_epoch" => epoch
             },
         );
         U256::max(
             (pt.bias
                 .checked_sub(pt.slope)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError6)
                 .checked_mul(
                     timestamp
                         .checked_sub(pt.ts.as_u128().into())
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::FeeDistributorSubtractionError7)
                         .as_u128()
                         .into(),
                 )
-                .unwrap_or_revert())
+                .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError5))
             .as_u128()
             .into(),
             0.into(),
@@ -280,9 +288,9 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         let mut t: U256 = get_time_cursor();
         let rounded_timestamp: U256 = U256::from(u64::from(get_blocktime()))
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::FeeDistributorDivisionError7)
             .checked_mul(WEEK)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError6);
         let () = runtime::call_versioned_contract(
             ve.into_hash().unwrap_or_revert().into(),
             None,
@@ -299,30 +307,36 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                     None,
                     "point_history",
                     runtime_args! {
-                        "key" => epoch
+                        "epoch" => epoch
                     },
                 );
                 let mut dt: U128 = 0.into();
                 if t > pt.ts {
                     // If the point is at 0 epoch, it can actually be earlier than the first deposit
                     // Then make dt 0
-                    dt = t.checked_sub(pt.ts).unwrap_or_revert().as_u128().into();
+                    dt = t
+                        .checked_sub(pt.ts)
+                        .unwrap_or_revert_with(Error::FeeDistributorSubtractionError8)
+                        .as_u128()
+                        .into();
                 }
                 VeSupply::instance().set(
                     &t,
                     U128::max(
                         pt.bias
                             .checked_sub(pt.slope)
-                            .unwrap_or_revert()
+                            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError9)
                             .checked_mul(dt)
-                            .unwrap_or_revert(),
+                            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError10),
                         0.into(),
                     )
                     .as_u128()
                     .into(),
                 );
             }
-            t = t.checked_add(WEEK).unwrap_or_revert();
+            t = t
+                .checked_add(WEEK)
+                .unwrap_or_revert_with(Error::FeeDistributorAdditionError10);
         }
         set_time_cursor(t);
     }
@@ -345,7 +359,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "user_point_epoch",
             runtime_args! {
-                "key" => addr
+                "user" => addr
             },
         );
         let start_time: U256 = get_start_time();
@@ -368,21 +382,21 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "user_point_history",
             runtime_args! {
-                "key1" => addr,
-                "key2" => user_epoch
+                "user" => addr,
+                "user_epoch" => user_epoch
             },
         );
         if week_cursor == 0.into() {
             week_cursor = (user_point
                 .ts
                 .checked_add(WEEK)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::FeeDistributorAdditionError11)
                 .checked_sub(1.into()))
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError11)
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::FeeDistributorDivisionError8)
             .checked_mul(WEEK)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError7);
         }
         if week_cursor >= last_token_time {
             return 0.into();
@@ -397,7 +411,9 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                 break;
             }
             if week_cursor >= user_point.ts && user_epoch <= max_user_epoch {
-                user_epoch = user_epoch.checked_add(1.into()).unwrap_or_revert();
+                user_epoch = user_epoch
+                    .checked_add(1.into())
+                    .unwrap_or_revert_with(Error::FeeDistributorAdditionError12);
                 old_user_point = user_point;
                 if user_epoch > max_user_epoch {
                     user_point = Point::default();
@@ -407,8 +423,8 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         None,
                         "user_point_history",
                         runtime_args! {
-                            "key1" => addr,
-                            "key2" => user_epoch
+                            "user" => addr,
+                            "user_epoch" => user_epoch
                         },
                     );
                 }
@@ -417,16 +433,16 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                 // + i * 2 is for rounding errors
                 let dt: U128 = week_cursor
                     .checked_sub(old_user_point.ts)
-                    .unwrap_or_revert()
+                    .unwrap_or_revert_with(Error::FeeDistributorSubtractionError12)
                     .as_u128()
                     .into();
                 let balance_of: U256 = U256::max(
                     old_user_point
                         .bias
                         .checked_sub(dt)
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::FeeDistributorSubtractionError13)
                         .checked_mul(old_user_point.slope)
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError8)
                         .as_u128()
                         .into(),
                     0.into(),
@@ -442,18 +458,22 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                                     TokensPerWeek::instance()
                                         .get(&week_cursor)
                                         .checked_div(VeSupply::instance().get(&week_cursor))
-                                        .unwrap_or_revert(),
+                                        .unwrap_or_revert_with(Error::FeeDistributorDivisionError9),
                                 )
-                                .unwrap_or_revert(),
+                                .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError9),
                         )
-                        .unwrap_or_revert();
+                        .unwrap_or_revert_with(Error::FeeDistributorAdditionError13);
                 }
-                week_cursor = week_cursor.checked_add(WEEK).unwrap_or_revert();
+                week_cursor = week_cursor
+                    .checked_add(WEEK)
+                    .unwrap_or_revert_with(Error::FeeDistributorAdditionError14);
             }
         }
         user_epoch = U256::min(
             max_user_epoch,
-            user_epoch.checked_sub(1.into()).unwrap_or_revert(),
+            user_epoch
+                .checked_sub(1.into())
+                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError14),
         );
         UserEpochOf::instance().set(&addr, user_epoch);
         TimeCursorOf::instance().set(&addr, week_cursor);
@@ -493,16 +513,16 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             && (U256::from(u64::from(get_blocktime()))
                 > last_token_time
                     .checked_add(TOKEN_CHECKPOINT_DEADLINE)
-                    .unwrap_or_revert())
+                    .unwrap_or_revert_with(Error::FeeDistributorAdditionError15))
         {
             self._checkpoint_token();
             set_last_token_time(U256::from(u64::from(get_blocktime())));
         }
         last_token_time = last_token_time
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::FeeDistributorDivisionError10)
             .checked_mul(WEEK)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError10);
         let amount: U256 = self._claim(addr, get_voting_escrow(), last_token_time);
         if amount != 0.into() {
             let token: Key = get_token();
@@ -511,8 +531,8 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                 None,
                 "transfer",
                 runtime_args! {
-                    "key1" => addr,
-                    "key2" => amount
+                    "recipient" => addr,
+                    "amount" => amount
                 },
             );
             if ret.is_err() {
@@ -521,7 +541,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             set_token_last_balance(
                 get_token_last_balance()
                     .checked_sub(amount)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::FeeDistributorSubtractionError15),
             );
         }
         set_lock(false);
@@ -550,16 +570,16 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             && (U256::from(u64::from(get_blocktime()))
                 > last_token_time
                     .checked_add(TOKEN_CHECKPOINT_DEADLINE)
-                    .unwrap_or_default())
+                    .unwrap_or_revert_with(Error::FeeDistributorAdditionError16))
         {
             self._checkpoint_token();
             last_token_time = U256::from(u64::from(get_blocktime()));
         }
         last_token_time = last_token_time
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::FeeDistributorDivisionError11)
             .checked_mul(WEEK)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError11);
         let voting_escrow: Key = get_voting_escrow();
         let token: Key = get_token();
         let mut total: U256 = 0.into();
@@ -581,14 +601,16 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                 if ret.is_err() {
                     runtime::revert(ApiError::User(ret.err().unwrap() as u16));
                 }
-                total = total.checked_add(amount).unwrap_or_revert();
+                total = total
+                    .checked_add(amount)
+                    .unwrap_or_revert_with(Error::FeeDistributorAdditionError17);
             }
         }
         if total != 0.into() {
             set_token_last_balance(
                 get_token_last_balance()
                     .checked_sub(total)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::FeeDistributorSubtractionError16),
             );
         }
         set_lock(false);
@@ -599,7 +621,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _coin Address of the coin being received (must be 3CRV)
     /// @return bool success
     fn burn(&self, coin: Key) -> bool {
-        if !(coin == get_token()) {
+        if coin != get_token() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidCoin1));
         }
         if get_is_killed() {
@@ -631,7 +653,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                 && (U256::from(u64::from(get_blocktime()))
                     > get_last_token_time()
                         .checked_add(TOKEN_CHECKPOINT_DEADLINE)
-                        .unwrap_or_revert())
+                        .unwrap_or_revert_with(Error::FeeDistributorAdditionError18))
             {
                 self._checkpoint_token();
             }
@@ -642,7 +664,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Commit transfer of ownership
     /// @param _addr New admin address
     fn commit_admin(&self, addr: Key) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorAccessDenied));
         }
         set_future_admin(addr);
@@ -651,10 +673,10 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
 
     /// @notice Apply transfer of ownership
     fn apply_admin(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin1));
         }
-        if !(get_future_admin() != zero_address()) {
+        if get_future_admin() == zero_address() {
             runtime::revert(ApiError::from(Error::FeeDistributorZeroFutureAdmin));
         }
         let future_admin: Key = get_future_admin();
@@ -669,7 +691,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
 
     /// @notice Toggle permission for checkpointing by any account
     fn toggle_allow_checkpoint_token(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin2));
         }
         let flag: bool = !get_can_checkpoint_token();
@@ -684,7 +706,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @dev Killing transfers the entire 3CRV balance to the emergency return address
     ///     and blocks the ability to claim or burn. The contract cannot be unkilled.
     fn kill_me(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin3));
         }
         set_is_killed(true);
@@ -716,10 +738,10 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param _coin Token address
     /// @return bool success
     fn recover_balance(&self, coin: Key) -> bool {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidAdmin4));
         }
-        if !(coin == get_token()) {
+        if coin != get_token() {
             runtime::revert(ApiError::from(Error::FeeDistributorInvalidCoin2));
         }
         let amount: U256 = runtime::call_versioned_contract(
@@ -748,7 +770,8 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     fn emit(&self, fee_distributor_event: &FeeDistributorEvent) {
         let mut events = Vec::new();
         let tmp = get_package_hash().to_formatted_string();
-        let tmp: Vec<&str> = tmp.split("-").collect();
+        let split: char = '-';
+        let tmp: Vec<&str> = tmp.split(split).collect();
         let package_hash = tmp[1].to_string();
         match fee_distributor_event {
             FeeDistributorEvent::CommitAdmin { admin } => {

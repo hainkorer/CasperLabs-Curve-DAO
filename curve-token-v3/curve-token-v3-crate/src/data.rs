@@ -71,10 +71,8 @@ impl Allowances {
 }
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 pub fn get_name() -> String {
     get_key(CURVE_TOKEN_V3_NAME).unwrap_or_revert()
@@ -112,7 +110,7 @@ pub fn set_minter(minter: Key) {
     set_key(CURVE_TOKEN_V3_MINTER, minter);
 }
 pub fn get_token() -> Key {
-    get_key(CURVE_TOKEN_V3_CURVE).unwrap_or(zero_address())
+    get_key(CURVE_TOKEN_V3_CURVE).unwrap_or_else(zero_address)
 }
 
 pub fn set_token(token: Key) {

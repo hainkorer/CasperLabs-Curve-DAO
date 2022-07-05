@@ -6,10 +6,8 @@ pub const TEN_E_NINE: u128 = 1000000000;
 pub const DURATION: U256 = U256([604800, 0, 0, 0]);
 //Zero Address
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 //Dict
 pub struct UserRewardPerTokenPaid {
@@ -89,7 +87,7 @@ pub fn set_snx(snx: Key) {
     set_key(SNX, snx);
 }
 pub fn get_snx() -> Key {
-    get_key(SNX).unwrap_or(zero_address())
+    get_key(SNX).unwrap_or_else(zero_address)
 }
 
 pub fn set_reward_per_token_stored(reward_per_token_stored: U256) {

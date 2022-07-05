@@ -37,7 +37,7 @@ fn deploy() -> (
         env.next_user().to_formatted_string(),
         env.next_user().to_formatted_string(),
     ];
-    let token: TestContract = VESTINGESCROWInstance::new(
+    let token: TestContract = VESTINGESCROWInstance::new_deploy(
         &env,
         NAME,
         owner,
@@ -66,12 +66,12 @@ fn test_vesting_escrow_deploy() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), _owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(_owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 }
 
 #[test]
@@ -84,15 +84,15 @@ fn test_vesting_escrow_disable_fund_admins() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), _owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(_owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
     vesting_escrow_instance.disable_fund_admins(_owner);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), false);
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(!vesting_escrow_instance.fund_admins_enabled());
+    assert!(vesting_escrow_instance.can_disable());
 }
 
 #[test]
@@ -105,15 +105,15 @@ fn test_vesting_escrow_disable_can_disable() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), _owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(_owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
     vesting_escrow_instance.disable_can_disable(_owner);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.can_disable(), false);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.can_disable());
 }
 
 #[test]
@@ -126,11 +126,11 @@ fn test_vesting_escrow_toggle_disable() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), _owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(_owner));
     vesting_escrow_instance.toggle_disable(_owner, _user);
     assert_eq!(vesting_escrow_instance.disabled_at(_owner), 0.into());
     assert_eq!(vesting_escrow_instance.disabled_at(_user), 1000.into());
@@ -146,11 +146,11 @@ fn test_vesting_escrow_toggle_disable_after_toggle_disable() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), _owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(_owner));
     vesting_escrow_instance.toggle_disable(_owner, _user);
     assert_eq!(vesting_escrow_instance.disabled_at(_owner), 0.into());
     assert_eq!(vesting_escrow_instance.disabled_at(_user), 1000.into());
@@ -170,15 +170,15 @@ fn test_vesting_escrow_toggle_disable_by_user() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), _owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(_owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
     vesting_escrow_instance.disable_can_disable(_owner);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.can_disable(), false);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.can_disable());
     vesting_escrow_instance.toggle_disable(_user, _user);
 }
 
@@ -193,15 +193,15 @@ fn test_vesting_escrow_toggle_disable_when_disabled() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), _owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(_owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(_owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
     vesting_escrow_instance.disable_can_disable(_owner);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.can_disable(), false);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.can_disable());
     vesting_escrow_instance.toggle_disable(_owner, _user);
 }
 
@@ -215,12 +215,12 @@ fn test_vesting_escrow_add_tokens() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
     let amount: U256 = 100.into();
 
     let value: U256 = 1000.into();
@@ -262,12 +262,12 @@ fn test_vesting_escrow_add_tokens_by_user() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
     let amount: U256 = 100.into();
 
     let value: U256 = 1000.into();
@@ -303,12 +303,12 @@ fn test_vesting_escrow_fund() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 
     let amount: U256 = 100.into();
 
@@ -364,12 +364,12 @@ fn test_vesting_escrow_fund_by_user() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 
     let amount: U256 = 100.into();
 
@@ -424,12 +424,12 @@ fn test_vesting_escrow_commit_transfer_ownership() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
     TestContract::new(
         &env,
         "vesting-escrow-session-code.wasm",
@@ -444,7 +444,7 @@ fn test_vesting_escrow_commit_transfer_ownership() {
     );
 
     let ret: bool = env.query_account_named_key(owner, &[COMMIT_TRANSFER_OWNERSHIP.into()]);
-    assert_eq!(ret, true);
+    assert!(ret);
     assert_eq!(vesting_escrow_instance.future_admin(), Key::from(_user));
 }
 
@@ -458,12 +458,12 @@ fn test_vesting_escrow_apply_transfer_ownership() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 
     TestContract::new(
         &env,
@@ -479,7 +479,7 @@ fn test_vesting_escrow_apply_transfer_ownership() {
     );
 
     let ret: bool = env.query_account_named_key(owner, &[COMMIT_TRANSFER_OWNERSHIP.into()]);
-    assert_eq!(ret, true);
+    assert!(ret);
     assert_eq!(vesting_escrow_instance.future_admin(), Key::from(_user));
 
     TestContract::new(
@@ -496,7 +496,7 @@ fn test_vesting_escrow_apply_transfer_ownership() {
     );
 
     let ret: bool = env.query_account_named_key(owner, &[APPLY_TRANSFER_OWNERSHIP.into()]);
-    assert_eq!(ret, true);
+    assert!(ret);
     assert_eq!(vesting_escrow_instance.future_admin(), Key::from(_user));
     assert_eq!(vesting_escrow_instance.admin(), Key::from(_user));
 }
@@ -511,12 +511,12 @@ fn test_vesting_escrow_vested_supply() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 
     let amount: U256 = 100.into();
 
@@ -586,12 +586,12 @@ fn test_vesting_escrow_locked_supply() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 
     let amount: U256 = 1000.into();
 
@@ -627,7 +627,7 @@ fn test_vesting_escrow_locked_supply() {
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![2.into(), 3.into(), 4.into(), 5.into()];
-    vesting_escrow_instance.fund(owner, _recipients.clone(), _amounts.clone());
+    vesting_escrow_instance.fund(owner, _recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 14.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 986.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 2.into());
@@ -661,12 +661,12 @@ fn test_vesting_escrow_vested_of() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 
     let amount: U256 = 1000.into();
 
@@ -702,7 +702,7 @@ fn test_vesting_escrow_vested_of() {
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![2.into(), 3.into(), 4.into(), 5.into()];
-    vesting_escrow_instance.fund(owner, _recipients.clone(), _amounts.clone());
+    vesting_escrow_instance.fund(owner, _recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 14.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 986.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 2.into());
@@ -782,12 +782,12 @@ fn test_vesting_escrow_balance_of() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 
     let amount: U256 = 1000.into();
 
@@ -823,7 +823,7 @@ fn test_vesting_escrow_balance_of() {
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![2.into(), 3.into(), 4.into(), 5.into()];
-    vesting_escrow_instance.fund(owner, _recipients.clone(), _amounts.clone());
+    vesting_escrow_instance.fund(owner, _recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 14.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 986.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 2.into());
@@ -903,12 +903,12 @@ fn test_vesting_escrow_locked_of() {
     );
     assert_eq!(vesting_escrow_instance.start_time(), 10000.into());
     assert_eq!(vesting_escrow_instance.end_time(), 10001.into());
-    assert_eq!(vesting_escrow_instance.can_disable(), true);
+    assert!(vesting_escrow_instance.can_disable());
     assert_eq!(vesting_escrow_instance.admin(), owner.into());
     assert_eq!(vesting_escrow_instance.lock(), 0);
-    assert_eq!(vesting_escrow_instance.fund_admins_enabled(), true);
-    assert_eq!(vesting_escrow_instance.fund_admins(owner), false);
-    assert_eq!(vesting_escrow_instance.fund_admins(user1), true);
+    assert!(vesting_escrow_instance.fund_admins_enabled());
+    assert!(!vesting_escrow_instance.fund_admins(owner));
+    assert!(vesting_escrow_instance.fund_admins(user1));
 
     let amount: U256 = 1000.into();
 
@@ -944,7 +944,7 @@ fn test_vesting_escrow_locked_of() {
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![2.into(), 3.into(), 4.into(), 5.into()];
-    vesting_escrow_instance.fund(owner, _recipients.clone(), _amounts.clone());
+    vesting_escrow_instance.fund(owner, _recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 14.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 986.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 2.into());

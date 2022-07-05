@@ -43,7 +43,7 @@ impl VestingEscrowSimpleEvent {
         .to_string()
     }
 }
-
+#[allow(clippy::too_many_arguments)]
 pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(&self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
         set_hash(contract_hash);
@@ -79,13 +79,16 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         package_hash: ContractPackageHash,
     ) -> bool {
         let lock = get_lock();
-        if lock != false {
+        if lock {
             runtime::revert(Error::VestingEscrowSimpleLocked1);
         }
+        DisableddAt::init();
+        InitialLocked::init();
+        TotalClaimed::init();
         set_lock(true);
         set_hash(contract_hash);
         set_package_hash(package_hash);
-        if !(get_admin() == zero_address()) {
+        if get_admin() != zero_address() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleOnlyInitializeOnce));
         }
         set_token(token);
@@ -107,10 +110,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         ret.unwrap_or_revert();
         InitialLocked::instance().set(&recipient, amount);
         set_initial_locked_supply(amount);
-        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Fund {
-            recipient: recipient,
-            amount: amount,
-        });
+        self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Fund { recipient, amount });
         set_lock(false);
         true
     }
@@ -121,7 +121,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     //      of tokens which have already vested.
     // @param _recipient address to disable or enable
     fn toggle_disable(&self, recipient: Key) {
-        if !(get_admin() == self.get_caller()) {
+        if get_admin() != self.get_caller() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly1));
         }
         if !(get_can_disable()) {
@@ -132,20 +132,20 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         if DisableddAt::instance().get(&recipient) == 0.into() {
             is_disabled = true;
         }
-        if is_disabled == true {
+        if is_disabled {
             DisableddAt::instance().set(&recipient, U256::from(blocktime))
         } else {
             DisableddAt::instance().set(&recipient, U256::from(0))
         }
         self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::ToggleDisable {
-            recipient: recipient,
+            recipient,
             disabled: is_disabled,
         });
     }
 
     /*@notice Disable the ability to call `toggle_disable` */
     fn disable_can_disable(&self) {
-        if !(get_admin() == self.get_caller()) {
+        if get_admin() != self.get_caller() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly2));
         }
         set_can_disable(false);
@@ -230,7 +230,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     /* @notice Transfer ownership of GaugeController to `addr`
     @param addr Address to have ownership transferred to*/
     fn commit_transfer_ownership(&self, addr: Key) -> bool {
-        if !(get_admin() == self.get_caller()) {
+        if get_admin() != self.get_caller() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly3));
         }
         set_future_admin(addr);
@@ -250,7 +250,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let mut t: U256 = DisableddAt::instance().get(&addr);
         let blocktime: U256 = 1000.into();
         if t == U256::from(0) {
-            t = U256::from(blocktime);
+            t = blocktime;
         }
         let _total_vested_of: U256 = self._total_vested_of(addr, t);
         let _total_claimed: U256 = TotalClaimed::instance().get(&addr);
@@ -282,18 +282,18 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
 
     // @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) -> bool {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly4));
         }
         let mut _admin: Key = get_future_admin();
-        if !(_admin != zero_address()) {
+        if _admin == zero_address() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminNotSet));
         }
         set_admin(_admin);
         self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::ApplyOwnership {
             admin: _admin,
         });
-        return true;
+        true
     }
 
     fn vesting_escrow_simple_emit(&self, vesting_escrow_simple_event: &VestingEscrowSimpleEvent) {

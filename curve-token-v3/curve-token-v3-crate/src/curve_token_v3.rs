@@ -44,7 +44,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @dev set minter for a specified address
     // @param _minter The address to assign minter role.
     fn set_minter(&self, _minter: Key) {
-        if !(self.get_caller() == get_minter()) {
+        if self.get_caller() != get_minter() {
             runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterCanSet));
         }
         set_minter(_minter);
@@ -135,7 +135,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         Allowances::instance().set(&self.get_caller(), &spender, amount);
         self.curve_token_v3_emit(&CurveTokenV3Event::Approval {
             owner: self.get_caller(),
-            spender: spender,
+            spender,
             value: amount,
         });
     }
@@ -146,7 +146,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @param _to The account that will receive the created tokens.
     // @param _value The amount that will be created.
     fn mint(&self, _to: Key, _value: U256) -> bool {
-        if !(self.get_caller() == get_minter()) {
+        if self.get_caller() != get_minter() {
             runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed));
         }
         set_total_supply(
@@ -176,7 +176,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @param _value The amount that will be burned.
     // @return bool success
     fn burn_from(&self, _to: Key, _value: U256) -> bool {
-        if !(self.get_caller() == get_minter()) {
+        if self.get_caller() != get_minter() {
             runtime::revert(ApiError::from(Error::CurveTokenV3OnlyMinterAllowed2));
         }
         set_total_supply(
@@ -215,7 +215,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         self.curve_token_v3_emit(&CurveTokenV3Event::Approval {
             owner: self.get_caller(),
-            spender: spender,
+            spender,
             value: amount,
         });
         Ok(())
@@ -236,7 +236,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         self.curve_token_v3_emit(&CurveTokenV3Event::Approval {
             owner: self.get_caller(),
-            spender: spender,
+            spender,
             value: amount,
         });
         Ok(())
@@ -245,13 +245,13 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
     // @dev set name and symbol
     // @param _name.
     fn set_name(&self, _name: String, _symbol: String) {
-        if !(self.get_caller()
-            == runtime::call_versioned_contract(
+        if self.get_caller()
+            != runtime::call_versioned_contract(
                 get_minter().into_hash().unwrap_or_revert().into(),
                 None,
                 "owner",
                 runtime_args! {},
-            ))
+            )
         {
             runtime::revert(ApiError::from(Error::CurveTokenV3NotAuthorized));
         }

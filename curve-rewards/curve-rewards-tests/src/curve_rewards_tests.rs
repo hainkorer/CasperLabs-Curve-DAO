@@ -6,14 +6,14 @@ use common::keys::*;
 pub const TEN_E_NINE: u128 = 1000000000;
 fn deploy_token(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "erc2020",
         owner,
         runtime_args! {
             "name" => "Token",
             "symbol" => "TK",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 1000000000000000000)
         },
         0,
@@ -21,14 +21,14 @@ fn deploy_token(env: &TestEnv, owner: AccountHash) -> TestContract {
 }
 fn deploy_reward(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "erc2020",
         owner,
         runtime_args! {
             "name" => "Reward",
             "symbol" => "RD",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 1000000000000000000000)
         },
         0,
@@ -39,7 +39,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let owner = env.next_user();
     let token = deploy_token(&env, owner);
     let reward = deploy_reward(&env, owner);
-    let curve_rewards_instance = CURVEREWARDSInstance::new(
+    let curve_rewards_instance = CURVEREWARDSInstance::new_deploy(
         &env,
         "CURVEREWARDS",
         owner,
@@ -48,7 +48,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     );
     let curve_rewards_package_hash = Key::Hash(curve_rewards_instance.package_hash());
     // For Minting Purpose
-    let to: Key = Key::from(curve_rewards_package_hash);
+    let to: Key = curve_rewards_package_hash;
     let amount: U256 = U256::from(TEN_E_NINE * 100000000000000000000);
     token.call_contract(
         owner,

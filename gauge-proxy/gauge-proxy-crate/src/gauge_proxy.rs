@@ -40,7 +40,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
     /// @param o_admin Ownership admin
     /// @param e_admin Emergency admin
     fn commit_set_admins(&self, o_admin: Key, e_admin: Key) {
-        if !(self.get_caller() == get_ownership_admin()) {
+        if self.get_caller() != get_ownership_admin() {
             runtime::revert(ApiError::from(Error::AccessDenied));
         };
         set_future_ownership_admin(o_admin);
@@ -54,7 +54,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Apply the effects of `commit_set_admins`
     /// @dev Only callable by the new owner admin
     fn accept_set_admins(&self) {
-        if !(self.get_caller() == get_future_ownership_admin()) {
+        if self.get_caller() != get_future_ownership_admin() {
             runtime::revert(ApiError::from(Error::AccessDenied));
         };
         let e_admin: Key = get_future_emergency_admin();
@@ -74,7 +74,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(ApiError::from(Error::IsLocked));
         }
         set_lock(true);
-        if !(self.get_caller() == get_ownership_admin()) {
+        if self.get_caller() != get_ownership_admin() {
             runtime::revert(ApiError::from(Error::AccessDenied));
         };
         let () = runtime::call_versioned_contract(
@@ -136,7 +136,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
     ///     can be claimed from but does not require staking, the staking and withdraw selectors should be set to 0x00
     /// @param _reward_tokens List of claimable tokens for this reward contract
     fn set_rewards(&self, gauge: Key, reward_contract: Key, sigs: Bytes, reward_tokens: Vec<Key>) {
-        if !(self.get_caller() == get_ownership_admin()) {
+        if self.get_caller() != get_ownership_admin() {
             runtime::revert(ApiError::from(Error::AccessDenied));
         };
         let () = runtime::call_versioned_contract(
@@ -154,7 +154,8 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
     fn emit(&self, gauge_proxy_event: &GaugeProxyEvent) {
         let mut events = Vec::new();
         let tmp = get_package_hash().to_formatted_string();
-        let tmp: Vec<&str> = tmp.split("-").collect();
+        let split: char = '-';
+        let tmp: Vec<&str> = tmp.split(split).collect();
         let package_hash = tmp[1].to_string();
         match gauge_proxy_event {
             GaugeProxyEvent::CommitAdmins {

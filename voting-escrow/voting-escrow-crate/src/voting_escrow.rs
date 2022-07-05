@@ -16,7 +16,6 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
-use common::keys::*;
 
 /// @notice Votes have a weight depending on time, so that users are committed to the future of (whatever they are voting for)
 /// @dev Vote weight decays linearly over time. Lock time cannot be more than `MAXTIME` (4 years).
@@ -70,7 +69,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             runtime_args! {},
         );
         let decimals: U256 = decimals.into();
-        if !(decimals <= 255.into()) {
+        if decimals > 255.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowInvalidDecimals))
         }
 
@@ -83,7 +82,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn only_admin(&self) {
-        if !(self.get_caller() == get_admin()) {
+        if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::VotingEscrowAdminOnly));
         }
     }
@@ -100,7 +99,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn apply_transfer_ownership(&mut self) {
         self.only_admin();
         let admin: Key = get_future_admin();
-        if !(admin != zero_address()) {
+        if admin == zero_address() {
             runtime::revert(ApiError::from(Error::VotingEscrowZeroAddress));
         }
         set_admin(admin);
@@ -306,13 +305,14 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 }
                 SlopeChanges::instance().set(&old_locked.end, old_dslope);
             }
-            if new_locked.end > U256::from(u64::from(get_blocktime())) {
-                if new_locked.end > old_locked.end {
-                    new_dslope = new_dslope.checked_sub(u_new.slope).unwrap_or_revert(); // old slope disappeared at this point
-                    SlopeChanges::instance().set(&new_locked.end, new_dslope);
-                }
-                // else: we recorded it already in old_dslope
+            if new_locked.end > U256::from(u64::from(get_blocktime()))
+                && new_locked.end > old_locked.end
+            {
+                new_dslope = new_dslope.checked_sub(u_new.slope).unwrap_or_revert(); // old slope disappeared at this point
+                SlopeChanges::instance().set(&new_locked.end, new_dslope);
             }
+            // else: we recorded it already in old_dslope
+
             // Now handle user history
             let user_epoch: U256 = UserPointEpoch::instance()
                 .get(&addr)
@@ -409,13 +409,13 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         set_lock(true);
         let locked: LockedBalance = Locked::instance().get(&addr);
-        if !(value > 0.into()) {
+        if value <= 0.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowNeedNonZeroValue1));
         }
-        if !(locked.amount > 0.into()) {
+        if locked.amount <= 0.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowNoExistingLockFound1));
         }
-        if !(locked.end > U256::from(u64::from(get_blocktime()))) {
+        if locked.end <= U256::from(u64::from(get_blocktime())) {
             runtime::revert(ApiError::from(
                 Error::VotingEscrowCannotAddToExpiredLockWithdraw1,
             ));
@@ -444,21 +444,21 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             .checked_mul(WEEK)
             .unwrap_or_revert(); // Locktime is rounded down to weeks
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
-        if !(value > 0.into()) {
+        if value <= 0.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowNeedNonZeroValue2));
         }
-        if !(locked.amount == 0.into()) {
+        if locked.amount != 0.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowWithdrawOldTokensFirst));
         }
-        if !(unlock_time > U256::from(u64::from(get_blocktime()))) {
+        if unlock_time <= U256::from(u64::from(get_blocktime())) {
             runtime::revert(ApiError::from(
                 Error::VotingEscrowCanOnlyLockUntilTimeInTheFuture,
             ));
         }
-        if !(unlock_time
-            <= U256::from(u64::from(get_blocktime()))
+        if unlock_time
+            > U256::from(u64::from(get_blocktime()))
                 .checked_add(MAXTIME)
-                .unwrap_or_revert())
+                .unwrap_or_revert()
         {
             runtime::revert(ApiError::from(Error::VotingEscrowVotingLockCanBe4YearsMax1));
         }
@@ -480,13 +480,13 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         set_lock(true);
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
-        if !(value > 0.into()) {
+        if value <= 0.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowNeedNonZeroValue3));
         }
-        if !(locked.amount > 0.into()) {
+        if locked.amount <= 0.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowNoExistingLockFound2));
         }
-        if !(locked.end > U256::from(u64::from(get_blocktime()))) {
+        if locked.end <= U256::from(u64::from(get_blocktime())) {
             runtime::revert(ApiError::from(
                 Error::VotingEscrowCannotAddToExpiredLockWithdraw2,
             ));
@@ -514,21 +514,21 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             .unwrap_or_revert()
             .checked_mul(WEEK)
             .unwrap_or_revert(); // Locktime is rounded down to weeks
-        if !(locked.end > U256::from(u64::from(get_blocktime()))) {
+        if locked.end <= U256::from(u64::from(get_blocktime())) {
             runtime::revert(ApiError::from(Error::VotingEscrowLockExpired));
         }
-        if !(locked.amount > 0.into()) {
+        if locked.amount <= 0.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowNothingIsLocked));
         }
-        if !(unlock_time > locked.end) {
+        if unlock_time <= locked.end {
             runtime::revert(ApiError::from(
                 Error::VotingEscrowCanOnlyIncreaseLockDuration,
             ));
         }
-        if !(unlock_time
-            <= U256::from(u64::from(get_blocktime()))
+        if unlock_time
+            > U256::from(u64::from(get_blocktime()))
                 .checked_add(MAXTIME)
-                .unwrap_or_revert())
+                .unwrap_or_revert()
         {
             runtime::revert(ApiError::from(Error::VotingEscrowVotingLockCanBe4YearsMax2));
         }
@@ -546,7 +546,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     /// @dev Only possible if the lock has expired
     fn withdraw(&mut self) {
         let mut locked: LockedBalance = Locked::instance().get(&self.get_caller());
-        if !(U256::from(u64::from(get_blocktime())) >= locked.end) {
+        if U256::from(u64::from(get_blocktime())) < locked.end {
             runtime::revert(ApiError::from(Error::VotingEscrowTheLockDidntExpire));
         }
         let value: U256 = locked.amount.as_u128().into();
@@ -846,7 +846,8 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn emit(&self, voting_escrow_event: &VotingEscrowEvent) {
         let mut events = Vec::new();
         let tmp = get_package_hash().to_formatted_string();
-        let tmp: Vec<&str> = tmp.split("-").collect();
+        let split: char = '-';
+        let tmp: Vec<&str> = tmp.split(split).collect();
         let package_hash = tmp[1].to_string();
         match voting_escrow_event {
             VotingEscrowEvent::CommitOwnership { admin } => {

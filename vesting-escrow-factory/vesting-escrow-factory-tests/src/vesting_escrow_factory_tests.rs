@@ -1,4 +1,4 @@
-use casper_types::{account::AccountHash, Key, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::vesting_escrow_factory_instance::VESTINGESCROWFACTORYInstance;
@@ -28,7 +28,7 @@ fn deploy() -> (
         DECIMALS,
         INIT_TOTAL_SUPPLY.into(),
     );
-    let vesting_escrow_factory_instance: TestContract = VESTINGESCROWFACTORYInstance::new(
+    let vesting_escrow_factory_instance: TestContract = VESTINGESCROWFACTORYInstance::new_deploy(
         &env,
         NAME,
         owner,
@@ -88,7 +88,7 @@ fn test_accept_transfer_ownership() {
 #[test]
 fn test_deploy_vesting_contract() {
     let (env, vesting_escrow_factory_instance, target, owner) = deploy();
-    let user = env.next_user();
+    let _user = env.next_user();
     assert_eq!(vesting_escrow_factory_instance.admin(), Key::from(owner));
     assert_eq!(
         vesting_escrow_factory_instance.target(),
@@ -98,6 +98,21 @@ fn test_deploy_vesting_contract() {
     let _can_disable = false;
     let _vesting_duration: U256 = 20304001.into();
     let _vesting_start: U256 = 100000.into();
+
+    target.call_contract(
+        owner,
+        "mint",
+        runtime_args! {"to" => Key::from(vesting_escrow_factory_instance.contract_package_hash()) , "amount" => _amount},
+        0,
+    );
+
+    target.call_contract(
+        owner,
+        "approve",
+        runtime_args! {"spender" => Key::from(vesting_escrow_factory_instance.contract_package_hash()) , "amount" => _amount},
+        0,
+    );
+
     vesting_escrow_factory_instance.deploy_vesting_contract(
         owner,
         Key::Hash(target.package_hash()),
@@ -107,4 +122,11 @@ fn test_deploy_vesting_contract() {
         _vesting_duration,
         Some(_vesting_start),
     );
+    // let vesting_escrow_simple_contract_hash = ContractHash::from(
+    //     vesting_escrow_factory_instance
+    //         .vesting_escrow_simple_contract_hash()
+    //         .into_hash()
+    //         .unwrap(),
+    // );
+    // vesting_escrow_simple_contract_hash.
 }

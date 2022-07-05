@@ -4,8 +4,11 @@ use casperlabs_test_env::{TestContract, TestEnv};
 fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let instance =
-        IREWARDDISTRIBUTIONRECIPIENTInstance::new(&env, "IREWARDDISTRIBUTIONRECIPIENT", owner);
+    let instance = IREWARDDISTRIBUTIONRECIPIENTInstance::new_deploy(
+        &env,
+        "IREWARDDISTRIBUTIONRECIPIENT",
+        owner,
+    );
     (env, owner, instance)
 }
 

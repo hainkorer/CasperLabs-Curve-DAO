@@ -234,7 +234,7 @@ fn supply() {
 
 #[no_mangle]
 fn locked() {
-    let key: Key = runtime::get_named_arg("key");
+    let key: Key = runtime::get_named_arg("addr");
     runtime::ret(CLValue::from_t(data::Locked::instance().get(&key)).unwrap_or_revert())
 }
 
@@ -245,29 +245,30 @@ fn epoch() {
 
 #[no_mangle]
 fn point_history() {
-    let key: U256 = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::PointHistory::instance().get(&key)).unwrap_or_revert())
+    let epoch: U256 = runtime::get_named_arg("epoch");
+    runtime::ret(CLValue::from_t(data::PointHistory::instance().get(&epoch)).unwrap_or_revert())
 }
 
 #[no_mangle]
 fn user_point_history() {
-    let key1: Key = runtime::get_named_arg("key1");
-    let key2: U256 = runtime::get_named_arg("key2");
+    let user: Key = runtime::get_named_arg("user");
+    let user_epoch: U256 = runtime::get_named_arg("user_epoch");
     runtime::ret(
-        CLValue::from_t(data::UserPointHistory::instance().get(&key1, &key2)).unwrap_or_revert(),
+        CLValue::from_t(data::UserPointHistory::instance().get(&user, &user_epoch))
+            .unwrap_or_revert(),
     )
 }
 
 #[no_mangle]
 fn user_point_epoch() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::UserPointEpoch::instance().get(&key)).unwrap_or_revert())
+    let user: Key = runtime::get_named_arg("user");
+    runtime::ret(CLValue::from_t(data::UserPointEpoch::instance().get(&user)).unwrap_or_revert())
 }
 
 #[no_mangle]
 fn slope_changes() {
-    let key: U256 = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::SlopeChanges::instance().get(&key)).unwrap_or_revert())
+    let time: U256 = runtime::get_named_arg("time");
+    runtime::ret(CLValue::from_t(data::SlopeChanges::instance().get(&time)).unwrap_or_revert())
 }
 
 #[no_mangle]
@@ -528,7 +529,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "locked",
-        vec![],
+        vec![Parameter::new("addr", Key::cl_type())],
         data::LockedBalance::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -542,28 +543,31 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "point_history",
-        vec![],
+        vec![Parameter::new("epoch", U256::cl_type())],
         data::Point::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "user_point_history",
-        vec![],
+        vec![
+            Parameter::new("user", Key::cl_type()),
+            Parameter::new("user_epoch", U256::cl_type()),
+        ],
         data::Point::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "user_point_epoch",
-        vec![],
+        vec![Parameter::new("user", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "slope_changes",
-        vec![],
+        vec![Parameter::new("time", U256::cl_type())],
         U128::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

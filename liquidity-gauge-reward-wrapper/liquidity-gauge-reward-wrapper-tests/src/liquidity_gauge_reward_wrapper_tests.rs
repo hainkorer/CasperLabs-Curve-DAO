@@ -8,14 +8,14 @@ const NAME: &str = "LiquidityGuageRewardWrapper";
 //ERC20
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "rewarded_token",
         owner,
         runtime_args! {
             "name" => "rewarded_token",
             "symbol" => "ERA",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
         0,
@@ -31,7 +31,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
         runtime_args! {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
-            "decimal" => 9 as u8,
+            "decimal" => 9_u8,
             "supply" => U256::from(TEN_E_NINE * 10000000000000000)
         },
         200000000000,
@@ -82,14 +82,14 @@ fn deploy_gauge_controller(
 //Reward
 fn deploy_reward(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "erc20-token.wasm",
         "reward token",
         owner,
         runtime_args! {
             "name" => "reward token",
             "symbol" => "RT",
-            "decimals" => 9 as u8,
+            "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
         0,
@@ -117,7 +117,7 @@ fn deploy_curve_rewards(
     reward: Key,
 ) -> TestContract {
     TestContract::new(
-        &env,
+        env,
         "curve-rewards.wasm",
         "Curve Rewards",
         owner,
@@ -136,9 +136,9 @@ fn deploy_liquidity_gauge_reward(
     token: Key,
     reward: Key,
 ) -> TestContract {
-    let cruve_rewards = deploy_curve_rewards(&env, owner, token, reward);
+    let cruve_rewards = deploy_curve_rewards(env, owner, token, reward);
     TestContract::new(
-        &env,
+        env,
         "liquidity-gauge-reward.wasm",
         "Liquidity Guage Reward",
         owner,
@@ -185,7 +185,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         Key::Hash(erc20.package_hash()),
         Key::Hash(reward.package_hash()),
     );
-    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::new(
+    let liquidity_gauge_reward_wrapper_instance = LIQUIDITYGAUGEREWARDWRAPPERInstance::new_deploy(
         &env,
         NAME,
         owner,

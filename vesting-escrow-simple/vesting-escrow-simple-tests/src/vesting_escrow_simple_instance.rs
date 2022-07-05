@@ -6,12 +6,14 @@ use casperlabs_contract_utils::key_to_str;
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct VESTINGESCROWSIMPLEInstance(TestContract);
+//#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 
 impl VESTINGESCROWSIMPLEInstance {
     pub fn instance(contract: TestContract) -> VESTINGESCROWSIMPLEInstance {
         VESTINGESCROWSIMPLEInstance(contract)
     }
-    pub fn new(
+    pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,

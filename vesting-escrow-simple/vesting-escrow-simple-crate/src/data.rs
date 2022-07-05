@@ -138,7 +138,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or_revert()
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 pub fn set_future_admin(future_admin: Key) {
     set_key(FUTURE_ADMIN, future_admin);
@@ -147,10 +147,8 @@ pub fn get_future_admin() -> Key {
     get_key(FUTURE_ADMIN).unwrap_or_revert()
 }
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 pub fn set_hash(contract_hash: ContractHash) {

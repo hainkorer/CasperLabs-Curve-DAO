@@ -14,7 +14,8 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct VESTINGESCROWFACTORYInstance(TestContract);
-
+//#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
 impl VESTINGESCROWFACTORYInstance {
     pub fn instance(vesting_escrow_factory: TestContract) -> VESTINGESCROWFACTORYInstance {
         VESTINGESCROWFACTORYInstance(vesting_escrow_factory)
@@ -67,7 +68,7 @@ impl VESTINGESCROWFACTORYInstance {
         )
     }
 
-    pub fn new(
+    pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
@@ -105,40 +106,6 @@ impl VESTINGESCROWFACTORYInstance {
             0,
         );
     }
-    // pub fn new(
-    //     env: &TestEnv,
-    //     contract_name: &str,
-    //     sender: AccountHash,
-    //     name: &str,
-    //     symbol: &str,
-    //     decimals: u8,
-    //     initial_supply: U256,
-    // ) -> VESTINGESCROWFACTORYInstance {
-    //     VESTINGESCROWFACTORYInstance(TestContract::new(
-    //         env,
-    //         "vesting-escrow-factory-token.wasm",
-    //         contract_name,
-    //         sender,
-    //         runtime_args! {
-    //             "name" => name,
-    //             "symbol" => symbol,
-    //             "initial_supply" => initial_supply,
-    //             "decimals" => decimals,
-    //         },0
-    //     ))
-    // }
-
-    // pub fn transfer<T: Into<Key>>(&self, sender: AccountHash, recipient: T, amount: U256) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "transfer",
-    //         runtime_args! {
-    //             "recipient" => recipient.into(),
-    //             "amount" => amount
-    //         },
-    //         0,
-    //     );
-    // }
 
     pub fn apply_transfer_ownership(&self, sender: AccountHash) {
         self.0
@@ -198,6 +165,15 @@ impl VESTINGESCROWFACTORYInstance {
     }
     pub fn contract_hash(&self) -> Key {
         self.0.query_named_key(String::from("self_contract_hash"))
+    }
+
+    pub fn vesting_escrow_simple_contract_package_hash(&self) -> ContractPackageHash {
+        self.0
+            .query_named_key(String::from("vesting_escrow_simple_contract_package_hash"))
+    }
+    pub fn vesting_escrow_simple_contract_hash(&self) -> Key {
+        self.0
+            .query_named_key(String::from("vesting_escrow_simple_contract_hash"))
     }
 }
 

@@ -4,7 +4,7 @@ use casperlabs_test_env::{TestContract, TestEnv};
 fn deploy() -> (TestEnv, AccountHash, TestContract, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let instance = OWNABLEInstance::new(&env, "OWNABLE", owner);
+    let instance = OWNABLEInstance::new_deploy(&env, "OWNABLE", owner);
     // Test Contract For Returning Value
     let ownable_package_hash = Key::Hash(instance.package_hash());
     let proxy = OWNABLEInstance::proxy(&env, "Proxy", owner, ownable_package_hash);
@@ -27,7 +27,7 @@ fn transfer_ownership() {
     let (_, owner, instance, _) = deploy();
     let instance = OWNABLEInstance::contract_instance(instance);
     let new_owner: Key = Key::from_formatted_str(
-        "hash-0000000020000000000000000000000000000000000000000000000000000000".into(),
+        "hash-0000000020000000000000000000000000000000000000000000000000000000",
     )
     .unwrap();
     instance.transfer_ownership(owner, new_owner);

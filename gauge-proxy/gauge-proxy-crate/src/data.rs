@@ -3,14 +3,12 @@ use casperlabs_contract_utils::{get_key, set_key};
 use common::keys::*;
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 pub fn get_ownership_admin() -> Key {
-    get_key(OWNERSHIP_ADMIN).unwrap_or(zero_address())
+    get_key(OWNERSHIP_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_ownership_admin(ownership_admin: Key) {
@@ -18,7 +16,7 @@ pub fn set_ownership_admin(ownership_admin: Key) {
 }
 
 pub fn get_emergency_admin() -> Key {
-    get_key(EMERGENCY_ADMIN).unwrap_or(zero_address())
+    get_key(EMERGENCY_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_emergency_admin(emergency_admin: Key) {
@@ -26,7 +24,7 @@ pub fn set_emergency_admin(emergency_admin: Key) {
 }
 
 pub fn get_future_ownership_admin() -> Key {
-    get_key(FUTURE_OWNERSHIP_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_OWNERSHIP_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_ownership_admin(future_ownership_admin: Key) {
@@ -34,7 +32,7 @@ pub fn set_future_ownership_admin(future_ownership_admin: Key) {
 }
 
 pub fn get_future_emergency_admin() -> Key {
-    get_key(FUTURE_EMERGENCY_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_EMERGENCY_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_emergency_admin(future_emergency_admin: Key) {

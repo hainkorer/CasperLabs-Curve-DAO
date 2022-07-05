@@ -11,11 +11,14 @@ pub type Meta = BTreeMap<String, String>;
 
 pub struct OWNABLEInstance(TestContract);
 
+// //#[clippy::must_use]
+#[allow(clippy::too_many_arguments)]
+
 impl OWNABLEInstance {
     pub fn contract_instance(contract: TestContract) -> OWNABLEInstance {
         OWNABLEInstance(contract)
     }
-    pub fn new(env: &TestEnv, contract_name: &str, sender: AccountHash) -> TestContract {
+    pub fn new_deploy(env: &TestEnv, contract_name: &str, sender: AccountHash) -> TestContract {
         TestContract::new(
             env,
             "ownable.wasm",

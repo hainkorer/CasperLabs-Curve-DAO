@@ -42,7 +42,7 @@ fn deploy() -> (
         Key::Hash(lp_token.package_hash()),
         Key::Hash(lp_token.package_hash()),
     );
-    let reward_only_gauge: TestContract = REWARDONLYGAUGEInstance::new(
+    let reward_only_gauge: TestContract = REWARDONLYGAUGEInstance::new_deploy(
         &env,
         NAME,
         owner,
@@ -173,7 +173,7 @@ fn test_reward_contract() {
     assert_eq!(
         ret,
         Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
+            "hash-0000000000000000000000000000000000000000000000000000000000000000"
         )
         .unwrap()
     );
@@ -312,7 +312,7 @@ fn test_increase_allowance() {
     let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
+        Err(e) => panic!("Increase Allowance Failed ERROR:{}", e),
     }
     assert_eq!(reward_only_gauge.allowance(owner, user), 100.into());
 }
@@ -351,7 +351,7 @@ fn test_decrease_allowance() {
     let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
+        Err(e) => panic!("Increase Allowance Failed ERROR:{}", e),
     }
     assert_eq!(reward_only_gauge.allowance(owner, user), 100.into());
     let amount2: U256 = 10.into();
@@ -372,7 +372,7 @@ fn test_decrease_allowance() {
     let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Decrease Allowance Failed ERROR:{}", e),
+        Err(e) => panic!("Decrease Allowance Failed ERROR:{}", e),
     }
     assert_eq!(reward_only_gauge.allowance(owner, user), 90.into());
 }
@@ -1140,7 +1140,7 @@ fn test_transfer() {
     let ret: Result<(), u32> = env.query_account_named_key(owner, &[TRANSFER.into()]);
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Transfer Failed ERROR:{}", e),
+        Err(e) => panic!("Transfer Failed ERROR:{}", e),
     }
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -1212,7 +1212,7 @@ fn test_transfer_from() {
     let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Increase Allowance Failed ERROR:{}", e),
+        Err(e) => panic!("Increase Allowance Failed ERROR:{}", e),
     }
     assert_eq!(reward_only_gauge.allowance(owner, user), 100.into());
 
@@ -1236,7 +1236,7 @@ fn test_transfer_from() {
     let ret: Result<(), u32> = env.query_account_named_key(user, &[TRANSFER_FROM.into()]);
     match ret {
         Ok(()) => {}
-        Err(e) => assert!(false, "Transfer From Failed ERROR:{}", e),
+        Err(e) => panic!("Transfer From Failed ERROR:{}", e),
     }
     assert_eq!(reward_only_gauge.allowance(owner, user), 95.into());
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");

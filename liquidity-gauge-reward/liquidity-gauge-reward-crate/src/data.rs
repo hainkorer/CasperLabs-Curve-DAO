@@ -11,10 +11,8 @@ pub const BOOST_WARMUP: U256 = U256([1209600, 0, 0, 0]);
 pub const WEEK: U256 = U256([604800, 0, 0, 0]);
 
 pub fn zero_address() -> Key {
-    Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000".into(),
-    )
-    .unwrap()
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
 }
 
 // caller -> recipient -> can deposit?
@@ -324,7 +322,7 @@ pub fn set_period(period: U128) {
 }
 
 pub fn get_minter() -> Key {
-    get_key(MINTER).unwrap_or(zero_address())
+    get_key(MINTER).unwrap_or_else(zero_address)
 }
 
 pub fn set_minter(minter: Key) {
@@ -332,7 +330,7 @@ pub fn set_minter(minter: Key) {
 }
 
 pub fn get_crv_token() -> Key {
-    get_key(CRV_TOKEN).unwrap_or(zero_address())
+    get_key(CRV_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_crv_token(crv_token: Key) {
@@ -340,21 +338,21 @@ pub fn set_crv_token(crv_token: Key) {
 }
 
 pub fn get_lp_token() -> Key {
-    get_key(LP_TOKEN).unwrap_or(zero_address())
+    get_key(LP_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_lp_token(lp_token: Key) {
     set_key(LP_TOKEN, lp_token);
 }
 pub fn get_controller() -> Key {
-    get_key(CONTROLLER).unwrap_or(zero_address())
+    get_key(CONTROLLER).unwrap_or_else(zero_address)
 }
 
 pub fn set_controller(controller: Key) {
     set_key(CONTROLLER, controller);
 }
 pub fn get_voting_escrow() -> Key {
-    get_key(VOTING_ESCROW).unwrap_or(zero_address())
+    get_key(VOTING_ESCROW).unwrap_or_else(zero_address)
 }
 
 pub fn set_voting_escrow(voting_escrow: Key) {
@@ -394,7 +392,7 @@ pub fn set_inflation_rate(inflation_rate: U256) {
 }
 
 pub fn get_reward_contract() -> Key {
-    get_key(REWARD_CONTRACT).unwrap_or(zero_address())
+    get_key(REWARD_CONTRACT).unwrap_or_else(zero_address)
 }
 
 pub fn set_reward_contract(reward_contract: Key) {
@@ -402,7 +400,7 @@ pub fn set_reward_contract(reward_contract: Key) {
 }
 
 pub fn get_rewarded_token() -> Key {
-    get_key(REWARDED_TOKEN).unwrap_or(zero_address())
+    get_key(REWARDED_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_rewarded_token(rewarded_token: Key) {
@@ -418,7 +416,7 @@ pub fn set_reward_integral(reward_integral: U256) {
 }
 
 pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or(zero_address())
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_admin(admin: Key) {
@@ -426,7 +424,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn get_future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or(zero_address())
+    get_key(FUTURE_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_admin(future_admin: Key) {

@@ -27,6 +27,7 @@ impl ContractContext<OnChainContractStorage> for LiquidityGaugeReward {
 }
 
 impl LIQUIDITYGAUGEREWARD<OnChainContractStorage> for LiquidityGaugeReward {}
+#[allow(clippy::too_many_arguments)]
 impl LiquidityGaugeReward {
     fn constructor(
         &mut self,
