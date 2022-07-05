@@ -8,7 +8,8 @@ use casper_contract::{
 };
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
+    U256,
 };
 use casperlabs_contract_utils::{set_key, ContractContext, OnChainContractStorage};
 use casperlabs_erc20::{self, data as erc20_data, ERC20};
@@ -171,15 +172,6 @@ fn balance_of() {
     runtime::ret(CLValue::from_t(erc20_data::Balances::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
-fn allowances() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let spender: Key = runtime::get_named_arg("spender");
-    runtime::ret(
-        CLValue::from_t(erc20_data::Allowances::instance().get(&owner, &spender))
-            .unwrap_or_revert(),
-    );
-}
-#[no_mangle]
 fn minter() {
     runtime::ret(CLValue::from_t(data::get_minter()).unwrap_or_revert());
 }
@@ -187,7 +179,14 @@ fn minter() {
 fn admin() {
     runtime::ret(CLValue::from_t(data::get_admin()).unwrap_or_revert());
 }
-
+#[no_mangle]
+fn mining_epoch() {
+    runtime::ret(CLValue::from_t(data::get_mining_epoch()).unwrap_or_revert());
+}
+#[no_mangle]
+fn start_epoch_time() {
+    runtime::ret(CLValue::from_t(data::get_start_epoch_time()).unwrap_or_revert());
+}
 #[no_mangle]
 fn rate() {
     runtime::ret(CLValue::from_t(data::get_rate()).unwrap_or_revert());
@@ -361,16 +360,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "allowances",
-        vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("spender", Key::cl_type()),
-        ],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "minter",
         vec![],
         Key::cl_type(),
@@ -381,6 +370,20 @@ fn get_entry_points() -> EntryPoints {
         "admin",
         vec![],
         Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "mining_epoch",
+        vec![],
+        U128::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "start_epoch_time",
+        vec![],
+        U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

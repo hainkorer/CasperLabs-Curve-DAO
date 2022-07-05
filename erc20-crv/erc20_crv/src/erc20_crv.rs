@@ -191,7 +191,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             start_epoch_time
         }
     }
-    
+
     ///"""
     ///@notice Get timestamp of the next mining epoch start
     ///        while simultaneously updating mining parameters
