@@ -27,7 +27,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
         runtime_args! {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
-            "decimal" => 9_u8,
+            "decimals" => 9_u8,
             "supply" => U256::from(0)
         },
         200000000000,
