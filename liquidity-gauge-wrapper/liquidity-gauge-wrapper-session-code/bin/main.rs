@@ -83,15 +83,15 @@ pub extern "C" fn call() {
             store(BALANCE_OF, ret);
         }
         APPROVED_TO_DEPOSIT => {
-            let key0: Key = runtime::get_named_arg("key0");
-            let key1: Key = runtime::get_named_arg("key1");
+            let owner: Key = runtime::get_named_arg("owner");
+            let spender: Key = runtime::get_named_arg("spender");
             let ret: bool = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 APPROVED_TO_DEPOSIT,
                 runtime_args! {
-                    "key0" => key0,
-                    "key1" => key1,
+                    "owner" => owner,
+                    "spender" => spender,
                 },
             );
             store(APPROVED_TO_DEPOSIT, ret);
