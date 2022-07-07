@@ -284,8 +284,8 @@ fn test_set_approve_deposit() {
         runtime_args! {
             "entrypoint" => String::from(APPROVED_TO_DEPOSIT),
             "package_hash" => package_hash,
-            "key0" => Key::Account(owner) ,
-            "key1" => Key::Account(owner)
+            "owner" => Key::Account(owner) ,
+            "spender" => Key::Account(owner)
         },
         300,
     );
