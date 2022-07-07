@@ -200,9 +200,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                 "amount" => ClaimableCrv::instance().get(&addr)
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-        }
+        ret.unwrap_or_revert();
         ClaimableCrv::instance().set(&addr, 0.into());
         set_lock(false);
     }
@@ -255,9 +253,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                     "amount" => value
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-            }
+            ret.unwrap_or_revert();
             let () = runtime::call_versioned_contract(
                 get_gauge().into_hash().unwrap_or_revert().into(),
                 None,
@@ -323,9 +319,7 @@ pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>: ContractContext<Stora
                     "amount" => value
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-            }
+            ret.unwrap_or_revert();
         }
         LIQUIDITYGAUGEWRAPPER::emit(
             self,

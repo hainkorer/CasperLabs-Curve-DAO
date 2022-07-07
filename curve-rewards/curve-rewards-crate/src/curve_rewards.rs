@@ -101,7 +101,7 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
         let reward: U256 = self.earned(self.get_caller());
         if reward > 0.into() {
             Rewards::instance().set(&self.get_caller(), 0.into());
-            let _ret: Result<(), u32> = runtime::call_versioned_contract(
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
                 get_snx().into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer",
@@ -110,6 +110,7 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
                     "amount" => reward
                 },
             );
+            ret.unwrap_or_revert();
             CURVEREWARDS::emit(
                 self,
                 &CurveRewardsEvent::RewardPaid {
