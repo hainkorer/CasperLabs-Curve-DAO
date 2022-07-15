@@ -96,6 +96,8 @@ fn last_time_reward_applicable() {
         },
         200,
     );
+    let ret: U256 = env.query_account_named_key(owner, &[LAST_TIME_REWARD_APPLICABLE.into()]);
+    assert_eq!(ret, 0.into(), "invalid result");
 }
 #[test]
 fn reward_per_token() {
@@ -116,10 +118,8 @@ fn reward_per_token() {
         },
         200,
     );
-    // let ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
-    // // proxy.reward_per_token(owner);
-    // // let v1: U256 = proxy.result();
-    // println!("{:?}", ret);
+    let ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
+    assert_eq!(ret, 186007.into(), "invalid result");
 }
 #[test]
 fn earned() {
@@ -141,47 +141,165 @@ fn earned() {
         },
         200,
     );
-    // let ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
-    // // proxy.earned(owner, Key::Account(owner));
-    // //let v1: U256 = curve_rewards_instance.result();
-    // println!("{:?}", ret);
-    // //println!("{:?}", v1);
+    let ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
+    let v: u128 = 2480100000000000000_u128;
+    assert_eq!(ret, v.into(), "invalid result");
 }
 #[test]
 fn stake() {
-    let (_, owner, instance) = deploy();
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     let amount: U256 = U256::from(TEN_E_NINE * 20);
     curve_rewards_instance.stake(owner, amount);
+    TestContract::new(
+        &env,
+        "curve-rewards-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, amount, "Invalid result");
 }
 #[test]
 fn withdraw() {
-    let (_, owner, instance) = deploy();
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     let amount: U256 = U256::from(TEN_E_NINE * 20);
     curve_rewards_instance.stake(owner, amount);
     let withdraw_amount: U256 = U256::from(TEN_E_NINE * 10);
     curve_rewards_instance.withdraw(owner, withdraw_amount);
+    TestContract::new(
+        &env,
+        "curve-rewards-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, withdraw_amount, "Invalid result");
+}
+#[should_panic]
+#[test]
+fn withdraw_panic() {
+    let (_, owner, instance) = deploy();
+    let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
+    let withdraw_amount: U256 = U256::from(TEN_E_NINE * 10);
+    curve_rewards_instance.withdraw(owner, withdraw_amount);
 }
 #[test]
 fn get_reward() {
-    let (_, owner, instance) = deploy();
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
+    let amount: U256 = U256::from(TEN_E_NINE * 20);
+    curve_rewards_instance.stake(owner, amount);
     curve_rewards_instance.get_reward(owner);
+    TestContract::new(
+        &env,
+        "curve-rewards-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, amount, "Invalid result");
 }
 #[test]
 fn exit() {
-    let (_, owner, instance) = deploy();
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     let amount: U256 = U256::from(TEN_E_NINE * 20);
     curve_rewards_instance.stake(owner, amount);
     curve_rewards_instance.exit(owner);
+    TestContract::new(
+        &env,
+        "curve-rewards-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, 0.into(), "Invalid result");
+}
+#[should_panic]
+#[test]
+fn exit_panic() {
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
+    curve_rewards_instance.exit(owner);
+    TestContract::new(
+        &env,
+        "curve-rewards-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, 0.into(), "Invalid result");
 }
 #[test]
 fn notify_reward_amount() {
-    let (_, owner, instance) = deploy();
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     let amount: U256 = U256::from(TEN_E_NINE * 20);
     curve_rewards_instance.stake(owner, amount);
     curve_rewards_instance.notify_reward_amount(owner, U256::from(TEN_E_NINE * 20));
+    TestContract::new(
+        &env,
+        "curve-rewards-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(LAST_TIME_REWARD_APPLICABLE),
+            "package_hash" => package_hash,
+        },
+        200,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[LAST_TIME_REWARD_APPLICABLE.into()]);
+    assert_eq!(ret, 200.into(), "invalid result");
+    TestContract::new(
+        &env,
+        "curve-rewards-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, amount, "Invalid result");
 }
