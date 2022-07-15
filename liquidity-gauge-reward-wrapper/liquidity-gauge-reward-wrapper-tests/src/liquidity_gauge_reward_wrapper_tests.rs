@@ -328,7 +328,7 @@ fn test_claimable_reward() {
         300,
     );
     let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
-    assert_eq!(ret,0.into(), "Invalid result");
+    assert_eq!(ret, 0.into(), "Invalid result");
 }
 #[test]
 fn test_claim_tokens() {
