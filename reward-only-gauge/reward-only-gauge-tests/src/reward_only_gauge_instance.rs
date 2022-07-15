@@ -57,6 +57,26 @@ impl REWARDONLYGAUGEInstance {
         )
     }
 
+    pub fn curve_rewards(
+        env: &TestEnv,
+        contract_name: &str,
+        sender: AccountHash,
+        token: Key,
+        reward: Key,
+    ) -> TestContract {
+        TestContract::new(
+            env,
+            "curve-rewards.wasm",
+            contract_name,
+            sender,
+            runtime_args! {
+                "token" => token,
+                "reward" => reward
+            },
+            0,
+        )
+    }
+
     pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
@@ -198,6 +218,66 @@ impl REWARDONLYGAUGEInstance {
             0,
         );
     }
+    pub fn set_rewards<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        _reward_contract: T,
+        _claim_sig: Bytes,
+        _reward_tokens: Vec<String>,
+    ) {
+        self.0.call_contract(
+            sender,
+            "set_rewards",
+            runtime_args! {
+                "_reward_contract" => _reward_contract.into(),
+                "_claim_sig" => _claim_sig,
+                "_reward_tokens" => _reward_tokens,
+            },
+            0,
+        );
+    }
+    pub fn claim_rewards(&self, sender: AccountHash, _addr: Option<Key>, _receiver: Option<Key>) {
+        self.0.call_contract(
+            sender,
+            "claim_rewards",
+            runtime_args! {
+                "_addr" => _addr,
+                "_receiver" => _receiver,
+            },
+            0,
+        );
+    }
+
+    pub fn deposit(
+        &self,
+        sender: AccountHash,
+        _value: U256,
+        _addr: Option<Key>,
+        _claim_rewards: Option<bool>,
+    ) {
+        self.0.call_contract(
+            sender,
+            "deposit",
+            runtime_args! {
+                "_value" => _value,
+                "_addr" => _addr,
+                "_claim_rewards" => _claim_rewards,
+            },
+            0,
+        );
+    }
+
+    pub fn withdraw(&self, sender: AccountHash, _value: U256, _claim_rewards: Option<bool>) {
+        self.0.call_contract(
+            sender,
+            "withdraw",
+            runtime_args! {
+                "_value" => _value,
+                "_claim_rewards" => _claim_rewards,
+            },
+            0,
+        );
+    }
 
     pub fn balance_of<T: Into<Key>>(&self, account: T) -> U256 {
         self.0
@@ -219,9 +299,9 @@ impl REWARDONLYGAUGEInstance {
             .query_dictionary("reward_integral", key_to_str(&account.into()))
             .unwrap_or_default()
     }
-    pub fn reward_tokens<T: Into<Key>>(&self, account: T) -> Key {
+    pub fn reward_tokens(&self, index: U256) -> Key {
         self.0
-            .query_dictionary("reward_tokens", key_to_str(&account.into()))
+            .query_dictionary("reward_tokens", (&index).to_string())
             .unwrap()
     }
 

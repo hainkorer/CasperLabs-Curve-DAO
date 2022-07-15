@@ -3,6 +3,9 @@ pub const SESSION_CODE_WASM: &str = "session-code.wasm";
 pub const SESSION_CODE_NAME: &str = "session_code";
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_CONTRACT_PACKAGE_HASH: &str = "self_contract_package_hash";
+pub const VESTING_ESCROW_SIMPLE_CONTRACT_HASH: &str = "vesting_escrow_simple_contract_hash";
+pub const VESTING_ESCROW_SIMPLE_CONTRACT_PACKAGE_HASH: &str =
+    "vesting_escrow_simple_contract_package_hash";
 pub const EVENT_TYPE: &str = "event_type";
 pub const RESULT: &str = "result";
 pub const ADMIN: &str = "admin";
@@ -205,5 +208,5 @@ pub const DECREASE_ALLOWANCE: &str = "decrease_allowance";
 // pub const REWARD_CONTRACT: &str = "reward_contract";
 pub const LAST_CLAIM: &str = "last_claim";
 pub const CLAIMED_REWARD: &str = "claimed_reward";
-pub const CLAIMEABLE_REWARD: &str = "claimable_reward";
-pub const CLAIMEABLE_REWARD_WRITE: &str = "claimable_reward_write";
+// pub const CLAIMABLE_REWARD: &str = "claimable_reward";
+pub const CLAIMABLE_REWARD_WRITE: &str = "claimable_reward_write";

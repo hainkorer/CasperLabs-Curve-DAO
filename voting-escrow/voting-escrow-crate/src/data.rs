@@ -83,13 +83,13 @@ impl UserPointHistory {
         Dict::init(USER_POINT_HISTORY)
     }
 
-    pub fn get(&self, owner: &Key, recipient: &U256) -> Point {
-        let key_: String = key_and_value_to_str(owner, recipient);
+    pub fn get(&self, user: &Key, user_epoch: &U256) -> Point {
+        let key_: String = key_and_value_to_str(user, user_epoch);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, owner: &Key, recipient: &U256, value: Point) {
-        let key_: String = key_and_value_to_str(owner, recipient);
+    pub fn set(&self, user: &Key, user_epoch: &U256, value: Point) {
+        let key_: String = key_and_value_to_str(user, user_epoch);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -111,12 +111,12 @@ impl UserPointEpoch {
         Dict::init(USER_POINT_EPOCH)
     }
 
-    pub fn get(&self, owner: &Key) -> U256 {
-        self.dict.get_by_key(owner).unwrap_or_default()
+    pub fn get(&self, user: &Key) -> U256 {
+        self.dict.get_by_key(user).unwrap_or_default()
     }
 
-    pub fn set(&self, owner: &Key, value: U256) {
-        self.dict.set_by_key(owner, value);
+    pub fn set(&self, user: &Key, value: U256) {
+        self.dict.set_by_key(user, value);
     }
 }
 
@@ -137,14 +137,12 @@ impl SlopeChanges {
         Dict::init(SLOPE_CHANGES)
     }
 
-    pub fn get(&self, owner: &U256) -> U128 {
-        self.dict
-            .get(owner.to_string().as_str())
-            .unwrap_or_default()
+    pub fn get(&self, time: &U256) -> U128 {
+        self.dict.get(time.to_string().as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, owner: &U256, value: U128) {
-        self.dict.set(owner.to_string().as_str(), value);
+    pub fn set(&self, time: &U256, value: U128) {
+        self.dict.set(time.to_string().as_str(), value);
     }
 }
 
@@ -167,12 +165,14 @@ impl PointHistory {
         Dict::init(POINT_HISTORY)
     }
 
-    pub fn get(&self, indx: &U256) -> Point {
-        self.dict.get(indx.to_string().as_str()).unwrap_or_default()
+    pub fn get(&self, epoch: &U256) -> Point {
+        self.dict
+            .get(epoch.to_string().as_str())
+            .unwrap_or_default()
     }
 
-    pub fn set(&self, indx: &U256, value: Point) {
-        self.dict.set(indx.to_string().as_str(), value);
+    pub fn set(&self, epoch: &U256, value: Point) {
+        self.dict.set(epoch.to_string().as_str(), value);
     }
 
     pub fn push(&mut self, value: Point) {

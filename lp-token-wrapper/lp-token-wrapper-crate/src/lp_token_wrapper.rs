@@ -32,8 +32,8 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
     fn total_supply(&self) -> U256 {
         get_total_supply()
     }
-    fn balance_of(&self, account: Key) -> U256 {
-        Balances::instance().get(&account)
+    fn balance_of(&self, owner: Key) -> U256 {
+        Balances::instance().get(&owner)
     }
     fn stake(&mut self, amount: U256) {
         set_total_supply(
@@ -48,7 +48,7 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
                 .checked_add(amount)
                 .unwrap_or_revert_with(Error::LpTokenWrapperAdditionError2),
         );
-        let _ret: Result<(), u32> = runtime::call_versioned_contract(
+        let ret: Result<(), u32> = runtime::call_versioned_contract(
             get_uni().into_hash().unwrap_or_revert().into(),
             None,
             "transfer_from",
@@ -58,6 +58,7 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
                 "amount" => amount
             },
         );
+        ret.unwrap_or_revert();
     }
     fn withdraw(&mut self, amount: U256) {
         set_total_supply(
@@ -72,7 +73,7 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
                 .checked_sub(amount)
                 .unwrap_or_revert_with(Error::LpTokenWrapperSubtractionError2),
         );
-        let _ret: Result<(), u32> = runtime::call_versioned_contract(
+        let ret: Result<(), u32> = runtime::call_versioned_contract(
             get_uni().into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
@@ -81,5 +82,6 @@ pub trait LPTOKENWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
                 "amount" => amount
             },
         );
+        ret.unwrap_or_revert();
     }
 }

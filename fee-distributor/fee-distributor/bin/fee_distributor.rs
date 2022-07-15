@@ -184,14 +184,14 @@ fn time_cursor() {
 
 #[no_mangle]
 fn time_cursor_of() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(TimeCursorOf::instance().get(&key)).unwrap_or_revert());
+    let addr: Key = runtime::get_named_arg("addr");
+    runtime::ret(CLValue::from_t(TimeCursorOf::instance().get(&addr)).unwrap_or_revert());
 }
 
 #[no_mangle]
 fn user_epoch_of() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(UserEpochOf::instance().get(&key)).unwrap_or_revert());
+    let addr: Key = runtime::get_named_arg("addr");
+    runtime::ret(CLValue::from_t(UserEpochOf::instance().get(&addr)).unwrap_or_revert());
 }
 
 #[no_mangle]
@@ -201,8 +201,8 @@ fn last_token_time() {
 
 #[no_mangle]
 fn tokens_per_week() {
-    let indx: U256 = runtime::get_named_arg("indx");
-    runtime::ret(CLValue::from_t(TokensPerWeek::instance().get(&indx)).unwrap_or_revert());
+    let week: U256 = runtime::get_named_arg("week");
+    runtime::ret(CLValue::from_t(TokensPerWeek::instance().get(&week)).unwrap_or_revert());
 }
 
 #[no_mangle]
@@ -227,8 +227,8 @@ fn token_last_balance() {
 
 #[no_mangle]
 fn ve_supply() {
-    let indx: U256 = runtime::get_named_arg("indx");
-    runtime::ret(CLValue::from_t(VeSupply::instance().get(&indx)).unwrap_or_revert());
+    let week: U256 = runtime::get_named_arg("week");
+    runtime::ret(CLValue::from_t(VeSupply::instance().get(&week)).unwrap_or_revert());
 }
 
 #[no_mangle]
@@ -414,14 +414,14 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "time_cursor_of",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("addr", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "user_epoch_of",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("addr", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -435,7 +435,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "tokens_per_week",
-        vec![Parameter::new("indx", U256::cl_type())],
+        vec![Parameter::new("week", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -470,7 +470,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "ve_supply",
-        vec![Parameter::new("indx", U256::cl_type())],
+        vec![Parameter::new("week", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

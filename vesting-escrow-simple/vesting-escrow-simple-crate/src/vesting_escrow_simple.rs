@@ -82,6 +82,9 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         if lock {
             runtime::revert(Error::VestingEscrowSimpleLocked1);
         }
+        DisableddAt::init();
+        InitialLocked::init();
+        TotalClaimed::init();
         set_lock(true);
         set_hash(contract_hash);
         set_package_hash(package_hash);

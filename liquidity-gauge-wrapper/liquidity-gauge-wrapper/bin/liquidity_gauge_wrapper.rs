@@ -193,8 +193,8 @@ fn gauge() {
 }
 #[no_mangle]
 fn balance_of() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::BalanceOf::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::BalanceOf::instance().get(&owner)).unwrap_or_revert());
 }
 
 #[no_mangle]
@@ -215,16 +215,17 @@ fn decimals() {
 }
 #[no_mangle]
 fn approved_to_deposit() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let key1: Key = runtime::get_named_arg("key1");
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
     runtime::ret(
-        CLValue::from_t(data::ApprovedToDeposit::instance().get(&key0, &key1)).unwrap_or_revert(),
+        CLValue::from_t(data::ApprovedToDeposit::instance().get(&owner, &spender))
+            .unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn claimable_crv() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::ClaimableCrv::instance().get(&key)).unwrap_or_revert());
+    let account: Key = runtime::get_named_arg("account");
+    runtime::ret(CLValue::from_t(data::ClaimableCrv::instance().get(&account)).unwrap_or_revert());
 }
 #[no_mangle]
 fn admin() {
@@ -447,7 +448,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -483,8 +484,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "approved_to_deposit",
         vec![
-            Parameter::new("key0", Key::cl_type()),
-            Parameter::new("key1", Key::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
         ],
         bool::cl_type(),
         EntryPointAccess::Public,
@@ -492,7 +493,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claimable_crv",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("account", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

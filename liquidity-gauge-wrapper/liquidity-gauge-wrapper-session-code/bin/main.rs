@@ -70,6 +70,59 @@ pub extern "C" fn call() {
             );
             store(ALLOWANCE, ret);
         }
+        BALANCE_OF => {
+            let owner: Key = runtime::get_named_arg("owner");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                BALANCE_OF,
+                runtime_args! {
+                    "owner" => owner,
+                },
+            );
+            store(BALANCE_OF, ret);
+        }
+        APPROVED_TO_DEPOSIT => {
+            let owner: Key = runtime::get_named_arg("owner");
+            let spender: Key = runtime::get_named_arg("spender");
+            let ret: bool = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                APPROVED_TO_DEPOSIT,
+                runtime_args! {
+                    "owner" => owner,
+                    "spender" => spender,
+                },
+            );
+            store(APPROVED_TO_DEPOSIT, ret);
+        }
+        ADMIN => {
+            let ret: Key = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                ADMIN,
+                runtime_args! {},
+            );
+            store(ADMIN, ret);
+        }
+        FUTURE_ADMIN => {
+            let ret: Key = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                FUTURE_ADMIN,
+                runtime_args! {},
+            );
+            store(FUTURE_ADMIN, ret);
+        }
+        IS_KILLED => {
+            let ret: bool = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                IS_KILLED,
+                runtime_args! {},
+            );
+            store(IS_KILLED, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

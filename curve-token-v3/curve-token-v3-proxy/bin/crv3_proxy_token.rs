@@ -20,7 +20,6 @@ fn constructor() {
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     let curve_token_v3: Key = runtime::get_named_arg("curve_token_v3");
-
     mappings::set_key(&mappings::self_hash_key(), contract_hash);
     mappings::set_key(&mappings::self_package_key(), package_hash);
     mappings::set_key(
@@ -62,27 +61,16 @@ fn transfer_from() {
     mappings::set_key(&mappings::result_key(), ret);
 }
 #[no_mangle]
-fn get_total_supply_crv3() {
-    let curve_token_v3_address: ContractHash = mappings::get_key(&mappings::curv_token_v3_key());
-
-    let ret: U256 = runtime::call_contract(
-        curve_token_v3_address,
-        "get_total_supply_crv3",
-        runtime_args! {},
-    );
-    mappings::set_key(&mappings::result_key(), ret);
-}
-#[no_mangle]
 fn mint() {
     let curve_token_v3_address: ContractHash = mappings::get_key(&mappings::curv_token_v3_key());
-    let _to: Key = runtime::get_named_arg("_to");
-    let _value: U256 = runtime::get_named_arg("_value");
+    let to: Key = runtime::get_named_arg("to");
+    let amount: U256 = runtime::get_named_arg("amount");
     let ret: bool = runtime::call_contract(
         curve_token_v3_address,
         "mint",
         runtime_args! {
-            "_to" => _to,
-            "_value" => _value,
+            "to" => to,
+            "amount" => amount,
         },
     );
     mappings::set_key(&mappings::result_key(), ret);
@@ -144,13 +132,12 @@ fn decrease_allowance() {
 #[no_mangle]
 fn burn_from() {
     let curve_token_v3_address: ContractHash = mappings::get_key(&mappings::curv_token_v3_key());
-
-    let _to: Key = runtime::get_named_arg("_to");
-    let _value: U256 = runtime::get_named_arg("_value");
+    let from: Key = runtime::get_named_arg("from");
+    let amount: U256 = runtime::get_named_arg("amount");
 
     let args: RuntimeArgs = runtime_args! {
-        "_to" => _to,
-        "_value" => _value,
+        "from" => from,
+        "amount" => amount,
     };
     let ret: bool = runtime::call_contract(curve_token_v3_address, "burn_from", args);
     mappings::set_key(&mappings::result_key(), ret);
@@ -176,14 +163,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "get_total_supply_crv3",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-
     entry_points.add_entry_point(EntryPoint::new(
         "transfer",
         vec![
@@ -239,8 +218,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "mint",
         vec![
-            Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type()),
+            Parameter::new("to", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -249,8 +228,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "burn_from",
         vec![
-            Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type()),
+            Parameter::new("from", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

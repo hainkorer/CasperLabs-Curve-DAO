@@ -115,16 +115,16 @@ fn package_hash() {
 }
 #[no_mangle]
 fn allowed_to_mint_for() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let key1: Key = runtime::get_named_arg("key1");
-    let ret: bool = Token::default().allowed_to_mint_for(key0, key1);
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    let ret: bool = Token::default().allowed_to_mint_for(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn minted() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let key1: Key = runtime::get_named_arg("key1");
-    let ret: U256 = Token::default().minted(key0, key1);
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    let ret: U256 = Token::default().minted(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
@@ -279,8 +279,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "allowed_to_mint_for",
         vec![
-            Parameter::new("key0", Key::cl_type()),
-            Parameter::new("key1", Key::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
         ],
         bool::cl_type(),
         EntryPointAccess::Public,
@@ -289,8 +289,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "minted",
         vec![
-            Parameter::new("key0", Key::cl_type()),
-            Parameter::new("key1", Key::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,

@@ -362,7 +362,7 @@ fn claimable_reward_write() {
 #[no_mangle]
 fn claim_rewards() {
     let _addr: Option<Key> = runtime::get_named_arg("_addr");
-    let _receiver: Option<Key> = runtime::get_named_arg("_token");
+    let _receiver: Option<Key> = runtime::get_named_arg("_receiver");
 
     Token::default().claim_rewards(_addr, _receiver);
 }
@@ -824,7 +824,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("_claim_sig", Bytes::cl_type()),
             Parameter::new("_reward_tokens", CLType::List(Box::new(String::cl_type()))),
         ],
-        U256::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

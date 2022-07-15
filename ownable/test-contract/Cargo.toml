@@ -15,7 +15,3 @@ path = "src/main.rs"
 bench = false
 doctest = false
 test = false
-
-
-[profile.release]
-lto = true

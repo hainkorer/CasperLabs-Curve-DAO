@@ -63,7 +63,7 @@ build-contract-minter:
 	cargo build --release -p erc20 -p erc20_crv -p erc20-crv-session-code  -p voting-escrow -p gauge-controller -p gauge-controller-proxy -p minter -p minter-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/minter-token.wasm 2>/dev/null | true
 build-contract-reward-only-gauge:
-	cargo build --release -p erc20 -p reward-only-gauge -p reward-only-gauge-session-code --target wasm32-unknown-unknown
+	cargo build --release -p erc20 -p erc20_crv -p reward-only-gauge -p reward-only-gauge-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/reward-only-gauge.wasm 2>/dev/null | true
 build-contract-vesting-escrow:
 	cargo build --release -p vesting-escrow-session-code -p erc20 -p vesting-escrow --target wasm32-unknown-unknown
@@ -202,6 +202,8 @@ copy-wasm-file-reward-only-gauge:
 	cp ${wasm_src_path}/erc20_crv.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-session-code.wasm ${reward_only_gauge_des_wasm}
+	cp ${wasm_src_path}/curve-rewards.wasm ${reward_only_gauge_des_wasm}
+	
 copy-wasm-file-vesting-escrow:
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-token.wasm ${vesting_escrow_des_wasm}

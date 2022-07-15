@@ -50,16 +50,6 @@ fn decimals() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn get_total_supply_crv3() {
-    let ret = CurveTokenV3::default().get_total_supply_crv3();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn set_minter() {
-    let _minter: Key = runtime::get_named_arg("_minter");
-    CurveTokenV3::default().set_minter(_minter);
-}
-#[no_mangle]
 fn transfer() {
     let recipient: Key = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
@@ -97,24 +87,28 @@ fn decrease_allowance() {
 }
 #[no_mangle]
 fn mint() {
-    let _to: Key = runtime::get_named_arg("_to");
-    let _value: U256 = runtime::get_named_arg("_value");
-    let ret = CurveTokenV3::default().mint(_to, _value);
+    let to: Key = runtime::get_named_arg("to");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = CurveTokenV3::default().mint(to, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
 #[no_mangle]
 fn burn_from() {
-    let _to: Key = runtime::get_named_arg("_to");
-    let _value: U256 = runtime::get_named_arg("_value");
-    let ret = CurveTokenV3::default().burn_from(_to, _value);
+    let from: Key = runtime::get_named_arg("from");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = CurveTokenV3::default().burn_from(from, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn set_minter() {
+    let minter: Key = runtime::get_named_arg("minter");
+    CurveTokenV3::default().set_minter(minter);
 }
 #[no_mangle]
 fn set_name() {
-    let _name: String = runtime::get_named_arg("_name");
-    let _symbol: String = runtime::get_named_arg("_symbol");
-    CurveTokenV3::default().set_name(_name, _symbol);
+    let name: String = runtime::get_named_arg("name");
+    let symbol: String = runtime::get_named_arg("symbol");
+    CurveTokenV3::default().set_name(name, symbol);
 }
 //[no_mangle] of public variables
 #[no_mangle]
@@ -126,6 +120,19 @@ fn symbol() {
     runtime::ret(CLValue::from_t(data::get_symbol()).unwrap_or_revert());
 }
 #[no_mangle]
+fn balance_of() {
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::Balances::instance().get(&owner)).unwrap_or_revert());
+}
+#[no_mangle]
+fn allowance() {
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    runtime::ret(
+        CLValue::from_t(data::Allowances::instance().get(&owner, &spender)).unwrap_or_revert(),
+    );
+}
+#[no_mangle]
 fn total_supply() {
     runtime::ret(CLValue::from_t(data::get_total_supply()).unwrap_or_revert());
 }
@@ -133,19 +140,7 @@ fn total_supply() {
 fn minter() {
     runtime::ret(CLValue::from_t(data::get_minter()).unwrap_or_revert());
 }
-#[no_mangle]
-fn balance_of() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::Balances::instance().get(&key)).unwrap_or_revert());
-}
-#[no_mangle]
-fn allowance() {
-    let key1: Key = runtime::get_named_arg("key1");
-    let key2: Key = runtime::get_named_arg("key2");
-    runtime::ret(
-        CLValue::from_t(data::Allowances::instance().get(&key1, &key2)).unwrap_or_revert(),
-    );
-}
+
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(
@@ -167,21 +162,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "get_total_supply_crv3",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "set_minter",
-        vec![Parameter::new("_minter", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-
     entry_points.add_entry_point(EntryPoint::new(
         "transfer",
         vec![
@@ -245,12 +225,11 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-
     entry_points.add_entry_point(EntryPoint::new(
         "mint",
         vec![
-            Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type()),
+            Parameter::new("to", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
         bool::cl_type(),
         EntryPointAccess::Public,
@@ -259,18 +238,25 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "burn_from",
         vec![
-            Parameter::new("_to", Key::cl_type()),
-            Parameter::new("_value", U256::cl_type()),
+            Parameter::new("from", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
         bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
+        "set_minter",
+        vec![Parameter::new("minter", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
         "set_name",
         vec![
-            Parameter::new("_name", String::cl_type()),
-            Parameter::new("_symbol", String::cl_type()),
+            Parameter::new("name", String::cl_type()),
+            Parameter::new("symbol", String::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -308,7 +294,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -316,8 +302,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "allowance",
         vec![
-            Parameter::new("key1", Key::cl_type()),
-            Parameter::new("key2", Key::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,

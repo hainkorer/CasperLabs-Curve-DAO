@@ -72,6 +72,21 @@ pub fn get_package_hash() -> ContractPackageHash {
     get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
 }
 
+pub fn set_vesting_escrow_simple_contract_hash(contract_hash: Key) {
+    set_key(SELF_CONTRACT_HASH, contract_hash);
+}
+
+pub fn get_vesting_escrow_simple_contract_hash() -> Key {
+    get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
+}
+pub fn set_vesting_escrow_simple_package_hash(package_hash: ContractPackageHash) {
+    set_key(VESTING_ESCROW_SIMPLE_CONTRACT_PACKAGE_HASH, package_hash);
+}
+
+pub fn get_vesting_escrow_simple_package_hash() -> ContractPackageHash {
+    get_key(VESTING_ESCROW_SIMPLE_CONTRACT_PACKAGE_HASH).unwrap_or_revert()
+}
+
 pub fn contract_package_hash() -> ContractPackageHash {
     let call_stacks = get_call_stack();
     let last_entry = call_stacks.last().unwrap_or_revert();
