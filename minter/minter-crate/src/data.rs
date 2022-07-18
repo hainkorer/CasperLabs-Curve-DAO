@@ -1,10 +1,5 @@
-use crate::event::MINTEREvent;
-use alloc::{collections::BTreeMap, string::ToString, vec::Vec};
-use casper_contract::{
-    contract_api::{runtime::get_call_stack, storage},
-    unwrap_or_revert::UnwrapOrRevert,
-};
-use casper_types::{system::CallStackElement, ContractPackageHash, Key, URef, U256};
+use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::UnwrapOrRevert};
+use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
 use common::keys::*;
 
@@ -127,74 +122,4 @@ pub fn contract_package_hash() -> ContractPackageHash {
         _ => None,
     };
     package_hash.unwrap_or_revert()
-}
-
-pub fn emit(event: &MINTEREvent) {
-    let mut events = Vec::new();
-    let package = contract_package_hash();
-    match event {
-        MINTEREvent::Mint {
-            recipient,
-            token_ids,
-        } => {
-            for token_id in token_ids {
-                let mut param = BTreeMap::new();
-                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert(EVENT_TYPE, "mint_remove_one".to_string());
-                param.insert("recipient", recipient.to_string());
-                param.insert("token_id", token_id.to_string());
-                events.push(param);
-            }
-        }
-        MINTEREvent::Burn { owner, token_ids } => {
-            for token_id in token_ids {
-                let mut param = BTreeMap::new();
-                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert(EVENT_TYPE, "burn_remove_one".to_string());
-                param.insert("owner", owner.to_string());
-                param.insert("token_id", token_id.to_string());
-                events.push(param);
-            }
-        }
-        MINTEREvent::Approve {
-            owner,
-            spender,
-            token_ids,
-        } => {
-            for token_id in token_ids {
-                let mut param = BTreeMap::new();
-                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert(EVENT_TYPE, "approve_token".to_string());
-                param.insert("owner", owner.to_string());
-                param.insert("spender", spender.to_string());
-                param.insert("token_id", token_id.to_string());
-                events.push(param);
-            }
-        }
-        MINTEREvent::Transfer {
-            sender,
-            recipient,
-            token_ids,
-        } => {
-            for token_id in token_ids {
-                let mut param = BTreeMap::new();
-                param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
-                param.insert(EVENT_TYPE, "transfer_token".to_string());
-                param.insert("sender", sender.to_string());
-                param.insert("recipient", recipient.to_string());
-                param.insert("token_id", token_id.to_string());
-                events.push(param);
-            }
-        }
-        MINTEREvent::MetadataUpdate { token_id } => {
-            let mut param = BTreeMap::new();
-            param.insert(SELF_CONTRACT_PACKAGE_HASH, package.to_string());
-            param.insert(EVENT_TYPE, "metadata_update".to_string());
-            param.insert("token_id", token_id.to_string());
-            events.push(param);
-        }
-    };
-    for param in events {
-        let _: URef = storage::new_uref(param);
-    }
 }
