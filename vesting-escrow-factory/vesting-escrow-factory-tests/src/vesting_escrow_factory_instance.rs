@@ -81,8 +81,8 @@ impl VESTINGESCROWFACTORYInstance {
             contract_name,
             sender,
             runtime_args! {
-                "_target"=>_target,
-                "_admin"=>_admin,
+                "target"=>_target,
+                "admin"=>_admin,
             },
             0,
         )
@@ -99,9 +99,9 @@ impl VESTINGESCROWFACTORYInstance {
             sender,
             "constructor",
             runtime_args! {
-                "_target"=>_target,
-                "_admin"=>_admin,
-                // "_vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
+                "target"=>_target,
+                "admin"=>_admin,
+                // "vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
             },
             0,
         );
@@ -126,23 +126,23 @@ impl VESTINGESCROWFACTORYInstance {
     pub fn deploy_vesting_contract<T: Into<Key>>(
         &self,
         sender: AccountHash,
-        _token: T,
-        _recipient: T,
-        _amount: U256,
-        _can_disable: bool,
-        _vesting_duration: U256,
-        _vesting_start: Option<U256>,
+        token: T,
+        recipient: T,
+        amount: U256,
+        can_disable: bool,
+        vesting_duration: U256,
+        vesting_start: Option<U256>,
     ) {
         self.0.call_contract(
             sender,
             "deploy_vesting_contract",
             runtime_args! {
-                "_token" => _token.into(),
-                "_recipient" => _recipient.into(),
-                "_amount" => _amount,
-                "_can_disable" => _can_disable,
-                "_vesting_duration" => _vesting_duration,
-                "_vesting_start" => _vesting_start,
+                "token" => token.into(),
+                "recipient" => recipient.into(),
+                "amount" => amount,
+                "can_disable" => can_disable,
+                "vesting_duration" => vesting_duration,
+                "vesting_start" => vesting_start,
             },
             0,
         );

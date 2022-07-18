@@ -84,11 +84,11 @@ impl VESTINGESCROWInstance {
             contract_name,
             sender,
             runtime_args! {
-                "_token"=>_token,
-                "_start_time"=>_start_time,
-                "_end_time"=>_end_time,
-                "_can_disable"=> _can_disable,
-                "_fund_admins"=> _fund_admins,
+                "token"=>_token,
+                "start_time"=>_start_time,
+                "end_time"=>_end_time,
+                "can_disable"=> _can_disable,
+                "fund_admins"=> _fund_admins,
             },
             0,
         )
@@ -158,7 +158,7 @@ impl VESTINGESCROWInstance {
             sender,
             "toggle_disable",
             runtime_args! {
-                "_recipient" => _recipient.into(),
+                "recipient" => _recipient.into(),
             },
             1000,
         );
@@ -177,7 +177,7 @@ impl VESTINGESCROWInstance {
     //         sender,
     //         "vested_of",
     //         runtime_args! {
-    //             "_recipient" => _recipient.into(),
+    //             "recipient" => _recipient.into(),
     //         },
     //         0,
     //     );
@@ -187,7 +187,7 @@ impl VESTINGESCROWInstance {
     //         sender,
     //         "balance_of",
     //         runtime_args! {
-    //             "_recipient" => _recipient.into(),
+    //             "recipient" => _recipient.into(),
     //         },
     //         0,
     //     );
@@ -197,7 +197,7 @@ impl VESTINGESCROWInstance {
     //         sender,
     //         "locked_of",
     //         runtime_args! {
-    //             "_recipient" => _recipient.into(),
+    //             "recipient" => _recipient.into(),
     //         },
     //         0,
     //     );
@@ -207,7 +207,7 @@ impl VESTINGESCROWInstance {
             sender,
             "add_tokens",
             runtime_args! {
-                "_amount" => _amount,
+                "amount" => _amount,
             },
             0,
         );
@@ -217,8 +217,8 @@ impl VESTINGESCROWInstance {
             sender,
             "fund",
             runtime_args! {
-                "_recipients" => _recipients,
-                "_amounts" => _amounts,
+                "recipients" => _recipients,
+                "amounts" => _amounts,
             },
             0,
         );

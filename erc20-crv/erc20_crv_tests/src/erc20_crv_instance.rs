@@ -33,7 +33,7 @@ impl ERC20CRVInstance {
             sender,
             "set_minter",
             runtime_args! {
-                "_minter" => _minter
+                "minter" => _minter
             },
             0,
         );
@@ -43,7 +43,7 @@ impl ERC20CRVInstance {
             sender,
             "burn",
             runtime_args! {
-                "_value"=>_value
+                "value"=>_value
             },
             0,
         );

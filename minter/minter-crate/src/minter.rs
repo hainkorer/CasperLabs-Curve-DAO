@@ -82,7 +82,7 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             gauge_addr_package_hash,
             None,
             "integrate_fraction",
-            runtime_args! {"key" => _for},
+            runtime_args! {"owner" => _for},
         );
         let minted = self.minted(_for, gauge_addr);
         let to_mint: U256 = total_mint - minted;

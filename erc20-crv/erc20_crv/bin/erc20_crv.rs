@@ -55,13 +55,13 @@ fn constructor() {
 }
 #[no_mangle]
 fn set_minter() {
-    let _minter: Key = runtime::get_named_arg("_minter");
-    Erc20Crv::default().set_minter(_minter);
+    let minter: Key = runtime::get_named_arg("minter");
+    Erc20Crv::default().set_minter(minter);
 }
 #[no_mangle]
 fn burn() {
-    let _value: U256 = runtime::get_named_arg("_value");
-    Erc20Crv::default().burn_caller(_value);
+    let value: U256 = runtime::get_named_arg("value");
+    Erc20Crv::default().burn_caller(value);
 }
 #[no_mangle]
 fn set_admin() {
@@ -174,10 +174,10 @@ fn name() {
     }
     #[no_mangle]
     fn allowances() {
-        let key1: Key = runtime::get_named_arg("key1");
-        let key2: Key = runtime::get_named_arg("key2");
+        let owner: Key = runtime::get_named_arg("owner");
+        let spender: Key = runtime::get_named_arg("spender");
         runtime::ret(
-            CLValue::from_t(erc20_data::Allowances::instance().get(&key1, &key2))
+            CLValue::from_t(erc20_data::Allowances::instance().get(&owner, &spender))
                 .unwrap_or_revert(),
         );
     }
@@ -212,14 +212,14 @@ fn name() {
         ));
         entry_points.add_entry_point(EntryPoint::new(
             "set_minter",
-            vec![Parameter::new("_minter", Key::cl_type())],
+            vec![Parameter::new("minter", Key::cl_type())],
             <()>::cl_type(),
             EntryPointAccess::Public,
             EntryPointType::Contract,
         ));
         entry_points.add_entry_point(EntryPoint::new(
             "burn",
-            vec![Parameter::new("_value", U256::cl_type())],
+            vec![Parameter::new("value", U256::cl_type())],
             <()>::cl_type(),
             EntryPointAccess::Public,
             EntryPointType::Contract,
@@ -392,8 +392,8 @@ fn name() {
         entry_points.add_entry_point(EntryPoint::new(
             "allowances",
             vec![
-                Parameter::new("key1", Key::cl_type()),
-                Parameter::new("key2", Key::cl_type()),
+                Parameter::new("owner", Key::cl_type()),
+                Parameter::new("spender", Key::cl_type()),
             ],
             U256::cl_type(),
             EntryPointAccess::Public,

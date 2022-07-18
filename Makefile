@@ -26,9 +26,9 @@ prepare:
 build-contract-curve-token-v3:
 	cargo build --release -p curve-token-v3 -p erc20 -p curve-rewards -p curve-token-v3-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/curve-token-v3.wasm 2>/dev/null | true
-build-contract-liquidity-gauge-v3:
-	cargo build --release -p liquidity-gauge-v3 --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
+# build-contract-liquidity-gauge-v3:
+# 	cargo build --release -p liquidity-gauge-v3 --target wasm32-unknown-unknown
+# 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
 build-liquidity-gauge-reward-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
 build-i-reward-distribution-recipient:
@@ -74,6 +74,7 @@ build-contract-vesting-escrow-factory:
 
 build-contract-liquidity-gauge-v3:
 	cargo build --release -p liquidity-gauge-v3 -p erc20 -p minter -p voting-escrow -p gauge-controller -p erc20_crv  --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
 build-contract-vesting-escrow-simple:
 	cargo build --release -p erc20 -p vesting-escrow-simple-proxy -p vesting-escrow-simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true
@@ -286,26 +287,26 @@ test-curve-rewards:
 test-liquidity-gauge-v3: 
 	make build-contract-liquidity-gauge-v3 && make copy-wasm-file-liquidity-gauge-v3 && make test-only-liquidity-gauge-v3
 all:
-	make test-curve-token-v3
-	make test-erc20
-	make test-erc20-crv
-	make test-fee-distributor
+	# make test-curve-token-v3
+	# make test-erc20
+	# make test-erc20-crv
+	# make test-fee-distributor
 	make test-gauge-controller
-	make test-gauge-proxy
-	make test-liquidity-gauge-reward
-	make test-liquidity-gauge-reward-wrapper
-	make test-liquidity-gauge-wrapper
-	make test-minter
-	make test-reward-only-gauge
-	make test-vesting-escrow
-	make test-vesting-escrow-factory
-	make test-vesting-escrow-simple
-	make test-voting-escrow
-	make test-ownable
-	make test-i-reward-distribution-recipient
-	make test-lp-token-wrapper
-	make test-curve-rewards
-	make test-liquidity-gauge-v3
+	# make test-gauge-proxy
+	# make test-liquidity-gauge-reward
+	# make test-liquidity-gauge-reward-wrapper
+	# make test-liquidity-gauge-wrapper
+	# make test-minter
+	# make test-reward-only-gauge
+	# make test-vesting-escrow
+	# make test-vesting-escrow-factory
+	# make test-vesting-escrow-simple
+	# make test-voting-escrow
+	# make test-ownable
+	# make test-i-reward-distribution-recipient
+	# make test-lp-token-wrapper
+	# make test-curve-rewards
+	# make test-liquidity-gauge-v3
 
 clean:
 	cargo clean

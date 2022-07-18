@@ -53,12 +53,12 @@ impl Token {
 
 #[no_mangle]
 fn constructor_vef() {
-    let _target: Key = runtime::get_named_arg::<Key>("_target");
-    let _admin: Key = runtime::get_named_arg("_admin");
+    let target: Key = runtime::get_named_arg::<Key>("target");
+    let admin: Key = runtime::get_named_arg("admin");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
 
-    Token::default().constructor_vef(_target, _admin, contract_hash, package_hash);
+    Token::default().constructor_vef(target, admin, contract_hash, package_hash);
 }
 
 #[no_mangle]
@@ -121,21 +121,21 @@ fn commit_transfer_ownership_vef() {
 
 #[no_mangle]
 fn deploy_vesting_contract() {
-    let _token: Key = runtime::get_named_arg("_token");
-    let _recipient: Key = runtime::get_named_arg("_recipient");
-    let _amount: U256 = runtime::get_named_arg("_amount");
-    let _can_disable: bool = runtime::get_named_arg("_can_disable");
-    let _vesting_duration: U256 = runtime::get_named_arg("_vesting_duration");
-    let _vesting_start: Option<U256> = runtime::get_named_arg("_vesting_start");
+    let token: Key = runtime::get_named_arg("token");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let can_disable: bool = runtime::get_named_arg("can_disable");
+    let vesting_duration: U256 = runtime::get_named_arg("vesting_duration");
+    let vesting_start: Option<U256> = runtime::get_named_arg("vesting_start");
     // let _vesting_escrow_simple_contract: Key =
-    // runtime::get_named_arg("_vesting_escrow_simple_contract");
+    // runtime::get_named_arg("vesting_escrow_simple_contract");
     let ret: Key = Token::default().deploy_vesting_contract(
-        _token,
-        _recipient,
-        _amount,
-        _can_disable,
-        _vesting_duration,
-        _vesting_start,
+        token,
+        recipient,
+        amount,
+        can_disable,
+        vesting_duration,
+        vesting_start,
         // _vesting_escrow_simple_contract,
     );
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
@@ -267,18 +267,22 @@ fn future_admin() {
 }
 #[no_mangle]
 fn initial_locked() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(ves_data::InitialLocked::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(
+        CLValue::from_t(ves_data::InitialLocked::instance().get(&owner)).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn total_claimed() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(ves_data::TotalClaimed::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(
+        CLValue::from_t(ves_data::TotalClaimed::instance().get(&owner)).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn disabled_at() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(ves_data::DisableddAt::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(ves_data::DisableddAt::instance().get(&owner)).unwrap_or_revert());
 }
 
 #[no_mangle]
@@ -293,13 +297,13 @@ fn call() {
         let (contract_hash, _) =
             storage::add_contract_version(package_hash, get_entry_points(), Default::default());
         // Read arguments for the constructor call.
-        let _target: Key = runtime::get_named_arg("_target");
-        let _admin: Key = runtime::get_named_arg("_admin");
+        let target: Key = runtime::get_named_arg("target");
+        let admin: Key = runtime::get_named_arg("admin");
 
         // Prepare constructor args
         let constructor_args = runtime_args! {
-            "_target" => _target,
-            "_admin" => _admin,
+            "target" => target,
+            "admin" => admin,
             "contract_hash" => contract_hash,
             "package_hash"=> package_hash
 
@@ -377,11 +381,11 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "constructor_vef",
         vec![
-            Parameter::new("_token", Key::cl_type()),
-            Parameter::new("_start_time", U256::cl_type()),
-            Parameter::new("_end_time", U256::cl_type()),
-            Parameter::new("_can_disable", bool::cl_type()),
-            Parameter::new("_fund_admins", CLType::List(Box::new(String::cl_type()))),
+            Parameter::new("token", Key::cl_type()),
+            Parameter::new("start_time", U256::cl_type()),
+            Parameter::new("end_time", U256::cl_type()),
+            Parameter::new("can_disable", bool::cl_type()),
+            Parameter::new("fund_admins", CLType::List(Box::new(String::cl_type()))),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
             Parameter::new("lock", u64::cl_type()),
@@ -437,13 +441,13 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "deploy_vesting_contract",
         vec![
-            Parameter::new("_token", Key::cl_type()),
-            Parameter::new("_recipient", Key::cl_type()),
-            Parameter::new("_amount", U256::cl_type()),
-            Parameter::new("_can_disable", bool::cl_type()),
-            Parameter::new("_vesting_duration", U256::cl_type()),
-            Parameter::new("_vesting_start", CLType::Option(Box::new(U256::cl_type()))),
-            // Parameter::new("_vesting_escrow_simple_contract", Key::cl_type()),
+            Parameter::new("token", Key::cl_type()),
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+            Parameter::new("can_disable", bool::cl_type()),
+            Parameter::new("vesting_duration", U256::cl_type()),
+            Parameter::new("vesting_start", CLType::Option(Box::new(U256::cl_type()))),
+            // Parameter::new(_vesting_escrow_simple_contract", Key::cl_type()),
         ],
         Key::cl_type(),
         EntryPointAccess::Public,

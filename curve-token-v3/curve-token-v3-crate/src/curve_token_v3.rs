@@ -49,16 +49,14 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
             Balances::instance()
                 .get(&self.get_caller())
                 .checked_sub(amount)
-                .ok_or(Error::CurveTokenV3UnderFlow1)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveTokenV3UnderFlow1),
         );
         Balances::instance().set(
             &recipient,
             Balances::instance()
                 .get(&recipient)
                 .checked_add(amount)
-                .ok_or(Error::CurveTokenV3OverFlow1)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveTokenV3OverFlow1),
         );
         self.curve_token_v3_emit(&CurveTokenV3Event::Transfer {
             from: self.get_caller(),
@@ -77,16 +75,14 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
             Balances::instance()
                 .get(&owner)
                 .checked_sub(amount)
-                .ok_or(Error::CurveTokenV3UnderFlow2)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveTokenV3UnderFlow2),
         );
         Balances::instance().set(
             &recipient,
             Balances::instance()
                 .get(&recipient)
                 .checked_add(amount)
-                .ok_or(Error::CurveTokenV3OverFlow2)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveTokenV3OverFlow2),
         );
         let allowance: U256 = Allowances::instance().get(&owner, &self.get_caller());
         if allowance != U256::MAX {
@@ -95,8 +91,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
                 &self.get_caller(),
                 allowance
                     .checked_sub(amount)
-                    .ok_or(Error::CurveTokenV3UnderFlow8)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::CurveTokenV3UnderFlow8),
             )
         }
         self.curve_token_v3_emit(&CurveTokenV3Event::Transfer {
@@ -133,8 +128,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         let allowance: U256 = Allowances::instance()
             .get(&self.get_caller(), &spender)
             .checked_add(amount)
-            .ok_or(Error::CurveTokenV3OverFlow6)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::CurveTokenV3OverFlow6);
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         self.curve_token_v3_emit(&CurveTokenV3Event::Approval {
             owner: self.get_caller(),
@@ -153,8 +147,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         let allowance: U256 = Allowances::instance()
             .get(&self.get_caller(), &spender)
             .checked_sub(amount)
-            .ok_or(Error::CurveTokenV3UnderFlow7)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::CurveTokenV3UnderFlow7);
         Allowances::instance().set(&self.get_caller(), &spender, allowance);
         self.curve_token_v3_emit(&CurveTokenV3Event::Approval {
             owner: self.get_caller(),
@@ -175,16 +168,14 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         set_total_supply(
             get_total_supply()
                 .checked_add(amount)
-                .ok_or(Error::CurveTokenV3OverFlow3)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveTokenV3OverFlow3),
         );
         Balances::instance().set(
             &to,
             Balances::instance()
                 .get(&to)
                 .checked_add(amount)
-                .ok_or(Error::CurveTokenV3OverFlow4)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveTokenV3OverFlow4),
         );
         self.curve_token_v3_emit(&CurveTokenV3Event::Transfer {
             from: zero_address(),
@@ -204,16 +195,14 @@ pub trait CURVETOKENV3<Storage: ContractStorage>: ContractContext<Storage> {
         set_total_supply(
             get_total_supply()
                 .checked_sub(value)
-                .ok_or(Error::CurveTokenV3UnderFlow5)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveTokenV3UnderFlow5),
         );
         Balances::instance().set(
             &to,
             Balances::instance()
                 .get(&to)
                 .checked_sub(value)
-                .ok_or(Error::CurveTokenV3UnderFlow6)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::CurveTokenV3UnderFlow6),
         );
         self.curve_token_v3_emit(&CurveTokenV3Event::Transfer {
             from: to,

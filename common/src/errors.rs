@@ -575,6 +575,63 @@ pub enum Error {
     GaugeControllerUnderFlow22 = 10766,
     /// 76,304 for (Gauge Controller UnderFlow23)
     GaugeControllerUnderFlow23 = 10767,
+    /// 76,305 for (Gauge Controller UnderFlow23)
+    GaugeControllerUnderFlow24 = 10768,
+    /// 76,306 for (Gauge Controller Multiply1)
+    GaugeControllerMultiply1 = 10769,
+    /// 76,306 for (Gauge Controller Multiply2)
+    GaugeControllerMultiply2 = 10770,
+    /// 76,306 for (Gauge Controller Multiply3)
+    GaugeControllerMultiply3 = 10771,
+    /// 76,306 for (Gauge Controller Multiply4)
+    GaugeControllerMultiply4 = 10772,
+    /// 76,306 for (Gauge Controller Multiply5)
+    GaugeControllerMultiply5 = 10773,
+    /// 76,306 for (Gauge Controller Multiply6)
+    GaugeControllerMultiply6 = 10774,
+    /// 76,306 for (Gauge Controller Multiply7)
+    GaugeControllerMultiply7 = 10775,
+    /// 76,306 for (Gauge Controller Multiply8)
+    GaugeControllerMultiply8 = 10776,
+    /// 76,306 for (Gauge Controller Multiply9)
+    GaugeControllerMultiply9 = 10777,
+    /// 76,306 for (Gauge Controller Multiply10)
+    GaugeControllerMultiply10 = 10778,
+    /// 76,306 for (Gauge Controller Multiply11)
+    GaugeControllerMultiply11 = 10779,
+    /// 76,306 for (Gauge Controller Multiply12)
+    GaugeControllerMultiply12 = 10780,
+    /// 76,306 for (Gauge Controller Multiply13)
+    GaugeControllerMultiply13 = 10781,
+    /// 76,306 for (Gauge Controller Multiply14)
+    GaugeControllerMultiply14 = 10782,
+    /// 76,306 for (Gauge Controller Multiply15)
+    GaugeControllerMultiply15 = 10783,
+    /// 76,306 for (Gauge Controller Multiply16)
+    GaugeControllerMultiply16 = 10784,
+    /// 76,306 for (Gauge Controller Multiply17)
+    GaugeControllerMultiply17 = 10785,
+    /// 76,306 for (Gauge Controller Multiply18)
+    GaugeControllerMultiply18 = 10786,
+    /// 76,306 for (Gauge Controller Multiply19)
+    GaugeControllerMultiply19 = 10787,
+    /// 76,306 for (Gauge Controller Divide1)
+    GaugeControllerDivide1 = 10788,
+    /// 76,306 for (Gauge Controller Divide2)
+    GaugeControllerDivide2 = 10789,
+    /// 76,306 for (Gauge Controller Divide3)
+    GaugeControllerDivide3 = 10790,
+    /// 76,306 for (Gauge Controller Divide4)
+    GaugeControllerDivide4 = 10791,
+    /// 76,306 for (Gauge Controller Divide5)
+    GaugeControllerDivide5 = 10792,
+    /// 76,306 for (Gauge Controller Divide6)
+    GaugeControllerDivide6 = 10793,
+    /// 76,306 for (Gauge Controller Divide7)
+    GaugeControllerDivide7 = 10794,
+    /// 76,306 for (Gauge Controller Divide8)
+    GaugeControllerDivide8 = 10795,
+
     /// 65,536 for (Minter Gauge Is Not Added)
     MinterIsNotAdded = 10801,
     /// 65,537 for (Minter Gauge Locked)

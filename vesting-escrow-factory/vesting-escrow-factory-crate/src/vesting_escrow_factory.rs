@@ -85,8 +85,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
 
             let end_time = vesting_start
                 .checked_add(_vesting_duration)
-                .ok_or(Error::VestingEscrowFactoryOverFlow1)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VestingEscrowFactoryOverFlow1);
 
             // Call the constructor entry point
             // let _: () = runtime::call_versioned_contract(

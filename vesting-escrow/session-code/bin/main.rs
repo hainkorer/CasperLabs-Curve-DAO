@@ -72,37 +72,37 @@ pub extern "C" fn call() {
             store(LOCKED_SUPPLY, ret);
         }
         VESTED_OF => {
-            let _recipient: Key = runtime::get_named_arg("_recipient");
+            let recipient: Key = runtime::get_named_arg("recipient");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 VESTED_OF,
                 runtime_args! {
-                    "_recipient"=>_recipient,
+                    "recipient"=>recipient,
                 },
             );
             store(VESTED_OF, ret);
         }
         BALANCE_OF => {
-            let _recipient: Key = runtime::get_named_arg("_recipient");
+            let recipient: Key = runtime::get_named_arg("recipient");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 BALANCE_OF,
                 runtime_args! {
-                    "_recipient"=>_recipient,
+                    "recipient"=>recipient,
                 },
             );
             store(BALANCE_OF, ret);
         }
         LOCKED_OF => {
-            let _recipient: Key = runtime::get_named_arg("_recipient");
+            let recipient: Key = runtime::get_named_arg("recipient");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 LOCKED_OF,
                 runtime_args! {
-                    "_recipient"=>_recipient,
+                    "recipient"=>recipient,
                 },
             );
             store(LOCKED_OF, ret);

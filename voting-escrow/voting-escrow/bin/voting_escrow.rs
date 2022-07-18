@@ -234,8 +234,8 @@ fn supply() {
 
 #[no_mangle]
 fn locked() {
-    let key: Key = runtime::get_named_arg("addr");
-    runtime::ret(CLValue::from_t(data::Locked::instance().get(&key)).unwrap_or_revert())
+    let addr: Key = runtime::get_named_arg("addr");
+    runtime::ret(CLValue::from_t(data::Locked::instance().get(&addr)).unwrap_or_revert())
 }
 
 #[no_mangle]

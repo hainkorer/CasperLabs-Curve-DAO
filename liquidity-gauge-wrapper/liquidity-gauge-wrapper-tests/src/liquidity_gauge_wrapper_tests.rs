@@ -175,7 +175,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     erc20_crv.call_contract(
         owner,
         "set_minter",
-        runtime_args! {"_minter" => Key::Account(owner)},
+        runtime_args! {"minter" => Key::Account(owner)},
         0,
     );
     // deploy_liquidity_gauge_v3.call_contract(
@@ -192,7 +192,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     );
 
     let _name: String = "type".to_string();
-    gauge_controller.call_contract(owner, "add_type", runtime_args! {"_name" => _name }, 0);
+    gauge_controller.call_contract(owner, "add_type", runtime_args! {"name" => _name }, 0);
     let addr: Key = Key::Account(owner);
     let gauge_type: U128 = 0.into();
     gauge_controller.call_contract(
@@ -206,7 +206,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         0,
     );
     let _name_1: String = "type1".to_string();
-    gauge_controller.call_contract(owner, "add_type", runtime_args! {"_name" => _name_1 }, 0);
+    gauge_controller.call_contract(owner, "add_type", runtime_args! {"name" => _name_1 }, 0);
     let addr1: Key = Key::Hash(deploy_liquidity_gauge_v3.package_hash());
     let gauge_type_1: U128 = 1.into();
     gauge_controller.call_contract(
