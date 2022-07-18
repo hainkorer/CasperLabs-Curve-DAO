@@ -51,7 +51,7 @@ impl REWARDONLYGAUGEInstance {
             runtime_args! {
                 "name" => name,
                 "symbol" => symbol,
-                "decimal" => decimals,
+                "decimals" => decimals,
             },
             100000000,
         )

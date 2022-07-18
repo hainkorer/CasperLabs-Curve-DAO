@@ -26,7 +26,7 @@ fn test_deploy() {
 fn burn() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
-    let value: U256 = 10.into();
+    let amount: U256 = 10.into();
     let minter = Key::from(owner);
     contract.set_minter(owner, minter);
     TestContract::new(
@@ -38,7 +38,7 @@ fn burn() {
             "entrypoint" => String::from(MINT),
             "package_hash" => Key::Hash(contract.package_hash()),
             "to"=>to,
-            "value"=>value
+            "amount"=>amount
         },
         1000000000,
     );
@@ -46,7 +46,7 @@ fn burn() {
     let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
     assert!(ret);
 
-    contract.burn(owner, value);
+    contract.burn(owner, amount);
 }
 #[test]
 fn set_admin() {
@@ -178,7 +178,7 @@ fn test_mintable_in_timeframe_js_client() {
 fn test_mint() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
-    let value: U256 = 10.into();
+    let amount: U256 = 10.into();
     let minter = Key::from(owner);
     contract.set_minter(owner, minter);
     TestContract::new(
@@ -190,7 +190,7 @@ fn test_mint() {
             "entrypoint" => String::from(MINT),
             "package_hash" => Key::Hash(contract.package_hash()),
             "to"=>to,
-            "value"=>value
+            "amount"=>amount
         },
         1000000000,
     );
@@ -202,10 +202,10 @@ fn test_mint() {
 fn test_mint_js_client() {
     let (_, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
-    let value: U256 = 10.into();
+    let amount: U256 = 10.into();
     let minter = Key::from(owner);
     contract.set_minter(owner, minter);
-    contract.mint_js_client(owner, to, value);
+    contract.mint_js_client(owner, to, amount);
     let ret: bool = contract.key_value(RESULT.to_string());
     assert!(ret);
 }
