@@ -13,7 +13,7 @@ impl ERC20CRVInstance {
         sender: AccountHash,
         name: String,
         symbol: String,
-        decimal: u8,
+        decimals: u8,
     ) -> ERC20CRVInstance {
         ERC20CRVInstance(TestContract::new(
             env,
@@ -23,27 +23,27 @@ impl ERC20CRVInstance {
             runtime_args! {
                 "name" => name,
                 "symbol" => symbol,
-                "decimal" => decimal,
+                "decimals" => decimals,
             },
             100000000,
         ))
     }
-    pub fn set_minter(&self, sender: AccountHash, _minter: Key) {
+    pub fn set_minter(&self, sender: AccountHash, minter: Key) {
         self.0.call_contract(
             sender,
             "set_minter",
             runtime_args! {
-                "minter" => _minter
+                "minter" => minter
             },
             0,
         );
     }
-    pub fn burn(&self, sender: AccountHash, _value: U256) {
+    pub fn burn(&self, sender: AccountHash, value: U256) {
         self.0.call_contract(
             sender,
             "burn",
             runtime_args! {
-                "value"=>_value
+                "value"=>value
             },
             0,
         );
@@ -133,24 +133,24 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn mint(&self, sender: AccountHash, to: Key, value: U256) {
+    pub fn mint(&self, sender: AccountHash, to: Key, amount: U256) {
         self.0.call_contract(
             sender,
             "mint",
             runtime_args! {
                 "to"=>to,
-                "value"=>value
+                "amount"=>amount
             },
             1000000000,
         );
     }
-    pub fn mint_js_client(&self, sender: AccountHash, to: Key, value: U256) {
+    pub fn mint_js_client(&self, sender: AccountHash, to: Key, amount: U256) {
         self.0.call_contract(
             sender,
             "mint_js_client",
             runtime_args! {
                 "to"=>to,
-                "value"=>value
+                "amount"=>amount
             },
             1000000000,
         );

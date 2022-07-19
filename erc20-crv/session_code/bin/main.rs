@@ -61,14 +61,14 @@ pub extern "C" fn call() {
         }
         MINT => {
             let to: Key = runtime::get_named_arg("to");
-            let value: U256 = runtime::get_named_arg("value");
+            let amount: U256 = runtime::get_named_arg("amount");
             let ret: bool = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 MINT,
                 runtime_args! {
                     "to"=>to,
-                    "value"=>value
+                    "amount"=>amount
                 },
             );
             store(MINT, ret);

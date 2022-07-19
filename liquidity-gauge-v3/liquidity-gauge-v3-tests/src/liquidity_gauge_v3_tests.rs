@@ -30,7 +30,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
         runtime_args! {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
-            "decimal" => 9_u8,
+            "decimals" => 9_u8,
             "supply" => U256::from(TEN_E_NINE * 10000000000000000)
         },
         200000000000,
@@ -154,7 +154,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     erc20_crv.call_contract(
         owner,
         "mint",
-        runtime_args! {"to" => to , "value" => amount_1},
+        runtime_args! {"to" => to , "amount" => amount_1},
         2000000000000000000,
     );
 
