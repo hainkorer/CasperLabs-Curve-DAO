@@ -165,6 +165,7 @@ fn test_minter_mint() {
         "add_type",
         runtime_args! {
             "name" => name,
+            "weight" => None::<U256>
         },
         0,
     );
@@ -200,6 +201,7 @@ fn test_minter_mint() {
         "add_type",
         runtime_args! {
             "name" => name,
+            "weight" => None::<U256>
         },
         0,
     );
@@ -233,6 +235,7 @@ fn test_minter_mint_many() {
         "add_type",
         runtime_args! {
             "name" => name,
+            "weight" => None::<U256>
         },
         0,
     );
@@ -268,6 +271,7 @@ fn test_minter_mint_many() {
         "add_type",
         runtime_args! {
             "name" => name,
+            "weight" => None::<U256>
         },
         0,
     );
@@ -305,6 +309,7 @@ fn test_minter_mint_for() {
         "add_type",
         runtime_args! {
             "name" => name,
+            "weight" => None::<U256>
         },
         0,
     );
@@ -340,6 +345,7 @@ fn test_minter_mint_for() {
         "add_type",
         runtime_args! {
             "name" => name,
+            "weight" => None::<U256>
         },
         0,
     );

@@ -159,7 +159,12 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     );
 
     let _name: String = "type".to_string();
-    gauge_controller.call_contract(owner, "add_type", runtime_args! {"name" => _name }, 0);
+    gauge_controller.call_contract(
+        owner,
+        "add_type",
+        runtime_args! {"name" => _name, "weight" => None::<U256> },
+        0,
+    );
     let addr: Key = Key::Account(owner);
     let gauge_type: U128 = 0.into();
     gauge_controller.call_contract(
@@ -173,7 +178,12 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         0,
     );
     let _name_1: String = "type1".to_string();
-    gauge_controller.call_contract(owner, "add_type", runtime_args! {"name" => _name_1 }, 0);
+    gauge_controller.call_contract(
+        owner,
+        "add_type",
+        runtime_args! {"name" => _name_1, "weight" => None::<U256> },
+        0,
+    );
     let addr1: Key = Key::Hash(liquidity_gauge_v3_instance.package_hash());
     let gauge_type_1: U128 = 1.into();
     gauge_controller.call_contract(
