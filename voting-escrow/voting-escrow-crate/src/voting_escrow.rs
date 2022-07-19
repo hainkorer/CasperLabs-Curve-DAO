@@ -34,11 +34,6 @@ use common::errors::*;
 ///       maxtime (4 years?)
 
 pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
-    /// @notice Contract constructor
-    /// @param token_addr `ERC20CRV` token address
-    /// @param _name Token name
-    /// @param _symbol Token symbol
-    /// @param _version Contract version - required for Aragon compatibility
     fn init(
         &self,
         token_addr: Key,
@@ -87,44 +82,31 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
     }
 
-    /// @notice Transfer ownership of VotingEscrow contract to `addr`
-    /// @param addr Address to have ownership transferred to
     fn commit_transfer_ownership(&mut self, addr: Key) {
         self.only_admin();
         set_future_admin(addr);
         VOTINGESCROW::emit(self, &VotingEscrowEvent::CommitOwnership { admin: addr });
     }
 
-    /// @notice Apply ownership transfer
     fn apply_transfer_ownership(&mut self) {
         self.only_admin();
         let admin: Key = get_future_admin();
-        if admin == zero_address() {
+        if admin == zero_address() || admin == account_zero_address() {
             runtime::revert(ApiError::from(Error::VotingEscrowZeroAddress));
         }
         set_admin(admin);
         VOTINGESCROW::emit(self, &VotingEscrowEvent::ApplyOwnership { admin });
     }
 
-    /// @notice Get the most recently recorded rate of voting power decrease for `addr`
-    /// @param addr Address of the user wallet
-    /// @return Value of the slope
     fn get_last_user_slope(&self, addr: Key) -> U128 {
         let uepoch: U256 = UserPointEpoch::instance().get(&addr);
         UserPointHistory::instance().get(&addr, &uepoch).slope
     }
 
-    /// @notice Get the timestamp for checkpoint `_idx` for `_addr`
-    /// @param _addr User wallet address
-    /// @param _idx User epoch number
-    /// @return Epoch time of the checkpoint
     fn user_point_history_ts(&self, addr: Key, idx: U256) -> U256 {
         UserPointHistory::instance().get(&addr, &idx).ts
     }
 
-    /// @notice Get timestamp when `_addr`'s lock finishes
-    /// @param _addr User wallet
-    /// @return Epoch time of the lock end
     fn locked_end(&self, addr: Key) -> U256 {
         Locked::instance().get(&addr).end
     }
@@ -139,7 +121,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let mut old_dslope: U128 = 0.into();
         let mut new_dslope: U128 = 0.into();
         let mut epoch: U256 = get_epoch();
-        if addr != zero_address() {
+        if addr != zero_address() || addr != account_zero_address() {
             //  Calculate slopes and biases
             //  Kept at zero when they have to
             if (old_locked.end > U256::from(u64::from(get_blocktime())))
@@ -148,18 +130,18 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 u_old.slope = old_locked
                     .amount
                     .checked_div(MAXTIME.as_u128().into())
-                    .unwrap_or_revert();
+                    .unwrap_or_revert_with(Error::VotingEscrowDivisionError1);
                 u_old.bias = u_old
                     .slope
                     .checked_mul(
                         old_locked
                             .end
                             .checked_sub(U256::from(u64::from(get_blocktime())))
-                            .unwrap_or_revert()
+                            .unwrap_or_revert_with(Error::VotingEscrowSubtractionError1)
                             .as_u128()
                             .into(),
                     )
-                    .unwrap_or_revert();
+                    .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError1);
             }
             if (new_locked.end > U256::from(u64::from(get_blocktime())))
                 && (new_locked.amount > 0.into())
@@ -167,18 +149,18 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 u_new.slope = new_locked
                     .amount
                     .checked_div(MAXTIME.as_u128().into())
-                    .unwrap_or_revert();
+                    .unwrap_or_revert_with(Error::VotingEscrowDivisionError2);
                 u_new.bias = u_new
                     .slope
                     .checked_mul(
                         new_locked
                             .end
                             .checked_sub(U256::from(u64::from(get_blocktime())))
-                            .unwrap_or_revert()
+                            .unwrap_or_revert_with(Error::VotingEscrowSubtractionError2)
                             .as_u128()
                             .into(),
                     )
-                    .unwrap_or_revert()
+                    .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError2)
             }
             // Read values of scheduled changes in the slope
             // old_locked.end can be in the past and in the future
@@ -216,13 +198,15 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         //  But that's ok b/c we know the block in such case
         let mut t_i: U256 = last_checkpoint
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VotingEscrowDivisionError3)
             .checked_mul(WEEK)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError3);
         for _ in 0..255 {
             // Hopefully it won't happen that this won't get used in 5 years!
             // If it does, users will be able to withdraw but vote weight will be broken
-            t_i = t_i.checked_add(WEEK).unwrap_or_revert();
+            t_i = t_i
+                .checked_add(WEEK)
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError2);
             let mut d_slope: U128 = 0.into();
             if t_i > U256::from(u64::from(get_blocktime())) {
                 t_i = U256::from(u64::from(get_blocktime()));
@@ -236,14 +220,17 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                         .slope
                         .checked_mul(
                             t_i.checked_sub(last_checkpoint)
-                                .unwrap_or_revert()
+                                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError3)
                                 .as_u128()
                                 .into(),
                         )
-                        .unwrap_or_revert(),
+                        .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError4),
                 )
-                .unwrap_or_revert();
-            last_point.slope = last_point.slope.checked_add(d_slope).unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError4);
+            last_point.slope = last_point
+                .slope
+                .checked_add(d_slope)
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError3);
             if last_point.bias < 0.into() {
                 // This can happen
                 last_point.bias = 0.into();
@@ -257,12 +244,17 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             last_point.blk = initial_last_point
                 .blk
                 .checked_add(block_slope)
-                .unwrap_or_revert()
-                .checked_mul(t_i.checked_sub(initial_last_point.ts).unwrap_or_revert())
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError4)
+                .checked_mul(
+                    t_i.checked_sub(initial_last_point.ts)
+                        .unwrap_or_revert_with(Error::VotingEscrowSubtractionError5),
+                )
+                .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError5)
                 .checked_div(MULTIPLIER.as_u128().into())
-                .unwrap_or_revert();
-            epoch = epoch.checked_add(1.into()).unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowDivisionError4);
+            epoch = epoch
+                .checked_add(1.into())
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError5);
             if t_i == U256::from(u64::from(get_blocktime())) {
                 // last_point.blk = block.number
                 break;
@@ -272,17 +264,27 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         set_epoch(epoch);
         // Now point_history is filled until t=now
-        if addr != zero_address() {
+        if addr != zero_address() || addr != account_zero_address() {
             // If last point was in this block, the slope change has been applied already
             // But in such case we have 0 slope(s)
             last_point.slope = last_point
                 .slope
-                .checked_add(u_new.slope.checked_sub(u_old.slope).unwrap_or_revert())
-                .unwrap_or_revert();
+                .checked_add(
+                    u_new
+                        .slope
+                        .checked_sub(u_old.slope)
+                        .unwrap_or_revert_with(Error::VotingEscrowSubtractionError6),
+                )
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError6);
             last_point.bias = last_point
                 .bias
-                .checked_add(u_new.bias.checked_sub(u_old.bias).unwrap_or_revert())
-                .unwrap_or_revert();
+                .checked_add(
+                    u_new
+                        .bias
+                        .checked_sub(u_old.bias)
+                        .unwrap_or_revert_with(Error::VotingEscrowSubtractionError7),
+                )
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError7);
             if last_point.slope < 0.into() {
                 last_point.slope = 0.into();
             }
@@ -292,23 +294,29 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         // Record the changed point into history
         PointHistory::instance().set(&epoch, last_point);
-        if addr != zero_address() {
+        if addr != zero_address() || addr != account_zero_address() {
             // Schedule the slope changes (slope is going down)
             // We subtract new_user_slope from [new_locked.end]
             // and add old_user_slope to [old_locked.end]
             if old_locked.end > U256::from(u64::from(get_blocktime())) {
                 // old_dslope was <something> - u_old.slope, so we cancel that
-                old_dslope = old_dslope.checked_add(u_old.slope).unwrap_or_revert();
+                old_dslope = old_dslope
+                    .checked_add(u_old.slope)
+                    .unwrap_or_revert_with(Error::VotingEscrowAdditionError8);
                 if new_locked.end == old_locked.end {
                     // It was a new deposit, not extension
-                    old_dslope = old_dslope.checked_sub(u_new.slope).unwrap_or_revert();
+                    old_dslope = old_dslope
+                        .checked_sub(u_new.slope)
+                        .unwrap_or_revert_with(Error::VotingEscrowSubtractionError8);
                 }
                 SlopeChanges::instance().set(&old_locked.end, old_dslope);
             }
             if new_locked.end > U256::from(u64::from(get_blocktime()))
                 && new_locked.end > old_locked.end
             {
-                new_dslope = new_dslope.checked_sub(u_new.slope).unwrap_or_revert(); // old slope disappeared at this point
+                new_dslope = new_dslope
+                    .checked_sub(u_new.slope)
+                    .unwrap_or_revert_with(Error::VotingEscrowSubtractionError9); // old slope disappeared at this point
                 SlopeChanges::instance().set(&new_locked.end, new_dslope);
             }
             // else: we recorded it already in old_dslope
@@ -317,7 +325,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             let user_epoch: U256 = UserPointEpoch::instance()
                 .get(&addr)
                 .checked_add(1.into())
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError9);
             UserPointEpoch::instance().set(&addr, user_epoch);
             u_new.ts = U256::from(u64::from(get_blocktime()));
             // u_new.blk = block.number
@@ -340,13 +348,17 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     ) {
         let mut locked: LockedBalance = locked_balance;
         let supply_before: U256 = get_supply();
-        set_supply(supply_before.checked_add(value).unwrap_or_revert());
+        set_supply(
+            supply_before
+                .checked_add(value)
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError10),
+        );
         let old_locked: LockedBalance = locked;
         // Adding to existing lock, or if a lock is expired - creating a new one
         locked.amount = locked
             .amount
             .checked_add(value.as_u128().into())
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VotingEscrowAdditionError11);
         if unlock_time != 0.into() {
             locked.end = unlock_time;
         }
@@ -385,12 +397,13 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             self,
             &VotingEscrowEvent::Supply {
                 prev_supply: supply_before,
-                supply: supply_before.checked_add(value).unwrap_or_revert(),
+                supply: supply_before
+                    .checked_add(value)
+                    .unwrap_or_revert_with(Error::VotingEscrowAdditionError12),
             },
         );
     }
 
-    /// @notice Record global data to checkpoint
     fn checkpoint(&self) {
         self._checkpoint(
             zero_address(),
@@ -399,10 +412,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         )
     }
 
-    /// @notice Deposit `_value` tokens for `_addr` and add to the lock
-    /// @dev Anyone (even a smart contract) can deposit for someone else, but cannot extend their locktime and deposit for a brand new user
-    /// @param _addr User's wallet address
-    /// @param _value Amount to add to user's lock
     fn deposit_for(&mut self, addr: Key, value: U256) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::VotingEscrowIsLocked1));
@@ -430,9 +439,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(false);
     }
 
-    /// @notice Deposit `_value` tokens for `self.get_caller()` and lock until `_unlock_time`
-    /// @param _value Amount to deposit
-    /// @param _unlock_time Epoch time when tokens unlock, rounded down to whole weeks
     fn create_lock(&mut self, value: U256, unlock_time: U256) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::VotingEscrowIsLocked2));
@@ -440,9 +446,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(true);
         let unlock_time: U256 = unlock_time
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VotingEscrowDivisionError5)
             .checked_mul(WEEK)
-            .unwrap_or_revert(); // Locktime is rounded down to weeks
+            .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError6); // Locktime is rounded down to weeks
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
         if value <= 0.into() {
             runtime::revert(ApiError::from(Error::VotingEscrowNeedNonZeroValue2));
@@ -458,7 +464,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         if unlock_time
             > U256::from(u64::from(get_blocktime()))
                 .checked_add(MAXTIME)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError13)
         {
             runtime::revert(ApiError::from(Error::VotingEscrowVotingLockCanBe4YearsMax1));
         }
@@ -472,8 +478,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(false);
     }
 
-    /// @notice Deposit `_value` additional tokens for `self.get_caller()` without modifying the unlock time
-    /// @param _value Amount of tokens to deposit and add to the lock
     fn increase_amount(&mut self, value: U256) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::VotingEscrowIsLocked3));
@@ -501,8 +505,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(false);
     }
 
-    /// @notice Extend the unlock time for `self.get_caller()` to `_unlock_time`
-    /// @param _unlock_time New epoch time for unlocking
     fn increase_unlock_time(&mut self, unlock_time: U256) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::VotingEscrowIsLocked4));
@@ -511,9 +513,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let locked: LockedBalance = Locked::instance().get(&self.get_caller());
         let unlock_time: U256 = unlock_time
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VotingEscrowDivisionError6)
             .checked_mul(WEEK)
-            .unwrap_or_revert(); // Locktime is rounded down to weeks
+            .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError7); // Locktime is rounded down to weeks
         if locked.end <= U256::from(u64::from(get_blocktime())) {
             runtime::revert(ApiError::from(Error::VotingEscrowLockExpired));
         }
@@ -528,7 +530,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         if unlock_time
             > U256::from(u64::from(get_blocktime()))
                 .checked_add(MAXTIME)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError14)
         {
             runtime::revert(ApiError::from(Error::VotingEscrowVotingLockCanBe4YearsMax2));
         }
@@ -542,8 +544,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(false);
     }
 
-    /// @notice Withdraw all tokens for `self.get_caller()`
-    /// @dev Only possible if the lock has expired
     fn withdraw(&mut self) {
         let mut locked: LockedBalance = Locked::instance().get(&self.get_caller());
         if U256::from(u64::from(get_blocktime())) < locked.end {
@@ -555,7 +555,11 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         locked.amount = 0.into();
         Locked::instance().set(&self.get_caller(), locked);
         let supply_before: U256 = get_supply();
-        set_supply(supply_before.checked_sub(value).unwrap_or_revert());
+        set_supply(
+            supply_before
+                .checked_sub(value)
+                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError10),
+        );
         // old_locked can have either expired <= timestamp or zero end
         // _locked has only 0 end
         // Both can have >= 0 amount
@@ -584,7 +588,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             self,
             &VotingEscrowEvent::Supply {
                 prev_supply: supply_before,
-                supply: supply_before.checked_sub(value).unwrap_or_revert(),
+                supply: supply_before
+                    .checked_sub(value)
+                    .unwrap_or_revert_with(Error::VotingEscrowSubtractionError11),
             },
         );
     }
@@ -606,25 +612,22 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             }
             let mid: U256 = min
                 .checked_add(max)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError15)
                 .checked_add(1.into())
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError16)
                 .checked_div(2.into())
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError17);
             if PointHistory::instance().get(&mid).blk <= block {
                 min = mid;
             } else {
-                max = mid.checked_sub(1.into()).unwrap_or_revert();
+                max = mid
+                    .checked_sub(1.into())
+                    .unwrap_or_revert_with(Error::VotingEscrowSubtractionError12);
             }
         }
         min
     }
 
-    /// @notice Get the current voting power for `self.get_caller()`
-    /// @dev Adheres to the ERC20 `balanceOf` interface for Aragon compatibility
-    /// @param addr User wallet address
-    /// @param _t Epoch time to return voting power at
-    /// @return User voting power
     fn balance_of(&self, addr: Key, t: Option<U256>) -> U256 {
         let t: U256 = match t {
             Some(val) => val,
@@ -646,13 +649,13 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                         .slope
                         .checked_mul(
                             t.checked_sub(last_point.ts)
-                                .unwrap_or_revert()
+                                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError13)
                                 .as_u128()
                                 .into(),
                         )
-                        .unwrap_or_revert(),
+                        .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError8),
                 )
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError14);
             if last_point.bias < 0.into() {
                 last_point.bias = 0.into();
             }
@@ -660,11 +663,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
     }
 
-    /// @notice Measure voting power of `addr` at block height `_block`
-    /// @dev Adheres to MiniMe `balanceOfAt` interface: https://github.com/Giveth/minime
-    /// @param addr User's wallet address
-    /// @param _block Block to calculate the voting power at
-    /// @return Voting power
     #[allow(unused_assignments)]
     fn balance_of_at(&self, addr: Key, block: U256) -> U256 {
         // Copying and pasting totalSupply code because Vyper cannot pass by reference yet
@@ -681,15 +679,17 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             }
             let mid: U256 = min
                 .checked_add(max)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError18)
                 .checked_add(1.into())
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError19)
                 .checked_add(2.into())
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError20);
             if UserPointHistory::instance().get(&addr, &mid).blk <= block {
                 min = mid;
             } else {
-                max = mid.checked_sub(1.into()).unwrap_or_revert();
+                max = mid
+                    .checked_sub(1.into())
+                    .unwrap_or_revert_with(Error::VotingEscrowSubtractionError15);
             }
         }
         let mut upoint: Point = UserPointHistory::instance().get(&addr, &min);
@@ -699,26 +699,36 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let mut d_block: U256 = 0.into();
         let mut d_t: U256 = 0.into();
         if epoch < max_epoch {
-            let point_1: Point =
-                PointHistory::instance().get(&epoch.checked_add(1.into()).unwrap_or_revert());
-            d_block = point_1.blk.checked_sub(point_0.blk).unwrap_or_revert();
+            let point_1: Point = PointHistory::instance().get(
+                &epoch
+                    .checked_add(1.into())
+                    .unwrap_or_revert_with(Error::VotingEscrowAdditionError21),
+            );
+            d_block = point_1
+                .blk
+                .checked_sub(point_0.blk)
+                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError16);
             d_t = point_1.ts - point_0.ts;
         } else {
             // d_block = block.number - point_0.blk
             d_t = U256::from(u64::from(get_blocktime()))
                 .checked_sub(point_0.ts)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError17);
         }
         let mut block_time: U256 = point_0.ts;
         if d_block != 0.into() {
             block_time = block_time
                 .checked_add(
-                    d_t.checked_mul(block.checked_sub(point_0.blk).unwrap_or_revert())
-                        .unwrap_or_revert()
-                        .checked_div(d_block)
-                        .unwrap_or_revert(),
+                    d_t.checked_mul(
+                        block
+                            .checked_sub(point_0.blk)
+                            .unwrap_or_revert_with(Error::VotingEscrowSubtractionError18),
+                    )
+                    .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError9)
+                    .checked_div(d_block)
+                    .unwrap_or_revert_with(Error::VotingEscrowDivisionError7),
                 )
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError22);
         }
         upoint.bias = upoint
             .bias
@@ -728,13 +738,13 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                     .checked_mul(
                         block_time
                             .checked_sub(upoint.ts)
-                            .unwrap_or_revert()
+                            .unwrap_or_revert_with(Error::VotingEscrowSubtractionError19)
                             .as_u128()
                             .into(),
                     )
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError10),
             )
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VotingEscrowSubtractionError20);
         if upoint.bias >= 0.into() {
             upoint.bias.as_u128().into()
         } else {
@@ -751,11 +761,13 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let mut t_i: U256 = last_point
             .ts
             .checked_div(WEEK)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VotingEscrowDivisionError8)
             .checked_mul(WEEK)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VotingEscrowSubtractionError21);
         for _ in 0..255 {
-            t_i = t_i.checked_add(WEEK).unwrap_or_revert();
+            t_i = t_i
+                .checked_add(WEEK)
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError23);
             let mut d_slope: U128 = 0.into();
             if t_i > t {
                 t_i = t;
@@ -769,17 +781,20 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                         .slope
                         .checked_mul(
                             t_i.checked_sub(last_point.ts)
-                                .unwrap_or_revert()
+                                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError22)
                                 .as_u128()
                                 .into(),
                         )
-                        .unwrap_or_revert(),
+                        .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError11),
                 )
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VotingEscrowSubtractionError23);
             if t_i == t {
                 break;
             }
-            last_point.slope = last_point.slope.checked_add(d_slope).unwrap_or_revert();
+            last_point.slope = last_point
+                .slope
+                .checked_add(d_slope)
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError24);
             last_point.ts = t_i;
         }
         if last_point.bias < 0.into() {
@@ -788,9 +803,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         last_point.bias.as_u128().into()
     }
 
-    /// @notice Calculate total voting power
-    /// @dev Adheres to the ERC20 `totalSupply` interface for Aragon compatibility
-    /// @return Total voting power
     fn total_supply(&self, t: Option<U256>) -> U256 {
         let t: U256 = match t {
             Some(val) => val,
@@ -805,9 +817,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         self._supply_at(last_point, t)
     }
 
-    /// @notice Calculate total voting power at some point in the past
-    /// @param _block Block to calculate the total voting power at
-    /// @return Total voting power at `_block`
     fn total_supply_at(&self, block: U256) -> U256 {
         // assert block <= block.number
         let epoch: U256 = get_epoch();
@@ -815,16 +824,24 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let point: Point = PointHistory::instance().get(&target_epoch);
         let mut dt: U256 = 0.into();
         if target_epoch < epoch {
-            let point_next: Point = PointHistory::instance()
-                .get(&target_epoch.checked_add(1.into()).unwrap_or_revert());
+            let point_next: Point = PointHistory::instance().get(
+                &target_epoch
+                    .checked_add(1.into())
+                    .unwrap_or_revert_with(Error::VotingEscrowAdditionError25),
+            );
             if point.blk != point_next.blk {
                 dt = block
                     .checked_sub(point.blk)
-                    .unwrap_or_revert()
-                    .checked_mul(point_next.ts.checked_sub(point.ts).unwrap_or_revert())
-                    .unwrap_or_revert()
+                    .unwrap_or_revert_with(Error::VotingEscrowSubtractionError24)
+                    .checked_mul(
+                        point_next
+                            .ts
+                            .checked_sub(point.ts)
+                            .unwrap_or_revert_with(Error::VotingEscrowSubtractionError25),
+                    )
+                    .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError12)
                     .checked_div(point_next.blk - point.blk)
-                    .unwrap_or_revert();
+                    .unwrap_or_revert_with(Error::VotingEscrowDivisionError9);
             }
         } else {
             //  if point.blk != block.number {
@@ -832,11 +849,15 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             //  }
         }
         // Now dt contains info on how far are we beyond point
-        self._supply_at(point, point.ts.checked_add(dt).unwrap_or_revert())
+        self._supply_at(
+            point,
+            point
+                .ts
+                .checked_add(dt)
+                .unwrap_or_revert_with(Error::VotingEscrowAdditionError26),
+        )
     }
 
-    /// Dummy methods for compatibility with Aragon
-    /// @dev Dummy method required for Aragon compatibility
     fn change_controller(&self, new_controller: Key) {
         if self.get_caller() == get_controller() {
             set_controller(new_controller);

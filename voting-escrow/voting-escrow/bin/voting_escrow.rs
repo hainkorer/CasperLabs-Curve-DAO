@@ -45,6 +45,11 @@ impl VotingEscrow {
     }
 }
 
+/// @notice Contract constructor
+/// @param token_addr `ERC20CRV` token address
+/// @param _name Token name
+/// @param _symbol Token symbol
+/// @param _version Contract version - required for Aragon compatibility
 #[no_mangle]
 fn constructor() {
     let token_addr: Key = runtime::get_named_arg("token_addr");
@@ -63,17 +68,23 @@ fn constructor() {
     );
 }
 
+/// @notice Transfer ownership of VotingEscrow contract to `addr`
+/// @param addr Address to have ownership transferred to
 #[no_mangle]
 fn commit_transfer_ownership() {
     let addr: Key = runtime::get_named_arg("addr");
     VotingEscrow::default().commit_transfer_ownership(addr);
 }
 
+/// @notice Apply ownership transfer
 #[no_mangle]
 fn apply_transfer_ownership() {
     VotingEscrow::default().apply_transfer_ownership();
 }
 
+/// @notice Get the most recently recorded rate of voting power decrease for `addr`
+/// @param addr Address of the user wallet
+/// @return Value of the slope
 #[no_mangle]
 fn get_last_user_slope() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -88,6 +99,10 @@ fn get_last_user_slope_js_client() {
     data::js_ret(ret);
 }
 
+/// @notice Get the timestamp for checkpoint `_idx` for `_addr`
+/// @param _addr User wallet address
+/// @param _idx User epoch number
+/// @return Epoch time of the checkpoint
 #[no_mangle]
 fn user_point_history_ts() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -104,6 +119,9 @@ fn user_point_history_ts_js_client() {
     data::js_ret(ret);
 }
 
+/// @notice Get timestamp when `_addr`'s lock finishes
+/// @param _addr User wallet
+/// @return Epoch time of the lock end
 #[no_mangle]
 fn locked_end() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -118,11 +136,16 @@ fn locked_end_js_client() {
     data::js_ret(ret);
 }
 
+/// @notice Record global data to checkpoint
 #[no_mangle]
 fn checkpoint() {
     VotingEscrow::default().checkpoint();
 }
 
+/// @notice Deposit `_value` tokens for `_addr` and add to the lock
+/// @dev Anyone (even a smart contract) can deposit for someone else, but cannot extend their locktime and deposit for a brand new user
+/// @param _addr User's wallet address
+/// @param _value Amount to add to user's lock
 #[no_mangle]
 fn deposit_for() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -130,6 +153,9 @@ fn deposit_for() {
     VotingEscrow::default().deposit_for(addr, value);
 }
 
+/// @notice Deposit `_value` tokens for `self.get_caller()` and lock until `_unlock_time`
+/// @param _value Amount to deposit
+/// @param _unlock_time Epoch time when tokens unlock, rounded down to whole weeks
 #[no_mangle]
 fn create_lock() {
     let value: U256 = runtime::get_named_arg("value");
@@ -137,23 +163,34 @@ fn create_lock() {
     VotingEscrow::default().create_lock(value, unlock_time);
 }
 
+/// @notice Deposit `_value` additional tokens for `self.get_caller()` without modifying the unlock time
+/// @param _value Amount of tokens to deposit and add to the lock
 #[no_mangle]
 fn increase_amount() {
     let value: U256 = runtime::get_named_arg("value");
     VotingEscrow::default().increase_amount(value)
 }
 
+/// @notice Extend the unlock time for `self.get_caller()` to `_unlock_time`
+/// @param _unlock_time New epoch time for unlocking
 #[no_mangle]
 fn increase_unlock_time() {
     let unlock_time: U256 = runtime::get_named_arg("unlock_time");
     VotingEscrow::default().increase_unlock_time(unlock_time);
 }
 
+/// @notice Withdraw all tokens for `self.get_caller()`
+/// @dev Only possible if the lock has expired
 #[no_mangle]
 fn withdraw() {
     VotingEscrow::default().withdraw();
 }
 
+/// @notice Get the current voting power for `self.get_caller()`
+/// @dev Adheres to the ERC20 `balanceOf` interface for Aragon compatibility
+/// @param addr User wallet address
+/// @param _t Epoch time to return voting power at
+/// @return User voting power
 #[no_mangle]
 fn balance_of() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -170,6 +207,11 @@ fn balance_of_js_client() {
     data::js_ret(ret);
 }
 
+/// @notice Measure voting power of `addr` at block height `_block`
+/// @dev Adheres to MiniMe `balanceOfAt` interface: https://github.com/Giveth/minime
+/// @param addr User's wallet address
+/// @param _block Block to calculate the voting power at
+/// @return Voting power
 #[no_mangle]
 fn balance_of_at() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -186,6 +228,9 @@ fn balance_of_at_js_client() {
     data::js_ret(ret);
 }
 
+/// @notice Calculate total voting power
+/// @dev Adheres to the ERC20 `totalSupply` interface for Aragon compatibility
+/// @return Total voting power
 #[no_mangle]
 fn total_supply() {
     let t: Option<U256> = runtime::get_named_arg("t");
@@ -200,6 +245,9 @@ fn total_supply_js_client() {
     data::js_ret(ret);
 }
 
+/// @notice Calculate total voting power at some point in the past
+/// @param _block Block to calculate the total voting power at
+/// @return Total voting power at `_block`
 #[no_mangle]
 fn total_supply_at() {
     let block: U256 = runtime::get_named_arg("block");
@@ -214,6 +262,8 @@ fn total_supply_at_js_client() {
     data::js_ret(ret);
 }
 
+/// Dummy methods for compatibility with Aragon
+/// @dev Dummy method required for Aragon compatibility
 #[no_mangle]
 fn change_controller() {
     let new_controller: Key = runtime::get_named_arg("new_controller");
