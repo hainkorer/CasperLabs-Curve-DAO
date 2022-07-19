@@ -146,18 +146,18 @@ fn future_admin() {
 }
 #[no_mangle]
 fn initial_locked() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::InitialLocked::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::InitialLocked::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn total_claimed() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::TotalClaimed::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::TotalClaimed::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn disabled_at() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::DisableddAt::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::DisableddAt::instance().get(&owner)).unwrap_or_revert());
 }
 
 #[no_mangle]

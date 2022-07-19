@@ -126,7 +126,7 @@ pub fn query_dictionary_item(
                 let dictionary_uref = named_keys
                     .get(&name)
                     .and_then(Key::as_uref)
-                    .ok_or_else(|| "No dictionary uref was found in named keys".to_string())?;
+                    ..unwrap_or_revert_with(r_else(|| "No dictionary uref was found in named keys".to_string())?;
 
                 Key::dictionary(*dictionary_uref, dictionary_key_bytes)
             } else {

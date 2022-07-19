@@ -239,8 +239,8 @@ fn test_claimed_reward() {
         runtime_args! {
             "entrypoint" => String::from(CLAIMED_REWARD),
             "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
-            "_addr"=>Key::from(user),
-            "_token"=>Key::from(user)
+            "addr"=>Key::from(user),
+            "token"=>Key::from(user)
         },
         0,
     );
@@ -815,8 +815,8 @@ fn test_claimable_reward_write() {
         runtime_args! {
             "entrypoint" => String::from(CLAIMABLE_REWARD_WRITE),
             "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
-            "_addr"=>Key::from(user),
-            "_token"=>Key::Hash(lp_token.package_hash())
+            "addr"=>Key::from(user),
+            "token"=>Key::Hash(lp_token.package_hash())
         },
         0,
     );
@@ -976,8 +976,8 @@ fn test_claimable_reward() {
         runtime_args! {
             "entrypoint" => String::from(CLAIMABLE_REWARD),
             "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
-            "_addr"=>Key::from(user),
-            "_token"=>Key::Hash(lp_token.package_hash())
+            "addr"=>Key::from(user),
+            "token"=>Key::Hash(lp_token.package_hash())
         },
         0,
     );

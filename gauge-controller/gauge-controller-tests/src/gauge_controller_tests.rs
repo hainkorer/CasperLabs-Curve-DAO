@@ -307,7 +307,7 @@ fn test_gauge_controller_add_type() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
 }
 
 #[test]
@@ -323,7 +323,7 @@ fn test_gauge_controller_add_gauge() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     let _weight: U128 = 1.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
@@ -343,7 +343,7 @@ fn test_gauge_controller_add_gauge() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_user, _user, gauge_type, None);
 // }
@@ -361,11 +361,11 @@ fn test_gauge_controller_add_gauge() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
 // }
@@ -384,11 +384,11 @@ fn test_gauge_controller_add_gauge() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_user, _user1, gauge_type, None);
 // }
@@ -406,7 +406,7 @@ fn test_gauge_controller_change_gauge_weight() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let weight: U256 = 2.into();
@@ -426,7 +426,7 @@ fn test_gauge_controller_change_gauge_weight() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 //     let weight: U256 = 2.into();
@@ -449,7 +449,7 @@ fn test_gauge_controller_change_gauge_weight() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 //     let weight: U256 = 2.into();
@@ -470,7 +470,7 @@ fn test_gauge_controller_change_gauge_weight() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     // let name: String = "type".to_string();
-//     // gauge_controller.add_type(_owner, name);
+//     // gauge_controller.add_type(_owner, name, None);
 //     // let gauge_type: U128 = 0.into();
 //     // gauge_controller.add_gauge(_owner, _user, gauge_type,None);
 //     let weight: U256 = 2.into();
@@ -491,7 +491,7 @@ fn test_gauge_controller_change_gauge_weight() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     // let gauge_type: U128 = 0.into();
 //     // gauge_controller.add_gauge(_owner, _user, gauge_type,None);
 //     let weight: U256 = 2.into();
@@ -542,7 +542,7 @@ fn test_gauge_controller_vote_for_gauge_weights() {
     assert_eq!(gauge_controller.admin(), Key::from(owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(owner, name);
+    gauge_controller.add_type(owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(owner, _user, gauge_type, None);
     let weight: U256 = 0.into();
@@ -671,7 +671,7 @@ fn test_gauge_controller_gauge_types() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     TestContract::new(
@@ -704,7 +704,7 @@ fn test_gauge_controller_gauge_types() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 //     TestContract::new(
@@ -737,11 +737,11 @@ fn test_gauge_controller_gauge_types() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
 //     TestContract::new(
@@ -790,11 +790,11 @@ fn test_gauge_controller_gauge_types() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
 //     TestContract::new(
@@ -873,11 +873,11 @@ fn test_gauge_controller_gauge_relative_weight() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
     let name: String = "type2".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 1.into();
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 
@@ -911,11 +911,11 @@ fn test_gauge_controller_gauge_relative_weight() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 
@@ -979,11 +979,11 @@ fn test_gauge_controller_gauge_relative_weight_write() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
     let name: String = "type2".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 1.into();
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 
@@ -1017,11 +1017,11 @@ fn test_gauge_controller_gauge_relative_weight_write() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 
@@ -1055,11 +1055,11 @@ fn test_gauge_controller_get_gauge_weight() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
     let name: String = "type2".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 1.into();
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
     let type_id: U128 = 1.into();
@@ -1096,11 +1096,11 @@ fn test_gauge_controller_get_gauge_weight() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 //     let type_id: U128 = 1.into();
@@ -1152,11 +1152,11 @@ fn test_gauge_controller_get_type_weight() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 1.into();
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
     let type_id: U128 = 1.into();
@@ -1193,11 +1193,11 @@ fn test_gauge_controller_get_total_weight() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 1.into();
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
     let type_id: U128 = 1.into();
@@ -1233,11 +1233,11 @@ fn test_gauge_controller_get_total_weight() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 //     let type_id: U128 = 1.into();
@@ -1273,11 +1273,11 @@ fn test_gauge_controller_get_weights_sum_per_type() {
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
-    gauge_controller.add_type(_owner, name);
+    gauge_controller.add_type(_owner, name, None);
     let gauge_type: U128 = 1.into();
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
     let type_id: U128 = 1.into();
@@ -1313,11 +1313,11 @@ fn test_gauge_controller_get_weights_sum_per_type() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 //     let type_id: U128 = 1.into();
@@ -1353,11 +1353,11 @@ fn test_gauge_controller_get_weights_sum_per_type() {
 //     assert_eq!(gauge_controller.admin(), Key::from(_owner));
 //     assert_eq!(gauge_controller.time_total(), U256::from(0));
 //     let name: String = "type".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 0.into();
 //     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
 //     let name: String = "type2".to_string();
-//     gauge_controller.add_type(_owner, name);
+//     gauge_controller.add_type(_owner, name, None);
 //     let gauge_type: U128 = 1.into();
 //     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 //     let type_id: U128 = 1.into();

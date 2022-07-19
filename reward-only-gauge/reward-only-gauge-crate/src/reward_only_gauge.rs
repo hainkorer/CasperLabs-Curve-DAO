@@ -178,8 +178,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         let spender_allowance: U256 = allowances.get(&owner, &_spender);
         let new_allowance: U256 = spender_allowance
             .checked_add(_added_value)
-            .ok_or(Error::RewardOnlyGaugeOverFlow1)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardOnlyGaugeOverFlow1);
         self._approve(owner, _spender, new_allowance);
         Ok(())
     }
@@ -193,8 +192,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
 
         let new_allowance: U256 = spender_allowance
             .checked_sub(_subtracted_value)
-            .ok_or(Error::RewardOnlyGaugeUnderFlow1)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow1);
         self._approve(owner, _spender, new_allowance);
 
         Ok(())
@@ -212,8 +210,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         if _allowance != U256::MAX {
             let new_allowance: U256 = _allowance
                 .checked_sub(_value)
-                .ok_or(Error::RewardOnlyGaugeUnderFlow2)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow2);
             self._approve(_from, self.get_caller(), new_allowance);
         }
         self._transfer(_from, _to, _value);
@@ -231,8 +228,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             let _from_balance: U256 = balances.get(&_from);
             let from_new_balance = _from_balance
                 .checked_sub(_value)
-                .ok_or(Error::RewardOnlyGaugeUnderFlow3)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow3);
             balances.set(&_from, from_new_balance);
 
             self._checkpoint_rewards(_to, total_supply, false, account_zero_address());
@@ -240,8 +236,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
             let _to_balance: U256 = balances.get(&_to);
             let to_new_balance = _from_balance
                 .checked_sub(_value)
-                .ok_or(Error::RewardOnlyGaugeUnderFlow4)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow4);
             balances.set(&_to, to_new_balance);
         }
         self.emit(&REWARDONLYGAUGEEvent::Transfer {
@@ -379,13 +374,11 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         );
         total_supply = total_supply
             .checked_sub(_value)
-            .ok_or(Error::RewardOnlyGaugeUnderFlow5)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow5);
         let balance = self.balance_of(self.get_caller());
         let new_balance = balance
             .checked_sub(_value)
-            .ok_or(Error::RewardOnlyGaugeUnderFlow6)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow6);
         Balances::instance().set(&self.get_caller(), new_balance);
         data::set_total_supply(total_supply);
         let lp_token = self.lp_token();
@@ -439,13 +432,11 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         self._checkpoint_rewards(addr, total_supply, claim_rewards, account_zero_address());
         total_supply = total_supply
             .checked_add(_value)
-            .ok_or(Error::RewardOnlyGaugeOverFlow4)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardOnlyGaugeOverFlow4);
         let balance = self.balance_of(self.get_caller());
         let new_balance = balance
             .checked_add(_value)
-            .ok_or(Error::RewardOnlyGaugeOverFlow5)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::RewardOnlyGaugeOverFlow5);
         Balances::instance().set(&self.get_caller(), new_balance);
         data::set_total_supply(total_supply);
         let lp_token = self.lp_token();
@@ -625,8 +616,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
                 d_i = U256::from(1000000000)
                     * (token_balance
                         .checked_sub(self.reward_balances(token))
-                        .ok_or(Error::RewardOnlyGaugeUnderFlow7)
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow7)
                         / _total_supply);
                 RewardBalances::instance().set(&token, token_balance);
                 if _user == zero_address() && d_i != 0.into() {
@@ -635,16 +625,14 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
                         &token,
                         reward_integral
                             .checked_add(d_i)
-                            .ok_or(Error::RewardOnlyGaugeOverFlow2)
-                            .unwrap_or_revert(),
+                            .unwrap_or_revert_with(Error::RewardOnlyGaugeOverFlow2),
                     )
                 }
             }
             let integral = self
                 .reward_integral(token)
                 .checked_add(d_i)
-                .ok_or(Error::RewardOnlyGaugeOverFlow3)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardOnlyGaugeOverFlow3);
             if d_i != 0.into() {
                 RewardIntegral::instance().set(&token, integral);
             }
@@ -655,16 +643,14 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
                 new_claimable = user_balance
                     * (integral
                         .checked_sub(integral_for)
-                        .ok_or(Error::RewardOnlyGaugeUnderFlow8)
-                        .unwrap_or_revert())
+                        .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow8))
                     / U256::from(1000000000);
             }
             let mut claim_data: ClaimDataStruct = self.claim_data(_user, token);
             let total_claimable: U256 = claim_data
                 .claimable_amount
                 .checked_add(new_claimable)
-                .ok_or(Error::RewardOnlyGaugeOverFlow6)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::RewardOnlyGaugeOverFlow6);
             if total_claimable > 0.into() {
                 let total_claimed = claim_data.claimed_amount;
                 if _claim {
@@ -685,13 +671,11 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
                     let latest_total_claimable = self
                         .reward_balances(token)
                         .checked_sub(total_claimable)
-                        .ok_or(Error::RewardOnlyGaugeUnderFlow9)
-                        .unwrap_or_revert();
+                        .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow9);
                     RewardBalances::instance().set(&token, latest_total_claimable);
                     claim_data.claimed_amount = total_claimed
                         .checked_add(total_claimable)
-                        .ok_or(Error::RewardOnlyGaugeOverFlow7)
-                        .unwrap_or_revert();
+                        .unwrap_or_revert_with(Error::RewardOnlyGaugeOverFlow7);
                     ClaimData::instance().set(&_user, &token, claim_data);
                 } else if new_claimable > 0.into() {
                     claim_data.claimed_amount = total_claimed;

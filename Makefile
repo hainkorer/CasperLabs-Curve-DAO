@@ -26,9 +26,9 @@ prepare:
 build-contract-curve-token-v3:
 	cargo build --release -p curve-token-v3 -p erc20 -p curve-rewards -p curve-token-v3-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/curve-token-v3.wasm 2>/dev/null | true
-build-contract-liquidity-gauge-v3:
-	cargo build --release -p liquidity-gauge-v3 --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
+# build-contract-liquidity-gauge-v3:
+# 	cargo build --release -p liquidity-gauge-v3 --target wasm32-unknown-unknown
+# 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
 build-liquidity-gauge-reward-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
 build-i-reward-distribution-recipient:
@@ -74,6 +74,7 @@ build-contract-vesting-escrow-factory:
 
 build-contract-liquidity-gauge-v3:
 	cargo build --release -p liquidity-gauge-v3 -p erc20 -p minter -p voting-escrow -p gauge-controller -p erc20_crv  --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
 build-contract-vesting-escrow-simple:
 	cargo build --release -p erc20 -p vesting-escrow-simple-proxy -p vesting-escrow-simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true

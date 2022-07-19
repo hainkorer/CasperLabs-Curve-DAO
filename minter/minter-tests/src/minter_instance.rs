@@ -231,18 +231,18 @@ impl MINTERInstance {
         );
     }
 
-    pub fn minted<T: Into<Key>>(&self, key0: T, key1: T) -> U256 {
-        let key0: Key = key0.into();
-        let key1: Key = key1.into();
+    pub fn minted<T: Into<Key>>(&self, owner: T, spender: T) -> U256 {
+        let owner: Key = owner.into();
+        let spender: Key = spender.into();
         self.0
-            .query_dictionary("minted", keys_to_str(&key0, &key1))
+            .query_dictionary("minted", keys_to_str(&owner, &spender))
             .unwrap_or_default()
     }
-    pub fn allowed_to_mint_for<T: Into<Key>>(&self, key0: T, key1: T) -> bool {
-        let key0: Key = key0.into();
-        let key1: Key = key1.into();
+    pub fn allowed_to_mint_for<T: Into<Key>>(&self, owner: T, spender: T) -> bool {
+        let owner: Key = owner.into();
+        let spender: Key = spender.into();
         self.0
-            .query_dictionary("allowed_to_mint_for", keys_to_str(&key0, &key1))
+            .query_dictionary("allowed_to_mint_for", keys_to_str(&owner, &spender))
             .unwrap_or_default()
     }
 

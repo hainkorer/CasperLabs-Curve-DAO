@@ -107,8 +107,7 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
         let spender_allowance: U256 = allowances.get(&owner, &spender);
         let new_allowance: U256 = spender_allowance
             .checked_add(amount)
-            .ok_or(Error::UniswapV2CoreERC20OverFlow1)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::UniswapV2CoreERC20OverFlow1);
 
         if owner != spender {
             self._approve(owner, spender, new_allowance);
@@ -127,8 +126,7 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
 
         let new_allowance: U256 = spender_allowance
             .checked_sub(amount)
-            .ok_or(Error::UniswapV2CoreERC20UnderFlow1)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::UniswapV2CoreERC20UnderFlow1);
 
         if new_allowance >= 0.into() && new_allowance < spender_allowance && owner != spender {
             self._approve(owner, spender, new_allowance);
@@ -146,8 +144,7 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
                 let spender_allowance: U256 = allowances.get(&owner, &self.get_caller());
                 let new_allowance: U256 = spender_allowance
                     .checked_sub(amount)
-                    .ok_or(Error::UniswapV2CoreERC20UnderFlow2)
-                    .unwrap_or_revert();
+                    .unwrap_or_revert_with(Error::UniswapV2CoreERC20UnderFlow2);
                 if new_allowance >= 0.into()
                     && new_allowance < spender_allowance
                     && owner != self.get_caller()
@@ -275,14 +272,12 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
             &recipient,
             balance
                 .checked_add(amount)
-                .ok_or(Error::UniswapV2CoreERC20OverFlow2)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::UniswapV2CoreERC20OverFlow2),
         );
         data::set_total_supply(
             data::total_supply()
                 .checked_add(amount)
-                .ok_or(Error::UniswapV2CoreERC20OverFlow3)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::UniswapV2CoreERC20OverFlow3),
         );
         let address_0: Key = Key::from_formatted_str(
             "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
@@ -303,14 +298,12 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
                 &recipient,
                 balance
                     .checked_sub(amount)
-                    .ok_or(Error::UniswapV2CoreERC20UnderFlow3)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::UniswapV2CoreERC20UnderFlow3),
             );
             data::set_total_supply(
                 data::total_supply()
                     .checked_sub(amount)
-                    .ok_or(Error::UniswapV2CoreERC20UnderFlow4)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::UniswapV2CoreERC20UnderFlow4),
             );
             let address_0: Key = Key::from_formatted_str(
                 "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
@@ -342,15 +335,13 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
                 &sender,
                 sender_balance
                     .checked_sub(amount)
-                    .ok_or(Error::UniswapV2CoreERC20UnderFlow5)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::UniswapV2CoreERC20UnderFlow5),
             );
             balances.set(
                 &recipient,
                 recipient_balance
                     .checked_add(amount)
-                    .ok_or(Error::UniswapV2CoreERC20OverFlow4)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::UniswapV2CoreERC20OverFlow4),
             );
             self.emit(&ERC20Event::Transfer {
                 from: sender,

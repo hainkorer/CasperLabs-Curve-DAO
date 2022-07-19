@@ -213,7 +213,7 @@ impl REWARDONLYGAUGEInstance {
             sender,
             "set_rewards_receiver",
             runtime_args! {
-                "_receiver" => _receiver.into(),
+                "receiver" => _receiver.into(),
             },
             0,
         );
@@ -229,9 +229,9 @@ impl REWARDONLYGAUGEInstance {
             sender,
             "set_rewards",
             runtime_args! {
-                "_reward_contract" => _reward_contract.into(),
-                "_claim_sig" => _claim_sig,
-                "_reward_tokens" => _reward_tokens,
+                "reward_contract" => _reward_contract.into(),
+                "claim_sig" => _claim_sig,
+                "reward_tokens" => _reward_tokens,
             },
             0,
         );
@@ -241,8 +241,8 @@ impl REWARDONLYGAUGEInstance {
             sender,
             "claim_rewards",
             runtime_args! {
-                "_addr" => _addr,
-                "_receiver" => _receiver,
+                "addr" => _addr,
+                "receiver" => _receiver,
             },
             0,
         );
@@ -259,9 +259,9 @@ impl REWARDONLYGAUGEInstance {
             sender,
             "deposit",
             runtime_args! {
-                "_value" => _value,
-                "_addr" => _addr,
-                "_claim_rewards" => _claim_rewards,
+                "value" => _value,
+                "addr" => _addr,
+                "claim_rewards" => _claim_rewards,
             },
             0,
         );
@@ -272,8 +272,8 @@ impl REWARDONLYGAUGEInstance {
             sender,
             "withdraw",
             runtime_args! {
-                "_value" => _value,
-                "_claim_rewards" => _claim_rewards,
+                "value" => _value,
+                "claim_rewards" => _claim_rewards,
             },
             0,
         );

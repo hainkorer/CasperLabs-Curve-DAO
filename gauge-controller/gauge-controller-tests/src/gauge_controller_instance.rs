@@ -185,12 +185,13 @@ impl GAUGECONLTROLLERInstance {
             0,
         );
     }
-    pub fn add_type(&self, sender: AccountHash, _name: String) {
+    pub fn add_type(&self, sender: AccountHash, _name: String, weight: Option<U256>) {
         self.0.call_contract(
             sender,
             "add_type",
             runtime_args! {
-                "_name" => _name,
+                "name" => _name,
+                "weight" => weight
             },
             10000000,
         );
@@ -223,32 +224,32 @@ impl GAUGECONLTROLLERInstance {
             sender,
             "vote_for_gauge_weights",
             runtime_args! {
-                "_gauge_addr" => _gauge_addr.into(),
-                "_user_weight" => _user_weight,
+                "gauge_addr" => _gauge_addr.into(),
+                "user_weight" => _user_weight,
             },
             1000000,
         );
     }
 
-    pub fn gauge_type_names<T: Into<Key>>(&self, key0: U128) -> String {
+    pub fn gauge_type_names<T: Into<Key>>(&self, owner: U128) -> String {
         self.0
-            .query_dictionary("gauge_type_names", key0.to_string())
+            .query_dictionary("gauge_type_names", owner.to_string())
             .unwrap_or_default()
     }
 
-    pub fn gauge_types_<T: Into<Key>>(&self, key0: T) -> U256 {
+    pub fn gauge_types_<T: Into<Key>>(&self, owner: T) -> U256 {
         self.0
-            .query_dictionary("gauge_types_", key_to_str(&key0.into()))
+            .query_dictionary("gauge_types_", key_to_str(&owner.into()))
             .unwrap_or_default()
     }
-    pub fn gauges<T: Into<Key>>(&self, key0: U256) -> Key {
+    pub fn gauges<T: Into<Key>>(&self, owner: U256) -> Key {
         self.0
-            .query_dictionary("gauges", key0.to_string())
+            .query_dictionary("gauges", owner.to_string())
             .unwrap_or_revert()
     }
-    pub fn points_total<T: Into<Key>>(&self, key0: U256) -> U256 {
+    pub fn points_total<T: Into<Key>>(&self, owner: U256) -> U256 {
         self.0
-            .query_dictionary("points_total", key0.to_string())
+            .query_dictionary("points_total", owner.to_string())
             .unwrap_or_default()
     }
     pub fn time_sum<T: Into<Key>>(&self, type_id: U256) -> U256 {
@@ -261,59 +262,59 @@ impl GAUGECONLTROLLERInstance {
             .query_dictionary("time_type_weight", type_id.to_string())
             .unwrap_or_default()
     }
-    pub fn time_weight<T: Into<Key>>(&self, key0: T) -> U256 {
+    pub fn time_weight<T: Into<Key>>(&self, owner: T) -> U256 {
         self.0
-            .query_dictionary("time_weight", key_to_str(&key0.into()))
+            .query_dictionary("time_weight", key_to_str(&owner.into()))
             .unwrap_or_default()
     }
-    pub fn vote_user_power<T: Into<Key>>(&self, key0: T) -> U256 {
+    pub fn vote_user_power<T: Into<Key>>(&self, owner: T) -> U256 {
         self.0
-            .query_dictionary("vote_user_power", key_to_str(&key0.into()))
+            .query_dictionary("vote_user_power", key_to_str(&owner.into()))
             .unwrap_or_default()
     }
 
-    pub fn change_sum(&self, key0: U128, key1: U256) -> U256 {
+    pub fn change_sum(&self, owner: U128, spender: U256) -> U256 {
         self.0
             .query_dictionary(
                 "change_sum",
-                values_to_str(&U256::from(key0.as_u128()), &key1),
+                values_to_str(&U256::from(owner.as_u128()), &spender),
             )
             .unwrap_or_default()
     }
-    pub fn changes_weight(&self, key0: Key, key1: U256) -> U256 {
+    pub fn changes_weight(&self, owner: Key, spender: U256) -> U256 {
         self.0
-            .query_dictionary("changes_weight", key_and_value_to_str(&key0, &key1))
+            .query_dictionary("changes_weight", key_and_value_to_str(&owner, &spender))
             .unwrap_or_default()
     }
-    pub fn last_user_vote(&self, key0: Key, key1: Key) -> U256 {
+    pub fn last_user_vote(&self, owner: Key, spender: Key) -> U256 {
         self.0
-            .query_dictionary("last_user_vote", keys_to_str(&key0, &key1))
+            .query_dictionary("last_user_vote", keys_to_str(&owner, &spender))
             .unwrap_or_default()
     }
-    pub fn points_sum(&self, key0: U128, key1: U256) -> U256 {
+    pub fn points_sum(&self, owner: U128, spender: U256) -> U256 {
         self.0
             .query_dictionary(
                 "points_sum",
-                values_to_str(&U256::from(key0.as_u128()), &key1),
+                values_to_str(&U256::from(owner.as_u128()), &spender),
             )
             .unwrap_or_default()
     }
-    pub fn points_type_weight(&self, key0: U128, key1: U256) -> U256 {
+    pub fn points_type_weight(&self, owner: U128, spender: U256) -> U256 {
         self.0
             .query_dictionary(
                 "points_type_weight",
-                values_to_str(&U256::from(key0.as_u128()), &key1),
+                values_to_str(&U256::from(owner.as_u128()), &spender),
             )
             .unwrap_or_default()
     }
-    pub fn points_weight(&self, key0: Key, key1: U256) -> U256 {
+    pub fn points_weight(&self, owner: Key, spender: U256) -> U256 {
         self.0
-            .query_dictionary("points_weight", key_and_value_to_str(&key0, &key1))
+            .query_dictionary("points_weight", key_and_value_to_str(&owner, &spender))
             .unwrap_or_default()
     }
-    pub fn vote_user_slopes(&self, key0: Key, key1: Key) -> U256 {
+    pub fn vote_user_slopes(&self, owner: Key, spender: Key) -> U256 {
         self.0
-            .query_dictionary("vote_user_slopes", keys_to_str(&key0, &key1))
+            .query_dictionary("vote_user_slopes", keys_to_str(&owner, &spender))
             .unwrap_or_default()
     }
 
