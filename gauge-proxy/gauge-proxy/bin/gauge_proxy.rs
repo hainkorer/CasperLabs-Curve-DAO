@@ -7,11 +7,12 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    bytesrepr::Bytes, runtime_args, CLTyped, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
+    bytesrepr::Bytes, runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash,
+    EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs,
+    URef,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use gauge_proxy_crate::{self, GAUGEPROXY};
+use gauge_proxy_crate::{self, data, GAUGEPROXY};
 
 #[derive(Default)]
 struct GaugeProxy(OnChainContractStorage);
@@ -95,6 +96,28 @@ fn set_rewards() {
     GaugeProxy::default().set_rewards(gauge, reward_contract, sigs, reward_tokens);
 }
 
+// Variables
+
+#[no_mangle]
+fn ownership_admin() {
+    runtime::ret(CLValue::from_t(data::get_ownership_admin()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn emergency_admin() {
+    runtime::ret(CLValue::from_t(data::get_emergency_admin()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn future_ownership_admin() {
+    runtime::ret(CLValue::from_t(data::get_future_ownership_admin()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn future_emergency_admin() {
+    runtime::ret(CLValue::from_t(data::get_future_emergency_admin()).unwrap_or_revert());
+}
+
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(
@@ -162,6 +185,35 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("reward_tokens", Vec::<Key>::cl_type()),
         ],
         <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    // Variables
+    entry_points.add_entry_point(EntryPoint::new(
+        "ownership_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "emergency_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_ownership_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_emergency_admin",
+        vec![],
+        Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
