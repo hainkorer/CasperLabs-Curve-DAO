@@ -35,7 +35,6 @@ impl Token {
         lp_token: Key,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
-        lock: u64,
     ) {
         REWARDONLYGAUGE::init(
             self,
@@ -43,7 +42,6 @@ impl Token {
             lp_token,
             Key::from(contract_hash),
             package_hash,
-            lock,
         );
     }
 }
@@ -54,9 +52,8 @@ fn constructor() {
     let lp_token: Key = runtime::get_named_arg("lp_token");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    let lock: u64 = runtime::get_named_arg("lock");
 
-    Token::default().constructor(admin, lp_token, contract_hash, package_hash, lock);
+    Token::default().constructor(admin, lp_token, contract_hash, package_hash);
 }
 
 #[no_mangle]
@@ -130,13 +127,6 @@ fn reward_integral_for() {
     let integral: U256 = Token::default().reward_integral_for(reward_token, claiming_address);
     runtime::ret(CLValue::from_t(integral).unwrap_or_revert());
 }
-// #[no_mangle]
-// fn claim_data() {
-//     let user: Key = runtime::get_named_arg("user");
-//     let claiming_address: Key = runtime::get_named_arg("claiming_address");
-//     let ret: ClaimDataStruct = Token::default().claim_data(user, claiming_address);
-//     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-// }
 
 #[no_mangle]
 fn total_supply() {
@@ -432,14 +422,12 @@ fn call() {
         // Read arguments for the constructor call.
         let admin: Key = runtime::get_named_arg("admin");
         let lp_token: Key = runtime::get_named_arg("lp_token");
-        let lock: u64 = 0;
         // Prepare constructor args
         let constructor_args = runtime_args! {
             "admin" => admin,
             "lp_token" => lp_token,
             "contract_hash" => contract_hash,
             "package_hash"=> package_hash,
-            "lock"=>lock
 
         };
 
@@ -515,7 +503,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("lp_token", Key::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
-            Parameter::new("lock", u64::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
@@ -613,24 +600,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    // entry_points.add_entry_point(EntryPoint::new(
-    //     "claim_data",
-    //     vec![
-    //         Parameter::new("user", Key::cl_type()),
-    //         Parameter::new("claiming_address", Key::cl_type()),
-    //     ],
-    //     ClaimDataSturct::cl_type(),
-    //     EntryPointAccess::Public,
-    //     EntryPointType::Contract,
-    // ));
-
-    // entry_points.add_entry_point(EntryPoint::new(
-    //     "reward_data",
-    //     vec![],
-    //     U256::cl_type(),
-    //     EntryPointAccess::Public,
-    //     EntryPointType::Contract,
-    // ));
 
     entry_points.add_entry_point(EntryPoint::new(
         "total_supply",

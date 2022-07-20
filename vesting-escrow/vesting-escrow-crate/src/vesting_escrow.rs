@@ -49,7 +49,6 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         _fund_admins: Vec<String>,
         contract_hash: Key,
         package_hash: ContractPackageHash,
-        lock: u64,
     ) {
         data::set_token(_token);
         data::set_admin(self.get_caller());
@@ -58,7 +57,7 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_can_disable(_can_disable);
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-        data::set_lock(lock);
+        data::set_lock(0);
         InitialLocked::init();
         TotalClaimed::init();
         DisabledAt::init();

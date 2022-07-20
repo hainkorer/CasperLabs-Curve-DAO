@@ -144,12 +144,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
     }
 
     fn reward_contract(&mut self) -> Key {
-        let address = self.reward_data().address;
-        if address == zero_address() {
-            zero_address()
-        } else {
-            address
-        }
+        self.reward_data().address
     }
     fn last_claim(&mut self) -> U256 {
         self.reward_data().time_stamp

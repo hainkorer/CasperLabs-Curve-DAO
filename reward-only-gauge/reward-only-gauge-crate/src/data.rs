@@ -287,8 +287,6 @@ pub fn reward_data() -> RewardData {
         address: zero_address(),
         time_stamp: 0.into(),
     };
-    // data.address = zero_address();
-    // data.time_stamp = 0.into();
     get_key(REWARD_DATA).unwrap_or(data)
 }
 
