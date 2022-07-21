@@ -37,13 +37,12 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
         controller: Key,
         contract_hash: Key,
         package_hash: ContractPackageHash,
-        lock: u64,
     ) {
         data::set_token(token);
         data::set_controller(controller);
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-        data::set_lock(lock);
+        data::set_lock(0);
         Minted::init();
         AllowedToMintFor::init();
     }

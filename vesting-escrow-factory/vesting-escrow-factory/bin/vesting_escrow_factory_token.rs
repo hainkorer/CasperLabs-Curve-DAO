@@ -388,7 +388,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("fund_admins", CLType::List(Box::new(String::cl_type()))),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
-            Parameter::new("lock", u64::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),

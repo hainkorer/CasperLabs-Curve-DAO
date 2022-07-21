@@ -37,7 +37,6 @@ impl Token {
         _fund_admins: Vec<String>,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
-        lock: u64,
     ) {
         VESTINGESCROW::init(
             self,
@@ -48,7 +47,6 @@ impl Token {
             _fund_admins,
             Key::from(contract_hash),
             package_hash,
-            lock,
         );
     }
 }
@@ -70,7 +68,6 @@ fn constructor() {
     let fund_admins: Vec<String> = runtime::get_named_arg("fund_admins");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    let lock: u64 = runtime::get_named_arg("lock");
 
     Token::default().constructor(
         token,
@@ -80,7 +77,6 @@ fn constructor() {
         fund_admins,
         contract_hash,
         package_hash,
-        lock,
     );
 }
 
@@ -304,7 +300,6 @@ fn call() {
         let end_time: U256 = runtime::get_named_arg("end_time");
         let can_disable: bool = runtime::get_named_arg("can_disable");
         let fund_admins: Vec<String> = runtime::get_named_arg("fund_admins");
-        let lock: u64 = 0;
         // Prepare constructor args
         let constructor_args = runtime_args! {
             "token" => token,
@@ -314,8 +309,6 @@ fn call() {
             "fund_admins" => fund_admins,
             "contract_hash" => contract_hash,
             "package_hash"=> package_hash,
-            "lock"=>lock
-
         };
 
         // Add the constructor group to the package hash with a single URef.
@@ -393,7 +386,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("fund_admins", CLType::List(Box::new(String::cl_type()))),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
-            Parameter::new("lock", u64::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
