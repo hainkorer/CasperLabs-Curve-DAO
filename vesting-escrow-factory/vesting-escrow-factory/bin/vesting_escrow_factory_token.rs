@@ -233,7 +233,7 @@ fn apply_transfer_ownership() {
 }
 #[no_mangle]
 fn claim() {
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     VESTINGESCROWSIMPLE::claim(&Token::default(), addr);
 }
 //[no_mangle] of public variables
@@ -547,7 +547,10 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claim",
-        vec![Parameter::new("addr", Key::cl_type())],
+        vec![Parameter::new(
+            "addr",
+            CLType::Option(Box::new(CLType::Key)),
+        )],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

@@ -1,8 +1,8 @@
 extern crate alloc;
-use alloc::vec;
+use alloc::{boxed::Box, vec};
 use casper_types::{
-    CLTyped, ContractHash, ContractPackageHash, EntryPoint, EntryPointAccess, EntryPointType,
-    EntryPoints, Group, Key, Parameter, U256,
+    CLType, CLTyped, ContractHash, ContractPackageHash, EntryPoint, EntryPointAccess,
+    EntryPointType, EntryPoints, Group, Key, Parameter, U256,
 };
 
 //Entry Points
@@ -101,7 +101,10 @@ pub fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claim",
-        vec![Parameter::new("addr", Key::cl_type())],
+        vec![Parameter::new(
+            "addr",
+            CLType::Option(Box::new(CLType::Key)),
+        )],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
