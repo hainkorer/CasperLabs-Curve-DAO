@@ -121,7 +121,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let mut old_dslope: U128 = 0.into();
         let mut new_dslope: U128 = 0.into();
         let mut epoch: U256 = get_epoch();
-        if addr != zero_address() || addr != account_zero_address() {
+        if addr != zero_address() && addr != account_zero_address() {
             //  Calculate slopes and biases
             //  Kept at zero when they have to
             if (old_locked.end > U256::from(u64::from(get_blocktime())))
@@ -264,7 +264,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         set_epoch(epoch);
         // Now point_history is filled until t=now
-        if addr != zero_address() || addr != account_zero_address() {
+        if addr != zero_address() && addr != account_zero_address() {
             // If last point was in this block, the slope change has been applied already
             // But in such case we have 0 slope(s)
             last_point.slope = last_point
@@ -294,7 +294,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         }
         // Record the changed point into history
         PointHistory::instance().set(&epoch, last_point);
-        if addr != zero_address() || addr != account_zero_address() {
+        if addr != zero_address() && addr != account_zero_address() {
             // Schedule the slope changes (slope is going down)
             // We subtract new_user_slope from [new_locked.end]
             // and add old_user_slope to [old_locked.end]
