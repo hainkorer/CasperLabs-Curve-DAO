@@ -23,6 +23,13 @@ pub fn zero_address() -> Key {
         .unwrap()
 }
 
+pub fn account_zero_address() -> Key {
+    Key::from_formatted_str(
+        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
+    )
+    .unwrap()
+}
+
 // We cannot really do block numbers per se b/c slope is per time, not per block
 // and per block could be fairly bad b/c Ethereum changes blocktimes.
 // What we can do is to extrapolate ***At functions
