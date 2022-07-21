@@ -266,7 +266,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "claimed_rewards_for",
             runtime_args! {
-                "key" => Key::from(get_package_hash())
+                "owner" => Key::from(get_package_hash())
             },
         );
         let d_reward: U256 = claimable_reward

@@ -32,12 +32,12 @@ impl ApprovedToDeposit {
         Dict::init(APPROVED_TO_DEPOSIT)
     }
 
-    pub fn get(&self, key0: &Key, key1: &Key) -> bool {
-        self.dict.get_by_keys((key0, key1)).unwrap_or_default()
+    pub fn get(&self, owner: &Key, spender: &Key) -> bool {
+        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
     }
 
-    pub fn set(&self, key0: &Key, key1: &Key, value: bool) {
-        self.dict.set_by_keys((key0, key1), value);
+    pub fn set(&self, owner: &Key, spender: &Key, value: bool) {
+        self.dict.set_by_keys((owner, spender), value);
     }
 }
 
@@ -92,7 +92,7 @@ impl WorkingBalances {
 }
 
 // The goal is to be able to calculate ∫(rate * balance / totalSupply dt) from 0 till checkpoint
-// All values are kept in units of being multiplied by 1e18
+// All values are kept in units of being multiplied by 1e9
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct PeriodTimestamp {
     dict: Dict,
@@ -125,7 +125,7 @@ impl PeriodTimestamp {
     }
 }
 
-// 1e18 * ∫(rate(t) / totalSupply(t) dt) from 0 till checkpoint
+// 1e9 * ∫(rate(t) / totalSupply(t) dt) from 0 till checkpoint
 // bump epoch when rate() changes
 
 #[derive(CLTyped, ToBytes, FromBytes)]
@@ -160,7 +160,7 @@ impl IntegrateInvSupply {
     }
 }
 
-// 1e18 * ∫(rate(t) / totalSupply(t) dt) from (last_action) till checkpoint
+// 1e9 * ∫(rate(t) / totalSupply(t) dt) from (last_action) till checkpoint
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct IntegrateInvSupplyOf {
     dict: Dict,

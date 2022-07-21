@@ -316,13 +316,13 @@ impl PointsSum {
     }
 }
 
-pub struct ChangeSum {
+pub struct ChangesSum {
     dict: Dict,
 }
 
-impl ChangeSum {
-    pub fn instance() -> ChangeSum {
-        ChangeSum {
+impl ChangesSum {
+    pub fn instance() -> ChangesSum {
+        ChangesSum {
             dict: Dict::instance(CHANGES_SUM_DICT),
         }
     }

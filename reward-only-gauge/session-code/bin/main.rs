@@ -110,44 +110,44 @@ pub extern "C" fn call() {
             store(LAST_CLAIM, ret);
         }
         CLAIMED_REWARD => {
-            let _addr: Key = runtime::get_named_arg("_addr");
-            let _token: Key = runtime::get_named_arg("_token");
+            let addr: Key = runtime::get_named_arg("addr");
+            let token: Key = runtime::get_named_arg("token");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 CLAIMED_REWARD,
                 runtime_args! {
-                    "_addr"=>_addr,
-                    "_token"=>_token
+                    "addr"=>addr,
+                    "token"=>token
                 },
             );
             store(CLAIMED_REWARD, ret);
         }
 
         CLAIMABLE_REWARD => {
-            let _addr: Key = runtime::get_named_arg("_addr");
-            let _token: Key = runtime::get_named_arg("_token");
+            let addr: Key = runtime::get_named_arg("addr");
+            let token: Key = runtime::get_named_arg("token");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 CLAIMABLE_REWARD,
                 runtime_args! {
-                    "_addr"=>_addr,
-                    "_token"=>_token
+                    "addr"=>addr,
+                    "token"=>token
                 },
             );
             store(CLAIMABLE_REWARD, ret);
         }
         CLAIMABLE_REWARD_WRITE => {
-            let _addr: Key = runtime::get_named_arg("_addr");
-            let _token: Key = runtime::get_named_arg("_token");
+            let addr: Key = runtime::get_named_arg("addr");
+            let token: Key = runtime::get_named_arg("token");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 CLAIMABLE_REWARD_WRITE,
                 runtime_args! {
-                    "_addr"=>_addr,
-                    "_token"=>_token
+                    "addr"=>addr,
+                    "token"=>token
                 },
             );
             store(CLAIMABLE_REWARD_WRITE, ret);

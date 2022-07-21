@@ -110,197 +110,201 @@ fn package_hash() {
     let ret: ContractPackageHash = Token::default().get_package_hash();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+/// """
+/// @notice Get Gauge relative weight (not more than 1.0) normalized to 1e9
+///         (e.g. 1.0 == 1e9). Inflation which will be received by it is
+///         inflation_rate * relative_weight / 1e9
+/// @param addr Gauge address
+/// @param time Relative weight at the specified timestamp in the past or present
+/// @return Value of relative weight normalized to 1e9
+///
 #[no_mangle]
 fn gauge_relative_weight() {
-    // @notice Get Gauge relative weight (not more than 1.0) normalized to 1e18
-    //         (e.g. 1.0 == 1e18). Inflation which will be received by it is
-    //         inflation_rate * relative_weight / 1e18
-    // @param addr Gauge address
-    // @param time Relative weight at the specified timestamp in the past or present
-    // @return Value of relative weight normalized to 1e18
-
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = Token::default().gauge_relative_weight(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+/// """
+/// @notice Get gauge weight normalized to 1e9 and also fill all the unfilled
+///         values for type and gauge records
+/// @dev Any address can call, however nothing is recorded if the values are filled already
+/// @param addr Gauge address
+/// @param time Relative weight at the specified timestamp in the past or present
+/// @return Value of relative weight normalized to 1e9
+/// """
 #[no_mangle]
 fn gauge_relative_weight_write() {
-    // @notice Get gauge weight normalized to 1e18 and also fill all the unfilled
-    //         values for type and gauge records
-    // @dev Any address can call, however nothing is recorded if the values are filled already
-    // @param addr Gauge address
-    // @param time Relative weight at the specified timestamp in the past or present
-    // @return Value of relative weight normalized to 1e18
-
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = Token::default().gauge_relative_weight_write(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+/// """
+/// @notice Change gauge type `type_id` weight to `weight`
+/// @param type_id Gauge type id
+/// @param weight New Gauge weight
+/// """
 #[no_mangle]
 fn change_type_weight() {
-    // @notice Change gauge type `type_id` weight to `weight`
-    // @param type_id Gauge type id
-    // @param weight New Gauge weight
-
     let type_id: U128 = runtime::get_named_arg("type_id");
     let weight: U256 = runtime::get_named_arg("weight");
 
     Token::default().change_type_weight(type_id, weight);
 }
-
+/// """
+/// @notice Change weight of gauge `addr` to `weight`
+/// @param addr `GaugeController` contract address
+/// @param weight New Gauge weight
+/// """
 #[no_mangle]
 fn change_gauge_weight() {
-    // @notice Change weight of gauge `addr` to `weight`
-    // @param addr `GaugeController` contract address
-    // @param weight New Gauge weight
-
     let addr: Key = runtime::get_named_arg("addr");
     let weight: U256 = runtime::get_named_arg("weight");
 
     Token::default().change_gauge_weight(addr, weight);
 }
-
+/// """
+/// @notice Get current gauge weight
+/// @param addr Gauge address
+/// @return Gauge weight
+/// """
 #[no_mangle]
 fn get_gauge_weight() {
-    // @notice Get current gauge weight
-    // @param addr Gauge address
-    // @return Gauge weight
-
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = Token::default().get_gauge_weight(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+/// """
+/// @notice Get current type weight
+/// @param type_id Type id
+/// @return Type weight
+/// """
 #[no_mangle]
 fn get_type_weight() {
-    // @notice Get current type weight
-    // @param type_id Type id
-    // @return Type weight
-
     let type_id: U128 = runtime::get_named_arg("type_id");
     let ret: U256 = Token::default().get_type_weight(type_id);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+/// """
+/// @notice Get current total (type-weighted) weight
+/// @return Total weight
+/// """
 #[no_mangle]
 fn get_total_weight() {
-    // @notice Get current total (type-weighted) weight
-    // @return Total weight
-
     let ret: U256 = Token::default().get_total_weight();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
+/// """
+/// @notice Get sum of gauge weights per type
+/// @param type_id Type id
+/// @return Sum of gauge weights
+/// """
 #[no_mangle]
 fn get_weights_sum_per_type() {
-    // @notice Get sum of gauge weights per type
-    // @param type_id Type id
-    // @return Sum of gauge weights
-
     let type_id: U128 = runtime::get_named_arg("type_id");
     let ret: U256 = Token::default().get_weights_sum_per_type(type_id);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 #[no_mangle]
-fn change_sum() {
-    let key0: U128 = runtime::get_named_arg("key0");
-    let key1: U256 = runtime::get_named_arg("key1");
-    let ret: U256 = Token::default().change_sum(key0, key1);
+fn changes_sum() {
+    let owner: U128 = runtime::get_named_arg("owner");
+    let spender: U256 = runtime::get_named_arg("spender");
+    let ret: U256 = Token::default().changes_sum(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn changes_weight() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let key1: U256 = runtime::get_named_arg("key1");
-    let ret: U256 = Token::default().changes_weight(key0, key1);
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: U256 = runtime::get_named_arg("spender");
+    let ret: U256 = Token::default().changes_weight(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn gauge_type_names() {
-    let key0: U128 = runtime::get_named_arg("key0");
-    let ret: String = Token::default().gauge_type_names(key0);
+    let owner: U128 = runtime::get_named_arg("owner");
+    let ret: String = Token::default().gauge_type_names(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+/// """
+/// # we increment values by 1 prior to storing them here so we can rely on a value
+/// # of zero as meaning the gauge has not been set
+/// """
 #[no_mangle]
 fn gauge_types_() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let ret: U128 = Token::default().gauge_types_(key0);
+    let owner: Key = runtime::get_named_arg("owner");
+    let ret: U128 = Token::default().gauge_types_(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn gauges() {
-    let key0: U256 = runtime::get_named_arg("key0");
-    let ret: Key = Token::default().gauges(key0);
+    let owner: U256 = runtime::get_named_arg("owner");
+    let ret: Key = Token::default().gauges(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn last_user_vote() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let key1: Key = runtime::get_named_arg("key1");
-    let ret: U256 = Token::default().last_user_vote(key0, key1);
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    let ret: U256 = Token::default().last_user_vote(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn points_sum() {
-    let key0: U128 = runtime::get_named_arg("key0");
-    let key1: U256 = runtime::get_named_arg("key1");
-    let ret: Point = Token::default().points_sum(key0, key1);
+    let owner: U128 = runtime::get_named_arg("owner");
+    let spender: U256 = runtime::get_named_arg("spender");
+    let ret: Point = Token::default().points_sum(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn points_total() {
-    let key0: U256 = runtime::get_named_arg("key0");
-    let ret: U256 = Token::default().points_total(key0);
+    let owner: U256 = runtime::get_named_arg("owner");
+    let ret: U256 = Token::default().points_total(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn points_type_weight() {
-    let key0: U128 = runtime::get_named_arg("key0");
-    let key1: U256 = runtime::get_named_arg("key1");
-    let ret: U256 = Token::default().points_type_weight(key0, key1);
+    let owner: U128 = runtime::get_named_arg("owner");
+    let spender: U256 = runtime::get_named_arg("spender");
+    let ret: U256 = Token::default().points_type_weight(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn points_weight() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let key1: U256 = runtime::get_named_arg("key1");
-    let ret: Point = Token::default().points_weight(key0, key1);
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: U256 = runtime::get_named_arg("spender");
+    let ret: Point = Token::default().points_weight(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn time_sum() {
-    let key0: U256 = runtime::get_named_arg("key0");
-    let ret: U256 = Token::default().time_sum(key0);
+    let owner: U256 = runtime::get_named_arg("owner");
+    let ret: U256 = Token::default().time_sum(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn time_type_weight() {
-    let key0: U256 = runtime::get_named_arg("key0");
-    let ret: U256 = Token::default().time_type_weight(key0);
+    let owner: U256 = runtime::get_named_arg("owner");
+    let ret: U256 = Token::default().time_type_weight(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn time_weight() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let ret: U256 = Token::default().time_weight(key0);
+    let owner: Key = runtime::get_named_arg("owner");
+    let ret: U256 = Token::default().time_weight(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn vote_user_power() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let ret: U256 = Token::default().vote_user_power(key0);
+    let owner: Key = runtime::get_named_arg("owner");
+    let ret: U256 = Token::default().vote_user_power(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 #[no_mangle]
 fn vote_user_slopes() {
-    let key0: Key = runtime::get_named_arg("key0");
-    let key1: Key = runtime::get_named_arg("key1");
-    let ret: VotedSlope = Token::default().vote_user_slopes(key0, key1);
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    let ret: VotedSlope = Token::default().vote_user_slopes(owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 // TimeWeight, VoteUserPower, VoteUserSlopes,
@@ -334,39 +338,43 @@ fn n_gauge_types() {
     let ret: U128 = Token::default().n_gauge_types();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+#[no_mangle]
+fn n_gauges() {
+    let ret: U128 = Token::default().n_gauges();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+/// @notice Add gauge type with name `_name` and weight `weight`
+/// @param _name Name of gauge type
+/// @param weight Weight of gauge type
 
 #[no_mangle]
 fn add_type() {
-    // @notice Add gauge type with name `_name` and weight `weight`
-    // @param _name Name of gauge type
-    // @param weight Weight of gauge type
-
-    let _name: String = runtime::get_named_arg("_name");
-    Token::default().add_type(_name);
+    let name: String = runtime::get_named_arg("name");
+    let weight: Option<U256> = runtime::get_named_arg("weight");
+    Token::default().add_type(name, weight);
 }
 
+/// @notice Add gauge `addr` of type `gauge_type` with weight `weight`
+/// @param addr Gauge address
+/// @param gauge_type Gauge type
+/// @param weight Gauge weight
 #[no_mangle]
 fn add_gauge() {
-    // @notice Add gauge `addr` of type `gauge_type` with weight `weight`
-    // @param addr Gauge address
-    // @param gauge_type Gauge type
-    // @param weight Gauge weight
-
     let addr: Key = runtime::get_named_arg("addr");
     let gauge_type: U128 = runtime::get_named_arg("gauge_type");
     let weight: Option<U256> = runtime::get_named_arg("weight");
     Token::default().add_gauge(addr, gauge_type, weight);
 }
 
+/// @notice Allocate voting power for changing pool weights
+/// @param _gauge_addr Gauge which `msg.sender` votes for
+/// @param _user_weight Weight for a gauge in bps (units of 0.01%). Minimal is 0.01%. Ignored if 0
 #[no_mangle]
 fn vote_for_gauge_weights() {
-    // @notice Allocate voting power for changing pool weights
-    // @param _gauge_addr Gauge which `msg.sender` votes for
-    // @param _user_weight Weight for a gauge in bps (units of 0.01%). Minimal is 0.01%. Ignored if 0
-
-    let _gauge_addr: Key = runtime::get_named_arg("_gauge_addr");
-    let _user_weight: U256 = runtime::get_named_arg("_user_weight");
-    Token::default().vote_for_gauge_weights(_gauge_addr, _user_weight);
+    let gauge_addr: Key = runtime::get_named_arg("gauge_addr");
+    let user_weight: U256 = runtime::get_named_arg("user_weight");
+    Token::default().vote_for_gauge_weights(gauge_addr, user_weight);
 }
 
 #[no_mangle]
@@ -519,6 +527,13 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "n_gauges",
+        vec![],
+        U128::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
 
     entry_points.add_entry_point(EntryPoint::new(
         "voting_escrow",
@@ -563,8 +578,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "vote_user_slopes",
         vec![
-            Parameter::new("key0", Key::cl_type()),
-            Parameter::new("key1", Key::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
         ],
         VotedSlope::cl_type(),
         EntryPointAccess::Public,
@@ -572,7 +587,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "vote_user_power",
-        vec![Parameter::new("key0", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -580,21 +595,21 @@ fn get_entry_points() -> EntryPoints {
 
     entry_points.add_entry_point(EntryPoint::new(
         "time_weight",
-        vec![Parameter::new("key0", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "time_type_weight",
-        vec![Parameter::new("key0", U256::cl_type())],
+        vec![Parameter::new("owner", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "time_sum",
-        vec![Parameter::new("key0", U256::cl_type())],
+        vec![Parameter::new("owner", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -602,8 +617,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "points_weight",
         vec![
-            Parameter::new("key0", Key::cl_type()),
-            Parameter::new("key1", U256::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", U256::cl_type()),
         ],
         Point::cl_type(),
         EntryPointAccess::Public,
@@ -613,8 +628,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "points_type_weight",
         vec![
-            Parameter::new("key0", U128::cl_type()),
-            Parameter::new("key1", U256::cl_type()),
+            Parameter::new("owner", U128::cl_type()),
+            Parameter::new("spender", U256::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -622,7 +637,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "points_total",
-        vec![Parameter::new("key0", U256::cl_type())],
+        vec![Parameter::new("owner", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -630,8 +645,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "points_sum",
         vec![
-            Parameter::new("key0", U128::cl_type()),
-            Parameter::new("key1", U256::cl_type()),
+            Parameter::new("owner", U128::cl_type()),
+            Parameter::new("spender", U256::cl_type()),
         ],
         Point::cl_type(),
         EntryPointAccess::Public,
@@ -640,8 +655,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "last_user_vote",
         vec![
-            Parameter::new("key0", Key::cl_type()),
-            Parameter::new("key1", Key::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -649,21 +664,21 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "gauges",
-        vec![Parameter::new("key0", U256::cl_type())],
+        vec![Parameter::new("owner", U256::cl_type())],
         Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "gauge_types_",
-        vec![Parameter::new("key0", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U128::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "gauge_type_names",
-        vec![Parameter::new("key0", U128::cl_type())],
+        vec![Parameter::new("owner", U128::cl_type())],
         String::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -671,18 +686,18 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "changes_weight",
         vec![
-            Parameter::new("key0", Key::cl_type()),
-            Parameter::new("key1", U256::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", U256::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "change_sum",
+        "changes_sum",
         vec![
-            Parameter::new("key0", U128::cl_type()),
-            Parameter::new("key1", U256::cl_type()),
+            Parameter::new("owner", U128::cl_type()),
+            Parameter::new("spender", U256::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -753,7 +768,10 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "add_type",
-        vec![Parameter::new("_name", String::cl_type())],
+        vec![
+            Parameter::new("name", String::cl_type()),
+            Parameter::new("weight", CLType::Option(Box::new(U256::cl_type()))),
+        ],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -772,8 +790,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "vote_for_gauge_weights",
         vec![
-            Parameter::new("_gauge_addr", Key::cl_type()),
-            Parameter::new("_user_weight", U256::cl_type()),
+            Parameter::new("gauge_addr", Key::cl_type()),
+            Parameter::new("user_weight", U256::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,

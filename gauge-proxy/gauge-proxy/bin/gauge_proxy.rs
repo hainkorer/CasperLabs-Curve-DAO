@@ -7,11 +7,12 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    bytesrepr::Bytes, runtime_args, CLTyped, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
+    bytesrepr::Bytes, runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash,
+    EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs,
+    URef,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use gauge_proxy_crate::{self, GAUGEPROXY};
+use gauge_proxy_crate::{self, data, GAUGEPROXY};
 
 #[derive(Default)]
 struct GaugeProxy(OnChainContractStorage);
@@ -54,6 +55,9 @@ fn constructor() {
     );
 }
 
+/// @notice Set ownership admin to `o_admin` and emergency admin to `e_admin`
+/// @param o_admin Ownership admin
+/// @param e_admin Emergency admin
 #[no_mangle]
 fn commit_set_admins() {
     let o_admin: Key = runtime::get_named_arg("o_admin");
@@ -61,11 +65,16 @@ fn commit_set_admins() {
     GaugeProxy::default().commit_set_admins(o_admin, e_admin);
 }
 
+/// @notice Apply the effects of `commit_set_admins`
+/// @dev Only callable by the new owner admin
 #[no_mangle]
 fn accept_set_admins() {
     GaugeProxy::default().accept_set_admins();
 }
 
+/// @notice Transfer ownership for liquidity gauge `_gauge` to `new_owner`
+/// @param _gauge Gauge which ownership is to be transferred
+/// @param new_owner New gauge owner address
 #[no_mangle]
 fn commit_transfer_ownership() {
     let gauge: Key = runtime::get_named_arg("gauge");
@@ -73,12 +82,18 @@ fn commit_transfer_ownership() {
     GaugeProxy::default().commit_transfer_ownership(gauge, new_owner);
 }
 
+/// @notice Apply transferring ownership of `_gauge`
+/// @param _gauge Gauge address
 #[no_mangle]
 fn accept_transfer_ownership() {
     let gauge: Key = runtime::get_named_arg("gauge");
     GaugeProxy::default().accept_transfer_ownership(gauge);
 }
 
+/// @notice Set the killed status for `_gauge`
+/// @dev When killed, the gauge always yields a rate of 0 and so cannot mint CRV
+/// @param _gauge Gauge address
+/// @param _is_killed Killed status to set
 #[no_mangle]
 fn set_killed() {
     let gauge: Key = runtime::get_named_arg("gauge");
@@ -86,6 +101,12 @@ fn set_killed() {
     GaugeProxy::default().set_killed(gauge, is_killed);
 }
 
+/// @notice Set the active reward contract for `_gauge`
+/// @param _gauge Gauge address
+/// @param _reward_contract Reward contract address. Set to ZERO_ADDRESS to disable staking.
+/// @param _sigs Four byte selectors for staking, withdrawing and claiming, right padded with zero bytes. If the reward contract
+///     can be claimed from but does not require staking, the staking and withdraw selectors should be set to 0x00
+/// @param _reward_tokens List of claimable tokens for this reward contract
 #[no_mangle]
 fn set_rewards() {
     let gauge: Key = runtime::get_named_arg("gauge");
@@ -93,6 +114,28 @@ fn set_rewards() {
     let sigs: Bytes = runtime::get_named_arg("sigs");
     let reward_tokens: Vec<Key> = runtime::get_named_arg("reward_tokens");
     GaugeProxy::default().set_rewards(gauge, reward_contract, sigs, reward_tokens);
+}
+
+// Variables
+
+#[no_mangle]
+fn ownership_admin() {
+    runtime::ret(CLValue::from_t(data::get_ownership_admin()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn emergency_admin() {
+    runtime::ret(CLValue::from_t(data::get_emergency_admin()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn future_ownership_admin() {
+    runtime::ret(CLValue::from_t(data::get_future_ownership_admin()).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn future_emergency_admin() {
+    runtime::ret(CLValue::from_t(data::get_future_emergency_admin()).unwrap_or_revert());
 }
 
 fn get_entry_points() -> EntryPoints {
@@ -162,6 +205,35 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("reward_tokens", Vec::<Key>::cl_type()),
         ],
         <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    // Variables
+    entry_points.add_entry_point(EntryPoint::new(
+        "ownership_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "emergency_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_ownership_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_emergency_admin",
+        vec![],
+        Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

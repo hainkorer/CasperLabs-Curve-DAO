@@ -36,9 +36,6 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
         set_package_hash(package_hash);
     }
 
-    /// @notice Set ownership admin to `o_admin` and emergency admin to `e_admin`
-    /// @param o_admin Ownership admin
-    /// @param e_admin Emergency admin
     fn commit_set_admins(&self, o_admin: Key, e_admin: Key) {
         if self.get_caller() != get_ownership_admin() {
             runtime::revert(ApiError::from(Error::AccessDenied));
@@ -51,8 +48,6 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
         });
     }
 
-    /// @notice Apply the effects of `commit_set_admins`
-    /// @dev Only callable by the new owner admin
     fn accept_set_admins(&self) {
         if self.get_caller() != get_future_ownership_admin() {
             runtime::revert(ApiError::from(Error::AccessDenied));
@@ -66,9 +61,6 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
         });
     }
 
-    /// @notice Transfer ownership for liquidity gauge `_gauge` to `new_owner`
-    /// @param _gauge Gauge which ownership is to be transferred
-    /// @param new_owner New gauge owner address
     fn commit_transfer_ownership(&self, gauge: Key, new_owner: Key) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::IsLocked));
@@ -88,8 +80,6 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(false);
     }
 
-    /// @notice Apply transferring ownership of `_gauge`
-    /// @param _gauge Gauge address
     fn accept_transfer_ownership(&self, gauge: Key) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::IsLocked));
@@ -104,10 +94,6 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(false);
     }
 
-    /// @notice Set the killed status for `_gauge`
-    /// @dev When killed, the gauge always yields a rate of 0 and so cannot mint CRV
-    /// @param _gauge Gauge address
-    /// @param _is_killed Killed status to set
     fn set_killed(&self, gauge: Key, is_killed: bool) {
         if get_lock() {
             runtime::revert(ApiError::from(Error::IsLocked));
@@ -129,12 +115,6 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(false);
     }
 
-    /// @notice Set the active reward contract for `_gauge`
-    /// @param _gauge Gauge address
-    /// @param _reward_contract Reward contract address. Set to ZERO_ADDRESS to disable staking.
-    /// @param _sigs Four byte selectors for staking, withdrawing and claiming, right padded with zero bytes. If the reward contract
-    ///     can be claimed from but does not require staking, the staking and withdraw selectors should be set to 0x00
-    /// @param _reward_tokens List of claimable tokens for this reward contract
     fn set_rewards(&self, gauge: Key, reward_contract: Key, sigs: Bytes, reward_tokens: Vec<Key>) {
         if self.get_caller() != get_ownership_admin() {
             runtime::revert(ApiError::from(Error::AccessDenied));

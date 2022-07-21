@@ -668,7 +668,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             None,
             "user_point_epoch",
             runtime_args! {
-                "addr" => addr,
+                "user" => addr,
             },
         );
         let t_ve: U256 = runtime::call_versioned_contract(
@@ -872,7 +872,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                     token_package_hash,
                     None,
                     "transfer",
-                    runtime_args! {"_to" => self.get_caller(),"_value" => _value},
+                    runtime_args! {"to" => self.get_caller(),"value" => _value},
                 );
             }
         }

@@ -575,6 +575,63 @@ pub enum Error {
     GaugeControllerUnderFlow22 = 10766,
     /// 76,304 for (Gauge Controller UnderFlow23)
     GaugeControllerUnderFlow23 = 10767,
+    /// 76,305 for (Gauge Controller UnderFlow23)
+    GaugeControllerUnderFlow24 = 10768,
+    /// 76,306 for (Gauge Controller Multiply1)
+    GaugeControllerMultiply1 = 10769,
+    /// 76,306 for (Gauge Controller Multiply2)
+    GaugeControllerMultiply2 = 10770,
+    /// 76,306 for (Gauge Controller Multiply3)
+    GaugeControllerMultiply3 = 10771,
+    /// 76,306 for (Gauge Controller Multiply4)
+    GaugeControllerMultiply4 = 10772,
+    /// 76,306 for (Gauge Controller Multiply5)
+    GaugeControllerMultiply5 = 10773,
+    /// 76,306 for (Gauge Controller Multiply6)
+    GaugeControllerMultiply6 = 10774,
+    /// 76,306 for (Gauge Controller Multiply7)
+    GaugeControllerMultiply7 = 10775,
+    /// 76,306 for (Gauge Controller Multiply8)
+    GaugeControllerMultiply8 = 10776,
+    /// 76,306 for (Gauge Controller Multiply9)
+    GaugeControllerMultiply9 = 10777,
+    /// 76,306 for (Gauge Controller Multiply10)
+    GaugeControllerMultiply10 = 10778,
+    /// 76,306 for (Gauge Controller Multiply11)
+    GaugeControllerMultiply11 = 10779,
+    /// 76,306 for (Gauge Controller Multiply12)
+    GaugeControllerMultiply12 = 10780,
+    /// 76,306 for (Gauge Controller Multiply13)
+    GaugeControllerMultiply13 = 10781,
+    /// 76,306 for (Gauge Controller Multiply14)
+    GaugeControllerMultiply14 = 10782,
+    /// 76,306 for (Gauge Controller Multiply15)
+    GaugeControllerMultiply15 = 10783,
+    /// 76,306 for (Gauge Controller Multiply16)
+    GaugeControllerMultiply16 = 10784,
+    /// 76,306 for (Gauge Controller Multiply17)
+    GaugeControllerMultiply17 = 10785,
+    /// 76,306 for (Gauge Controller Multiply18)
+    GaugeControllerMultiply18 = 10786,
+    /// 76,306 for (Gauge Controller Multiply19)
+    GaugeControllerMultiply19 = 10787,
+    /// 76,306 for (Gauge Controller Divide1)
+    GaugeControllerDivide1 = 10788,
+    /// 76,306 for (Gauge Controller Divide2)
+    GaugeControllerDivide2 = 10789,
+    /// 76,306 for (Gauge Controller Divide3)
+    GaugeControllerDivide3 = 10790,
+    /// 76,306 for (Gauge Controller Divide4)
+    GaugeControllerDivide4 = 10791,
+    /// 76,306 for (Gauge Controller Divide5)
+    GaugeControllerDivide5 = 10792,
+    /// 76,306 for (Gauge Controller Divide6)
+    GaugeControllerDivide6 = 10793,
+    /// 76,306 for (Gauge Controller Divide7)
+    GaugeControllerDivide7 = 10794,
+    /// 76,306 for (Gauge Controller Divide8)
+    GaugeControllerDivide8 = 10795,
+
     /// 65,536 for (Minter Gauge Is Not Added)
     MinterIsNotAdded = 10801,
     /// 65,537 for (Minter Gauge Locked)
@@ -789,82 +846,229 @@ pub enum Error {
     VotingEscrowTheLockDidntExpire = 11322,
     /// 65,540 for (Voting Escrow Invalid Block Number)
     VotingEscrowInvalidBlockNumber = 11323,
-    /// 65,540 for (Liquidity Gauge Wrapper Unauthorized)
-    GaugeWrapperUnauthorized = 11401,
-    /// 65,540 for (Liquidity Gauge Wrapper Is Killed)
-    GaugeWrapperIsKilled1 = 11402,
-    /// 65,546 for (Liquidity Gauge Wrapper Not Approved)
-    GaugeWrapperNotApproved = 11403,
-    /// 65,546 for (Liquidity Gauge Wrapper IsLocked1)
-    GaugeWrapperIsLocked1 = 11404,
-    /// 65,546 for (Liquidity Gauge Wrapper IsLocked2)
-    GaugeWrapperIsLocked2 = 11405,
-    /// 65,546 for (Liquidity Gauge Wrapper Is Locked3)
-    GaugeWrapperIsLocked3 = 11406,
-    /// 65,546 for (Liquidity Gauge Wrapper Admin Only1)
-    GaugeWrapperAdminOnly1 = 11407,
-    /// 65,546 for (Liquidity Gauge Wrapper Admin Only2)
-    GaugeWrapperAdminOnly2 = 11408,
-    /// 65,546 for (Liquidity Gauge Wrapper Admin Only3)
-    GaugeWrapperAdminOnly3 = 11409,
-    /// 65,546 for (Liquidity Gauge Wrapper Admin Not Set)
-    GaugeWrapperAdminNotSet = 11410,
-    /// 65,546 for (Liquidity Gauge Wrapper Zero Address)
-    GaugeWrapperZeroAddress = 11411,
-    /// 65,540 for (Liquidity Gauge Wrapper Is Killed)
-    GaugeWrapperIsKilled2 = 11412,
-    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 1)
-    GaugeWrapperAdditionError1 = 11413,
-    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 2)
-    GaugeWrapperAdditionError2 = 11414,
-    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 3)
-    GaugeWrapperAdditionError3 = 11415,
-    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 4)
-    GaugeWrapperAdditionError4 = 11416,
-    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 5)
-    GaugeWrapperAdditionError5 = 11417,
-    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 6)
-    GaugeWrapperAdditionError6 = 11418,
-    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 7)
-    GaugeWrapperAdditionError7 = 11419,
-    /// 65,540 for (Liquidity Gauge Wrapper Addition Error 8)
-    GaugeWrapperAdditionError8 = 11420,
-    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 1)
-    GaugeWrapperSubtractionError1 = 11421,
-    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 2)
-    GaugeWrapperSubtractionError2 = 11422,
-    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 3)
-    GaugeWrapperSubtractionError3 = 11423,
-    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 4)
-    GaugeWrapperSubtractionError4 = 11424,
-    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 5)
-    GaugeWrapperSubtractionError5 = 11425,
-    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 6)
-    GaugeWrapperSubtractionError6 = 11426,
-    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 7)
-    GaugeWrapperSubtractionError7 = 11427,
-    /// 65,540 for (Liquidity Gauge Wrapper Subtraction Error 8)
-    GaugeWrapperSubtractionError8 = 11428,
-    /// 65,540 for (Liquidity Gauge Wrapper Division Error 1)
-    GaugeWrapperDivisionError1 = 11429,
-    /// 65,540 for (Liquidity Gauge Wrapper Division Error 2)
-    GaugeWrapperDivisionError2 = 11430,
-    /// 65,540 for (Liquidity Gauge Wrapper Division Error 3)
-    GaugeWrapperDivisionError3 = 11431,
-    /// 65,540 for (Liquidity Gauge Wrapper Division Error 4)
-    GaugeWrapperDivisionError4 = 11432,
-    /// 65,540 for (Liquidity Gauge Wrapper Multiply Error 1)
-    GaugeWrapperMultiplyError1 = 11433,
-    /// 65,540 for (Liquidity Gauge Wrapper Multiply Error 2)
-    GaugeWrapperMultiplyError2 = 11434,
-    /// 65,540 for (Liquidity Gauge Wrapper Multiply Error 3)
-    GaugeWrapperMultiplyError3 = 11435,
-    /// 65,540 for (Liquidity Gauge Wrapper Multiply Error 4)
-    GaugeWrapperMultiplyError4 = 11436,
+    /// 65,541 for (Voting Escrow Division Error 1)
+    VotingEscrowDivisionError1 = 11324,
+    /// 65,542 for (Voting Escrow Division Error 2)
+    VotingEscrowDivisionError2 = 11325,
+    /// 65,543 for (Voting Escrow Division Error 3)
+    VotingEscrowDivisionError3 = 11326,
+    /// 65,544 for (Voting Escrow Division Error 4)
+    VotingEscrowDivisionError4 = 11327,
+    /// 65,545 for (Voting Escrow Division Error 5)
+    VotingEscrowDivisionError5 = 11328,
+    /// 65,546 for (Voting Escrow Division Error 6)
+    VotingEscrowDivisionError6 = 11329,
+    /// 65,547 for (Voting Escrow Division Error 7)
+    VotingEscrowDivisionError7 = 11330,
+    /// 65,548 for (Voting Escrow Division Error 8)
+    VotingEscrowDivisionError8 = 11331,
+    /// 65,549 for (Voting Escrow Division Error 9)
+    VotingEscrowDivisionError9 = 11332,
+    /// 65,557 for (Voting Escrow Subtraction Error 1)
+    VotingEscrowSubtractionError1 = 11340,
+    /// 65,558 for (Voting Escrow Subtraction Error 2)
+    VotingEscrowSubtractionError2 = 11341,
+    /// 65,559 for (Voting Escrow Subtraction Error 3)
+    VotingEscrowSubtractionError3 = 11342,
+    /// 65,560 for (Voting Escrow Subtraction Error 4)
+    VotingEscrowSubtractionError4 = 11343,
+    /// 65,561 for (Voting Escrow Subtraction Error 5)
+    VotingEscrowSubtractionError5 = 11344,
+    /// 65,562 for (Voting Escrow Subtraction Error 6)
+    VotingEscrowSubtractionError6 = 11345,
+    /// 65,563 for (Voting Escrow Subtraction Error 7)
+    VotingEscrowSubtractionError7 = 11346,
+    /// 65,564 for (Voting Escrow Subtraction Error 8)
+    VotingEscrowSubtractionError8 = 11347,
+    /// 65,565 for (Voting Escrow Subtraction Error 9)
+    VotingEscrowSubtractionError9 = 11348,
+    /// 65,566 for (Voting Escrow Subtraction Error 10)
+    VotingEscrowSubtractionError10 = 11349,
+    /// 65,567 for (Voting Escrow Subtraction Error 11)
+    VotingEscrowSubtractionError11 = 11350,
+    /// 65,568 for (Voting Escrow Subtraction Error 12)
+    VotingEscrowSubtractionError12 = 11351,
+    /// 65,569 for (Voting Escrow Subtraction Error 13)
+    VotingEscrowSubtractionError13 = 11352,
+    /// 65,570 for (Voting Escrow Subtraction Error 14)
+    VotingEscrowSubtractionError14 = 11353,
+    /// 65,571 for (Voting Escrow Subtraction Error 15)
+    VotingEscrowSubtractionError15 = 11354,
+    /// 65,572 for (Voting Escrow Subtraction Error 16)
+    VotingEscrowSubtractionError16 = 11355,
+    /// 65,573 for (Voting Escrow Subtraction Error 17)
+    VotingEscrowSubtractionError17 = 11356,
+    /// 65,574 for (Voting Escrow Subtraction Error 18)
+    VotingEscrowSubtractionError18 = 11357,
+    /// 65,575 for (Voting Escrow Subtraction Error 19)
+    VotingEscrowSubtractionError19 = 11358,
+    /// 65,576 for (Voting Escrow Subtraction Error 20)
+    VotingEscrowSubtractionError20 = 11359,
+    /// 65,577 for (Voting Escrow Subtraction Error 21)
+    VotingEscrowSubtractionError21 = 11360,
+    /// 65,578 for (Voting Escrow Subtraction Error 22)
+    VotingEscrowSubtractionError22 = 11361,
+    /// 65,579 for (Voting Escrow Subtraction Error 23)
+    VotingEscrowSubtractionError23 = 11362,
+    /// 65,580 for (Voting Escrow Subtraction Error 24)
+    VotingEscrowSubtractionError24 = 11363,
+    /// 65,581 for (Voting Escrow Subtraction Error 25)
+    VotingEscrowSubtractionError25 = 11364,
+    /// 65,582 for (Voting Escrow Multiplication Error 1)
+    VotingEscrowMultiplicationError1 = 11365,
+    /// 65,583 for (Voting Escrow Multiplication Error 2)
+    VotingEscrowMultiplicationError2 = 11366,
+    /// 65,584 for (Voting Escrow Multiplication Error 3)
+    VotingEscrowMultiplicationError3 = 11367,
+    /// 65,585 for (Voting Escrow Multiplication Error 4)
+    VotingEscrowMultiplicationError4 = 11368,
+    /// 65,586 for (Voting Escrow Multiplication Error 5)
+    VotingEscrowMultiplicationError5 = 11369,
+    /// 65,587 for (Voting Escrow Multiplication Error 6)
+    VotingEscrowMultiplicationError6 = 11370,
+    /// 65,588 for (Voting Escrow Multiplication Error 7)
+    VotingEscrowMultiplicationError7 = 11371,
+    /// 65,589 for (Voting Escrow Multiplication Error 8)
+    VotingEscrowMultiplicationError8 = 11372,
+    /// 65,590 for (Voting Escrow Multiplication Error 9)
+    VotingEscrowMultiplicationError9 = 11373,
+    /// 65,591 for (Voting Escrow Multiplication Error 10)
+    VotingEscrowMultiplicationError10 = 11374,
+    /// 65,592 for (Voting Escrow Multiplication Error 11)
+    VotingEscrowMultiplicationError11 = 11375,
+    /// 65,593 for (Voting Escrow Multiplication Error 12)
+    VotingEscrowMultiplicationError12 = 11376,
+    /// 65,597 for (Voting Escrow Addition Error 1)
+    VotingEscrowAdditionError1 = 11380,
+    /// 65,598 for (Voting Escrow Addition Error 2)
+    VotingEscrowAdditionError2 = 11381,
+    /// 65,599 for (Voting Escrow Addition Error 3)
+    VotingEscrowAdditionError3 = 11382,
+    /// 65,600 for (Voting Escrow Addition Error 4)
+    VotingEscrowAdditionError4 = 11383,
+    /// 65,601 for (Voting Escrow Addition Error 5)
+    VotingEscrowAdditionError5 = 11384,
+    /// 65,602 for (Voting Escrow Addition Error 6)
+    VotingEscrowAdditionError6 = 11385,
+    /// 65,603 for (Voting Escrow Addition Error 7)
+    VotingEscrowAdditionError7 = 11386,
+    /// 65,604 for (Voting Escrow Addition Error 8)
+    VotingEscrowAdditionError8 = 11387,
+    /// 65,605 for (Voting Escrow Addition Error 9)
+    VotingEscrowAdditionError9 = 11388,
+    /// 65,606 for (Voting Escrow Addition Error 10)
+    VotingEscrowAdditionError10 = 11389,
+    /// 65,607 for (Voting Escrow Addition Error 11)
+    VotingEscrowAdditionError11 = 11390,
+    /// 65,608 for (Voting Escrow Addition Error 12)
+    VotingEscrowAdditionError12 = 11391,
+    /// 65,609 for (Voting Escrow Addition Error 13)
+    VotingEscrowAdditionError13 = 11392,
+    /// 65,610 for (Voting Escrow Addition Error 14)
+    VotingEscrowAdditionError14 = 11393,
+    /// 65,611 for (Voting Escrow Addition Error 15)
+    VotingEscrowAdditionError15 = 11394,
+    /// 65,612 for (Voting Escrow Addition Error 16)
+    VotingEscrowAdditionError16 = 11395,
+    /// 65,613 for (Voting Escrow Addition Error 17)
+    VotingEscrowAdditionError17 = 11396,
+    /// 65,614 for (Voting Escrow Addition Error 18)
+    VotingEscrowAdditionError18 = 11397,
+    /// 65,615 for (Voting Escrow Addition Error 19)
+    VotingEscrowAdditionError19 = 11398,
+    /// 65,616 for (Voting Escrow Addition Error 20)
+    VotingEscrowAdditionError20 = 11399,
+    /// 65,617 for (Voting Escrow Addition Error 21)
+    VotingEscrowAdditionError21 = 11400,
+    /// 65,618 for (Voting Escrow Addition Error 22)
+    VotingEscrowAdditionError22 = 11401,
+    /// 65,619 for (Voting Escrow Addition Error 23)
+    VotingEscrowAdditionError23 = 11402,
+    /// 65,620 for (Voting Escrow Addition Error 24)
+    VotingEscrowAdditionError24 = 11403,
+    /// 65,621 for (Voting Escrow Addition Error 25)
+    VotingEscrowAdditionError25 = 11404,
+    /// 65,622 for (Voting Escrow Addition Error 26)
+    VotingEscrowAdditionError26 = 11405,
+
+    /// 65,718 for (Liquidity Gauge Wrapper Unauthorized)
+    GaugeWrapperUnauthorized = 11501,
+    /// 65,719 for (Liquidity Gauge Wrapper Is Killed)
+    GaugeWrapperIsKilled1 = 11502,
+    /// 65,720 for (Liquidity Gauge Wrapper Not Approved)
+    GaugeWrapperNotApproved = 11503,
+    /// 65,721 for (Liquidity Gauge Wrapper IsLocked1)
+    GaugeWrapperIsLocked1 = 11504,
+    /// 65,722 for (Liquidity Gauge Wrapper IsLocked2)
+    GaugeWrapperIsLocked2 = 11505,
+    /// 65,723 for (Liquidity Gauge Wrapper Is Locked3)
+    GaugeWrapperIsLocked3 = 11506,
+    /// 65,724 for (Liquidity Gauge Wrapper Admin Only1)
+    GaugeWrapperAdminOnly1 = 11507,
+    /// 65,725 for (Liquidity Gauge Wrapper Admin Only2)
+    GaugeWrapperAdminOnly2 = 11508,
+    /// 65,726 for (Liquidity Gauge Wrapper Admin Only3)
+    GaugeWrapperAdminOnly3 = 11509,
+    /// 65,727 for (Liquidity Gauge Wrapper Admin Not Set)
+    GaugeWrapperAdminNotSet = 11510,
+    /// 65,728 for (Liquidity Gauge Wrapper Zero Address)
+    GaugeWrapperZeroAddress = 11511,
+    /// 65,729 for (Liquidity Gauge Wrapper Is Killed)
+    GaugeWrapperIsKilled2 = 11512,
+    /// 65,730 for (Liquidity Gauge Wrapper Addition Error 1)
+    GaugeWrapperAdditionError1 = 11513,
+    /// 65,731 for (Liquidity Gauge Wrapper Addition Error 2)
+    GaugeWrapperAdditionError2 = 11514,
+    /// 65,732 for (Liquidity Gauge Wrapper Addition Error 3)
+    GaugeWrapperAdditionError3 = 11515,
+    /// 65,733 for (Liquidity Gauge Wrapper Addition Error 4)
+    GaugeWrapperAdditionError4 = 11516,
+    /// 65,734 for (Liquidity Gauge Wrapper Addition Error 5)
+    GaugeWrapperAdditionError5 = 11517,
+    /// 65,735 for (Liquidity Gauge Wrapper Addition Error 6)
+    GaugeWrapperAdditionError6 = 11518,
+    /// 65,736 for (Liquidity Gauge Wrapper Addition Error 7)
+    GaugeWrapperAdditionError7 = 11519,
+    /// 65,737 for (Liquidity Gauge Wrapper Addition Error 8)
+    GaugeWrapperAdditionError8 = 11520,
+    /// 65,738 for (Liquidity Gauge Wrapper Subtraction Error 1)
+    GaugeWrapperSubtractionError1 = 11521,
+    /// 65,739 for (Liquidity Gauge Wrapper Subtraction Error 2)
+    GaugeWrapperSubtractionError2 = 11522,
+    /// 65,740 for (Liquidity Gauge Wrapper Subtraction Error 3)
+    GaugeWrapperSubtractionError3 = 11523,
+    /// 65,741 for (Liquidity Gauge Wrapper Subtraction Error 4)
+    GaugeWrapperSubtractionError4 = 11524,
+    /// 65,742 for (Liquidity Gauge Wrapper Subtraction Error 5)
+    GaugeWrapperSubtractionError5 = 11525,
+    /// 65,743 for (Liquidity Gauge Wrapper Subtraction Error 6)
+    GaugeWrapperSubtractionError6 = 11526,
+    /// 65,744 for (Liquidity Gauge Wrapper Subtraction Error 7)
+    GaugeWrapperSubtractionError7 = 11527,
+    /// 65,745 for (Liquidity Gauge Wrapper Subtraction Error 8)
+    GaugeWrapperSubtractionError8 = 11528,
+    /// 65,746 for (Liquidity Gauge Wrapper Division Error 1)
+    GaugeWrapperDivisionError1 = 11529,
+    /// 65,747 for (Liquidity Gauge Wrapper Division Error 2)
+    GaugeWrapperDivisionError2 = 11530,
+    /// 65,748 for (Liquidity Gauge Wrapper Division Error 3)
+    GaugeWrapperDivisionError3 = 11531,
+    /// 65,749 for (Liquidity Gauge Wrapper Division Error 4)
+    GaugeWrapperDivisionError4 = 11532,
+    /// 65,750 for (Liquidity Gauge Wrapper Multiply Error 1)
+    GaugeWrapperMultiplyError1 = 11533,
+    /// 65,751 for (Liquidity Gauge Wrapper Multiply Error 2)
+    GaugeWrapperMultiplyError2 = 11534,
+    /// 65,752 for (Liquidity Gauge Wrapper Multiply Error 3)
+    GaugeWrapperMultiplyError3 = 11535,
+    /// 65,753 for (Liquidity Gauge Wrapper Multiply Error 4)
+    GaugeWrapperMultiplyError4 = 11536,
+
     /// 65,546 for (Ownable: caller is not the owner)
-    OwnableNotOwner = 11501,
+    OwnableNotOwner = 11598,
     /// 65,540 for (Ownable: new owner is the zero address)
-    OwnableNewOwnerAddressZero = 11502,
+    OwnableNewOwnerAddressZero = 11599,
+
     /// 65,540 for (IRewardDistributionRecipient: Caller is not reward distribution)
     NotRewardDistribution = 11601,
     //65,540 for (CurveRewards:Cannot stake 0)
