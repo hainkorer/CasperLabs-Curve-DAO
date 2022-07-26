@@ -210,7 +210,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
 
                 let d_bias: U256 = pt
                     .slope
-                    .checked_mul(data::WEEK)
+                    .checked_mul(WEEK)
                     .unwrap_or_revert_with(Error::GaugeControllerMultiply2);
                 if pt.bias > d_bias {
                     pt.bias = pt
