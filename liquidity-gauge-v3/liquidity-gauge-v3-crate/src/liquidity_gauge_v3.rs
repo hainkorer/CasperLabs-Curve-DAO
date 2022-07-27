@@ -826,11 +826,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             balances.set(&to, to_new_balance);
             self._update_liquidity_limit(to, to_new_balance, total_supply);
         }
-        self.emit(&LiquidityGaugeV3Event::Transfer {
-            from,
-            to,
-            value,
-        });
+        self.emit(&LiquidityGaugeV3Event::Transfer { from, to, value });
     }
 
     fn transfer(&mut self, recipient: Key, amount: U256) -> Result<(), u32> {
