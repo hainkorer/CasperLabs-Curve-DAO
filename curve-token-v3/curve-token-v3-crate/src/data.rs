@@ -122,7 +122,7 @@ pub fn set_hash(contract_hash: Key) {
 }
 
 pub fn get_hash() -> Key {
-    get_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH).unwrap_or_else(zero_address)
 }
 
 pub fn set_package_hash(package_hash: ContractPackageHash) {
@@ -130,5 +130,5 @@ pub fn set_package_hash(package_hash: ContractPackageHash) {
 }
 
 pub fn get_package_hash() -> ContractPackageHash {
-    get_key(CURVE_TOKEN_V3_SELF_PACKAGE_HASH).unwrap_or_revert()
+    get_key(CURVE_TOKEN_V3_SELF_PACKAGE_HASH).unwrap_or_default()
 }
