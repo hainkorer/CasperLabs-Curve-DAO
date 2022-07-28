@@ -1,5 +1,5 @@
 use alloc::string::{String, ToString};
-use casper_types::{Key, U128, U256};
+use casper_types::{Key, U256};
 
 pub enum VotingEscrowEvent {
     CommitOwnership {
@@ -12,7 +12,7 @@ pub enum VotingEscrowEvent {
         provider: Key,
         value: U256,
         locktime: U256,
-        _type: U128,
+        _type: i128,
         ts: U256,
     },
     Withdraw {
