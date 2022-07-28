@@ -63,11 +63,9 @@ fn integrate_checkpoint() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-///"""
 ///    @notice Record a checkpoint for `addr`
 ///    @param addr User address
 ///    @return bool success
-///"""
 #[no_mangle]
 fn user_checkpoint() {
     let addr: Key = runtime::get_named_arg("addr");
