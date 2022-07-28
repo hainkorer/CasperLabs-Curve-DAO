@@ -314,8 +314,6 @@ fn test_claimable_tokens() {
         },
         300,
     );
-    // let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_TOKENS.into()]);
-    // assert_eq!(ret, U256::from(TEN_E_NINE * 1000), "Invalid result");
 }
 #[test]
 fn test_claimable_reward() {

@@ -263,7 +263,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             if current_token != zero_address() {
                 if current_token != new_token {
 
-                    //  runtime::revert(Error::RewardOnlyGaugeCannotModifyExistingRewardToken);
+                    //runtime::revert(Error::RewardOnlyGaugeCannotModifyExistingRewardToken);
                 }
             } else if new_token != zero_address() {
                 RewardTokens::instance().set(&i.into(), new_token);

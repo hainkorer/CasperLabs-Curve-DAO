@@ -16,7 +16,6 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct GAUGECONLTROLLERInstance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl GAUGECONLTROLLERInstance {
     pub fn instance(gauge_controller: TestContract) -> GAUGECONLTROLLERInstance {

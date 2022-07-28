@@ -15,7 +15,6 @@ pub type Meta = BTreeMap<String, String>;
 
 pub struct VESTINGESCROWInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
-//#[clippy::must_use]
 impl VESTINGESCROWInstance {
     pub fn instance(vesting_escrow: TestContract) -> VESTINGESCROWInstance {
         VESTINGESCROWInstance(vesting_escrow)
@@ -106,28 +105,6 @@ impl VESTINGESCROWInstance {
             0,
         );
     }
-    // pub fn new_deploy(
-    //     env: &TestEnv,
-    //     contract_name: &str,
-    //     sender: AccountHash,
-    //     name: &str,
-    //     symbol: &str,
-    //     decimals: u8,
-    //     initial_supply: U256,
-    // ) -> VESTINGESCROWInstance {
-    //     VESTINGESCROWInstance(TestContract::new(
-    //         env,
-    //         "vesting-escrow-token.wasm",
-    //         contract_name,
-    //         sender,
-    //         runtime_args! {
-    //             "name" => name,
-    //             "symbol" => symbol,
-    //             "initial_supply" => initial_supply,
-    //             "decimals" => decimals,
-    //         },0
-    //     ))
-    // }
 
     pub fn commit_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash, addr: T) {
         self.0.call_contract(
@@ -163,45 +140,6 @@ impl VESTINGESCROWInstance {
             1000,
         );
     }
-    // pub fn vested_supply<T: Into<Key>>(&self, sender: AccountHash, _recipient: T) {
-    //     self.0
-    //         .call_contract(sender, "vested_supply", runtime_args! {}, 0);
-    // }
-
-    // pub fn locked_supply<T: Into<Key>>(&self, sender: AccountHash, _recipient: T) {
-    //     self.0
-    //         .call_contract(sender, "locked_supply", runtime_args! {}, 0);
-    // }
-    // pub fn vested_of<T: Into<Key>>(&self, sender: AccountHash, _recipient: T) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "vested_of",
-    //         runtime_args! {
-    //             "recipient" => _recipient.into(),
-    //         },
-    //         0,
-    //     );
-    // }
-    //  pub fn balance_of<T: Into<Key>>(&self, sender: AccountHash, _recipient: T) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "balance_of",
-    //         runtime_args! {
-    //             "recipient" => _recipient.into(),
-    //         },
-    //         0,
-    //     );
-    // }
-    //  pub fn locked_of<T: Into<Key>>(&self, sender: AccountHash, _recipient: T) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "locked_of",
-    //         runtime_args! {
-    //             "recipient" => _recipient.into(),
-    //         },
-    //         0,
-    //     );
-    // }
     pub fn add_tokens(&self, sender: AccountHash, _amount: U256) {
         self.0.call_contract(
             sender,

@@ -50,14 +50,13 @@ impl Token {
         );
     }
 }
-/// """
+
 /// @param _token Address of the ERC20 token being distributed
 /// @param _start_time Timestamp at which the distribution starts. Should be in
 ///     the future, so that we have enough time to VoteLock everyone
 /// @param _end_time Time until everything should be vested
 /// @param _can_disable Whether admin can disable accounts in this deployment
 /// @param _fund_admins Temporary admin accounts used only for funding
-/// """
 
 #[no_mangle]
 fn constructor() {
@@ -158,9 +157,7 @@ fn can_disable() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Accept a pending ownership transfer
-/// """
 
 #[no_mangle]
 fn apply_transfer_ownership() {
@@ -168,10 +165,8 @@ fn apply_transfer_ownership() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Transfer ownership of GaugeController to `addr`
 /// @param addr Address to have ownership transferred to
-/// """
 
 #[no_mangle]
 fn commit_transfer_ownership() {
@@ -180,79 +175,73 @@ fn commit_transfer_ownership() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Disable the funding admin accounts
-/// """
+
 #[no_mangle]
 fn disable_fund_admins() {
     Token::default().disable_fund_admins();
 }
 
-/// """
 /// @notice Disable the ability to call `toggle_disable`
-/// """
+
 #[no_mangle]
 fn disable_can_disable() {
     Token::default().disable_can_disable();
 }
 
-/// """
 /// @notice Disable or re-enable a vested address's ability to claim tokens
 /// @dev When disabled, the address is only unable to claim tokens which are still
 ///      locked at the time of this call. It is not possible to block the claim
 ///      of tokens which have already vested.
 /// @param _recipient Address to disable or enable
-/// """
+
 #[no_mangle]
 fn toggle_disable() {
     let recipient: Key = runtime::get_named_arg("recipient");
     Token::default().toggle_disable(recipient);
 }
 
-/// """
 /// @notice Get the total number of tokens which have vested, that are held
 ///         by this contract
-/// """
+
 #[no_mangle]
 fn vested_supply() {
     let ret: U256 = Token::default().vested_supply();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Get the total number of tokens which are still locked
 ///         (have not yet vested)
-/// """
+
 #[no_mangle]
 fn locked_supply() {
     let ret: U256 = Token::default().locked_supply();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Get the number of tokens which have vested for a given address
 /// @param _recipient address to check
-/// """
+
 #[no_mangle]
 fn vested_of() {
     let recipient: Key = runtime::get_named_arg("recipient");
     let ret: U256 = Token::default().vested_of(recipient);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
+
 /// @notice Get the number of unclaimed, vested tokens for a given address
 /// @param _recipient address to check
-/// """
+
 #[no_mangle]
 fn balance_of() {
     let recipient: Key = runtime::get_named_arg("recipient");
     let ret: U256 = Token::default().balance_of(recipient);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
+
 /// @notice Get the number of locked tokens for a given address
 /// @param _recipient address to check
-/// """
+
 #[no_mangle]
 fn locked_of() {
     let recipient: Key = runtime::get_named_arg("recipient");
@@ -260,22 +249,20 @@ fn locked_of() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Transfer vestable tokens into the contract
 /// @dev Handled separate from `fund` to reduce transaction count when using funding admins
 /// @param _amount Number of tokens to transfer
-/// """
+
 #[no_mangle]
 fn add_tokens() {
     let amount: U256 = runtime::get_named_arg("amount");
     Token::default().add_tokens(amount);
 }
 
-/// """
 /// @notice Vest tokens for multiple recipients
 /// @param _recipients List of addresses to fund
 /// @param _amounts Amount of vested tokens for each address
-/// """
+
 #[no_mangle]
 fn fund() {
     let recipients: Vec<String> = runtime::get_named_arg("recipients");

@@ -44,12 +44,11 @@ impl Token {
         );
     }
 }
-/// """
+
 /// @notice Contract constructor
 /// @dev Prior to deployment you must deploy one copy of `VestingEscrowSimple` which
 ///      is used as a library for vesting contracts deployed by this factory
 /// @param _target `VestingEscrowSimple` contract address
-/// """
 
 #[no_mangle]
 fn constructor_vef() {
@@ -84,9 +83,7 @@ fn future_admin_vef() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Accept a pending ownership transfer
-/// """
 
 #[no_mangle]
 fn apply_transfer_ownership_vef() {
@@ -94,10 +91,8 @@ fn apply_transfer_ownership_vef() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Transfer ownership of GaugeController to `addr`
 /// @param addr Address to have ownership transferred to
-/// """
 
 #[no_mangle]
 fn commit_transfer_ownership_vef() {
@@ -106,7 +101,6 @@ fn commit_transfer_ownership_vef() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Deploy a new vesting contract
 /// @dev Each contract holds tokens which vest for a single account. Tokens
 ///         must be sent to this contract via the regular `ERC20.transfer` method
@@ -117,7 +111,6 @@ fn commit_transfer_ownership_vef() {
 /// @param _can_disable Can admin disable recipient's ability to claim tokens?
 /// @param _vesting_duration Time period over which tokens are released
 /// @param _vesting_start Epoch time when tokens begin to vest
-/// """
 
 #[no_mangle]
 fn deploy_vesting_contract() {
@@ -127,8 +120,6 @@ fn deploy_vesting_contract() {
     let can_disable: bool = runtime::get_named_arg("can_disable");
     let vesting_duration: U256 = runtime::get_named_arg("vesting_duration");
     let vesting_start: Option<U256> = runtime::get_named_arg("vesting_start");
-    // let _vesting_escrow_simple_contract: Key =
-    // runtime::get_named_arg("vesting_escrow_simple_contract");
     let ret: Key = Token::default().deploy_vesting_contract(
         token,
         recipient,
@@ -136,7 +127,6 @@ fn deploy_vesting_contract() {
         can_disable,
         vesting_duration,
         vesting_start,
-        // _vesting_escrow_simple_contract,
     );
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -144,14 +134,6 @@ fn deploy_vesting_contract() {
 //VESTING ESCROW SIMPLE NO MANGLE
 #[no_mangle]
 fn constructor() {
-    // let admin: Key = runtime::get_named_arg("admin");
-    // let token: Key = runtime::get_named_arg("token");
-    // let recipient: Key = runtime::get_named_arg("recipient");
-    // let amount: U256 = runtime::get_named_arg("amount");
-    // let start_time: U256 = runtime::get_named_arg("start_time");
-    // let end_time: U256 = runtime::get_named_arg("end_time");
-    // let can_disable: bool = runtime::get_named_arg("can_disable");
-
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
     VESTINGESCROWSIMPLE::init(&Token::default(), contract_hash, package_hash);
@@ -446,7 +428,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("can_disable", bool::cl_type()),
             Parameter::new("vesting_duration", U256::cl_type()),
             Parameter::new("vesting_start", CLType::Option(Box::new(U256::cl_type()))),
-            // Parameter::new(_vesting_escrow_simple_contract", Key::cl_type()),
         ],
         Key::cl_type(),
         EntryPointAccess::Public,

@@ -56,10 +56,8 @@ fn constructor() {
     Token::default().constructor(token, voting_escrow, contract_hash, package_hash);
 }
 
-/// """
 /// @notice Transfer ownership of GaugeController to `addr`
 /// @param addr Address to have ownership transferred to
-/// """
 
 #[no_mangle]
 fn commit_transfer_ownership() {
@@ -67,19 +65,16 @@ fn commit_transfer_ownership() {
     Token::default().commit_transfer_ownership(addr);
 }
 
-/// """
 /// @notice Apply pending ownership transfer
-/// """
+
 #[no_mangle]
 fn apply_transfer_ownership() {
     Token::default().apply_transfer_ownership();
 }
 
-/// """
 /// @notice Get gauge type for address
 /// @param _addr Gauge address
 /// @return Gauge type id
-/// """
 #[no_mangle]
 fn gauge_types() {
     let addr: Key = runtime::get_named_arg::<Key>("addr");
@@ -87,18 +82,16 @@ fn gauge_types() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Checkpoint to fill data common for all gauges
-/// """
+
 #[no_mangle]
 fn checkpoint() {
     Token::default().checkpoint();
 }
 
-/// """
 /// @notice Checkpoint to fill data for both a specific gauge and common for all gauges
 /// @param addr Gauge address
-/// """
+
 #[no_mangle]
 fn checkpoint_gauge() {
     let addr: Key = runtime::get_named_arg::<Key>("addr");
@@ -110,39 +103,38 @@ fn package_hash() {
     let ret: ContractPackageHash = Token::default().get_package_hash();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
 /// @notice Get Gauge relative weight (not more than 1.0) normalized to 1e9
 ///         (e.g. 1.0 == 1e9). Inflation which will be received by it is
 ///         inflation_rate * relative_weight / 1e9
 /// @param addr Gauge address
 /// @param time Relative weight at the specified timestamp in the past or present
 /// @return Value of relative weight normalized to 1e9
-///
+
 #[no_mangle]
 fn gauge_relative_weight() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = Token::default().gauge_relative_weight(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
+
 /// @notice Get gauge weight normalized to 1e9 and also fill all the unfilled
 ///         values for type and gauge records
 /// @dev Any address can call, however nothing is recorded if the values are filled already
 /// @param addr Gauge address
 /// @param time Relative weight at the specified timestamp in the past or present
 /// @return Value of relative weight normalized to 1e9
-/// """
+
 #[no_mangle]
 fn gauge_relative_weight_write() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = Token::default().gauge_relative_weight_write(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
+
 /// @notice Change gauge type `type_id` weight to `weight`
 /// @param type_id Gauge type id
 /// @param weight New Gauge weight
-/// """
+
 #[no_mangle]
 fn change_type_weight() {
     let type_id: U128 = runtime::get_named_arg("type_id");
@@ -150,11 +142,11 @@ fn change_type_weight() {
 
     Token::default().change_type_weight(type_id, weight);
 }
-/// """
+
 /// @notice Change weight of gauge `addr` to `weight`
 /// @param addr `GaugeController` contract address
 /// @param weight New Gauge weight
-/// """
+
 #[no_mangle]
 fn change_gauge_weight() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -162,42 +154,42 @@ fn change_gauge_weight() {
 
     Token::default().change_gauge_weight(addr, weight);
 }
-/// """
+
 /// @notice Get current gauge weight
 /// @param addr Gauge address
 /// @return Gauge weight
-/// """
+
 #[no_mangle]
 fn get_gauge_weight() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = Token::default().get_gauge_weight(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
+
 /// @notice Get current type weight
 /// @param type_id Type id
 /// @return Type weight
-/// """
+
 #[no_mangle]
 fn get_type_weight() {
     let type_id: U128 = runtime::get_named_arg("type_id");
     let ret: U256 = Token::default().get_type_weight(type_id);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
+
 /// @notice Get current total (type-weighted) weight
 /// @return Total weight
-/// """
+
 #[no_mangle]
 fn get_total_weight() {
     let ret: U256 = Token::default().get_total_weight();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
+
 /// @notice Get sum of gauge weights per type
 /// @param type_id Type id
 /// @return Sum of gauge weights
-/// """
+
 #[no_mangle]
 fn get_weights_sum_per_type() {
     let type_id: U128 = runtime::get_named_arg("type_id");
@@ -225,10 +217,10 @@ fn gauge_type_names() {
     let ret: String = Token::default().gauge_type_names(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-/// """
+
 /// # we increment values by 1 prior to storing them here so we can rely on a value
 /// # of zero as meaning the gauge has not been set
-/// """
+
 #[no_mangle]
 fn gauge_types_() {
     let owner: Key = runtime::get_named_arg("owner");

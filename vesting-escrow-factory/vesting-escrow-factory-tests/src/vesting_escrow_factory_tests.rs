@@ -15,8 +15,6 @@ fn deploy() -> (
     VESTINGESCROWFACTORYInstance,
     TestContract,
     AccountHash,
-    // VESTINGESCROWFACTORYInstance,
-    // VESTINGESCROWFACTORYInstance,
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
@@ -34,7 +32,6 @@ fn deploy() -> (
         owner,
         Key::Hash(token.package_hash()),
         Key::from(owner),
-        // Key::Hash(_token.package_hash()),
     );
     (
         env,
@@ -122,11 +119,4 @@ fn test_deploy_vesting_contract() {
         _vesting_duration,
         Some(_vesting_start),
     );
-    // let vesting_escrow_simple_contract_hash = ContractHash::from(
-    //     vesting_escrow_factory_instance
-    //         .vesting_escrow_simple_contract_hash()
-    //         .into_hash()
-    //         .unwrap(),
-    // );
-    // vesting_escrow_simple_contract_hash.
 }

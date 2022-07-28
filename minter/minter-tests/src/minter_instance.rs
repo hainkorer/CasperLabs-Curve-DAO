@@ -14,7 +14,6 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct MINTERInstance(TestContract);
-// //#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl MINTERInstance {
     pub fn instance(minter: TestContract) -> MINTERInstance {

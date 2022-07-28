@@ -114,7 +114,6 @@ fn test_commit_transfer_ownership() {
     reward_only_gauge.commit_transfer_ownership(owner, user);
     assert_eq!(reward_only_gauge.admin(), owner.into());
     assert_eq!(reward_only_gauge.future_admin(), user.into());
-    // assert_eq!(reward_only_gauge.rewards_receiver(owner), Key::from(user));
 }
 
 #[test]
@@ -462,7 +461,6 @@ fn test_set_rewards() {
     );
 
     let reward_tokens: Vec<String> = vec![
-        // Key::Hash(liquidity_gauge_reward.package_hash()).to_formatted_string(),
         Key::Hash(lp_token1.package_hash()).to_formatted_string(),
         Key::Hash(lp_token2.package_hash()).to_formatted_string(),
         Key::Hash(lp_token3.package_hash()).to_formatted_string(),

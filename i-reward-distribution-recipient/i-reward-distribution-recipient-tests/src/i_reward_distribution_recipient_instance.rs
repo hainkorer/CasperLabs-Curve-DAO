@@ -10,7 +10,6 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct IREWARDDISTRIBUTIONRECIPIENTInstance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl IREWARDDISTRIBUTIONRECIPIENTInstance {
     pub fn contract_instance(contract: TestContract) -> IREWARDDISTRIBUTIONRECIPIENTInstance {

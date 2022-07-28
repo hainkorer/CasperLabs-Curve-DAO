@@ -1,7 +1,6 @@
 use crate::data::*;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256};
-// use common::errors::*;
 use casper_types::ApiError;
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 #[repr(u16)]

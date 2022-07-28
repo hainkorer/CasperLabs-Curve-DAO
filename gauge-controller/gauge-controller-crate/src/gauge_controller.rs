@@ -98,11 +98,9 @@ impl GAUGECONLTROLLEREvent {
 }
 
 pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
-    /// """
     /// @notice Contract constructor
     /// @param _token `ERC20CRV` contract address
     /// @param _voting_escrow `VotingEscrow` contract address
-    /// """
     fn init(
         &mut self,
         token: Key,
@@ -190,12 +188,11 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         self._get_total();
     }
 
-    /// """
     /// @notice Fill historic gauge weights week-over-week for missed checkins
     ///         and return the total for the future week
     /// @param gauge_addr Address of the gauge
     /// @return Gauge weight
-    /// """
+
     fn _get_weight(&mut self, gauge_addr: Key) -> U256 {
         let mut t: U256 = self.time_weight(gauge_addr);
         if t > U256::from(0) {
@@ -236,16 +233,16 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             U256::from(0)
         }
     }
-    /// """
+
     /// @notice Fill historic total weights week-over-week for missed checkins
     ///         and return the total for the future week
     /// @return Total weight
-    /// """
+
     fn _get_total(&mut self) -> U256 {
         let mut t: U256 = self.time_total();
         let mut _n_gauge_types: U128 = self.n_gauge_types();
         if t > U256::from(u64::from(runtime::get_blocktime())) {
-            // # If we have already checkpointed - still need to change the value
+            // If we have already checkpointed - still need to change the value
             t = t
                 .checked_sub(WEEK)
                 .unwrap_or_revert_with(Error::GaugeControllerUnderFlow4);
@@ -288,12 +285,11 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         pt
     }
 
-    /// """
     /// @notice Fill sum of gauge weights for the same type week-over-week for
     ///         missed checkins and return the sum for the future week
     /// @param gauge_type Gauge type id
     /// @return Sum of weights
-    /// """
+
     fn _get_sum(&mut self, gauge_type: U128) -> U256 {
         let mut t: U256 = self.time_sum(U256::from(gauge_type.as_u128()));
         if t > U256::from(0) {
@@ -330,12 +326,12 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             U256::from(0)
         }
     }
-    /// """
+
     /// @notice Fill historic type weights week-over-week for missed checkins
     ///         and return the type weight for the future week
     /// @param gauge_type Gauge type id
     /// @return Type weight
-    /// """
+
     fn _get_type_weight(&mut self, gauge_type: U128) -> U256 {
         let mut t: U256 = self.time_type_weight(U256::from(gauge_type.as_u128()));
         if t > U256::from(0) {
@@ -358,14 +354,13 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         }
     }
 
-    /// """
     /// @notice Get Gauge relative weight (not more than 1.0) normalized to 1e9
     ///         (e.g. 1.0 == 1e9). Inflation which will be received by it is
     ///         inflation_rate * relative_weight / 1e9
     /// @param addr Gauge address
     /// @param time Relative weight at the specified timestamp in the past or present
     /// @return Value of relative weight normalized to 1e9
-    /// """
+
     fn _gauge_relative_weight(&mut self, addr: Key, time: U256) -> U256 {
         let t: U256 = time
             .checked_div(WEEK)
@@ -393,11 +388,10 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         }
     }
 
-    /// """
     /// @notice Change type weight
     /// @param type_id Type id
     /// @param weight New type weight
-    /// """
+
     fn _change_type_weight(&mut self, type_id: U128, weight: U256) {
         let old_weight: U256 = self._get_type_weight(type_id);
         let old_sum: U256 = self._get_sum(type_id);
@@ -436,8 +430,8 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         });
     }
 
-    // # Change gauge weight
-    // # Only needed when testing in reality
+    /// Change gauge weight
+    /// Only needed when testing in reality
     fn _change_gauge_weight(&mut self, addr: Key, weight: U256) {
         let gauge_type: U128 = self
             .gauge_types_(addr)
@@ -587,7 +581,7 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     fn vote_user_slopes(&mut self, owner: Key, spender: Key) -> VotedSlope {
         VoteUserSlopes::instance().get(&owner, &spender)
     }
-    // TimeWeight, VoteUserPower, VoteUserSlopes,
+    /// TimeWeight, VoteUserPower, VoteUserSlopes,
     fn add_type(&mut self, _name: String, _weight: Option<U256>) {
         let weight: U256 = if let Some(..) = _weight {
             _weight.unwrap()

@@ -71,45 +71,9 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             let (contract_hash, _) =
                 storage::add_contract_version(package_hash, get_entry_points(), Default::default());
             runtime::put_key(&format!("{}_contract", name), contract_hash.into());
-            // info.staking_rewards = Key::from(package_hash);
-            // Access
-            // let constructor_access: URef = storage::create_contract_user_group(
-            //     package_hash,
-            //     "constructor",
-            //     1,
-            //     Default::default(),
-            // )
-            // .unwrap_or_revert()
-            // .pop()
-            // .unwrap_or_revert();
-
             let end_time = vesting_start
                 .checked_add(_vesting_duration)
                 .unwrap_or_revert_with(Error::VestingEscrowFactoryOverFlow1);
-
-            // Call the constructor entry point
-            // let _: () = runtime::call_versioned_contract(
-            //     package_hash,
-            //     None,
-            //     "constructor",
-            //     runtime_args! {
-            //         "admin"=> self.admin(),
-            //         "token" => _token,
-            //         "recipient" => _recipient,
-            //         "amount" => _amount,
-            //         "start_time" => vesting_start,
-            //         "end_time" => end_time,
-            //         "can_disable" => _can_disable,
-            //         "contract_hash" => contract_hash,
-            //         "package_hash"=> package_hash
-            //     },
-            // );
-
-            // // Remove all URefs from the constructor group, so no one can call it for the second time.
-            // let mut urefs = BTreeSet::new();
-            // urefs.insert(constructor_access);
-            // storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
-            //     .unwrap_or_revert();
 
             let token_hash_add_array = match _token {
                 Key::Hash(package) => package,

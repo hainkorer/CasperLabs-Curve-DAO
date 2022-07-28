@@ -69,11 +69,10 @@ impl REWARDONLYGAUGEEvent {
 }
 
 pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
-    /// """
     /// @notice Contract constructor
     /// @param _admin Admin who can kill the gauge
     /// @param _lp_token Liquidity Pool contract address
-    /// """
+
     fn init(
         &mut self,
         _admin: Key,
@@ -545,9 +544,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         data::future_admin()
     }
 
-    /// """
     /// @notice Claim pending rewards and checkpoint rewards for a user
-    /// """
 
     fn _checkpoint_rewards(
         &mut self,
@@ -585,7 +582,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         }
         let mut receiver = _receiver;
         if _claim && receiver == account_zero_address() && receiver == zero_address() {
-            // # if receiver is not explicitly declared, check for default receiver
+            // if receiver is not explicitly declared, check for default receiver
             receiver = self.rewards_receiver(_user);
             if receiver == account_zero_address() || receiver == zero_address() {
                 receiver = _user;

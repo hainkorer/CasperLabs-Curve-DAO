@@ -11,7 +11,6 @@ pub type Meta = BTreeMap<String, String>;
 
 pub struct OWNABLEInstance(TestContract);
 
-// //#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 
 impl OWNABLEInstance {

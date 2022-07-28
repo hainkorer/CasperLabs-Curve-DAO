@@ -110,7 +110,9 @@ impl RewardsReceiver {
     }
 
     pub fn get(&self, owner: &Key) -> Key {
-        self.dict.get(&key_to_str(owner)).unwrap_or_revert()
+        self.dict
+            .get(&key_to_str(owner))
+            .unwrap_or_else(zero_address)
     }
 
     pub fn set(&self, owner: &Key, value: Key) {
@@ -318,31 +320,6 @@ impl IntegrateFraction {
     }
 }
 
-// const REWARDS_RECIEVER: &str = "rewards_receiver";
-// pub struct RewardsReciever {
-//     dict: Dict,
-// }
-
-// impl RewardsReciever {
-//     pub fn instance() -> RewardsReciever {
-//         RewardsReciever {
-//             dict: Dict::instance(REWARDS_RECIEVER),
-//         }
-//     }
-
-//     pub fn init() {
-//         Dict::init(REWARDS_RECIEVER)
-//     }
-
-//     pub fn get(&self, key: &Key) -> &Key {
-//         self.dict.get_by_key(key).unwrap_or_d
-//     }
-
-//     pub fn set(&self, key1: &Key, key2: &Key) {
-//         self.dict.set_by_key(key1, key2);
-//     }
-// }
-
 const REWARD_INTEGRAL: &str = "reward_integral";
 pub struct RewardIntegral {
     dict: Dict,
@@ -399,30 +376,6 @@ pub fn set_decimals(decimals: u8) {
     set_key(DECIMALS, decimals);
 }
 
-// const CLAIM_DATA: &str = "claim_data";
-// pub struct ClaimData {
-//     dict: Dict,
-// }
-
-// impl ClaimData {
-//     pub fn instance() -> ClaimData {
-//         ClaimData {
-//             dict: Dict::instance(CLAIM_DATA),
-//         }
-//     }
-
-//     pub fn init() {
-//         Dict::init(CLAIM_DATA)
-//     }
-
-//     pub fn get(&self, key1: &Key,key2: &Key) -> U256 {
-//         self.dict.get_by_keys((key1, key2)).unwrap_or_default()
-//     }
-
-//     pub fn set(&self, key1: &Key,key2: &Key ,value: U256) {
-//         self.dict.set_by_keys((key1, key2), value);
-//     }
-// }
 pub fn claim_sig() -> Bytes {
     get_key(CLAIM_SIG).unwrap_or_revert()
 }

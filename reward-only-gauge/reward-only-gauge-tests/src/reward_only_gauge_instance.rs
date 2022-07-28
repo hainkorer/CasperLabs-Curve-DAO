@@ -28,7 +28,6 @@ pub struct RewardData {
     pub time_stamp: U256,
 }
 pub struct REWARDONLYGAUGEInstance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl REWARDONLYGAUGEInstance {
     pub fn instance(reward_only_gauge: TestContract) -> REWARDONLYGAUGEInstance {
@@ -159,18 +158,6 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    // pub fn allowance_fn(&self, sender: AccountHash, owner: Key, spender: Key) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "allowance",
-    //         runtime_args! {
-    //             "owner" => owner,
-    //             "spender" => spender,
-    //         },
-    //         0,
-    //     );
-    // }
-
     pub fn decrease_allowance<T: Into<Key>>(&self, sender: AccountHash, spender: T, amount: U256) {
         self.0.call_contract(
             sender,
@@ -183,17 +170,6 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    // pub fn mint<T: Into<Key>>(&self, sender: AccountHash, to: T, amount: U256) {
-    //     self.0.call_contract(
-    //         sender,
-    //         "mint",
-    //         runtime_args! {
-    //             "to" => to.into(),
-    //             "amount" => amount
-    //         },
-    //         0,
-    //     );
-    // }
     pub fn accept_transfer_ownership(&self, sender: AccountHash) {
         self.0
             .call_contract(sender, "accept_transfer_ownership", runtime_args! {}, 0);
@@ -326,17 +302,6 @@ impl REWARDONLYGAUGEInstance {
             .query_dictionary("claim_data", keys_to_str(&owner, &spender))
             .unwrap_or_revert()
     }
-    // pub fn allowance_package_hash<T: Into<Key>>(
-    //     &self,
-    //     owner: ContractPackageHash,
-    //     spender: T,
-    // ) -> U256 {
-    //     let owner: Key = owner.into();
-    //     let spender: Key = spender.into();
-    //     self.0
-    //         .query_dictionary("allowances", keys_to_str(&owner, &spender))
-    //         .unwrap_or_default()
-    // }
 
     pub fn name(&self) -> String {
         self.0.query_named_key(String::from("name"))
@@ -377,34 +342,6 @@ impl REWARDONLYGAUGEInstance {
         self.0.query_named_key(String::from("lp_token"))
     }
 
-    // // Result methods
-    // pub fn transfer_result(&self) -> Result<(), u32> {
-    //     self.0.query_named_key("transfer_result".to_string())
-    // }
-
-    // pub fn package_hash_result(&self) -> ContractPackageHash {
-    //     self.0.query_named_key("package_hash".to_string())
-    // }
-
-    // pub fn transfer_from_result(&self) -> Result<(), u32> {
-    //     self.0.query_named_key("transfer_from_result".to_string())
-    // }
-    // pub fn allowance_res(&self) -> U256 {
-    //     self.0.query_named_key("allowance".to_string())
-    // }
-
-    // pub fn increase_allowance_res(&self) -> Result<(), u32> {
-    //     self.0
-    //         .query_named_key("increase_allowance_result".to_string())
-    // }
-    // pub fn decrease_allowance_res(&self) -> Result<(), u32> {
-    //     self.0
-    //         .query_named_key("decrease_allowance_result".to_string())
-    // }
-
-    // pub fn meta(&self) -> Meta {
-    //     self.0.query_named_key(String::from("meta"))
-    // }
 }
 
 pub fn key_to_str(key: &Key) -> String {

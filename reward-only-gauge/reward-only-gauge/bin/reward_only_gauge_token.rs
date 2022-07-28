@@ -146,30 +146,25 @@ fn name() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Get the number of decimals for this token
 /// @dev Implemented as a view method to reduce gas costs
 /// @return uint256 decimal places
-/// """
+
 #[no_mangle]
 fn decimals() {
     let ret: u8 = Token::default().decimals();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Accept a pending ownership transfer
-/// """
 
 #[no_mangle]
 fn accept_transfer_ownership() {
     Token::default().accept_transfer_ownership();
 }
 
-/// """
 /// @notice Transfer ownership of GaugeController to `addr`
 /// @param addr Address to have ownership transferred to
-/// """
 
 #[no_mangle]
 fn commit_transfer_ownership() {
@@ -177,12 +172,10 @@ fn commit_transfer_ownership() {
     Token::default().commit_transfer_ownership(addr);
 }
 
-/// """
 /// @notice Transfer token for a specified address
 /// @dev Transferring claims pending reward tokens for the sender and receiver
 /// @param _to The address to transfer to.
 /// @param _value The amount to be transferred.
-/// """
 
 #[no_mangle]
 fn transfer() {
@@ -192,13 +185,12 @@ fn transfer() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Transfer tokens from one address to another.
 /// @dev Transferring claims pending reward tokens for the sender and receiver
 /// @param _from address The address which you want to send tokens from
 /// @param _to address The address which you want to transfer to
 /// @param _value uint256 the amount of tokens to be transferred
-/// """
+
 #[no_mangle]
 fn transfer_from() {
     let owner: Key = runtime::get_named_arg("owner");
@@ -208,7 +200,6 @@ fn transfer_from() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Approve the passed address to transfer the specified amount of
 ///         tokens on behalf of msg.sender
 /// @dev Beware that changing an allowance via this method brings the risk
@@ -219,7 +210,7 @@ fn transfer_from() {
 /// @param spender The address which will transfer the funds
 /// @param _value The amount of tokens that may be transferred
 /// @return bool success
-/// """
+
 #[no_mangle]
 fn approve() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -227,14 +218,13 @@ fn approve() {
     Token::default().approve(spender, amount);
 }
 
-/// """
 /// @notice Increase the allowance granted to `spender` by the caller
 /// @dev This is alternative to {approve} that can be used as a mitigation for
 ///      the potential race condition
 /// @param spender The address which will transfer the funds
 /// @param amount The amount of to increase the allowance
 /// @return bool success
-/// """
+
 #[no_mangle]
 fn increase_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -243,14 +233,13 @@ fn increase_allowance() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Decrease the allowance granted to `spender` by the caller
 /// @dev This is alternative to {approve} that can be used as a mitigation for
 ///      the potential race condition
 /// @param spender The address which will transfer the funds
 /// @param amount The amount of to decrease the allowance
 /// @return bool success
-/// """
+
 #[no_mangle]
 fn decrease_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -260,32 +249,29 @@ fn decrease_allowance() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Address of the reward contract providing non-CRV incentives for this gauge
 /// @dev Returns `ZERO_ADDRESS` if there is no reward contract active
-/// """
+
 #[no_mangle]
 fn reward_contract() {
     let ret = Token::default().reward_contract();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Epoch timestamp of the last call to claim from `reward_contract`
 /// @dev Rewards are claimed at most once per hour in order to reduce gas costs
-/// """
+
 #[no_mangle]
 fn last_claim() {
     let ret = Token::default().last_claim();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Get the number of already-claimed reward tokens for a user
 /// @param _addr Account to get reward amount for
 /// @param _token Token to get reward amount for
 /// @return uint256 Total amount of `_token` already claimed by `_addr`
-/// """
+
 #[no_mangle]
 fn claimed_reward() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -295,7 +281,6 @@ fn claimed_reward() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Get the number of claimable reward tokens for a user
 /// @dev This call does not consider pending claimable amount in `reward_contract`.
 ///      Off-chain callers should instead use `claimable_rewards_write` as a
@@ -303,7 +288,6 @@ fn claimed_reward() {
 /// @param _addr Account to get reward amount for
 /// @param _token Token to get reward amount for
 /// @return uint256 Claimable reward token amount
-/// """
 
 #[no_mangle]
 fn claimable_reward() {
@@ -314,25 +298,23 @@ fn claimable_reward() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Set the default reward receiver for the caller.
 /// @dev When set to ZERO_ADDRESS, rewards are sent to the caller
 /// @param _receiver Receiver address for any rewards claimed via `claim_rewards`
-/// """
+
 #[no_mangle]
 fn set_rewards_receiver() {
     let receiver: Key = runtime::get_named_arg("receiver");
     Token::default().set_rewards_receiver(receiver);
 }
 
-/// """
 /// @notice Get the number of claimable reward tokens for a user
 /// @dev This function should be manually changed to "view" in the ABI
 ///      Calling it via a transaction will claim available reward tokens
 /// @param _addr Account to get reward amount for
 /// @param _token Token to get reward amount for
 /// @return uint256 Claimable reward token amount
-/// """
+
 #[no_mangle]
 fn claimable_reward_write() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -342,13 +324,12 @@ fn claimable_reward_write() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// """
 /// @notice Claim available reward tokens for `_addr`
 /// @param _addr Address to claim for
 /// @param _receiver Address to transfer rewards to - if set to
 ///                  ZERO_ADDRESS, uses the default reward receiver
 ///                  for the caller
-/// """
+
 #[no_mangle]
 fn claim_rewards() {
     let addr: Option<Key> = runtime::get_named_arg("addr");
@@ -357,7 +338,6 @@ fn claim_rewards() {
     Token::default().claim_rewards(addr, receiver);
 }
 
-/// """
 /// @notice Set the active reward contract
 /// @dev A reward contract cannot be set while this contract has no deposits
 /// @param _reward_contract Reward contract address. Set to ZERO_ADDRESS to
@@ -371,7 +351,7 @@ fn claim_rewards() {
 ///                     this function to unset or modify a reward contract,
 ///                     this array must begin with the already-set reward
 ///                     token addresses.
-/// """
+
 #[no_mangle]
 fn set_rewards() {
     let reward_contract: Key = runtime::get_named_arg("reward_contract");
@@ -381,11 +361,10 @@ fn set_rewards() {
     Token::default().set_rewards(reward_contract, claim_sig, reward_tokens);
 }
 
-/// """
 /// @notice Withdraw `_value` LP tokens
 /// @dev Withdrawing also claims pending reward tokens
 /// @param _value Number of tokens to withdraw
-/// """
+
 #[no_mangle]
 fn withdraw() {
     let value: U256 = runtime::get_named_arg("value");
@@ -394,12 +373,11 @@ fn withdraw() {
     Token::default().withdraw(value, claim_rewards);
 }
 
-/// """
 /// @notice Deposit `_value` LP tokens
 /// @dev Depositting also claims pending reward tokens
 /// @param _value Number of tokens to deposit
 /// @param _addr Address to deposit for
-/// """
+
 #[no_mangle]
 fn deposit() {
     let value: U256 = runtime::get_named_arg("value");

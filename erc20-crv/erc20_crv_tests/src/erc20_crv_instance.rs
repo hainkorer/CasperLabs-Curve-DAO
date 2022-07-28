@@ -4,7 +4,6 @@ use casper_types::{
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct ERC20CRVInstance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl ERC20CRVInstance {
     pub fn new_deploy(

@@ -14,7 +14,6 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct VESTINGESCROWFACTORYInstance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl VESTINGESCROWFACTORYInstance {
     pub fn instance(vesting_escrow_factory: TestContract) -> VESTINGESCROWFACTORYInstance {
@@ -93,7 +92,6 @@ impl VESTINGESCROWFACTORYInstance {
         sender: AccountHash,
         _target: Key,
         _admin: Key,
-        // _vesting_escrow_simple_contract: Key,
     ) {
         self.0.call_contract(
             sender,
@@ -101,7 +99,6 @@ impl VESTINGESCROWFACTORYInstance {
             runtime_args! {
                 "target"=>_target,
                 "admin"=>_admin,
-                // "vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
             },
             0,
         );
