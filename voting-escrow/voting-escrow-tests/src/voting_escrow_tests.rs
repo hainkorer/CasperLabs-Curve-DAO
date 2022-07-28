@@ -77,8 +77,8 @@ fn test_get_last_user_slope() {
         },
         0,
     );
-    let ret: U128 = env.query_account_named_key(owner, &[GET_LAST_USER_SLOPE.into()]);
-    assert_eq!(ret, 0.into(), "Invalid last user scope value");
+    let ret: (bool, U128) = env.query_account_named_key(owner, &[GET_LAST_USER_SLOPE.into()]);
+    assert_eq!(ret, (false, 0.into()), "Invalid last user scope value");
 }
 
 #[test]
@@ -86,8 +86,8 @@ fn test_get_last_user_slope_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
     instance.get_last_user_slope_js_client(owner, addr);
-    let ret: U128 = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into(), "Invalid default value");
+    let ret: (bool, U128) = instance.key_value(RESULT.to_string());
+    assert_eq!(ret, (false, 0.into()), "Invalid default value");
 }
 
 #[test]
@@ -330,7 +330,7 @@ fn test_balance_of_js_client() {
 fn test_balance_of_at() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
-    let block: U256 = 123.into();
+    let time: U256 = 123.into();
     TestContract::new(
         &env,
         SESSION_CODE_WASM,
@@ -340,9 +340,9 @@ fn test_balance_of_at() {
             "entrypoint" => String::from(BALANCE_OF_AT),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => addr,
-            "block" => block
+            "time" => time
         },
-        0,
+        123456789, // blocktime
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF_AT.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
@@ -352,8 +352,8 @@ fn test_balance_of_at() {
 fn test_balance_of_at_js_client() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
-    let block: U256 = 123.into();
-    instance.balance_of_at_js_client(owner, addr, block);
+    let time: U256 = 123.into();
+    instance.balance_of_at_js_client(owner, addr, time);
     let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default balance");
 }
@@ -390,7 +390,7 @@ fn test_total_supply_js_client() {
 #[test]
 fn test_total_supply_at() {
     let (env, owner, instance, _) = deploy();
-    let block: U256 = 123.into();
+    let time: U256 = 123.into();
     TestContract::new(
         &env,
         SESSION_CODE_WASM,
@@ -399,7 +399,7 @@ fn test_total_supply_at() {
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY_AT),
             "package_hash" => Key::Hash(instance.package_hash()),
-            "block" => block,
+            "time" => time,
         },
         0,
     );
@@ -410,8 +410,8 @@ fn test_total_supply_at() {
 #[test]
 fn test_total_supply_at_js_client() {
     let (_, owner, instance, _) = deploy();
-    let block: U256 = 123.into();
-    instance.total_supply_at_js_client(owner, block);
+    let time: U256 = 123.into();
+    instance.total_supply_at_js_client(owner, time);
     let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default total supply");
 }
