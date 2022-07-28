@@ -483,14 +483,14 @@ fn test_claimable_reward_write() {
         "SessionCode",
         owner,
         runtime_args! {
-            "entrypoint" => String::from(CLAIMEABLE_REWARD_WRITE),
+            "entrypoint" => String::from(CLAIMABLE_REWARD_WRITE),
             "package_hash" => Key::Hash(contract.package_hash()),
             "addr"=>Key::from(addr),
             "token"=>Key::from(token)
         },
         0,
     );
-    let ret: U256 = env.query_account_named_key(owner, &[CLAIMEABLE_REWARD_WRITE.into()]);
+    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD_WRITE.into()]);
     assert_eq!(ret, 0.into());
 }
 #[test]
@@ -505,14 +505,14 @@ fn test_claimable_reward() {
         "SessionCode",
         owner,
         runtime_args! {
-            "entrypoint" => String::from(CLAIMEABLE_REWARD),
+            "entrypoint" => String::from(CLAIMABLE_REWARD),
             "package_hash" => Key::Hash(contract.package_hash()),
             "addr"=>Key::from(addr),
             "token"=>Key::from(token)
         },
         0,
     );
-    let ret: U256 = env.query_account_named_key(owner, &[CLAIMEABLE_REWARD.into()]);
+    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
     assert_eq!(ret, 0.into());
 }
 #[test]
