@@ -209,5 +209,5 @@ pub const DECREASE_ALLOWANCE: &str = "decrease_allowance";
 // pub const REWARD_CONTRACT: &str = "reward_contract";
 pub const LAST_CLAIM: &str = "last_claim";
 pub const CLAIMED_REWARD: &str = "claimed_reward";
-pub const CLAIMEABLE_REWARD: &str = "claimable_reward";
-pub const CLAIMEABLE_REWARD_WRITE: &str = "claimable_reward_write";
+// pub const CLAIMABLE_REWARD: &str = "claimable_reward";
+pub const CLAIMABLE_REWARD_WRITE: &str = "claimable_reward_write";

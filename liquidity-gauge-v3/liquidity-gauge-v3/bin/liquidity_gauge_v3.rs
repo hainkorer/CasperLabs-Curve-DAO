@@ -372,9 +372,11 @@ fn total_supply() {
 }
 #[no_mangle]
 fn allowance() {
-    let key1: Key = runtime::get_named_arg("key1");
-    let key2: Key = runtime::get_named_arg("key2");
-    runtime::ret(CLValue::from_t(data::Allowance::instance().get(&key1, &key2)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    runtime::ret(
+        CLValue::from_t(data::Allowance::instance().get(&owner, &spender)).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn name() {
@@ -386,8 +388,8 @@ fn symbol() {
 }
 #[no_mangle]
 fn working_balances() {
-    let key1: Key = runtime::get_named_arg("key1");
-    runtime::ret(CLValue::from_t(data::WorkingBalances::instance().get(&key1)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::WorkingBalances::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn working_supply() {
@@ -399,34 +401,36 @@ fn period() {
 }
 #[no_mangle]
 fn period_timestamp() {
-    let key: U256 = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::PeriodTimestamp::instance().get(&key)).unwrap_or_revert());
+    let owner: U256 = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::PeriodTimestamp::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn integrate_inv_supply() {
-    let key: U256 = runtime::get_named_arg("key");
+    let owner: U256 = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(data::IntegrateInvSupply::instance().get(&key)).unwrap_or_revert(),
+        CLValue::from_t(data::IntegrateInvSupply::instance().get(&owner)).unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn integrate_inv_supply_of() {
-    let key: Key = runtime::get_named_arg("key");
+    let owner: Key = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(data::IntegrateInvSupplyOf::instance().get(&key)).unwrap_or_revert(),
+        CLValue::from_t(data::IntegrateInvSupplyOf::instance().get(&owner)).unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn integrate_checkpoint_of() {
-    let key: Key = runtime::get_named_arg("key");
+    let owner: Key = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(data::IntegrateCheckpointOf::instance().get(&key)).unwrap_or_revert(),
+        CLValue::from_t(data::IntegrateCheckpointOf::instance().get(&owner)).unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn integrate_fraction() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::IntegrateFraction::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(
+        CLValue::from_t(data::IntegrateFraction::instance().get(&owner)).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn inflation_rate() {
@@ -434,25 +438,26 @@ fn inflation_rate() {
 }
 #[no_mangle]
 fn reward_tokens() {
-    let key: U256 = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::RewardTokens::instance().get(&key)).unwrap_or_revert());
+    let owner: U256 = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::RewardTokens::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn rewards_receiver() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::RewardsReceiver::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::RewardsReceiver::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn reward_integral() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::RewardIntegral::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::RewardIntegral::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn reward_integral_for() {
-    let key1: Key = runtime::get_named_arg("key1");
-    let key2: Key = runtime::get_named_arg("key2");
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
     runtime::ret(
-        CLValue::from_t(data::RewardIntegralFor::instance().get(&key1, &key2)).unwrap_or_revert(),
+        CLValue::from_t(data::RewardIntegralFor::instance().get(&owner, &spender))
+            .unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -755,8 +760,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "allowance",
         vec![
-            Parameter::new("key1", Key::cl_type()),
-            Parameter::new("key2", Key::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -778,7 +783,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "working_balances",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -799,35 +804,35 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "period_timestamp",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "integrate_inv_supply",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "integrate_inv_supply_of",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "integrate_checkpoint_of",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "integrate_fraction",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -841,21 +846,21 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "reward_tokens",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "rewards_receiver",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "reward_integral",
-        vec![Parameter::new("key", Key::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -863,8 +868,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "reward_integral_for",
         vec![
-            Parameter::new("key1", Key::cl_type()),
-            Parameter::new("key2", Key::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,

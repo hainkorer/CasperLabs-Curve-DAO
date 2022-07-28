@@ -51,9 +51,29 @@ impl REWARDONLYGAUGEInstance {
             runtime_args! {
                 "name" => name,
                 "symbol" => symbol,
-                "decimal" => decimals,
+                "decimals" => decimals,
             },
             100000000,
+        )
+    }
+
+    pub fn curve_rewards(
+        env: &TestEnv,
+        contract_name: &str,
+        sender: AccountHash,
+        token: Key,
+        reward: Key,
+    ) -> TestContract {
+        TestContract::new(
+            env,
+            "curve-rewards.wasm",
+            contract_name,
+            sender,
+            runtime_args! {
+                "token" => token,
+                "reward" => reward
+            },
+            0,
         )
     }
 
@@ -193,7 +213,67 @@ impl REWARDONLYGAUGEInstance {
             sender,
             "set_rewards_receiver",
             runtime_args! {
-                "_receiver" => _receiver.into(),
+                "receiver" => _receiver.into(),
+            },
+            0,
+        );
+    }
+    pub fn set_rewards<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        _reward_contract: T,
+        _claim_sig: Bytes,
+        _reward_tokens: Vec<String>,
+    ) {
+        self.0.call_contract(
+            sender,
+            "set_rewards",
+            runtime_args! {
+                "reward_contract" => _reward_contract.into(),
+                "claim_sig" => _claim_sig,
+                "reward_tokens" => _reward_tokens,
+            },
+            0,
+        );
+    }
+    pub fn claim_rewards(&self, sender: AccountHash, _addr: Option<Key>, _receiver: Option<Key>) {
+        self.0.call_contract(
+            sender,
+            "claim_rewards",
+            runtime_args! {
+                "addr" => _addr,
+                "receiver" => _receiver,
+            },
+            0,
+        );
+    }
+
+    pub fn deposit(
+        &self,
+        sender: AccountHash,
+        _value: U256,
+        _addr: Option<Key>,
+        _claim_rewards: Option<bool>,
+    ) {
+        self.0.call_contract(
+            sender,
+            "deposit",
+            runtime_args! {
+                "value" => _value,
+                "addr" => _addr,
+                "claim_rewards" => _claim_rewards,
+            },
+            0,
+        );
+    }
+
+    pub fn withdraw(&self, sender: AccountHash, _value: U256, _claim_rewards: Option<bool>) {
+        self.0.call_contract(
+            sender,
+            "withdraw",
+            runtime_args! {
+                "value" => _value,
+                "claim_rewards" => _claim_rewards,
             },
             0,
         );
@@ -219,9 +299,9 @@ impl REWARDONLYGAUGEInstance {
             .query_dictionary("reward_integral", key_to_str(&account.into()))
             .unwrap_or_default()
     }
-    pub fn reward_tokens<T: Into<Key>>(&self, account: T) -> Key {
+    pub fn reward_tokens(&self, index: U256) -> Key {
         self.0
-            .query_dictionary("reward_tokens", key_to_str(&account.into()))
+            .query_dictionary("reward_tokens", (&index).to_string())
             .unwrap()
     }
 

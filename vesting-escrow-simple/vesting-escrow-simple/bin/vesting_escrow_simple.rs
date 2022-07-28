@@ -112,7 +112,7 @@ fn apply_transfer_ownership() {
 }
 #[no_mangle]
 fn claim() {
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     VestingEscrowSimple::default().claim(addr);
 }
 //[no_mangle] of public variables
@@ -146,18 +146,18 @@ fn future_admin() {
 }
 #[no_mangle]
 fn initial_locked() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::InitialLocked::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::InitialLocked::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn total_claimed() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::TotalClaimed::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::TotalClaimed::instance().get(&owner)).unwrap_or_revert());
 }
 #[no_mangle]
 fn disabled_at() {
-    let key: Key = runtime::get_named_arg("key");
-    runtime::ret(CLValue::from_t(data::DisableddAt::instance().get(&key)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(CLValue::from_t(data::DisableddAt::instance().get(&owner)).unwrap_or_revert());
 }
 
 #[no_mangle]
@@ -169,21 +169,7 @@ fn call() {
         entry_points::get_entry_points(),
         Default::default(),
     );
-    let admin: Key = runtime::get_named_arg("admin");
-    let token: Key = runtime::get_named_arg("token");
-    let recipient: Key = runtime::get_named_arg("recipient");
-    let amount: U256 = runtime::get_named_arg("amount");
-    let start_time: U256 = runtime::get_named_arg("start_time");
-    let end_time: U256 = runtime::get_named_arg("end_time");
-    let can_disable: bool = runtime::get_named_arg("can_disable");
     let constructor_args = runtime_args! {
-        "admin"=>admin,
-        "token" => token,
-        "recipient" => recipient,
-        "amount" => amount,
-        "start_time" => start_time,
-        "end_time" => end_time,
-        "can_disable" => can_disable,
         "contract_hash" => contract_hash,
         "package_hash"=> package_hash
     };

@@ -49,7 +49,6 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         _fund_admins: Vec<String>,
         contract_hash: Key,
         package_hash: ContractPackageHash,
-        lock: u64,
     ) {
         data::set_token(_token);
         data::set_admin(self.get_caller());
@@ -58,7 +57,7 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_can_disable(_can_disable);
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-        data::set_lock(lock);
+        data::set_lock(0);
         InitialLocked::init();
         TotalClaimed::init();
         DisabledAt::init();
@@ -197,23 +196,19 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         if locked
             * (time
                 .checked_sub(start)
-                .ok_or(Error::VestingEscrowUnderFlow1)
-                .unwrap_or_revert())
+                .unwrap_or_revert_with(Error::VestingEscrowUnderFlow1))
             / (end
                 .checked_sub(start)
-                .ok_or(Error::VestingEscrowUnderFlow2)
-                .unwrap_or_revert())
+                .unwrap_or_revert_with(Error::VestingEscrowUnderFlow2))
             < locked
         {
             locked
                 * (time
                     .checked_sub(start)
-                    .ok_or(Error::VestingEscrowUnderFlow3)
-                    .unwrap_or_revert())
+                    .unwrap_or_revert_with(Error::VestingEscrowUnderFlow3))
                 / (end
                     .checked_sub(start)
-                    .ok_or(Error::VestingEscrowUnderFlow4)
-                    .unwrap_or_revert())
+                    .unwrap_or_revert_with(Error::VestingEscrowUnderFlow4))
         } else {
             locked
         }
@@ -228,23 +223,19 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         if locked
             * (U256::from(u64::from(runtime::get_blocktime()))
                 .checked_sub(start)
-                .ok_or(Error::VestingEscrowUnderFlow5)
-                .unwrap_or_revert())
+                .unwrap_or_revert_with(Error::VestingEscrowUnderFlow5))
             / (end
                 .checked_sub(start)
-                .ok_or(Error::VestingEscrowUnderFlow6)
-                .unwrap_or_revert())
+                .unwrap_or_revert_with(Error::VestingEscrowUnderFlow6))
             < locked
         {
             locked
                 * (U256::from(u64::from(runtime::get_blocktime()))
                     .checked_sub(start)
-                    .ok_or(Error::VestingEscrowUnderFlow7)
-                    .unwrap_or_revert())
+                    .unwrap_or_revert_with(Error::VestingEscrowUnderFlow7))
                 / (end
                     .checked_sub(start)
-                    .ok_or(Error::VestingEscrowUnderFlow8)
-                    .unwrap_or_revert())
+                    .unwrap_or_revert_with(Error::VestingEscrowUnderFlow8))
         } else {
             locked
         }
@@ -255,8 +246,7 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn locked_supply(&mut self) -> U256 {
         self.initial_locked_supply()
             .checked_sub(self._total_vested())
-            .ok_or(Error::VestingEscrowUnderFlow9)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VestingEscrowUnderFlow9)
     }
     fn vested_of(&mut self, _recipient: Key) -> U256 {
         self._total_vested_of(_recipient, None)
@@ -265,14 +255,12 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn balance_of(&mut self, _recipient: Key) -> U256 {
         self._total_vested_of(_recipient, None)
             .checked_sub(self.total_claimed(_recipient))
-            .ok_or(Error::VestingEscrowUnderFlow10)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VestingEscrowUnderFlow10)
     }
     fn locked_of(&mut self, _recipient: Key) -> U256 {
         self.initial_locked(_recipient)
             .checked_sub(self._total_vested_of(_recipient, None))
-            .ok_or(Error::VestingEscrowUnderFlow11)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::VestingEscrowUnderFlow11)
     }
     fn add_tokens(&mut self, _amount: U256) {
         if self.get_caller() != self.admin() {
@@ -294,8 +282,7 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let unallocated_supply = self.unallocated_supply();
         let res = unallocated_supply
             .checked_add(_amount)
-            .ok_or(Error::VestingEscrowOverFlow1)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VestingEscrowOverFlow1);
         data::set_unallocated_supply(res);
     }
 
@@ -328,15 +315,13 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             }
             _total_amount = _total_amount
                 .checked_add(amount)
-                .ok_or(Error::VestingEscrowOverFlow2)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::VestingEscrowOverFlow2);
             let initial_locked = self.initial_locked(recipient);
             InitialLocked::instance().set(
                 &recipient,
                 initial_locked
                     .checked_add(amount)
-                    .ok_or(Error::VestingEscrowOverFlow3)
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::VestingEscrowOverFlow3),
             );
             self.emit(&VESTINGESCROWEvent::Fund { recipient, amount });
         }
@@ -344,15 +329,13 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_initial_locked_supply(
             initial_locked_supply
                 .checked_add(_total_amount)
-                .ok_or(Error::VestingEscrowOverFlow4)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::VestingEscrowOverFlow4),
         );
         let unallocated_supply = self.unallocated_supply();
         data::set_unallocated_supply(
             unallocated_supply
                 .checked_sub(_total_amount)
-                .ok_or(Error::VestingEscrowUnderFlow12)
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::VestingEscrowUnderFlow12),
         );
         data::set_lock(0);
     }
@@ -375,13 +358,11 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let claimable = self
             ._total_vested_of(addr, Some(t))
             .checked_sub(self.total_claimed(addr))
-            .ok_or(Error::VestingEscrowUnderFlow13)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VestingEscrowUnderFlow13);
         let total_claimed = self.total_claimed(addr);
         let res = total_claimed
             .checked_add(claimable)
-            .ok_or(Error::VestingEscrowOverFlow5)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::VestingEscrowOverFlow5);
         TotalClaimed::instance().set(&addr, res);
         self.emit(&VESTINGESCROWEvent::Claim {
             recipient: addr,

@@ -37,7 +37,6 @@ impl Token {
         _fund_admins: Vec<String>,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
-        lock: u64,
     ) {
         VESTINGESCROW::init(
             self,
@@ -48,7 +47,6 @@ impl Token {
             _fund_admins,
             Key::from(contract_hash),
             package_hash,
-            lock,
         );
     }
 }
@@ -63,24 +61,22 @@ impl Token {
 
 #[no_mangle]
 fn constructor() {
-    let _token: Key = runtime::get_named_arg::<Key>("_token");
-    let _start_time: U256 = runtime::get_named_arg("_start_time");
-    let _end_time: U256 = runtime::get_named_arg("_end_time");
-    let _can_disable: bool = runtime::get_named_arg("_can_disable");
-    let _fund_admins: Vec<String> = runtime::get_named_arg("_fund_admins");
+    let token: Key = runtime::get_named_arg::<Key>("token");
+    let start_time: U256 = runtime::get_named_arg("start_time");
+    let end_time: U256 = runtime::get_named_arg("end_time");
+    let can_disable: bool = runtime::get_named_arg("can_disable");
+    let fund_admins: Vec<String> = runtime::get_named_arg("fund_admins");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    let lock: u64 = runtime::get_named_arg("lock");
 
     Token::default().constructor(
-        _token,
-        _start_time,
-        _end_time,
-        _can_disable,
-        _fund_admins,
+        token,
+        start_time,
+        end_time,
+        can_disable,
+        fund_admins,
         contract_hash,
         package_hash,
-        lock,
     );
 }
 
@@ -209,8 +205,8 @@ fn disable_can_disable() {
 /// """
 #[no_mangle]
 fn toggle_disable() {
-    let _recipient: Key = runtime::get_named_arg("_recipient");
-    Token::default().toggle_disable(_recipient);
+    let recipient: Key = runtime::get_named_arg("recipient");
+    Token::default().toggle_disable(recipient);
 }
 
 /// """
@@ -239,8 +235,8 @@ fn locked_supply() {
 /// """
 #[no_mangle]
 fn vested_of() {
-    let _recipient: Key = runtime::get_named_arg("_recipient");
-    let ret: U256 = Token::default().vested_of(_recipient);
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret: U256 = Token::default().vested_of(recipient);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 /// """
@@ -249,8 +245,8 @@ fn vested_of() {
 /// """
 #[no_mangle]
 fn balance_of() {
-    let _recipient: Key = runtime::get_named_arg("_recipient");
-    let ret: U256 = Token::default().balance_of(_recipient);
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret: U256 = Token::default().balance_of(recipient);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 /// """
@@ -259,8 +255,8 @@ fn balance_of() {
 /// """
 #[no_mangle]
 fn locked_of() {
-    let _recipient: Key = runtime::get_named_arg("_recipient");
-    let ret: U256 = Token::default().locked_of(_recipient);
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let ret: U256 = Token::default().locked_of(recipient);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -271,8 +267,8 @@ fn locked_of() {
 /// """
 #[no_mangle]
 fn add_tokens() {
-    let _amount: U256 = runtime::get_named_arg("_amount");
-    Token::default().add_tokens(_amount);
+    let amount: U256 = runtime::get_named_arg("amount");
+    Token::default().add_tokens(amount);
 }
 
 /// """
@@ -282,9 +278,9 @@ fn add_tokens() {
 /// """
 #[no_mangle]
 fn fund() {
-    let _recipients: Vec<String> = runtime::get_named_arg("_recipients");
-    let _amounts: Vec<U256> = runtime::get_named_arg("_amounts");
-    Token::default().fund(_recipients, _amounts);
+    let recipients: Vec<String> = runtime::get_named_arg("recipients");
+    let amounts: Vec<U256> = runtime::get_named_arg("amounts");
+    Token::default().fund(recipients, amounts);
 }
 
 #[no_mangle]
@@ -299,23 +295,20 @@ fn call() {
         let (contract_hash, _) =
             storage::add_contract_version(package_hash, get_entry_points(), Default::default());
         // Read arguments for the constructor call.
-        let _token: Key = runtime::get_named_arg("_token");
-        let _start_time: U256 = runtime::get_named_arg("_start_time");
-        let _end_time: U256 = runtime::get_named_arg("_end_time");
-        let _can_disable: bool = runtime::get_named_arg("_can_disable");
-        let _fund_admins: Vec<String> = runtime::get_named_arg("_fund_admins");
-        let lock: u64 = 0;
+        let token: Key = runtime::get_named_arg("token");
+        let start_time: U256 = runtime::get_named_arg("start_time");
+        let end_time: U256 = runtime::get_named_arg("end_time");
+        let can_disable: bool = runtime::get_named_arg("can_disable");
+        let fund_admins: Vec<String> = runtime::get_named_arg("fund_admins");
         // Prepare constructor args
         let constructor_args = runtime_args! {
-            "_token" => _token,
-            "_start_time" => _start_time,
-            "_end_time" => _end_time,
-            "_can_disable" => _can_disable,
-            "_fund_admins" => _fund_admins,
+            "token" => token,
+            "start_time" => start_time,
+            "end_time" => end_time,
+            "can_disable" => can_disable,
+            "fund_admins" => fund_admins,
             "contract_hash" => contract_hash,
             "package_hash"=> package_hash,
-            "lock"=>lock
-
         };
 
         // Add the constructor group to the package hash with a single URef.
@@ -386,14 +379,13 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "constructor",
         vec![
-            Parameter::new("_token", Key::cl_type()),
-            Parameter::new("_start_time", U256::cl_type()),
-            Parameter::new("_end_time", U256::cl_type()),
-            Parameter::new("_can_disable", bool::cl_type()),
-            Parameter::new("_fund_admins", CLType::List(Box::new(String::cl_type()))),
+            Parameter::new("token", Key::cl_type()),
+            Parameter::new("start_time", U256::cl_type()),
+            Parameter::new("end_time", U256::cl_type()),
+            Parameter::new("can_disable", bool::cl_type()),
+            Parameter::new("fund_admins", CLType::List(Box::new(String::cl_type()))),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
-            Parameter::new("lock", u64::cl_type()),
         ],
         <()>::cl_type(),
         EntryPointAccess::Groups(vec![Group::new("constructor")]),
@@ -431,7 +423,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "add_tokens",
-        vec![Parameter::new("_amount", U256::cl_type())],
+        vec![Parameter::new("amount", U256::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -439,8 +431,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "fund",
         vec![
-            Parameter::new("_recipients", CLType::List(Box::new(String::cl_type()))),
-            Parameter::new("_amounts", CLType::List(Box::new(U256::cl_type()))),
+            Parameter::new("recipients", CLType::List(Box::new(String::cl_type()))),
+            Parameter::new("amounts", CLType::List(Box::new(U256::cl_type()))),
         ],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -549,7 +541,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "toggle_disable",
-        vec![Parameter::new("_recipient", Key::cl_type())],
+        vec![Parameter::new("recipient", Key::cl_type())],
         bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -570,21 +562,21 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "vested_of",
-        vec![Parameter::new("_recipient", Key::cl_type())],
+        vec![Parameter::new("recipient", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("_recipient", Key::cl_type())],
+        vec![Parameter::new("recipient", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "locked_of",
-        vec![Parameter::new("_recipient", Key::cl_type())],
+        vec![Parameter::new("recipient", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

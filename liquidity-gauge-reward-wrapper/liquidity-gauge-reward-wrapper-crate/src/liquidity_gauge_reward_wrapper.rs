@@ -251,7 +251,6 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     // @notice Get the number of claimable reward tokens per user
     // @dev This function should be manually changed to "view" in the ABI
     // @return uint256 number of claimable tokens per user
-    #[allow(non_snake_case)]
     fn claimable_reward(&self, addr: Key) -> U256 {
         let gauge: Key = get_gauge();
         let claimable_reward: U256 = runtime::call_versioned_contract(
@@ -267,7 +266,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None,
             "claimed_rewards_for",
             runtime_args! {
-                "key" => Key::from(get_package_hash())
+                "owner" => Key::from(get_package_hash())
             },
         );
         let d_reward: U256 = claimable_reward
@@ -318,9 +317,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 "amount" => ClaimableCrv::instance().get(&addr)
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-        }
+        ret.unwrap_or_revert();
         let ret: Result<(), u32> = runtime::call_versioned_contract(
             get_rewarded_token().into_hash().unwrap_or_revert().into(),
             None,
@@ -330,9 +327,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 "amount" => ClaimableRewards::instance().get(&addr)
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-        }
+        ret.unwrap_or_revert();
         ClaimableCrv::instance().set(&addr, 0.into());
         ClaimableRewards::instance().set(&addr, 0.into());
         set_lock(false);
@@ -386,9 +381,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                     "amount" => value
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-            }
+            ret.unwrap_or_revert();
             let () = runtime::call_versioned_contract(
                 get_gauge().into_hash().unwrap_or_revert().into(),
                 None,
@@ -454,9 +447,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                     "amount" => value
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-            }
+            ret.unwrap_or_revert();
         }
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,

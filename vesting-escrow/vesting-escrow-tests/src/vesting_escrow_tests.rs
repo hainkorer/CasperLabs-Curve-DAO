@@ -337,14 +337,14 @@ fn test_vesting_escrow_fund() {
     let user_2 = env.next_user();
     let user_3 = env.next_user();
     let user_4 = env.next_user();
-    let _recipients: Vec<String> = vec![
+    let recipients: Vec<String> = vec![
         user_1.to_formatted_string(),
         user_2.to_formatted_string(),
         user_3.to_formatted_string(),
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![1.into(), 2.into(), 3.into(), 4.into()];
-    vesting_escrow_instance.fund(owner, _recipients, _amounts);
+    vesting_escrow_instance.fund(owner, recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 10.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 90.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 1.into());
@@ -398,14 +398,14 @@ fn test_vesting_escrow_fund_by_user() {
     let user_2 = env.next_user();
     let user_3 = env.next_user();
     let user_4 = env.next_user();
-    let _recipients: Vec<String> = vec![
+    let recipients: Vec<String> = vec![
         user_1.to_formatted_string(),
         user_2.to_formatted_string(),
         user_3.to_formatted_string(),
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![1.into(), 2.into(), 3.into(), 4.into()];
-    vesting_escrow_instance.fund(_user, _recipients, _amounts);
+    vesting_escrow_instance.fund(_user, recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 10.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 90.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 1.into());
@@ -545,14 +545,14 @@ fn test_vesting_escrow_vested_supply() {
     let user_2 = env.next_user();
     let user_3 = env.next_user();
     let user_4 = env.next_user();
-    let _recipients: Vec<String> = vec![
+    let recipients: Vec<String> = vec![
         user_1.to_formatted_string(),
         user_2.to_formatted_string(),
         user_3.to_formatted_string(),
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![1.into(), 2.into(), 3.into(), 4.into()];
-    vesting_escrow_instance.fund(owner, _recipients, _amounts);
+    vesting_escrow_instance.fund(owner, recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 10.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 90.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 1.into());
@@ -620,14 +620,14 @@ fn test_vesting_escrow_locked_supply() {
     let user_2 = env.next_user();
     let user_3 = env.next_user();
     let user_4 = env.next_user();
-    let _recipients: Vec<String> = vec![
+    let recipients: Vec<String> = vec![
         user_1.to_formatted_string(),
         user_2.to_formatted_string(),
         user_3.to_formatted_string(),
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![2.into(), 3.into(), 4.into(), 5.into()];
-    vesting_escrow_instance.fund(owner, _recipients, _amounts);
+    vesting_escrow_instance.fund(owner, recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 14.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 986.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 2.into());
@@ -695,14 +695,14 @@ fn test_vesting_escrow_vested_of() {
     let user_2 = env.next_user();
     let user_3 = env.next_user();
     let user_4 = env.next_user();
-    let _recipients: Vec<String> = vec![
+    let recipients: Vec<String> = vec![
         user_1.to_formatted_string(),
         user_2.to_formatted_string(),
         user_3.to_formatted_string(),
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![2.into(), 3.into(), 4.into(), 5.into()];
-    vesting_escrow_instance.fund(owner, _recipients, _amounts);
+    vesting_escrow_instance.fund(owner, recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 14.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 986.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 2.into());
@@ -718,7 +718,7 @@ fn test_vesting_escrow_vested_of() {
         runtime_args! {
             "entrypoint" => String::from(VESTED_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_1),
+            "recipient" => Key::Account(user_1),
         },
         1000000,
     );
@@ -733,7 +733,7 @@ fn test_vesting_escrow_vested_of() {
         runtime_args! {
             "entrypoint" => String::from(VESTED_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_2),
+            "recipient" => Key::Account(user_2),
         },
         1000000,
     );
@@ -748,7 +748,7 @@ fn test_vesting_escrow_vested_of() {
         runtime_args! {
             "entrypoint" => String::from(VESTED_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_3),
+            "recipient" => Key::Account(user_3),
         },
         1000000,
     );
@@ -763,7 +763,7 @@ fn test_vesting_escrow_vested_of() {
         runtime_args! {
             "entrypoint" => String::from(VESTED_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_4),
+            "recipient" => Key::Account(user_4),
         },
         1000000,
     );
@@ -816,14 +816,14 @@ fn test_vesting_escrow_balance_of() {
     let user_2 = env.next_user();
     let user_3 = env.next_user();
     let user_4 = env.next_user();
-    let _recipients: Vec<String> = vec![
+    let recipients: Vec<String> = vec![
         user_1.to_formatted_string(),
         user_2.to_formatted_string(),
         user_3.to_formatted_string(),
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![2.into(), 3.into(), 4.into(), 5.into()];
-    vesting_escrow_instance.fund(owner, _recipients, _amounts);
+    vesting_escrow_instance.fund(owner, recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 14.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 986.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 2.into());
@@ -839,7 +839,7 @@ fn test_vesting_escrow_balance_of() {
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_1),
+            "recipient" => Key::Account(user_1),
         },
         1000000,
     );
@@ -854,7 +854,7 @@ fn test_vesting_escrow_balance_of() {
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_2),
+            "recipient" => Key::Account(user_2),
         },
         1000000,
     );
@@ -869,7 +869,7 @@ fn test_vesting_escrow_balance_of() {
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_3),
+            "recipient" => Key::Account(user_3),
         },
         1000000,
     );
@@ -884,7 +884,7 @@ fn test_vesting_escrow_balance_of() {
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_4),
+            "recipient" => Key::Account(user_4),
         },
         1000000,
     );
@@ -937,14 +937,14 @@ fn test_vesting_escrow_locked_of() {
     let user_2 = env.next_user();
     let user_3 = env.next_user();
     let user_4 = env.next_user();
-    let _recipients: Vec<String> = vec![
+    let recipients: Vec<String> = vec![
         user_1.to_formatted_string(),
         user_2.to_formatted_string(),
         user_3.to_formatted_string(),
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![2.into(), 3.into(), 4.into(), 5.into()];
-    vesting_escrow_instance.fund(owner, _recipients, _amounts);
+    vesting_escrow_instance.fund(owner, recipients, _amounts);
     assert_eq!(vesting_escrow_instance.initial_locked_supply(), 14.into());
     assert_eq!(vesting_escrow_instance.unallocated_supply(), 986.into());
     assert_eq!(vesting_escrow_instance.initial_locked(user_1), 2.into());
@@ -960,7 +960,7 @@ fn test_vesting_escrow_locked_of() {
         runtime_args! {
             "entrypoint" => String::from(LOCKED_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_1),
+            "recipient" => Key::Account(user_1),
         },
         1000000,
     );
@@ -975,7 +975,7 @@ fn test_vesting_escrow_locked_of() {
         runtime_args! {
             "entrypoint" => String::from(LOCKED_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_2),
+            "recipient" => Key::Account(user_2),
         },
         1000000,
     );
@@ -990,7 +990,7 @@ fn test_vesting_escrow_locked_of() {
         runtime_args! {
             "entrypoint" => String::from(LOCKED_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_3),
+            "recipient" => Key::Account(user_3),
         },
         1000000,
     );
@@ -1005,7 +1005,7 @@ fn test_vesting_escrow_locked_of() {
         runtime_args! {
             "entrypoint" => String::from(LOCKED_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "_recipient" => Key::Account(user_4),
+            "recipient" => Key::Account(user_4),
         },
         1000000,
     );

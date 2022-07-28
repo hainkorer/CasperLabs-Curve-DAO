@@ -7,8 +7,3 @@ mod minter;
 
 pub use casperlabs_contract_utils;
 pub use minter::MINTER;
-
-use alloc::{collections::BTreeMap, string::String};
-use casper_types::U256;
-pub type TokenId = U256;
-pub type Meta = BTreeMap<String, String>;

@@ -72,33 +72,80 @@ fn total_supply() {
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
     assert_eq!(ret, amount, "Invalid result");
-    // proxy.total_supply(owner);
-    // let v: U256 = proxy.result();
-    // println!("{:?}", v);
 }
 #[test]
 fn balance_of() {
-    let (_, owner, instance) = deploy();
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let lp_token_wrapper_instance = LPTOKENWRAPPERInstance::contract_instance(instance);
     let amount: U256 = U256::from(TEN_E_NINE * 2);
     lp_token_wrapper_instance.stake(owner, amount);
-    // proxy.balance_of(owner, Key::Account(owner));
-    // let v: U256 = proxy.result();
-    // println!("{:?}", v);
+    TestContract::new(
+        &env,
+        "lp-token-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, amount, "Invalid result");
 }
 #[test]
 fn stake() {
-    let (_, owner, instance) = deploy();
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let lp_token_wrapper_instance = LPTOKENWRAPPERInstance::contract_instance(instance);
     let amount: U256 = U256::from(TEN_E_NINE * 20);
     lp_token_wrapper_instance.stake(owner, amount);
+    TestContract::new(
+        &env,
+        "lp-token-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, amount, "Invalid result");
 }
 #[test]
 fn withdraw() {
-    let (_, owner, instance) = deploy();
+    let (env, owner, instance) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let lp_token_wrapper_instance = LPTOKENWRAPPERInstance::contract_instance(instance);
     let amount: U256 = U256::from(TEN_E_NINE * 20);
     lp_token_wrapper_instance.stake(owner, amount);
+    let withdraw_amount: U256 = U256::from(TEN_E_NINE * 10);
+    lp_token_wrapper_instance.withdraw(owner, withdraw_amount);
+    TestContract::new(
+        &env,
+        "lp-token-wrapper-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => package_hash,
+            "owner" => Key::Account(owner)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, withdraw_amount, "Invalid result");
+}
+#[should_panic]
+#[test]
+fn withdraw_panic() {
+    let (_, owner, instance) = deploy();
+    let lp_token_wrapper_instance = LPTOKENWRAPPERInstance::contract_instance(instance);
     let withdraw_amount: U256 = U256::from(TEN_E_NINE * 10);
     lp_token_wrapper_instance.withdraw(owner, withdraw_amount);
 }

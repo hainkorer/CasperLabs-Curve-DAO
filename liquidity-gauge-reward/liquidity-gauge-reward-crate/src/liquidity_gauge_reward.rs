@@ -356,8 +356,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                     }
                     // On precisions of the calculation
                     //  rate ~= 10e18
-                    //  last_weight > 0.01 * 1e18 = 1e16 (if pool weight is 1%)
-                    //  _working_supply ~= TVL * 1e18 ~= 1e26 ($100M for example)
+                    //  last_weight > 0.01 * 1e9 = 1e16 (if pool weight is 1%)
+                    //  _working_supply ~= TVL * 1e9 ~= 1e26 ($100M for example)
                     //  The largest loss is at dt = 1
                     //  Loss is 1e-9 - acceptable
                 }
@@ -425,8 +425,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                 None,
                 "minted",
                 runtime_args! {
-                    "key0" => addr,
-                    "key1" => Key::from(get_package_hash())
+                    "owner" => addr,
+                    "spender" => Key::from(get_package_hash())
                 },
             ))
             .unwrap_or_revert()
@@ -481,7 +481,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             None,
             "user_point_epoch",
             runtime_args! {
-                "key" => addr
+                "user" => addr
             },
         );
         let t_ve: U256 = runtime::call_versioned_contract(

@@ -150,15 +150,21 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         }
         set_can_disable(false);
     }
-    fn _total_vested_of(&self, recipient: Key, time: U256) -> U256 {
+    fn _total_vested_of(&self, recipient: Key, time: Option<U256>) -> U256 {
+        let blocktime: u64 = runtime::get_blocktime().into();
+        let _time: U256 = if let Some(..) = time {
+            time.unwrap()
+        } else {
+            U256::from(blocktime)
+        };
         let start: U256 = get_start_time();
         let end: U256 = get_end_time();
         let locked: U256 = InitialLocked::instance().get(&recipient);
-        if time < start {
+        if _time < start {
             return 0.into();
         }
         let ans: U256 = locked
-            .checked_mul(time.checked_sub(start).unwrap_or_revert())
+            .checked_mul(_time.checked_sub(start).unwrap_or_revert())
             .unwrap_or_revert()
             .checked_div(end.checked_sub(start).unwrap_or_revert())
             .unwrap_or_revert_with(Error::VestingEscrowSimpleAirthmeticError1);
@@ -202,14 +208,14 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     @param _recipient address to check */
     fn vested_of(&self, recipient: Key) -> U256 {
         let blocktime: u64 = runtime::get_blocktime().into();
-        self._total_vested_of(recipient, U256::from(blocktime))
+        self._total_vested_of(recipient, Some(U256::from(blocktime)))
     }
 
     /*@notice Get the number of unclaimed, vested tokens for a given address
     @param _recipient address to check */
     fn balance_of(&self, recipient: Key) -> U256 {
         let blocktime: u64 = runtime::get_blocktime().into();
-        let total_vested_of: U256 = self._total_vested_of(recipient, U256::from(blocktime));
+        let total_vested_of: U256 = self._total_vested_of(recipient, Some(U256::from(blocktime)));
         let self_total_claimed: U256 = TotalClaimed::instance().get(&recipient);
         total_vested_of
             .checked_sub(self_total_claimed)
@@ -221,7 +227,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     fn locked_of(&self, recipient: Key) -> U256 {
         let initial_locked = InitialLocked::instance().get(&recipient);
         let blocktime: u64 = runtime::get_blocktime().into();
-        let total_vested_of: U256 = self._total_vested_of(recipient, U256::from(blocktime));
+        let total_vested_of: U256 = self._total_vested_of(recipient, Some(U256::from(blocktime)));
         initial_locked
             .checked_sub(total_vested_of)
             .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow3)
@@ -241,24 +247,29 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
 
     /*@notice Claim tokens which have vested
     @param addr Address to claim tokens for */
-    fn claim(&self, addr: Key) {
+    fn claim(&self, addr: Option<Key>) {
         //Locked
         if get_lock() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleLocked2));
         }
         set_lock(true);
-        let mut t: U256 = DisableddAt::instance().get(&addr);
+        let _addr: Key = if let Some(..) = addr {
+            addr.unwrap()
+        } else {
+            self.get_caller()
+        };
+        let mut t: U256 = DisableddAt::instance().get(&_addr);
         let blocktime: U256 = 1000.into();
         if t == U256::from(0) {
             t = blocktime;
         }
-        let _total_vested_of: U256 = self._total_vested_of(addr, t);
-        let _total_claimed: U256 = TotalClaimed::instance().get(&addr);
+        let _total_vested_of: U256 = self._total_vested_of(_addr, Some(t));
+        let _total_claimed: U256 = TotalClaimed::instance().get(&_addr);
         let claimable: U256 = _total_vested_of
             .checked_sub(_total_claimed)
             .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow4);
         let updated_total_claimed = _total_claimed.checked_add(claimable).unwrap_or_revert();
-        TotalClaimed::instance().set(&addr, updated_total_claimed);
+        TotalClaimed::instance().set(&_addr, updated_total_claimed);
         let token: Key = get_token();
         let ret: Result<(), u32> = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
@@ -275,7 +286,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         }
 
         self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Claim {
-            recipient: addr,
+            recipient: _addr,
             claimed: claimable,
         });
     }

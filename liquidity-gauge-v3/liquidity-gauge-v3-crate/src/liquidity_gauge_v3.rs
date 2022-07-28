@@ -521,8 +521,8 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                 None,
                 "minted",
                 runtime_args! {
-                    "key0" => addr,
-                    "key1" => Key::from(data::get_package_hash())
+                    "owner" => addr,
+                    "spender" => Key::from(data::get_package_hash())
                 },
             ))
             .unwrap_or_revert()
@@ -602,7 +602,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             None,
             "user_point_epoch",
             runtime_args! {
-                "addr" => addr,
+                "user" => addr,
             },
         );
         let t_ve: U256 = runtime::call_versioned_contract(

@@ -1,4 +1,4 @@
-use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
+use casper_types::{account::AccountHash, bytesrepr::Bytes, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::reward_only_gauge_instance::REWARDONLYGAUGEInstance;
@@ -18,7 +18,13 @@ const TOKEN_SYMBOL: &str = "ERC";
 const DECIMALS: u8 = 8;
 const INIT_TOTAL_SUPPLY: u64 = 0;
 
-fn deploy() -> (TestEnv, REWARDONLYGAUGEInstance, TestContract, AccountHash) {
+fn deploy() -> (
+    TestEnv,
+    REWARDONLYGAUGEInstance,
+    TestContract,
+    AccountHash,
+    TestContract,
+) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let lp_token: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
@@ -28,6 +34,13 @@ fn deploy() -> (TestEnv, REWARDONLYGAUGEInstance, TestContract, AccountHash) {
         TOKEN_SYMBOL,
         DECIMALS,
         INIT_TOTAL_SUPPLY.into(),
+    );
+    let curve_rewards: TestContract = REWARDONLYGAUGEInstance::curve_rewards(
+        &env,
+        "CURVEREWARDS",
+        owner,
+        Key::Hash(lp_token.package_hash()),
+        Key::Hash(lp_token.package_hash()),
     );
     let reward_only_gauge: TestContract = REWARDONLYGAUGEInstance::new_deploy(
         &env,
@@ -41,12 +54,13 @@ fn deploy() -> (TestEnv, REWARDONLYGAUGEInstance, TestContract, AccountHash) {
         REWARDONLYGAUGEInstance::instance(reward_only_gauge),
         lp_token,
         owner,
+        curve_rewards,
     )
 }
 
 #[test]
 fn test_deploy() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -63,7 +77,7 @@ fn test_deploy() {
 
 #[test]
 fn test_set_rewards_receiver() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -83,7 +97,7 @@ fn test_set_rewards_receiver() {
 
 #[test]
 fn test_commit_transfer_ownership() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -105,7 +119,7 @@ fn test_commit_transfer_ownership() {
 
 #[test]
 fn test_accept_transfer_ownership() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -127,7 +141,7 @@ fn test_accept_transfer_ownership() {
 }
 #[test]
 fn test_reward_contract() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -167,7 +181,7 @@ fn test_reward_contract() {
 
 #[test]
 fn test_last_claim() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -201,7 +215,7 @@ fn test_last_claim() {
 
 #[test]
 fn test_claimed_reward() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -225,8 +239,8 @@ fn test_claimed_reward() {
         runtime_args! {
             "entrypoint" => String::from(CLAIMED_REWARD),
             "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
-            "_addr"=>Key::from(user),
-            "_token"=>Key::from(user)
+            "addr"=>Key::from(user),
+            "token"=>Key::from(user)
         },
         0,
     );
@@ -236,44 +250,8 @@ fn test_claimed_reward() {
 }
 
 #[test]
-fn test_claimable_reward() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
-    let user = env.next_user();
-
-    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
-    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
-    assert_eq!(reward_only_gauge.decimals(), 9);
-    assert_eq!(reward_only_gauge.total_supply(), 0.into());
-    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
-    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
-    assert_eq!(reward_only_gauge.admin(), owner.into());
-    assert_eq!(
-        reward_only_gauge.lp_token(),
-        Key::Hash(lp_token.package_hash())
-    );
-    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
-
-    TestContract::new(
-        &env,
-        "reward-only-gauge-session-code.wasm",
-        "SessionCode",
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(CLAIMABLE_REWARD),
-            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
-            "_addr"=>Key::from(user),
-            "_token"=>Key::from(user)
-        },
-        0,
-    );
-
-    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
-    assert_eq!(ret, 0.into());
-}
-
-#[test]
 fn test_approve() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -300,7 +278,7 @@ fn test_approve() {
 
 #[test]
 fn test_increase_allowance() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -341,7 +319,7 @@ fn test_increase_allowance() {
 
 #[test]
 fn test_decrease_allowance() {
-    let (env, reward_only_gauge, lp_token, owner) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -397,4 +375,874 @@ fn test_decrease_allowance() {
         Err(e) => panic!("Decrease Allowance Failed ERROR:{}", e),
     }
     assert_eq!(reward_only_gauge.allowance(owner, user), 90.into());
+}
+
+#[test]
+fn test_set_rewards() {
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
+    let user = env.next_user();
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+
+    let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
+    let lp_token1: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token1",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token2: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token2",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token3: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token3",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token4: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token4",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token5: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token5",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token6: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token6",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token7: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token7",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token8: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token8",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+
+    let reward_tokens: Vec<String> = vec![
+        // Key::Hash(liquidity_gauge_reward.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token1.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token2.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token3.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token4.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token5.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token6.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token7.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token8.package_hash()).to_formatted_string(),
+    ];
+
+    reward_only_gauge.set_rewards(
+        owner,
+        Key::Hash(_curve_rewards.package_hash()),
+        claim_sig.clone(),
+        reward_tokens,
+    );
+    assert_eq!(reward_only_gauge.claim_sig(), claim_sig);
+    assert_eq!(
+        reward_only_gauge.reward_tokens(0.into()),
+        Key::Hash(lp_token1.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(1.into()),
+        Key::Hash(lp_token2.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(2.into()),
+        Key::Hash(lp_token3.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(3.into()),
+        Key::Hash(lp_token4.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(4.into()),
+        Key::Hash(lp_token5.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(5.into()),
+        Key::Hash(lp_token6.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(6.into()),
+        Key::Hash(lp_token7.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(7.into()),
+        Key::Hash(lp_token8.package_hash())
+    );
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+}
+
+#[test]
+fn test_claim_rewards() {
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
+    let user = env.next_user();
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+
+    let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
+    let lp_token1: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token1",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token2: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token2",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token3: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token3",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token4: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token4",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token5: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token5",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token6: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token6",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token7: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token7",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token8: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token8",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+
+    let reward_tokens: Vec<String> = vec![
+        Key::Hash(lp_token1.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token2.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token3.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token4.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token5.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token6.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token7.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token8.package_hash()).to_formatted_string(),
+    ];
+
+    reward_only_gauge.set_rewards(
+        owner,
+        Key::Hash(_curve_rewards.package_hash()),
+        claim_sig.clone(),
+        reward_tokens,
+    );
+    assert_eq!(reward_only_gauge.claim_sig(), claim_sig);
+    assert_eq!(
+        reward_only_gauge.reward_tokens(0.into()),
+        Key::Hash(lp_token1.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(1.into()),
+        Key::Hash(lp_token2.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(2.into()),
+        Key::Hash(lp_token3.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(3.into()),
+        Key::Hash(lp_token4.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(4.into()),
+        Key::Hash(lp_token5.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(5.into()),
+        Key::Hash(lp_token6.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(6.into()),
+        Key::Hash(lp_token7.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(7.into()),
+        Key::Hash(lp_token8.package_hash())
+    );
+    reward_only_gauge.claim_rewards(owner, Some(Key::from(owner)), Some(Key::from(user)));
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+}
+
+#[test]
+fn test_claimable_reward_write() {
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
+    let user = env.next_user();
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+
+    let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
+    let lp_token1: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token1",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token2: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token2",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token3: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token3",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token4: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token4",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token5: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token5",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token6: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token6",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token7: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token7",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token8: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token8",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+
+    let reward_tokens: Vec<String> = vec![
+        Key::Hash(lp_token1.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token2.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token3.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token4.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token5.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token6.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token7.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token8.package_hash()).to_formatted_string(),
+    ];
+
+    reward_only_gauge.set_rewards(
+        owner,
+        Key::Hash(_curve_rewards.package_hash()),
+        claim_sig.clone(),
+        reward_tokens,
+    );
+    assert_eq!(reward_only_gauge.claim_sig(), claim_sig);
+    assert_eq!(
+        reward_only_gauge.reward_tokens(0.into()),
+        Key::Hash(lp_token1.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(1.into()),
+        Key::Hash(lp_token2.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(2.into()),
+        Key::Hash(lp_token3.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(3.into()),
+        Key::Hash(lp_token4.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(4.into()),
+        Key::Hash(lp_token5.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(5.into()),
+        Key::Hash(lp_token6.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(6.into()),
+        Key::Hash(lp_token7.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(7.into()),
+        Key::Hash(lp_token8.package_hash())
+    );
+    reward_only_gauge.claim_rewards(owner, Some(Key::from(owner)), Some(Key::from(user)));
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMABLE_REWARD_WRITE),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "addr"=>Key::from(user),
+            "token"=>Key::Hash(lp_token.package_hash())
+        },
+        0,
+    );
+
+    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD_WRITE.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+#[test]
+fn test_claimable_reward() {
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
+    let user = env.next_user();
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+
+    let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
+    let lp_token1: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token1",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token2: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token2",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token3: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token3",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token4: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token4",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token5: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token5",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token6: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token6",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token7: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token7",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+    let lp_token8: TestContract = REWARDONLYGAUGEInstance::erc20_crv(
+        &env,
+        owner,
+        "Lp_token8",
+        TOKEN_SYMBOL,
+        DECIMALS,
+        INIT_TOTAL_SUPPLY.into(),
+    );
+
+    let reward_tokens: Vec<String> = vec![
+        Key::Hash(lp_token1.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token2.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token3.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token4.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token5.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token6.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token7.package_hash()).to_formatted_string(),
+        Key::Hash(lp_token8.package_hash()).to_formatted_string(),
+    ];
+
+    reward_only_gauge.set_rewards(
+        owner,
+        Key::Hash(_curve_rewards.package_hash()),
+        claim_sig.clone(),
+        reward_tokens,
+    );
+    assert_eq!(reward_only_gauge.claim_sig(), claim_sig);
+    assert_eq!(
+        reward_only_gauge.reward_tokens(0.into()),
+        Key::Hash(lp_token1.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(1.into()),
+        Key::Hash(lp_token2.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(2.into()),
+        Key::Hash(lp_token3.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(3.into()),
+        Key::Hash(lp_token4.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(4.into()),
+        Key::Hash(lp_token5.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(5.into()),
+        Key::Hash(lp_token6.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(6.into()),
+        Key::Hash(lp_token7.package_hash())
+    );
+    assert_eq!(
+        reward_only_gauge.reward_tokens(7.into()),
+        Key::Hash(lp_token8.package_hash())
+    );
+    reward_only_gauge.claim_rewards(owner, Some(Key::from(owner)), Some(Key::from(user)));
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMABLE_REWARD),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "addr"=>Key::from(user),
+            "token"=>Key::Hash(lp_token.package_hash())
+        },
+        0,
+    );
+
+    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
+    assert_eq!(ret, 0.into());
+}
+
+#[test]
+fn test_deposit() {
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
+    let user = env.next_user();
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+
+    let deposit: U256 = 10.into();
+    lp_token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+                    "spender"=>Key::from(reward_only_gauge.contract_package_hash()),
+                "amount"=>deposit
+        },
+        0,
+    );
+
+    reward_only_gauge.deposit(owner, deposit, Some(Key::from(owner)), Some(false));
+
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+}
+
+#[test]
+fn test_withdraw() {
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
+    let user = env.next_user();
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+
+    let deposit: U256 = 10.into();
+    lp_token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+                    "spender"=>Key::from(reward_only_gauge.contract_package_hash()),
+                "amount"=>deposit
+        },
+        0,
+    );
+
+    reward_only_gauge.deposit(owner, deposit, Some(Key::from(owner)), Some(false));
+
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    reward_only_gauge.withdraw(owner, deposit / 2, Some(false));
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 5.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 5.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+}
+
+#[test]
+fn test_transfer() {
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
+    let user = env.next_user();
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+
+    let deposit: U256 = 10.into();
+    lp_token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+                    "spender"=>Key::from(reward_only_gauge.contract_package_hash()),
+                "amount"=>deposit
+        },
+        0,
+    );
+
+    reward_only_gauge.deposit(owner, deposit, Some(Key::from(owner)), Some(false));
+
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+
+    let amount: U256 = 5.into();
+
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(TRANSFER),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "recipient"=>Key::from(user),
+            "amount"=>amount
+        },
+        0,
+    );
+
+    let ret: Result<(), u32> = env.query_account_named_key(owner, &[TRANSFER.into()]);
+    match ret {
+        Ok(()) => {}
+        Err(e) => panic!("Transfer Failed ERROR:{}", e),
+    }
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 5.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 5.into());
+}
+
+#[test]
+fn test_transfer_from() {
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards) = deploy();
+    let user = env.next_user();
+
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 0.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+    assert_eq!(reward_only_gauge.admin(), owner.into());
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
+
+    let deposit: U256 = 10.into();
+    lp_token.call_contract(
+        owner,
+        "approve",
+        runtime_args! {
+                    "spender"=>Key::from(reward_only_gauge.contract_package_hash()),
+                "amount"=>deposit
+        },
+        0,
+    );
+
+    reward_only_gauge.deposit(owner, deposit, Some(Key::from(owner)), Some(false));
+
+    assert_eq!(
+        reward_only_gauge.lp_token(),
+        Key::Hash(lp_token.package_hash())
+    );
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 0.into());
+
+    let amount: U256 = 100.into();
+
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(INCREASE_ALLOWANCE),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "spender"=>Key::from(user),
+            "amount"=>amount
+        },
+        0,
+    );
+
+    let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
+    match ret {
+        Ok(()) => {}
+        Err(e) => panic!("Increase Allowance Failed ERROR:{}", e),
+    }
+    assert_eq!(reward_only_gauge.allowance(owner, user), 100.into());
+
+    let amount: U256 = 5.into();
+
+    TestContract::new(
+        &env,
+        "reward-only-gauge-session-code.wasm",
+        "SessionCode",
+        user,
+        runtime_args! {
+            "entrypoint" => String::from(TRANSFER_FROM),
+            "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
+            "owner"=>Key::from(owner),
+            "recipient"=>Key::from(user),
+            "amount"=>amount
+        },
+        0,
+    );
+
+    let ret: Result<(), u32> = env.query_account_named_key(user, &[TRANSFER_FROM.into()]);
+    match ret {
+        Ok(()) => {}
+        Err(e) => panic!("Transfer From Failed ERROR:{}", e),
+    }
+    assert_eq!(reward_only_gauge.allowance(owner, user), 95.into());
+    assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
+    assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
+    assert_eq!(reward_only_gauge.decimals(), 9);
+    assert_eq!(reward_only_gauge.total_supply(), 10.into());
+    assert_eq!(reward_only_gauge.balance_of(owner), 5.into());
+    assert_eq!(reward_only_gauge.balance_of(user), 5.into());
 }
