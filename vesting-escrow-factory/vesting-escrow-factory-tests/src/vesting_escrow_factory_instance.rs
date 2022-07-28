@@ -87,12 +87,7 @@ impl VESTINGESCROWFACTORYInstance {
         )
     }
 
-    pub fn constructor(
-        &self,
-        sender: AccountHash,
-        _target: Key,
-        _admin: Key,
-    ) {
+    pub fn constructor(&self, sender: AccountHash, _target: Key, _admin: Key) {
         self.0.call_contract(
             sender,
             "constructor",

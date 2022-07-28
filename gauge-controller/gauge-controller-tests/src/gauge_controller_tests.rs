@@ -89,7 +89,7 @@ fn deploy_fail() -> (
         owner,
         Key::Hash(_token.package_hash()),
         Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000"
+            "hash-0000000000000000000000000000000000000000000000000000000000000000",
         )
         .unwrap(),
     );
@@ -588,7 +588,7 @@ fn test_gauge_controller_vote_for_gauge_weights_by_user() {
     assert_eq!(gauge_controller.admin(), Key::from(owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(owner, name,None);
+    gauge_controller.add_type(owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(owner, _user, gauge_type, None);
     let weight: U256 = 0.into();
@@ -639,13 +639,13 @@ fn test_gauge_controller_vote_for_gauge_weights_multiple_time() {
     assert_eq!(gauge_controller.admin(), Key::from(owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
-    gauge_controller.add_type(owner, name,None);
+    gauge_controller.add_type(owner, name, None);
     let gauge_type: U128 = 0.into();
     gauge_controller.add_gauge(owner, _user, gauge_type, None);
     let weight: U256 = 0.into();
     gauge_controller.vote_for_gauge_weights(owner, _user, weight);
     let name: String = "type2".to_string();
-    gauge_controller.add_type(owner, name,None);
+    gauge_controller.add_type(owner, name, None);
     let gauge_type: U128 = 1.into();
     gauge_controller.add_gauge(owner, _user1, gauge_type, None);
     let weight: U256 = 1.into();

@@ -341,7 +341,6 @@ impl REWARDONLYGAUGEInstance {
     pub fn lp_token(&self) -> Key {
         self.0.query_named_key(String::from("lp_token"))
     }
-
 }
 
 pub fn key_to_str(key: &Key) -> String {
