@@ -226,7 +226,7 @@ impl GAUGECONLTROLLERInstance {
                 "gauge_addr" => _gauge_addr.into(),
                 "user_weight" => _user_weight,
             },
-            1000000,
+            1000000000,
         );
     }
 

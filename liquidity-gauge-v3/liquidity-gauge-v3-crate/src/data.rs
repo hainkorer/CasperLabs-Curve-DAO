@@ -9,11 +9,10 @@ use common::keys::*;
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
-pub const CLAIM_FREQUENCY: U256 = U256([3600, 0, 0, 0]);
-pub const WEEK: U256 = U256([604800, 0, 0, 0]);
+pub const CLAIM_FREQUENCY: U256 = U256([3600000, 0, 0, 0]);
+pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
 
 #[allow(non_snake_case)]
-
 pub fn zero_address() -> Key {
     Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
         .unwrap()
@@ -31,7 +30,6 @@ pub struct ClaimDataStruct {
     pub claimed_amount: U256,
 }
 
-const CLAIM_DATA_DICT: &str = "claim_data";
 pub struct ClaimData {
     dict: Dict,
 }
@@ -48,9 +46,13 @@ impl ClaimData {
     }
 
     pub fn get(&self, user: &Key, claiming_address: &Key) -> ClaimDataStruct {
+        let data = ClaimDataStruct {
+            claimable_amount: 0.into(),
+            claimed_amount: 0.into(),
+        };
         self.dict
             .get_by_keys((user, claiming_address))
-            .unwrap_or_revert()
+            .unwrap_or(data)
     }
 
     pub fn set(&self, user: &Key, claiming_address: &Key, claimed_amount: ClaimDataStruct) {
@@ -145,7 +147,6 @@ impl BalanceOf {
     }
 }
 
-const ALLOWANCE: &str = "allowance";
 pub struct Allowance {
     dict: Dict,
 }
@@ -153,12 +154,12 @@ pub struct Allowance {
 impl Allowance {
     pub fn instance() -> Allowance {
         Allowance {
-            dict: Dict::instance(ALLOWANCE),
+            dict: Dict::instance(ALLOWANCES_DICT),
         }
     }
 
     pub fn init() {
-        Dict::init(ALLOWANCE)
+        Dict::init(ALLOWANCES_DICT)
     }
 
     pub fn get(&self, key1: &Key, key2: &Key) -> U256 {
@@ -390,7 +391,11 @@ pub fn set_myvec(myvec: Vec<Key>) {
     set_key(MYVEC, myvec);
 }
 pub fn reward_data() -> RewardData {
-    get_key(REWARD_DATA).unwrap_or_revert()
+    let data = RewardData {
+        address: zero_address(),
+        time_stamp: 0.into(),
+    };
+    get_key(REWARD_DATA).unwrap_or(data)
 }
 
 pub fn set_reward_data(reward_data: RewardData) {
@@ -401,7 +406,7 @@ pub fn set_minter(minter: Key) {
 }
 
 pub fn get_minter() -> Key {
-    get_key(MINTER).unwrap_or_revert()
+    get_key(MINTER).unwrap_or_else(zero_address)
 }
 
 pub fn set_crv_token(crv_token: Key) {
@@ -409,7 +414,7 @@ pub fn set_crv_token(crv_token: Key) {
 }
 
 pub fn get_crv_token() -> Key {
-    get_key(CRV_TOKEN).unwrap_or_revert()
+    get_key(CRV_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_lp_token(lp_token: Key) {
@@ -417,7 +422,7 @@ pub fn set_lp_token(lp_token: Key) {
 }
 
 pub fn get_lp_token() -> Key {
-    get_key(LP_TOKEN).unwrap_or_revert()
+    get_key(LP_TOKEN).unwrap_or_else(zero_address)
 }
 
 pub fn set_controller(controller: Key) {
@@ -425,7 +430,7 @@ pub fn set_controller(controller: Key) {
 }
 
 pub fn get_controller() -> Key {
-    get_key(CONTROLLER).unwrap_or_revert()
+    get_key(CONTROLLER).unwrap_or_else(zero_address)
 }
 
 pub fn set_voting_escrow(voting_escrow: Key) {
@@ -433,7 +438,7 @@ pub fn set_voting_escrow(voting_escrow: Key) {
 }
 
 pub fn get_voting_escrow() -> Key {
-    get_key(VOTING_ESCROW).unwrap_or_revert()
+    get_key(VOTING_ESCROW).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_epoch_time(future_epoch_time: U256) {
@@ -495,7 +500,7 @@ pub fn set_admin(admin: Key) {
 }
 
 pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or_revert()
+    get_key(ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_future_admin(future_admin: Key) {
@@ -503,7 +508,7 @@ pub fn set_future_admin(future_admin: Key) {
 }
 
 pub fn get_future_admin() -> Key {
-    get_key(FUTURE_ADMIN).unwrap_or_revert()
+    get_key(FUTURE_ADMIN).unwrap_or_else(zero_address)
 }
 
 pub fn set_is_killed(is_killed: bool) {

@@ -112,6 +112,7 @@ members = [
   "liquidity-gauge-v3/liquidity-gauge-v3",
   "liquidity-gauge-v3/liquidity-gauge-v3-crate",
   "liquidity-gauge-v3/liquidity-gauge-v3-tests",
+  "liquidity-gauge-v3/liquidity-gauge-v3-session-code",
 
 ]
 

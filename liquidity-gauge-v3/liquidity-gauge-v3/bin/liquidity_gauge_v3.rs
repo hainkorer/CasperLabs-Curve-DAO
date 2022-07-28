@@ -56,9 +56,18 @@ fn decimals() {
     let ret: u8 = LiquidityGaugeV3::default().decimals();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+
+#[no_mangle]
+fn integrate_checkpoint() {
+    let ret: U256 = LiquidityGaugeV3::default().integrate_checkpoint();
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+///"""
 ///    @notice Record a checkpoint for `addr`
 ///    @param addr User address
 ///    @return bool success
+///"""
 #[no_mangle]
 fn user_checkpoint() {
     let addr: Key = runtime::get_named_arg("addr");
@@ -95,7 +104,6 @@ fn last_claim() {
 fn claimed_reward() {
     let addr: Key = runtime::get_named_arg("addr");
     let token: Key = runtime::get_named_arg("token");
-
     let ret = LiquidityGaugeV3::default().claimed_reward(addr, token);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -115,7 +123,6 @@ fn claimable_reward() {
     let ret: U256 = LiquidityGaugeV3::default().claimable_reward(addr, token);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
 /// @notice Get the number of claimable reward tokens for a user
 /// @dev This function should be manually changed to "view" in the ABI
 ///      Calling it via a transaction will claim available reward tokens
@@ -127,7 +134,6 @@ fn claimable_reward() {
 fn claimable_reward_write() {
     let addr: Key = runtime::get_named_arg("addr");
     let token: Key = runtime::get_named_arg("token");
-
     let ret: U256 = LiquidityGaugeV3::default().claimable_reward_write(addr, token);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -149,7 +155,18 @@ fn kick() {
     let addr: Key = runtime::get_named_arg("addr");
     LiquidityGaugeV3::default().kick(addr);
 }
+///    @notice Claim available reward tokens for `addr`
+///    @param addr Address to claim for
+///    @param receiver Address to transfer rewards to - if set to
+///                     ZERO_ADDRESS, uses the default reward receiver
+///                     for the caller
 
+#[no_mangle]
+fn claim_rewards() {
+    let addr: Option<Key> = runtime::get_named_arg("addr");
+    let receiver: Option<Key> = runtime::get_named_arg("receiver");
+    LiquidityGaugeV3::default().claim_rewards(addr, receiver);
+}
 /// @notice Deposit `_value` LP tokens
 /// @dev Depositting also claims pending reward tokens
 /// @param _value Number of tokens to deposit
@@ -182,9 +199,9 @@ fn withdraw() {
 
 #[no_mangle]
 fn transfer() {
-    let to: Key = runtime::get_named_arg("to");
-    let value: U256 = runtime::get_named_arg("amount");
-    let ret: bool = LiquidityGaugeV3::default().transfer(to, value);
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret: Result<(), u32> = LiquidityGaugeV3::default().transfer(recipient, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -196,10 +213,10 @@ fn transfer() {
 
 #[no_mangle]
 fn transfer_from() {
-    let from: Key = runtime::get_named_arg("from");
-    let to: Key = runtime::get_named_arg("to");
-    let value: U256 = runtime::get_named_arg("value");
-    let ret: bool = LiquidityGaugeV3::default().transfer_from(from, to, value);
+    let owner: Key = runtime::get_named_arg("owner");
+    let recipient: Key = runtime::get_named_arg("recipient");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret: Result<(), u32> = LiquidityGaugeV3::default().transfer_from(owner, recipient, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -453,6 +470,13 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
+        "integrate_checkpoint",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
         "user_checkpoint",
         vec![Parameter::new("addr", Key::cl_type())],
         bool::cl_type(),
@@ -518,6 +542,16 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
+        "claim_rewards",
+        vec![
+            Parameter::new("addr", CLType::Option(Box::new(CLType::Key))),
+            Parameter::new("receiver", CLType::Option(Box::new(CLType::Key))),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
         "kick",
         vec![Parameter::new("addr", Key::cl_type())],
         <()>::cl_type(),
@@ -548,21 +582,27 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "transfer",
         vec![
-            Parameter::new("to", Key::cl_type()),
-            Parameter::new("value", U256::cl_type()),
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "transfer_from",
         vec![
-            Parameter::new("from", Key::cl_type()),
-            Parameter::new("to", Key::cl_type()),
-            Parameter::new("value", U256::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
