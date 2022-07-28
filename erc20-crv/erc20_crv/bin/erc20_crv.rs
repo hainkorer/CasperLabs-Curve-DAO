@@ -192,7 +192,65 @@ fn admin() {
 fn rate() {
     runtime::ret(CLValue::from_t(data::get_rate()).unwrap_or_revert());
 }
+//ERC20
+#[no_mangle]
+fn permit() {
+    let public_key: String = runtime::get_named_arg("public");
+    let signature: String = runtime::get_named_arg("signature");
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    let value: U256 = runtime::get_named_arg("value");
+    let deadline: u64 = runtime::get_named_arg("deadline");
+    ERC20::permit(
+        &mut Erc20Crv::default(),
+        public_key,
+        signature,
+        owner,
+        spender,
+        value,
+        deadline,
+    );
+}
 
+#[no_mangle]
+fn nonce() {
+    let owner: Key = runtime::get_named_arg("owner");
+    let ret: U256 = ERC20::nonce(&mut Erc20Crv::default(), owner);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn allowance() {
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    let ret: U256 = ERC20::allowance(&mut Erc20Crv::default(), owner, spender);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+/// This function is to return the Total Supply of the contract
+
+#[no_mangle]
+fn total_supply() {
+    let ret: U256 = ERC20::total_supply(&mut Erc20Crv::default());
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn increase_allowance() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+
+    let ret: Result<(), u32> = ERC20::increase_allowance(&mut Erc20Crv::default(), spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
+#[no_mangle]
+fn decrease_allowance() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+
+    let ret: Result<(), u32> = ERC20::decrease_allowance(&mut Erc20Crv::default(), spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
 fn get_entry_points() -> EntryPoints {
     let mut entry_points = EntryPoints::new();
     entry_points.add_entry_point(EntryPoint::new(
@@ -415,6 +473,70 @@ fn get_entry_points() -> EntryPoints {
         "rate",
         vec![],
         U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "permit",
+        vec![
+            Parameter::new("public", String::cl_type()),
+            Parameter::new("signature", String::cl_type()),
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("value", U256::cl_type()),
+            Parameter::new("deadline", u64::cl_type()),
+        ],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "nonce",
+        vec![Parameter::new("owner", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "allowance",
+        vec![
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
+        ],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "total_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "increase_allowance",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "decrease_allowance",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
