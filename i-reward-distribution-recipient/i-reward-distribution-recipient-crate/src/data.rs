@@ -1,7 +1,11 @@
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key};
 use casperlabs_contract_utils::{get_key, set_key};
-use common::keys::*;
+
+pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
+pub const SELF_CONTRACT_PACKAGE_HASH: &str = "self_contract_package_hash";
+pub const REWARDDISTRIBUTION: &str = "reward_distribution";
+pub const RESULT: &str = "result";
 
 pub fn set_reward_distribution(reward_distribution: Key) {
     set_key(REWARDDISTRIBUTION, reward_distribution);
