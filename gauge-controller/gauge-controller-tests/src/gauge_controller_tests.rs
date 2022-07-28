@@ -1,15 +1,15 @@
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
+use common::keys::*;
 
 use crate::gauge_controller_instance::GAUGECONLTROLLERInstance;
-use common::keys::*;
 
 const NAME: &str = "GAUGECONLTROLLER";
 const TOKEN_NAME: &str = "ERC20";
 const TOKEN_SYMBOL: &str = "ERC";
 const DECIMALS: u8 = 8;
 const INIT_TOTAL_SUPPLY: u64 = 0;
-pub const VOTING_ESCROW_WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
+pub const VOTING_ESCROW_WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
 
 fn deploy() -> (
     TestEnv,
@@ -143,6 +143,7 @@ fn test_gauge_controller_commit_transfer_ownership() {
     gauge_controller.commit_transfer_ownership(_owner, _user);
     assert_eq!(gauge_controller.future_admin(), Key::from(_user));
 }
+
 // #[test]
 // #[should_panic]
 // fn test_gauge_controller_commit_transfer_ownership_by_user() {
@@ -175,6 +176,7 @@ fn test_gauge_controller_apply_transfer_ownership() {
     gauge_controller.apply_transfer_ownership(_owner);
     assert_eq!(gauge_controller.admin(), Key::from(_user));
 }
+
 // #[test]
 // #[should_panic]
 // fn test_gauge_controller_apply_transfer_ownership_by_user() {
@@ -222,6 +224,7 @@ fn test_gauge_controller_checkpoint() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     gauge_controller.checkpoint(_owner);
 }
+
 // #[test]
 // fn test_gauge_controller_checkpoint_by_user() {
 //     let (env, gauge_controller, _owner, _token, _voting_escrow) = deploy();

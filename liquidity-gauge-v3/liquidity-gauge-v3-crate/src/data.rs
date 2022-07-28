@@ -9,8 +9,8 @@ use common::keys::*;
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
-pub const CLAIM_FREQUENCY: U256 = U256([3600, 0, 0, 0]);
-pub const WEEK: U256 = U256([604800, 0, 0, 0]);
+pub const CLAIM_FREQUENCY: U256 = U256([3600000, 0, 0, 0]);
+pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
 
 #[allow(non_snake_case)]
 

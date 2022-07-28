@@ -10,6 +10,7 @@ pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_CONTRACT_PACKAGE_HASH: &str = "self_contract_package_hash";
 pub const RESULT: &str = "result";
 pub const OWNER: &str = "owner";
+
 //Zero Address
 pub fn zero_address() -> Key {
     Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
