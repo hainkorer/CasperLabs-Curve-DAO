@@ -1000,7 +1000,6 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         }
         let mut reward_data = self.reward_data();
         reward_data.address = reward_contract;
-        // data::set_reward_sigs(_sigs);
         for (i, reward_token) in _reward_tokens
             .iter()
             .enumerate()

@@ -4,7 +4,7 @@ use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::{
     contract_api::{
-        runtime::{self},
+        runtime,
         storage,
     },
     unwrap_or_revert::UnwrapOrRevert,

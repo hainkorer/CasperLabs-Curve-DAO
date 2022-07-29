@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-
 use blake2::{
     digest::{Update, VariableOutput},
     VarBlake2b,

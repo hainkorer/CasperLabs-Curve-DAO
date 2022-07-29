@@ -818,7 +818,6 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn total_supply_at(&self, block: U256) -> U256 {
-        // assert block <= block.number
         let epoch: U256 = get_epoch();
         let target_epoch: U256 = self._find_block_epoch(block, epoch);
         let point: Point = PointHistory::instance().get(&target_epoch);
