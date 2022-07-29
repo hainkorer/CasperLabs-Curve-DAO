@@ -1156,19 +1156,19 @@ pub enum Error {
     LiquidityGuageV3Unauthorized = 11826,
     /// 65,540 for (Liquidity guage v3 Underflow 10)
     LiquidityGaugeUnderFlow10 = 11827,
-    /// 65,540 for (Liquidity guage v3 Underflow 10)
+    /// 65,540 for (Liquidity guage v3 Underflow 11)
     LiquidityGaugeUnderFlow11 = 11828,
     /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGuageV3KickNotAllowed = 11829,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 is zero address)
     LiquidityGaugeTokenIsZeroAddress = 11830,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 total supply zero)
     LiquidityGaugeZeroTotalSupply = 11831,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 failed to deposit)
     LiquidityGaugeFailedToDeposit = 11832,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 failed to withdraw)
     LiquidityGaugeFailedToWithdraw = 11833,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 Reward Token existing)
     LiquidityGaugeCannotModifyExistingRewardtoken = 11834,
     /// 65,540 for (Lp Token Wrapper Addition Error 1)
     LpTokenWrapperAdditionError1 = 11901,
