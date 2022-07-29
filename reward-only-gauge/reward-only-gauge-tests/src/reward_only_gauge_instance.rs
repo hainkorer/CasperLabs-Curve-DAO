@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use blake2::{
     digest::{Update, VariableOutput},
     VarBlake2b,
@@ -11,6 +10,7 @@ use casper_types::{
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::collections::BTreeMap;
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;

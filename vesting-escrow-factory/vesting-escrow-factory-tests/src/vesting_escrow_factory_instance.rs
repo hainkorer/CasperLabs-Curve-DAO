@@ -19,31 +19,6 @@ impl VESTINGESCROWFACTORYInstance {
     pub fn instance(vesting_escrow_factory: TestContract) -> VESTINGESCROWFACTORYInstance {
         VESTINGESCROWFACTORYInstance(vesting_escrow_factory)
     }
-
-    pub fn proxy(env: &TestEnv, vesting_escrow_factory: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "vesting-escrow-factory-proxy-token.wasm",
-            "proxy_test",
-            sender,
-            runtime_args! {
-                "vesting_escrow_factory" => vesting_escrow_factory
-            },
-            0,
-        )
-    }
-    pub fn proxy2(env: &TestEnv, vesting_escrow_factory: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "vesting-escrow-factory-proxy-token.wasm",
-            "proxy_test2",
-            sender,
-            runtime_args! {
-                "vesting_escrow_factory" => vesting_escrow_factory
-            },
-            0,
-        )
-    }
     pub fn erc20(
         env: &TestEnv,
         sender: AccountHash,

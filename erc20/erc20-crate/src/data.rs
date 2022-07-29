@@ -1,8 +1,5 @@
 use alloc::string::String;
-use casper_contract::{
-    contract_api::{runtime::get_call_stack},
-    unwrap_or_revert::UnwrapOrRevert,
-};
+use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
 use common::keys::*;

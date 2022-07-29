@@ -350,7 +350,6 @@ fn decrease_allowance_js_client() {
 
 /// This function is to fetch a Contract Package Hash
 
-
 #[no_mangle]
 fn package_hash() {
     let ret: ContractPackageHash = Token::default().get_package_hash();

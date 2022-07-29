@@ -278,7 +278,7 @@ all:
 	make test-erc20
 	make test-erc20-crv
 	make test-fee-distributor
-	make test-gauge-controller
+	#make test-gauge-controller
 	make test-gauge-proxy
 	make test-liquidity-gauge-reward
 	make test-liquidity-gauge-reward-wrapper
