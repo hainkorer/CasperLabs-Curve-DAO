@@ -402,9 +402,9 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         self._checkpoint_rewards(addr, claim_rewards);
     }
 
-    // @notice Record a checkpoint for `addr`
-    // @param addr User address
-    // @return bool success
+    /// @notice Record a checkpoint for `addr`
+    /// @param addr User address
+    /// @return bool success
     fn user_checkpoint(&self, addr: Key) -> bool {
         if !((self.get_caller() == addr) || (self.get_caller() == get_minter())) {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardUnauthorized));
@@ -414,8 +414,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         true
     }
 
-    // @notice Get the number of claimable tokens per user
-    // @return uint256 number of claimable tokens per user
+    /// @notice Get the number of claimable tokens per user
+    /// @return uint256 number of claimable tokens per user
     fn claimable_tokens(&self, addr: Key) -> U256 {
         self._checkpoint(addr, true);
         IntegrateFraction::instance()
@@ -432,9 +432,9 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             .unwrap_or_revert()
     }
 
-    // @notice Get the number of claimable reward tokens for a user
-    // @param addr Account to get reward amount for
-    // @return uint256 Claimable reward token amount
+    /// @notice Get the number of claimable reward tokens for a user
+    /// @param addr Account to get reward amount for
+    /// @return uint256 Claimable reward token amount
     #[allow(non_snake_case)]
     fn claimable_reward(&self, addr: Key) -> U256 {
         let d_reward: U256 = runtime::call_versioned_contract(
@@ -519,9 +519,9 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         self._update_liquidity_limit(addr, BalanceOf::instance().get(&addr), get_total_supply());
     }
 
-    // @notice Set whether `addr` can deposit tokens for `self.get_caller()`
-    // @param addr Address to set approval on
-    // @param can_deposit bool - can this account deposit for `self.get_caller()`?
+    /// @notice Set whether `addr` can deposit tokens for `self.get_caller()`
+    /// @param addr Address to set approval on
+    /// @param can_deposit bool - can this account deposit for `self.get_caller()`?
     fn set_approve_deposit(&self, addr: Key, can_deposit: bool) {
         ApprovedToDeposit::instance().set(&addr, &self.get_caller(), can_deposit);
     }

@@ -766,10 +766,8 @@ pub enum Error {
     VestingEscrowFactoryStartTimeTooSoon = 11107,
     /// 65,540 for (Vesting Escrow Factory Admin Not Set)
     VestingEscrowFactoryAdminNotSet = 11108,
-    /// 65,540 for (Vesting Escrow Simple Initialize Once)
-
     ///Vesting Escrow simple errors
-    ///
+    /// 65,540 for (Vesting Escrow Simple Initialize Once)
     VestingEscrowSimpleOnlyInitializeOnce = 11201,
     /// 65,540 for (Vesting Escrow Simple Admin Only1)
     VestingEscrowSimpleAdminOnly1 = 11202,
@@ -799,7 +797,6 @@ pub enum Error {
     VestingEscrowSimpleUnderFlow3 = 11214,
     /// 65,540 for (Vesting Escrow Simple Under flow4)
     VestingEscrowSimpleUnderFlow4 = 11215,
-
     /// 65,540 for (Voting Escrow Invalid Decimals)
     VotingEscrowInvalidDecimals = 11301,
     /// 65,540 for (Voting Escrow Admin Only)
@@ -990,7 +987,6 @@ pub enum Error {
     VotingEscrowAdditionError25 = 11404,
     /// 65,622 for (Voting Escrow Addition Error 26)
     VotingEscrowAdditionError26 = 11405,
-
     /// 65,718 for (Liquidity Gauge Wrapper Unauthorized)
     GaugeWrapperUnauthorized = 11501,
     /// 65,719 for (Liquidity Gauge Wrapper Is Killed)
@@ -1160,19 +1156,19 @@ pub enum Error {
     LiquidityGuageV3Unauthorized = 11826,
     /// 65,540 for (Liquidity guage v3 Underflow 10)
     LiquidityGaugeUnderFlow10 = 11827,
-    /// 65,540 for (Liquidity guage v3 Underflow 10)
+    /// 65,540 for (Liquidity guage v3 Underflow 11)
     LiquidityGaugeUnderFlow11 = 11828,
     /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGuageV3KickNotAllowed = 11829,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 is zero address)
     LiquidityGaugeTokenIsZeroAddress = 11830,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 total supply zero)
     LiquidityGaugeZeroTotalSupply = 11831,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 failed to deposit)
     LiquidityGaugeFailedToDeposit = 11832,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 failed to withdraw)
     LiquidityGaugeFailedToWithdraw = 11833,
-    /// 65,540 for (Liquidity guage v3 Kick not allowed)
+    /// 65,540 for (Liquidity guage v3 Reward Token existing)
     LiquidityGaugeCannotModifyExistingRewardtoken = 11834,
     /// 65,540 for (Lp Token Wrapper Addition Error 1)
     LpTokenWrapperAdditionError1 = 11901,

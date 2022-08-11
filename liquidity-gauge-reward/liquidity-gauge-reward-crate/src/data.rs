@@ -91,8 +91,8 @@ impl WorkingBalances {
     }
 }
 
-// The goal is to be able to calculate ∫(rate * balance / totalSupply dt) from 0 till checkpoint
-// All values are kept in units of being multiplied by 1e9
+/// The goal is to be able to calculate ∫(rate * balance / totalSupply dt) from 0 till checkpoint
+/// All values are kept in units of being multiplied by 1e9
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct PeriodTimestamp {
     dict: Dict,
@@ -125,8 +125,8 @@ impl PeriodTimestamp {
     }
 }
 
-// 1e9 * ∫(rate(t) / totalSupply(t) dt) from 0 till checkpoint
-// bump epoch when rate() changes
+/// 1e9 * ∫(rate(t) / totalSupply(t) dt) from 0 till checkpoint
+/// bump epoch when rate() changes
 
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct IntegrateInvSupply {
@@ -160,7 +160,7 @@ impl IntegrateInvSupply {
     }
 }
 
-// 1e9 * ∫(rate(t) / totalSupply(t) dt) from (last_action) till checkpoint
+/// 1e9 * ∫(rate(t) / totalSupply(t) dt) from (last_action) till checkpoint
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct IntegrateInvSupplyOf {
     dict: Dict,
@@ -211,8 +211,8 @@ impl IntegrateCheckpointOf {
     }
 }
 
-// ∫(balance * rate(t) / totalSupply(t) dt) from 0 till checkpoint
-// Units: rate * t = already number of coins per address to issue
+/// ∫(balance * rate(t) / totalSupply(t) dt) from 0 till checkpoint
+/// Units: rate * t = already number of coins per address to issue
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct IntegrateFraction {
     dict: Dict,

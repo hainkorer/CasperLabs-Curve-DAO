@@ -54,10 +54,8 @@ fn constructor() {
     Token::default().constructor(token, controller, contract_hash, package_hash);
 }
 
-///"""
 ///@notice Mint everything which belongs to `msg.sender` and send to them
 ///@param gauge_addr `LiquidityGauge` address to get mintable amount from
-///"""
 
 #[no_mangle]
 fn mint() {
@@ -65,10 +63,8 @@ fn mint() {
     Token::default().mint(gauge_addr);
 }
 
-///"""
 ///@notice Mint everything which belongs to `msg.sender` across multiple gauges
 ///@param gauge_addrs List of `LiquidityGauge` addresses
-///"""
 
 #[no_mangle]
 fn mint_many() {
@@ -80,12 +76,10 @@ fn mint_many() {
     Token::default().mint_many(gauge_addrs);
 }
 
-/// """
 /// @notice Mint tokens for `_for`
 /// @dev Only possible when `msg.sender` has been approved via `toggle_approve_mint`
 /// @param gauge_addr `LiquidityGauge` address to get mintable amount from
 /// @param _for Address to mint to
-/// """
 
 #[no_mangle]
 fn mint_for() {
@@ -94,10 +88,8 @@ fn mint_for() {
     Token::default().mint_for(gauge_addr, _for);
 }
 
-/// """
 /// @notice allow `minting_user` to mint for `msg.sender`
 /// @param minting_user Address to toggle permission for
-/// """
 
 #[no_mangle]
 fn toggle_approve_mint() {

@@ -23,7 +23,6 @@ members = [
   # GAUGE CONTROLLER
   "gauge-controller/gauge-controller",
   "gauge-controller/gauge-controller-crate",
-  "gauge-controller/gauge-controller-proxy",
   "gauge-controller/gauge-controller-tests",
   "gauge-controller/session-code",
   # GAUGE PROXY
@@ -47,7 +46,6 @@ members = [
   # MINTER
   "minter/minter",
   "minter/minter-crate",
-  "minter/minter-proxy",
   "minter/minter-tests",
   # REWARD ONLY GAUGE
   "reward-only-gauge/reward-only-gauge",
@@ -62,14 +60,10 @@ members = [
   # VESTING ESCROW FACTORY
   "vesting-escrow-factory/vesting-escrow-factory",
   "vesting-escrow-factory/vesting-escrow-factory-crate",
-  "vesting-escrow-factory/vesting-escrow-factory-proxy",
   "vesting-escrow-factory/vesting-escrow-factory-tests",
   # VESTING ESCROW SIMPLE
   "vesting-escrow-simple/vesting-escrow-simple-crate",
   "vesting-escrow-simple/vesting-escrow-simple",
-  "vesting-escrow-simple/vesting-escrow-simple-proxy",
-  "vesting-escrow-simple/vesting-escrow-simple-tests",
-  "vesting-escrow-simple/vesting-escrow-simple-proxy",
 
   # ERC20
   "erc20/erc20",
@@ -125,3 +119,6 @@ members = [
 [profile.release]
 codegen-units = 1
 lto = true
+
+[patch.crates-io]
+renvm-sig = { git = 'https://github.com/Scytalelabs-official/CasperLabs-renvm-sig.git', branch = 'main' }

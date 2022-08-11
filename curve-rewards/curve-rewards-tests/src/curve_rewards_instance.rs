@@ -10,7 +10,6 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct CURVEREWARDSInstance(TestContract);
-#[allow(clippy::use_self)]
 #[allow(clippy::too_many_arguments)]
 impl CURVEREWARDSInstance {
     pub fn contract_instance(contract: TestContract) -> CURVEREWARDSInstance {

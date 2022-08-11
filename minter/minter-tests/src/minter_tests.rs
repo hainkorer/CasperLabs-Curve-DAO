@@ -108,10 +108,6 @@ fn deploy() -> (
         Key::Hash(_token.package_hash()),
         Key::Account(owner),
     );
-    // let test_contract: TestContract =
-    //     MINTERInstance::proxy(&env, Key::Hash(token.contract_hash()), owner);
-    // let test_contract2: TestContract =
-    //     MINTERInstance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
     (
         env,
         MINTERInstance::instance(minter),
@@ -120,8 +116,7 @@ fn deploy() -> (
         voting_escrow,
         gauge_controller,
         liquidity_gauge_reward,
-        erc20_crv, // MINTERInstance::instance(test_contract),
-                   // MINTERInstance::instance(test_contract2),
+        erc20_crv,
     )
 }
 
@@ -283,10 +278,8 @@ fn test_minter_mint_many() {
         gauge_type,
         Some(weight),
     );
-    let gauge_addrs: Vec<String> = vec![
-        // Key::Hash(liquidity_gauge_reward.package_hash()).to_formatted_string(),
-        Key::Hash(liquidity_gauge_reward_1.package_hash()).to_formatted_string(),
-    ];
+    let gauge_addrs: Vec<String> =
+        vec![Key::Hash(liquidity_gauge_reward_1.package_hash()).to_formatted_string()];
     minter.mint_many(owner, gauge_addrs);
 }
 

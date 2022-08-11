@@ -36,7 +36,7 @@ impl Allowances {
     }
 }
 
-// caller -> recipient -> can deposit?
+/// caller -> recipient -> can deposit?
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct ApprovedToDeposit {

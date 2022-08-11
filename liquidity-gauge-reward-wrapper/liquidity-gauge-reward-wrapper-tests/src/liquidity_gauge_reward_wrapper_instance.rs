@@ -4,7 +4,6 @@ use casper_types::{
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct LIQUIDITYGAUGEREWARDWRAPPERInstance(TestContract);
-// //#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
     pub fn contract_instance(contract: TestContract) -> LIQUIDITYGAUGEREWARDWRAPPERInstance {

@@ -171,7 +171,6 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
     /// * `digest` - A u8 array that holds the digest
     ///
     /// * `owner` - An Accounthash that holds the account address of the signer
-    ///
 
     fn ecrecover(
         &mut self,
@@ -218,7 +217,6 @@ pub trait ERC20<Storage: ContractStorage>: ContractContext<Storage> {
     /// * `value` - A U256 that holds the value
     ///  
     /// * `deadeline` - A u64 that holds the deadline limit
-    ///
 
     fn permit(
         &mut self,

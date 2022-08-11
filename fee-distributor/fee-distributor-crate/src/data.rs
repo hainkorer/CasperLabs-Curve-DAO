@@ -15,9 +15,9 @@ pub fn zero_address() -> Key {
         .unwrap()
 }
 
-// We cannot really do block numbers per se b/c slope is per time, not per block
-// and per block could be fairly bad b/c Ethereum changes blocktimes.
-// What we can do is to extrapolate ***At functions
+/// We cannot really do block numbers per se b/c slope is per time, not per block
+/// and per block could be fairly bad b/c Ethereum changes blocktimes.
+/// What we can do is to extrapolate ***At functions
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Point {
     pub bias: U128,

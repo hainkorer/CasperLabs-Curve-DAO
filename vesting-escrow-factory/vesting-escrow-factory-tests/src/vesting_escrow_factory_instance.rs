@@ -14,36 +14,10 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct VESTINGESCROWFACTORYInstance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl VESTINGESCROWFACTORYInstance {
     pub fn instance(vesting_escrow_factory: TestContract) -> VESTINGESCROWFACTORYInstance {
         VESTINGESCROWFACTORYInstance(vesting_escrow_factory)
-    }
-
-    pub fn proxy(env: &TestEnv, vesting_escrow_factory: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "vesting-escrow-factory-proxy-token.wasm",
-            "proxy_test",
-            sender,
-            runtime_args! {
-                "vesting_escrow_factory" => vesting_escrow_factory
-            },
-            0,
-        )
-    }
-    pub fn proxy2(env: &TestEnv, vesting_escrow_factory: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "vesting-escrow-factory-proxy-token.wasm",
-            "proxy_test2",
-            sender,
-            runtime_args! {
-                "vesting_escrow_factory" => vesting_escrow_factory
-            },
-            0,
-        )
     }
     pub fn erc20(
         env: &TestEnv,
@@ -88,20 +62,13 @@ impl VESTINGESCROWFACTORYInstance {
         )
     }
 
-    pub fn constructor(
-        &self,
-        sender: AccountHash,
-        _target: Key,
-        _admin: Key,
-        // _vesting_escrow_simple_contract: Key,
-    ) {
+    pub fn constructor(&self, sender: AccountHash, _target: Key, _admin: Key) {
         self.0.call_contract(
             sender,
             "constructor",
             runtime_args! {
                 "target"=>_target,
                 "admin"=>_admin,
-                // "vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
             },
             0,
         );

@@ -108,11 +108,8 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         data::set_rate(0.into());
         data::set_start_epoch_supply(data::get_init_supply());
     }
-
-    ///"""
     /// @dev Update mining rate and supply at the start of the epoch
     /// Any modifying mining call must also call this
-    /// """
     fn _update_mining_parameters(&self) {
         let mut rate: U256 = data::get_rate();
         let mut start_epoch_supply = data::get_start_epoch_supply();
@@ -155,11 +152,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         });
     }
 
-    ///"""
     /// @notice Update mining rate and supply at the start of the epoch
     /// @dev Callable by any address, but only once per epochTotal supply becomes slightly larger if this function is called late
-    ///     Total supply becomes slightly larger if this function is called late
-    ///"""
+    /// Total supply becomes slightly larger if this function is called late
     fn update_mining_parameters(&self) {
         let blocktime: u64 = runtime::get_blocktime().into();
         if U256::from(blocktime)
@@ -171,12 +166,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         }
         self._update_mining_parameters();
     }
-
-    ///"""
     ///@notice Get timestamp of the current mining epoch start
     ///        while simultaneously updating mining parameters
     ///@return Timestamp of the epoch
-    ///"""
     fn start_epoch_time_write(&self) -> U256 {
         let start_epoch_time = data::get_start_epoch_time();
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -191,12 +183,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             start_epoch_time
         }
     }
-
-    ///"""
     ///@notice Get timestamp of the next mining epoch start
     ///        while simultaneously updating mining parameters
     ///@return Timestamp of the next epoch
-    ///"""
     fn future_epoch_time_write(&self) -> U256 {
         let start_epoch_time = data::get_start_epoch_time();
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -228,20 +217,14 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
             .checked_add(ans)
             .unwrap_or_revert_with(Error::Erc20CRVOverFlow16)
     }
-
-    ///"""
     ///@notice Current number of tokens in existence (claimed or unclaimed)
-    ///"""
     fn available_supply(&self) -> U256 {
         self._available_supply()
     }
-
-    ///"""
     ///@notice How much supply is mintable from start timestamp till end timestamp
     ///@param start Start of the time interval (timestamp)
     ///@param end End of the time interval (timestamp)
     ///@return Tokens mintable from `start` till `end`
-    ///"""
     fn mintable_in_timeframe(&self, start: U256, end: U256) -> U256 {
         if start > end {
             runtime::revert(ApiError::from(Error::Erc20CRVStartGreaterThanEnd));
@@ -325,12 +308,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         }
         to_mint
     }
-
-    ///"""
     ///@notice Set the minter address
     ///@dev Only callable once, when minter has not yet been set
     ///@param minter Address of the minter
-    ///"""
     fn set_minter(&self, minter: Key) {
         if self.get_caller() != data::get_admin() {
             runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
@@ -338,12 +318,9 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         data::set_minter(minter);
         self.erc20_crv_emit(&Erc20CrvEvent::SetMinter { minter });
     }
-
-    ///"""
     ///@notice Set the new admin.
     ///@dev After all is set up, admin only can change the token name
     ///@param _admin New admin address
-    ///"""
     fn set_admin(&self, admin: Key) {
         if self.get_caller() != data::get_admin() {
             runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly));
@@ -351,14 +328,11 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         data::set_admin(admin);
         self.erc20_crv_emit(&Erc20CrvEvent::SetAdmin { admin });
     }
-
-    ///"""
     ///@notice Mint `amount` tokens and assign them to `to`
     ///@dev Emits a Transfer event originating from 0x00
     ///@param _to The account that will receive the created tokens
     ///@param amount The amount that will be created
     ///@return bool success
-    ///"""
     fn mint(&self, to: Key, amount: U256) -> bool {
         if self.get_caller() != data::get_minter() {
             runtime::revert(ApiError::from(Error::Erc20CRVMinterOnly));
@@ -396,13 +370,10 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
 
         true
     }
-
-    ///"""
     ///@notice Change the token name and symbol to `name` and `symbol`
     ///@dev Only callable by the admin account
     ///@param name New token name
     ///@param symbol New token symbol
-    ///"""
     fn set_name(&self, name: String, symbol: String) {
         if data::get_minter() != self.get_caller() {
             runtime::revert(ApiError::from(Error::Erc20CRVOnlyMinterAllowed1));

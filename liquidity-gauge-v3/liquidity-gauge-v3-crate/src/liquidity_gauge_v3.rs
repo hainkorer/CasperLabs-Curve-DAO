@@ -342,8 +342,6 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                             "transfer",
                             runtime_args! {"to" => receiver,"amount" => total_claimable},
                         );
-                        // if len(response) != 0:
-                        //     assert convert(response, bool)
                         claim_data.claimed_amount = total_claimed
                             .checked_add(total_claimable)
                             .ok_or(Error::LiquidityGaugeOverFlow7)
@@ -1002,7 +1000,6 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         }
         let mut reward_data = self.reward_data();
         reward_data.address = reward_contract;
-        // data::set_reward_sigs(_sigs);
         for (i, reward_token) in _reward_tokens
             .iter()
             .enumerate()
@@ -1022,7 +1019,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             }
         }
         if reward_contract != zero_address() {
-            // # do an initial checkpoint to verify that claims are working
+            // do an initial checkpoint to verify that claims are working
             self._checkpoint_rewards(zero_address(), total_supply, false, zero_address())
         }
         data::set_lock(false);

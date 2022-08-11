@@ -14,36 +14,10 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct MINTERInstance(TestContract);
-// //#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl MINTERInstance {
     pub fn instance(minter: TestContract) -> MINTERInstance {
         MINTERInstance(minter)
-    }
-
-    pub fn proxy(env: &TestEnv, minter: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "minter-proxy-token.wasm",
-            "proxy_test",
-            sender,
-            runtime_args! {
-                "minter" => minter
-            },
-            0,
-        )
-    }
-    pub fn proxy2(env: &TestEnv, minter: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "minter-proxy-token.wasm",
-            "proxy_test2",
-            sender,
-            runtime_args! {
-                "minter" => minter
-            },
-            0,
-        )
     }
     pub fn deploy_gauge_controller(
         env: &TestEnv,

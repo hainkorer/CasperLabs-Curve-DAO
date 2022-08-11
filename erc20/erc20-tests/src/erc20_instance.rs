@@ -14,7 +14,6 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct ERC20Instance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl ERC20Instance {
     pub fn instance(erc20: TestContract) -> ERC20Instance {
@@ -90,28 +89,6 @@ impl ERC20Instance {
             0,
         );
     }
-    // pub fn new_deploy(
-    //     env: &TestEnv,
-    //     contract_name: &str,
-    //     sender: AccountHash,
-    //     name: &str,
-    //     symbol: &str,
-    //     decimals: u8,
-    //     initial_supply: U256,
-    // ) -> ERC20Instance {
-    //     ERC20Instance(TestContract::new(
-    //         env,
-    //         "erc20-token.wasm",
-    //         contract_name,
-    //         sender,
-    //         runtime_args! {
-    //             "name" => name,
-    //             "symbol" => symbol,
-    //             "initial_supply" => initial_supply,
-    //             "decimals" => decimals,
-    //         },0
-    //     ))
-    // }
 
     pub fn transfer<T: Into<Key>>(&self, sender: AccountHash, recipient: T, amount: U256) {
         self.0.call_contract(

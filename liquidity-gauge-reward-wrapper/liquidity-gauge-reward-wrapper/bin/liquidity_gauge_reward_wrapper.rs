@@ -613,11 +613,12 @@ fn call() {
         // add a first version to this package
         let (contract_hash, _): (ContractHash, _) =
             storage::add_contract_version(package_hash, get_entry_points(), Default::default());
-
+        //Variables
         let name: String = runtime::get_named_arg("name");
         let symbol: String = runtime::get_named_arg("symbol");
         let gauge: Key = runtime::get_named_arg("gauge");
         let admin: Key = runtime::get_named_arg("admin");
+        // Call the constructor entry point
         let constructor_args = runtime_args! {
             "name" => name,
             "symbol" => symbol,
