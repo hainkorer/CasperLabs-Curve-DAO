@@ -188,7 +188,6 @@ fn approve() {
 /// * `to` - A Key that holds the account address of the user
 ///
 /// * `amount` - A U256 that holds the amount for mint
-///
 
 #[no_mangle]
 fn mint() {
@@ -204,7 +203,6 @@ fn mint() {
 /// * `from` - A Key that holds the account address of the user
 ///
 /// * `amount` - A U256 that holds the amount for burn
-///
 
 #[no_mangle]
 fn burn() {
@@ -218,7 +216,6 @@ fn burn() {
 /// # Parameters
 ///
 /// * `owner` - A Key that holds the account address of the user against which user wants to get balance
-///
 
 #[no_mangle]
 fn balance_of() {
@@ -232,7 +229,6 @@ fn balance_of() {
 /// # Parameters
 ///
 /// * `owner` - A Key that holds the account address of the user against which user wants to get nonce
-///
 
 #[no_mangle]
 fn nonce() {
@@ -242,7 +238,6 @@ fn nonce() {
 }
 
 /// This function is to return the Name of contract
-///
 
 #[no_mangle]
 fn name() {
@@ -251,7 +246,6 @@ fn name() {
 }
 
 /// This function is to return the Symbol of contract
-///
 
 #[no_mangle]
 fn symbol() {
@@ -260,7 +254,6 @@ fn symbol() {
 }
 
 /// This function is to return the Decimals of contract
-///
 
 #[no_mangle]
 fn decimals() {
@@ -275,7 +268,6 @@ fn decimals() {
 /// * `owner` - A Key that holds the account address of the user
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
 
 #[no_mangle]
 fn allowance() {
@@ -286,7 +278,6 @@ fn allowance() {
 }
 
 /// This function is to return the Total Supply of the contract
-///
 
 #[no_mangle]
 fn total_supply() {
@@ -301,7 +292,6 @@ fn total_supply() {
 /// * `amount` - Number of tokens to increment approval of tokens by for spender
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
 #[no_mangle]
 fn increase_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -318,7 +308,6 @@ fn increase_allowance() {
 /// * `amount` - Number of tokens to increment approval of tokens by for spender
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
 #[no_mangle]
 fn increase_allowance_js_client() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -334,7 +323,6 @@ fn increase_allowance_js_client() {
 /// * `amount` - Number of tokens to decrement approval of tokens by for spender
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
 #[no_mangle]
 fn decrease_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -351,7 +339,7 @@ fn decrease_allowance() {
 /// * `amount` - Number of tokens to decrement approval of tokens by for spender
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
+
 #[no_mangle]
 fn decrease_allowance_js_client() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -361,7 +349,6 @@ fn decrease_allowance_js_client() {
 }
 
 /// This function is to fetch a Contract Package Hash
-///
 
 #[no_mangle]
 fn package_hash() {

@@ -26,14 +26,6 @@ fn store<T: CLTyped + ToBytes>(key: &str, value: T) {
     runtime::put_key(key, value_key);
 }
 
-// pub const GAUGE_TYPES: &str = "gauge_types";
-// pub const GAUGE_RELATIVE_WEIGHT: &str = "gauge_relative_weight";
-// pub const GAUGE_RELATIVE_WEIGHT_WRITE: &str = "gauge_relative_weight_write";
-// pub const GET_GAUGE_WEIGHT: &str = "get_gauge_weight";
-// pub const GET_TYPE_WEIGHT: &str = "get_type_weight";
-// pub const GET_TOTAL_WEIGHT: &str = "get_total_weight";
-// pub const GET_WEIGHTS_SUM_PER_TYPE: &str = "get_weights_sum_per_type";
-
 #[no_mangle]
 pub extern "C" fn call() {
     let entrypoint: String = runtime::get_named_arg("entrypoint");
@@ -50,7 +42,6 @@ pub extern "C" fn call() {
                     "addr"=>addr,
                 },
             );
-            // assert_eq!(ret, 0.into());
             store(GAUGE_TYPES, ret);
         }
         GAUGE_RELATIVE_WEIGHT => {

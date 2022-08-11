@@ -55,17 +55,17 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         set_admin(self.get_caller());
     }
 
-    // @notice Initialize the contract.
-    // @dev This function is seperate from `__init__` because of the factory pattern
-    //      used in `VestingEscrowFactory.deploy_vesting_contract`. It may be called
-    //      once per deployment.
-    // @param _admin Admin address
-    // @param _token Address of the ERC20 token being distributed
-    // @param _recipient Address to vest tokens for
-    // @param _amount Amount of tokens being vested for `_recipient`
-    // @param _start_time Epoch time at which token distribution starts
-    // @param _end_time Time until everything should be vested
-    // @param _can_disable Can admin disable recipient's ability to claim tokens?
+    /// @notice Initialize the contract.
+    /// @dev This function is seperate from `__init__` because of the factory pattern
+    ///      used in `VestingEscrowFactory.deploy_vesting_contract`. It may be called
+    ///      once per deployment.
+    /// @param _admin Admin address
+    /// @param _token Address of the ERC20 token being distributed
+    /// @param _recipient Address to vest tokens for
+    /// @param _amount Amount of tokens being vested for `_recipient`
+    /// @param _start_time Epoch time at which token distribution starts
+    /// @param _end_time Time until everything should be vested
+    /// @param _can_disable Can admin disable recipient's ability to claim tokens?
     fn initialize(
         &self,
         admin: Key,
@@ -115,11 +115,11 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         true
     }
 
-    //  @notice Disable or re-enable a vested address's ability to claim tokens
-    // @dev When disabled, the address is only unable to claim tokens which are still
-    //      locked at the time of this call. It is not possible to block the claim
-    //      of tokens which have already vested.
-    // @param _recipient address to disable or enable
+    ///  @notice Disable or re-enable a vested address's ability to claim tokens
+    /// @dev When disabled, the address is only unable to claim tokens which are still
+    ///      locked at the time of this call. It is not possible to block the claim
+    ///      of tokens which have already vested.
+    /// @param _recipient address to disable or enable
     fn toggle_disable(&self, recipient: Key) {
         if get_admin() != self.get_caller() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly1));
@@ -143,7 +143,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         });
     }
 
-    /*@notice Disable the ability to call `toggle_disable` */
+    /// @notice Disable the ability to call `toggle_disable`
     fn disable_can_disable(&self) {
         if get_admin() != self.get_caller() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly2));
@@ -188,14 +188,14 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         ans.min(locked)
     }
 
-    /* @notice Get the total number of tokens which have vested, that are held
-    by this contract*/
+    /// @notice Get the total number of tokens which have vested, that are held
+    /// by this contract
     fn vested_supply(&self) -> U256 {
         self._total_vested()
     }
 
-    /*@notice Get the total number of tokens which are still locked
-    (have not yet vested) */
+    /// @notice Get the total number of tokens which are still locked
+    /// (have not yet vested)
     fn locked_supply(&self) -> U256 {
         let initial_locked_supply = get_initial_locked_supply();
         let total_vested: U256 = self._total_vested();
@@ -204,15 +204,15 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow1)
     }
 
-    /*@notice Get the number of tokens which have vested for a given address
-    @param _recipient address to check */
+    /// @notice Get the number of tokens which have vested for a given address
+    /// @param _recipient address to check
     fn vested_of(&self, recipient: Key) -> U256 {
         let blocktime: u64 = runtime::get_blocktime().into();
         self._total_vested_of(recipient, Some(U256::from(blocktime)))
     }
 
-    /*@notice Get the number of unclaimed, vested tokens for a given address
-    @param _recipient address to check */
+    /// @notice Get the number of unclaimed, vested tokens for a given address
+    /// @param _recipient address to check
     fn balance_of(&self, recipient: Key) -> U256 {
         let blocktime: u64 = runtime::get_blocktime().into();
         let total_vested_of: U256 = self._total_vested_of(recipient, Some(U256::from(blocktime)));
@@ -222,8 +222,8 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow2)
     }
 
-    /*@notice Get the number of locked tokens for a given address
-    @param _recipient address to check */
+    /// @notice Get the number of locked tokens for a given address
+    /// @param _recipient address to check
     fn locked_of(&self, recipient: Key) -> U256 {
         let initial_locked = InitialLocked::instance().get(&recipient);
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -233,8 +233,8 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
             .unwrap_or_revert_with(Error::VestingEscrowSimpleUnderFlow3)
     }
 
-    /* @notice Transfer ownership of GaugeController to `addr`
-    @param addr Address to have ownership transferred to*/
+    /// @notice Transfer ownership of GaugeController to `addr`
+    /// @param addr Address to have ownership transferred to
     fn commit_transfer_ownership(&self, addr: Key) -> bool {
         if get_admin() != self.get_caller() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly3));
@@ -245,8 +245,8 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         true
     }
 
-    /*@notice Claim tokens which have vested
-    @param addr Address to claim tokens for */
+    /// @notice Claim tokens which have vested
+    /// @param addr Address to claim tokens for
     fn claim(&self, addr: Option<Key>) {
         //Locked
         if get_lock() {
@@ -291,7 +291,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         });
     }
 
-    // @notice Apply pending ownership transfer
+    /// @notice Apply pending ownership transfer
     fn apply_transfer_ownership(&self) -> bool {
         if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::VestingEscrowSimpleAdminOnly4));

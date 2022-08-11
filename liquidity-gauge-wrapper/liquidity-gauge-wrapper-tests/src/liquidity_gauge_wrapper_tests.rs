@@ -118,7 +118,6 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let erc20 = deploy_erc20(&env, owner);
-    //let reward = deploy_reward(&env, owner);
     let erc20_crv = deploy_erc20_crv(&env, owner);
     let voting_escrow = deploy_voting_escrow(
         &env,
@@ -178,12 +177,6 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         runtime_args! {"minter" => Key::Account(owner)},
         0,
     );
-    // deploy_liquidity_gauge_v3.call_contract(
-    //     owner,
-    //     "set_rewards",
-    //     runtime_args! {"to" => to , "value" => amount_1},
-    //     0,
-    // );
     erc20_crv.call_contract(
         owner,
         "mint",

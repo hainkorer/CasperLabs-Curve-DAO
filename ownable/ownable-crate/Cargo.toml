@@ -6,7 +6,6 @@ authors = ["Muhammad Adrees <muhammad.adrees@scytalelabs.com>"]
 license = "MIT"
 description = "this package have basic functionalities for CasperLabs Curve Dao's Ownable Contract"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 casper-contract = "1.4.4"

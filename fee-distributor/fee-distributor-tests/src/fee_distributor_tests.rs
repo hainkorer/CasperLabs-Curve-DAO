@@ -219,6 +219,8 @@ fn test_apply_admin() {
 fn test_toggle_allow_checkpoint_token() {
     let (_, owner, instance, _) = deploy();
     instance.toggle_allow_checkpoint_token(owner);
+    let can_checkpoint_token: bool = instance.key_value("can_checkpoint_token".into());
+    assert!(can_checkpoint_token, "Cannot checkpoint");
 }
 
 #[test]
@@ -234,6 +236,8 @@ fn test_kill_me() {
         0,
     );
     instance.kill_me(owner);
+    let is_killed: bool = instance.key_value("is_killed".into());
+    assert!(is_killed, "Contract not killed");
 }
 
 #[test]

@@ -3,10 +3,7 @@ use alloc::string::String;
 use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::{
-    contract_api::{
-        runtime::{self},
-        storage,
-    },
+    contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
@@ -16,11 +13,11 @@ use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
 
 pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
-    // @notice Contract constructor
-    // @param _name Token full name
-    // @param _symbol Token symbol
-    // @param _gauge Liquidity gauge contract address
-    // @param _admin Admin who can kill the gauge
+    /// @notice Contract constructor
+    /// @param _name Token full name
+    /// @param _symbol Token symbol
+    /// @param _gauge Liquidity gauge contract address
+    /// @param _admin Admin who can kill the gauge
     fn init(
         &self,
         name: String,
@@ -198,9 +195,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         );
         RewardIntegralFor::instance().set(&addr, i);
     }
-    // @notice Record a checkpoint for `addr`
-    // @param addr User address
-    // @return bool success
+    /// @notice Record a checkpoint for `addr`
+    /// @param addr User address
+    /// @return bool success
     fn user_checkpoint(&self, addr: Key) -> bool {
         if !((self.get_caller() == addr) || (self.get_caller() == get_minter())) {
             runtime::revert(ApiError::from(Error::RewardWrapperUnauthorized));
@@ -209,9 +206,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         true
     }
 
-    // @notice Get the number of claimable tokens per user
-    // @dev This function should be manually changed to "view" in the ABI
-    // @return uint256 number of claimable tokens per user
+    /// @notice Get the number of claimable tokens per user
+    /// @dev This function should be manually changed to "view" in the ABI
+    /// @return uint256 number of claimable tokens per user
     fn claimable_tokens(&self, addr: Key) -> U256 {
         let d_reward: U256 = runtime::call_versioned_contract(
             get_gauge().into_hash().unwrap_or_revert().into(),
@@ -248,9 +245,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             .unwrap_or_revert_with(Error::RewardWrapperDivisionError6)
     }
 
-    // @notice Get the number of claimable reward tokens per user
-    // @dev This function should be manually changed to "view" in the ABI
-    // @return uint256 number of claimable tokens per user
+    /// @notice Get the number of claimable reward tokens per user
+    /// @dev This function should be manually changed to "view" in the ABI
+    /// @return uint256 number of claimable tokens per user
     fn claimable_reward(&self, addr: Key) -> U256 {
         let gauge: Key = get_gauge();
         let claimable_reward: U256 = runtime::call_versioned_contract(
@@ -333,9 +330,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         set_lock(false);
     }
 
-    // @notice Set whether `addr` can deposit tokens for `self.get_caller()`
-    // @param addr Address to set approval on
-    // @param can_deposit bool - can this account deposit for `self.get_caller()`?
+    /// @notice Set whether `addr` can deposit tokens for `self.get_caller()`
+    /// @param addr Address to set approval on
+    /// @param can_deposit bool - can this account deposit for `self.get_caller()`?
     fn set_approve_deposit(&self, addr: Key, can_deposit: bool) {
         ApprovedToDeposit::instance().set(&addr, &self.get_caller(), can_deposit);
     }
@@ -466,10 +463,10 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         );
         set_lock(false);
     }
-    // @dev Function to check the amount of tokens that an owner allowed to a spender.
-    // @param _owner The address which owns the funds.
-    // @param _spender The address which will spend the funds.
-    // @return An uint256 specifying the amount of tokens still available for the spender.
+    /// @dev Function to check the amount of tokens that an owner allowed to a spender.
+    /// @param _owner The address which owns the funds.
+    /// @param _spender The address which will spend the funds.
+    /// @return An uint256 specifying the amount of tokens still available for the spender.
     fn allowance(&self, owner: Key, spender: Key) -> U256 {
         Allowances::instance().get(&owner, &spender)
     }
@@ -501,17 +498,17 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             },
         );
     }
-    // @dev Transfer token for a specified address
-    // @param _to The address to transfer to.
-    // @param _value The amount to be transferred.
+    /// @dev Transfer token for a specified address
+    /// @param _to The address to transfer to.
+    /// @param _value The amount to be transferred.
     fn transfer(&mut self, recipient: Key, amount: U256) -> Result<(), u32> {
         self._transfer(self.get_caller(), recipient, amount);
         Ok(())
     }
-    // @dev Transfer tokens from one address to another.
-    // @param _from address The address which you want to send tokens from
-    // @param _to address The address which you want to transfer to
-    // @param _value uint256 the amount of tokens to be transferred
+    /// @dev Transfer tokens from one address to another.
+    /// @param _from address The address which you want to send tokens from
+    /// @param _to address The address which you want to transfer to
+    /// @param _value uint256 the amount of tokens to be transferred
     fn transfer_from(&mut self, owner: Key, recipient: Key, amount: U256) -> Result<(), u32> {
         let allowance: U256 = Allowances::instance().get(&owner, &self.get_caller());
         if allowance != U256::MAX {
@@ -526,15 +523,15 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         self._transfer(owner, recipient, amount);
         Ok(())
     }
-    // @notice Approve the passed address to transfer the specified amount of
-    //  tokens on behalf of msg.sender
-    //  @dev Beware that changing an allowance via this method brings the risk
-    //  that someone may use both the old and new allowance by unfortunate
-    //  transaction ordering. This may be mitigated with the use of
-    //  {increaseAllowance} and {decreaseAllowance}.
-    //  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    // @param _spender The address which will transfer the funds
-    // @param _value The amount of tokens that may be transferred
+    /// @notice Approve the passed address to transfer the specified amount of
+    ///  tokens on behalf of msg.sender
+    ///  @dev Beware that changing an allowance via this method brings the risk
+    ///  that someone may use both the old and new allowance by unfortunate
+    ///  transaction ordering. This may be mitigated with the use of
+    ///  {increaseAllowance} and {decreaseAllowance}.
+    ///  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+    /// @param _spender The address which will transfer the funds
+    /// @param _value The amount of tokens that may be transferred
     fn approve(&self, spender: Key, amount: U256) {
         Allowances::instance().set(&self.get_caller(), &spender, amount);
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
@@ -546,12 +543,12 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             },
         );
     }
-    // @notice Increase the allowance granted to `_spender` by the caller
-    // @dev This is alternative to {approve} that can be used as a mitigation for
-    //      the potential race condition
-    // @param _spender The address which will transfer the funds
-    // @param _added_value The amount of to increase the allowance
-    // @return Result on success
+    /// @notice Increase the allowance granted to `_spender` by the caller
+    /// @dev This is alternative to {approve} that can be used as a mitigation for
+    ///      the potential race condition
+    /// @param _spender The address which will transfer the funds
+    /// @param _added_value The amount of to increase the allowance
+    /// @return Result on success
     fn increase_allowance(&mut self, spender: Key, amount: U256) -> Result<(), u32> {
         let allowance: U256 = Allowances::instance()
             .get(&self.get_caller(), &spender)
@@ -568,12 +565,12 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         );
         Ok(())
     }
-    // @notice Decrease the allowance granted to `_spender` by the caller
-    // @dev This is alternative to {approve} that can be used as a mitigation for
-    //      the potential race condition
-    // @param _spender The address which will transfer the funds
-    // @param _subtracted_value The amount of to decrease the allowance
-    // @return Result on success
+    /// @notice Decrease the allowance granted to `_spender` by the caller
+    /// @dev This is alternative to {approve} that can be used as a mitigation for
+    ///      the potential race condition
+    /// @param _spender The address which will transfer the funds
+    /// @param _subtracted_value The amount of to decrease the allowance
+    /// @return Result on success
     fn decrease_allowance(&mut self, spender: Key, amount: U256) -> Result<(), u32> {
         let allowance: U256 = Allowances::instance()
             .get(&self.get_caller(), &spender)

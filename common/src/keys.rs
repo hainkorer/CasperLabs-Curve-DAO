@@ -192,6 +192,7 @@ pub const REWARD_PER_TOKEN: &str = "reward_per_token";
 pub const EARNED: &str = "earned";
 //Liqudity Guage v3 keys
 pub const MYVEC: &str = "myvec";
+pub const INTEGRATE_CHECKPOINT: &str = "integrate_checkpoint";
 
 //VESTING ESCROW
 pub const APPLY_TRANSFER_OWNERSHIP: &str = "apply_transfer_ownership";
@@ -205,8 +206,6 @@ pub const TRANSFER: &str = "transfer";
 pub const TRANSFER_FROM: &str = "transfer_from";
 pub const INCREASE_ALLOWANCE: &str = "increase_allowance";
 pub const DECREASE_ALLOWANCE: &str = "decrease_allowance";
-// pub const REWARD_CONTRACT: &str = "reward_contract";
 pub const LAST_CLAIM: &str = "last_claim";
 pub const CLAIMED_REWARD: &str = "claimed_reward";
-// pub const CLAIMABLE_REWARD: &str = "claimable_reward";
 pub const CLAIMABLE_REWARD_WRITE: &str = "claimable_reward_write";
