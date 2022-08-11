@@ -1160,16 +1160,55 @@ pub enum Error {
     LiquidityGaugeUnderFlow11 = 11828,
     /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGuageV3KickNotAllowed = 11829,
-    /// 65,540 for (Liquidity guage v3 is zero address)
+    /// 65,540 for (Liquidity guage v3 TokenIsZeroAddress)
     LiquidityGaugeTokenIsZeroAddress = 11830,
-    /// 65,540 for (Liquidity guage v3 total supply zero)
+    /// 65,540 for (Liquidity guage v3 zero total supply)
     LiquidityGaugeZeroTotalSupply = 11831,
-    /// 65,540 for (Liquidity guage v3 failed to deposit)
+    /// 65,540 for (Liquidity guage v3 failed deposit)
     LiquidityGaugeFailedToDeposit = 11832,
     /// 65,540 for (Liquidity guage v3 failed to withdraw)
     LiquidityGaugeFailedToWithdraw = 11833,
-    /// 65,540 for (Liquidity guage v3 Reward Token existing)
+    /// 65,540 for (Liquidity guage v3 cannot modify existing reward token)
     LiquidityGaugeCannotModifyExistingRewardtoken = 11834,
+    /// 65,540 for (Liquidity guage v3 Kick not needed)
+    LiquidityGuageV3KickNotNeeded = 11835,
+    /// 65,540 for (Liquidity guage locked 2)
+    LiquidityGaugeLocked2 = 11836,
+    /// 65,540 for (Liquidity guage v3 locked 3)
+    LiquidityGaugeLocked3 = 11837,
+    /// 65,540 for (Liquidity guage v3 locked 4)
+    LiquidityGaugeLocked4 = 11838,
+    /// 65,540 for (Liquidity guage v3 locked 5)
+    LiquidityGaugeLocked5 = 11839,
+    /// 65,540 for (Liquidity guage v3 locked 6)
+    LiquidityGaugeLocked6 = 11840,
+    /// 65,540 for (Liquidity guage v3 locked 7)
+    LiquidityGaugeLocked7 = 11841,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 1)
+    LiquidityGaugeArithmeticError1 = 11842,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 2)
+    LiquidityGaugeArithmeticError2 = 11843,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 3)
+    LiquidityGaugeArithmeticError3 = 11844,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 4)
+    LiquidityGaugeArithmeticError4 = 11845,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 5)
+    LiquidityGaugeArithmeticError5 = 11846,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 6)
+    LiquidityGaugeArithmeticError6 = 11847,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 7)
+    LiquidityGaugeArithmeticError7 = 11848,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 8)
+    LiquidityGaugeArithmeticError8 = 11849,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 9)
+    LiquidityGaugeArithmeticError9 = 11850,
+    /// 65,540 for (Liquidity guage locked 10)
+    LiquidityGaugeArithmeticError10 = 11851,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 11)
+    LiquidityGaugeArithmeticError11 = 11852,
+    /// 65,540 for (Liquidity guage v3 Arithmetic error 12)
+    LiquidityGaugeArithmeticError12 = 11853,
+
     /// 65,540 for (Lp Token Wrapper Addition Error 1)
     LpTokenWrapperAdditionError1 = 11901,
     /// 65,540 for (Lp Token Wrapper Addition Error 2)
