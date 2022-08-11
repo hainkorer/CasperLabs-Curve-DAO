@@ -844,8 +844,6 @@ pub enum Error {
     VotingEscrowCanOnlyIncreaseLockDuration = 11321,
     /// 65,540 for (Voting Escrow The Lock Didnt Expire)
     VotingEscrowTheLockDidntExpire = 11322,
-    /// 65,540 for (Voting Escrow Invalid Block Number)
-    VotingEscrowInvalidBlockTimestamp = 11323,
     /// 65,541 for (Voting Escrow Division Error 1)
     VotingEscrowDivisionError1 = 11324,
     /// 65,542 for (Voting Escrow Division Error 2)
@@ -1000,6 +998,18 @@ pub enum Error {
     VotingEscrowAdditionError25 = 11406,
     /// 65,624 for (Voting Escrow Addition Error 26)
     VotingEscrowAdditionError26 = 11407,
+    /// 65,625 for (Voting Escrow Week Multiplication Error 1)
+    VotingEscrowWeekMultiplicationError1 = 11408,
+    /// 65,626 for (Voting Escrow Week Division Error 1)
+    VotingEscrowWeekDivisionError1 = 11409,
+    /// 65,627 for (Voting Escrow Week Multiplication Error 2)
+    VotingEscrowWeekMultiplicationError2 = 11410,
+    /// 65,628 for (Voting Escrow Week Division Error 2)
+    VotingEscrowWeekDivisionError2 = 11411,
+    /// 65,637 for (Voting Escrow Invalid Block Timestamp 1)
+    VotingEscrowInvalidBlockTimestamp1 = 11420,
+    /// 65,638 for (Voting Escrow Invalid Block Timestamp 2)
+    VotingEscrowInvalidBlockTimestamp2 = 11421,
 
     /// 65,718 for (Liquidity Gauge Wrapper Unauthorized)
     GaugeWrapperUnauthorized = 11501,
