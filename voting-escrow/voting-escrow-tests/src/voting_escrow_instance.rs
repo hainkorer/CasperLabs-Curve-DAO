@@ -127,7 +127,7 @@ impl VOTINGESCROWInstance {
             runtime_args! {
                 "unlock_time" => unlock_time
             },
-            0,
+            604799999,
         );
     }
 
