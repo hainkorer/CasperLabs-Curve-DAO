@@ -137,10 +137,10 @@ fn test_claim_js_client() {
 #[test]
 fn test_claim_many() {
     let (env, owner, instance, _) = deploy();
-    let receivers: Vec<Key> = vec![
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
+    let receivers: Vec<String> = vec![
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
     ];
     TestContract::new(
         &env,
@@ -161,10 +161,10 @@ fn test_claim_many() {
 #[test]
 fn test_claim_many_js_client() {
     let (env, owner, instance, _) = deploy();
-    let receivers: Vec<Key> = vec![
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
+    let receivers: Vec<String> = vec![
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
     ];
     instance.claim_many_js_client(owner, receivers);
     let ret: bool = instance.key_value(RESULT.to_string());
