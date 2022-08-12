@@ -1,3 +1,5 @@
+use core::convert::TryInto;
+
 use crate::{data::*, event::FeeDistributorEvent};
 use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
@@ -9,7 +11,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::errors::*;
@@ -266,18 +268,18 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             },
         );
         U256::max(
-            (pt.bias
-                .checked_sub(pt.slope)
+            (pt.bias()
+                .checked_sub(pt.slope())
                 .unwrap_or_revert_with(Error::FeeDistributorSubtractionError6)
                 .checked_mul(
                     timestamp
                         .checked_sub(pt.ts.as_u128().into())
                         .unwrap_or_revert_with(Error::FeeDistributorSubtractionError7)
                         .as_u128()
-                        .into(),
+                        .try_into()
+                        .unwrap(),
                 )
                 .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError5))
-            .as_u128()
             .into(),
             0.into(),
         )
@@ -310,7 +312,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         "epoch" => epoch
                     },
                 );
-                let mut dt: U128 = 0.into();
+                let mut dt: i128 = 0.into();
                 if t > pt.ts {
                     // If the point is at 0 epoch, it can actually be earlier than the first deposit
                     // Then make dt 0
@@ -318,19 +320,19 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         .checked_sub(pt.ts)
                         .unwrap_or_revert_with(Error::FeeDistributorSubtractionError8)
                         .as_u128()
-                        .into();
+                        .try_into()
+                        .unwrap();
                 }
                 VeSupply::instance().set(
                     &t,
-                    U128::max(
-                        pt.bias
-                            .checked_sub(pt.slope)
+                    i128::max(
+                        pt.bias()
+                            .checked_sub(pt.slope())
                             .unwrap_or_revert_with(Error::FeeDistributorSubtractionError9)
                             .checked_mul(dt)
                             .unwrap_or_revert_with(Error::FeeDistributorSubtractionError10),
                         0.into(),
                     )
-                    .as_u128()
                     .into(),
                 );
             }
@@ -431,19 +433,19 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             } else {
                 // Calc
                 // + i * 2 is for rounding errors
-                let dt: U128 = week_cursor
+                let dt: i128 = week_cursor
                     .checked_sub(old_user_point.ts)
                     .unwrap_or_revert_with(Error::FeeDistributorSubtractionError12)
                     .as_u128()
-                    .into();
+                    .try_into()
+                    .unwrap();
                 let balance_of: U256 = U256::max(
                     old_user_point
-                        .bias
+                        .bias()
                         .checked_sub(dt)
                         .unwrap_or_revert_with(Error::FeeDistributorSubtractionError13)
-                        .checked_mul(old_user_point.slope)
+                        .checked_mul(old_user_point.slope())
                         .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError8)
-                        .as_u128()
                         .into(),
                     0.into(),
                 );
