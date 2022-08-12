@@ -668,9 +668,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     #[allow(unused_assignments)]
     fn balance_of_at(&self, addr: Key, mut time: U256) -> U256 {
         time = time
-            .checked_mul(WEEK)
-            .unwrap_or_revert_with(Error::VotingEscrowWeekMultiplicationError1)
             .checked_div(WEEK)
+            .unwrap_or_revert_with(Error::VotingEscrowWeekMultiplicationError1)
+            .checked_mul(WEEK)
             .unwrap_or_revert_with(Error::VotingEscrowWeekDivisionError1);
 
         if time > U256::from(u64::from(get_blocktime())) {
@@ -830,9 +830,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn total_supply_at(&self, mut time: U256) -> U256 {
         time = time
-            .checked_mul(WEEK)
-            .unwrap_or_revert_with(Error::VotingEscrowWeekMultiplicationError2)
             .checked_div(WEEK)
+            .unwrap_or_revert_with(Error::VotingEscrowWeekMultiplicationError2)
+            .checked_mul(WEEK)
             .unwrap_or_revert_with(Error::VotingEscrowWeekDivisionError2);
 
         if time > U256::from(u64::from(runtime::get_blocktime())) {

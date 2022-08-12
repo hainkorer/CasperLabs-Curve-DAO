@@ -841,8 +841,6 @@ pub enum Error {
     VotingEscrowCanOnlyIncreaseLockDuration = 11321,
     /// 65,540 for (Voting Escrow The Lock Didnt Expire)
     VotingEscrowTheLockDidntExpire = 11322,
-    /// 65,540 for (Voting Escrow Invalid Block Number)
-    VotingEscrowInvalidBlockNumber = 11323,
     /// 65,541 for (Voting Escrow Division Error 1)
     VotingEscrowDivisionError1 = 11324,
     /// 65,542 for (Voting Escrow Division Error 2)
@@ -911,82 +909,105 @@ pub enum Error {
     VotingEscrowSubtractionError24 = 11363,
     /// 65,581 for (Voting Escrow Subtraction Error 25)
     VotingEscrowSubtractionError25 = 11364,
-    /// 65,582 for (Voting Escrow Multiplication Error 1)
-    VotingEscrowMultiplicationError1 = 11365,
-    /// 65,583 for (Voting Escrow Multiplication Error 2)
-    VotingEscrowMultiplicationError2 = 11366,
-    /// 65,584 for (Voting Escrow Multiplication Error 3)
-    VotingEscrowMultiplicationError3 = 11367,
-    /// 65,585 for (Voting Escrow Multiplication Error 4)
-    VotingEscrowMultiplicationError4 = 11368,
-    /// 65,586 for (Voting Escrow Multiplication Error 5)
-    VotingEscrowMultiplicationError5 = 11369,
-    /// 65,587 for (Voting Escrow Multiplication Error 6)
-    VotingEscrowMultiplicationError6 = 11370,
-    /// 65,588 for (Voting Escrow Multiplication Error 7)
-    VotingEscrowMultiplicationError7 = 11371,
-    /// 65,589 for (Voting Escrow Multiplication Error 8)
-    VotingEscrowMultiplicationError8 = 11372,
-    /// 65,590 for (Voting Escrow Multiplication Error 9)
-    VotingEscrowMultiplicationError9 = 11373,
-    /// 65,591 for (Voting Escrow Multiplication Error 10)
-    VotingEscrowMultiplicationError10 = 11374,
-    /// 65,592 for (Voting Escrow Multiplication Error 11)
-    VotingEscrowMultiplicationError11 = 11375,
-    /// 65,593 for (Voting Escrow Multiplication Error 12)
-    VotingEscrowMultiplicationError12 = 11376,
-    /// 65,597 for (Voting Escrow Addition Error 1)
-    VotingEscrowAdditionError1 = 11380,
-    /// 65,598 for (Voting Escrow Addition Error 2)
-    VotingEscrowAdditionError2 = 11381,
-    /// 65,599 for (Voting Escrow Addition Error 3)
-    VotingEscrowAdditionError3 = 11382,
-    /// 65,600 for (Voting Escrow Addition Error 4)
-    VotingEscrowAdditionError4 = 11383,
-    /// 65,601 for (Voting Escrow Addition Error 5)
-    VotingEscrowAdditionError5 = 11384,
-    /// 65,602 for (Voting Escrow Addition Error 6)
-    VotingEscrowAdditionError6 = 11385,
-    /// 65,603 for (Voting Escrow Addition Error 7)
-    VotingEscrowAdditionError7 = 11386,
-    /// 65,604 for (Voting Escrow Addition Error 8)
-    VotingEscrowAdditionError8 = 11387,
-    /// 65,605 for (Voting Escrow Addition Error 9)
-    VotingEscrowAdditionError9 = 11388,
-    /// 65,606 for (Voting Escrow Addition Error 10)
-    VotingEscrowAdditionError10 = 11389,
-    /// 65,607 for (Voting Escrow Addition Error 11)
-    VotingEscrowAdditionError11 = 11390,
-    /// 65,608 for (Voting Escrow Addition Error 12)
-    VotingEscrowAdditionError12 = 11391,
-    /// 65,609 for (Voting Escrow Addition Error 13)
-    VotingEscrowAdditionError13 = 11392,
-    /// 65,610 for (Voting Escrow Addition Error 14)
-    VotingEscrowAdditionError14 = 11393,
-    /// 65,611 for (Voting Escrow Addition Error 15)
-    VotingEscrowAdditionError15 = 11394,
-    /// 65,612 for (Voting Escrow Addition Error 16)
-    VotingEscrowAdditionError16 = 11395,
-    /// 65,613 for (Voting Escrow Addition Error 17)
-    VotingEscrowAdditionError17 = 11396,
-    /// 65,614 for (Voting Escrow Addition Error 18)
-    VotingEscrowAdditionError18 = 11397,
-    /// 65,615 for (Voting Escrow Addition Error 19)
-    VotingEscrowAdditionError19 = 11398,
-    /// 65,616 for (Voting Escrow Addition Error 20)
-    VotingEscrowAdditionError20 = 11399,
-    /// 65,617 for (Voting Escrow Addition Error 21)
-    VotingEscrowAdditionError21 = 11400,
-    /// 65,618 for (Voting Escrow Addition Error 22)
-    VotingEscrowAdditionError22 = 11401,
-    /// 65,619 for (Voting Escrow Addition Error 23)
-    VotingEscrowAdditionError23 = 11402,
-    /// 65,620 for (Voting Escrow Addition Error 24)
-    VotingEscrowAdditionError24 = 11403,
-    /// 65,621 for (Voting Escrow Addition Error 25)
-    VotingEscrowAdditionError25 = 11404,
-    /// 65,622 for (Voting Escrow Addition Error 26)
-    VotingEscrowAdditionError26 = 11405,
+    /// 65,582 for (Voting Escrow Subtraction Error 26)
+    VotingEscrowSubtractionError26 = 11365,
+    /// 65,583 for (Voting Escrow Subtraction Error 27)
+    VotingEscrowSubtractionError27 = 11366,
+    /// 65,584 for (Voting Escrow Subtraction Error 28)
+    VotingEscrowSubtractionError28 = 11367,
+    /// 65,585 for (Voting Escrow Multiplication Error 1)
+    VotingEscrowMultiplicationError1 = 11368,
+    /// 65,586 for (Voting Escrow Multiplication Error 2)
+    VotingEscrowMultiplicationError2 = 11369,
+    /// 65,587 for (Voting Escrow Multiplication Error 3)
+    VotingEscrowMultiplicationError3 = 11370,
+    /// 65,588 for (Voting Escrow Multiplication Error 4)
+    VotingEscrowMultiplicationError4 = 11371,
+    /// 65,589 for (Voting Escrow Multiplication Error 5)
+    VotingEscrowMultiplicationError5 = 11372,
+    /// 65,590 for (Voting Escrow Multiplication Error 6)
+    VotingEscrowMultiplicationError6 = 11373,
+    /// 65,591 for (Voting Escrow Multiplication Error 7)
+    VotingEscrowMultiplicationError7 = 11374,
+    /// 65,592 for (Voting Escrow Multiplication Error 8)
+    VotingEscrowMultiplicationError8 = 11375,
+    /// 65,593 for (Voting Escrow Multiplication Error 9)
+    VotingEscrowMultiplicationError9 = 11376,
+    /// 65,594 for (Voting Escrow Multiplication Error 10)
+    VotingEscrowMultiplicationError10 = 11377,
+    /// 65,595 for (Voting Escrow Multiplication Error 11)
+    VotingEscrowMultiplicationError11 = 11378,
+    /// 65,596 for (Voting Escrow Multiplication Error 12)
+    VotingEscrowMultiplicationError12 = 11379,
+    /// 65,597 for (Voting Escrow Multiplication Error 13)
+    VotingEscrowMultiplicationError13 = 11380,
+    /// 65,598 for (Voting Escrow Multiplication Error 14)
+    VotingEscrowMultiplicationError14 = 11381,
+    /// 65,599 for (Voting Escrow Addition Error 1)
+    VotingEscrowAdditionError1 = 11382,
+    /// 65,600 for (Voting Escrow Addition Error 2)
+    VotingEscrowAdditionError2 = 11383,
+    /// 65,601 for (Voting Escrow Addition Error 3)
+    VotingEscrowAdditionError3 = 11384,
+    /// 65,602 for (Voting Escrow Addition Error 4)
+    VotingEscrowAdditionError4 = 11385,
+    /// 65,603 for (Voting Escrow Addition Error 5)
+    VotingEscrowAdditionError5 = 11386,
+    /// 65,604 for (Voting Escrow Addition Error 6)
+    VotingEscrowAdditionError6 = 11387,
+    /// 65,605 for (Voting Escrow Addition Error 7)
+    VotingEscrowAdditionError7 = 11388,
+    /// 65,606 for (Voting Escrow Addition Error 8)
+    VotingEscrowAdditionError8 = 11389,
+    /// 65,607 for (Voting Escrow Addition Error 9)
+    VotingEscrowAdditionError9 = 11390,
+    /// 65,608 for (Voting Escrow Addition Error 10)
+    VotingEscrowAdditionError10 = 11391,
+    /// 65,609 for (Voting Escrow Addition Error 11)
+    VotingEscrowAdditionError11 = 11392,
+    /// 65,610 for (Voting Escrow Addition Error 12)
+    VotingEscrowAdditionError12 = 11393,
+    /// 65,611 for (Voting Escrow Addition Error 13)
+    VotingEscrowAdditionError13 = 11394,
+    /// 65,612 for (Voting Escrow Addition Error 14)
+    VotingEscrowAdditionError14 = 11395,
+    /// 65,613 for (Voting Escrow Addition Error 15)
+    VotingEscrowAdditionError15 = 11396,
+    /// 65,614 for (Voting Escrow Addition Error 16)
+    VotingEscrowAdditionError16 = 11397,
+    /// 65,615 for (Voting Escrow Addition Error 17)
+    VotingEscrowAdditionError17 = 11398,
+    /// 65,616 for (Voting Escrow Addition Error 18)
+    VotingEscrowAdditionError18 = 11399,
+    /// 65,617 for (Voting Escrow Addition Error 19)
+    VotingEscrowAdditionError19 = 11400,
+    /// 65,618 for (Voting Escrow Addition Error 20)
+    VotingEscrowAdditionError20 = 11401,
+    /// 65,619 for (Voting Escrow Addition Error 21)
+    VotingEscrowAdditionError21 = 11402,
+    /// 65,620 for (Voting Escrow Addition Error 22)
+    VotingEscrowAdditionError22 = 11403,
+    /// 65,621 for (Voting Escrow Addition Error 23)
+    VotingEscrowAdditionError23 = 11404,
+    /// 65,622 for (Voting Escrow Addition Error 24)
+    VotingEscrowAdditionError24 = 11405,
+    /// 65,623 for (Voting Escrow Addition Error 25)
+    VotingEscrowAdditionError25 = 11406,
+    /// 65,624 for (Voting Escrow Addition Error 26)
+    VotingEscrowAdditionError26 = 11407,
+    /// 65,625 for (Voting Escrow Week Multiplication Error 1)
+    VotingEscrowWeekMultiplicationError1 = 11408,
+    /// 65,626 for (Voting Escrow Week Division Error 1)
+    VotingEscrowWeekDivisionError1 = 11409,
+    /// 65,627 for (Voting Escrow Week Multiplication Error 2)
+    VotingEscrowWeekMultiplicationError2 = 11410,
+    /// 65,628 for (Voting Escrow Week Division Error 2)
+    VotingEscrowWeekDivisionError2 = 11411,
+    /// 65,637 for (Voting Escrow Invalid Block Timestamp 1)
+    VotingEscrowInvalidBlockTimestamp1 = 11420,
+    /// 65,638 for (Voting Escrow Invalid Block Timestamp 2)
+    VotingEscrowInvalidBlockTimestamp2 = 11421,
+
     /// 65,718 for (Liquidity Gauge Wrapper Unauthorized)
     GaugeWrapperUnauthorized = 11501,
     /// 65,719 for (Liquidity Gauge Wrapper Is Killed)
