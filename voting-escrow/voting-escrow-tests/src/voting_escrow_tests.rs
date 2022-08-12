@@ -238,8 +238,8 @@ fn test_increase_amount() {
     instance.increase_amount(owner, value);
 }
 
-// #[test]
-fn _test_increase_unlock_time() {
+#[test]
+fn test_increase_unlock_time() {
     let (_, owner, instance, erc20) = deploy();
     let value: U256 = 1000.into();
     let unlock_time: U256 = WEEK;
