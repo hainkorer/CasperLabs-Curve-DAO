@@ -12,7 +12,7 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
 
 pub enum VestingEscrowSimpleEvent {
     Fund { recipient: Key, amount: U256 },

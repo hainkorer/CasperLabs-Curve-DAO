@@ -3,13 +3,10 @@ use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub const TEN_E_NINE: u128 = 1000000000;
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
+
 pub struct Allowances {
     dict: Dict,
 }

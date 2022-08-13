@@ -1,7 +1,7 @@
 use crate::data::{
-    self, get_lp_token, get_package_hash, zero_address, Allowance, BalanceOf, ClaimData,
-    ClaimDataStruct, PeriodTimestamp, RewardData, RewardIntegral, RewardIntegralFor, RewardTokens,
-    RewardsReceiver, CLAIM_FREQUENCY, MAX_REWARDS,
+    self, get_lp_token, get_package_hash, Allowance, BalanceOf, ClaimData, ClaimDataStruct,
+    PeriodTimestamp, RewardData, RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver,
+    CLAIM_FREQUENCY, MAX_REWARDS,
 };
 use crate::{alloc::string::ToString, event::*};
 use alloc::vec::Vec;
@@ -12,10 +12,11 @@ use casper_contract::{
 };
 use casper_types::bytesrepr::Bytes;
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
+
 pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(
         &mut self,
@@ -145,7 +146,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
     }
 
     fn integrate_checkpoint(&self) -> U256 {
-        PeriodTimestamp::instance().get(&U256::from(data::get_period().as_u128()))
+        PeriodTimestamp::instance().get(&U256::from(data::get_period()))
     }
 
     fn _update_liquidity_limit(&self, addr: Key, l: U256, supply: U256) {
@@ -353,11 +354,10 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
     fn _checkpoint(&mut self, addr: Key) {
         let token: Key = data::get_crv_token();
         let controller: Key = data::get_controller();
-        let mut period: U128 = data::get_period();
-        let period_time: U256 =
-            data::PeriodTimestamp::instance().get(&U256::from(period.as_u128()));
+        let mut period: i128 = data::get_period();
+        let period_time: U256 = data::PeriodTimestamp::instance().get(&U256::from(period));
         let mut integrate_inv_supply: U256 =
-            data::IntegrateInvSupply::instance().get(&U256::from(period.as_u128()));
+            data::IntegrateInvSupply::instance().get(&U256::from(period));
         let mut rate: U256 = data::get_inflation_rate();
         let mut new_rate: U256 = rate;
         let prev_future_epoch: U256 = data::get_future_epoch_time();
@@ -468,10 +468,8 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         }
         period = period.checked_add(1.into()).unwrap_or_revert();
         data::set_period(period);
-        data::PeriodTimestamp::instance()
-            .set(&U256::from(period.as_u128()), block_timestamp.into());
-        data::IntegrateInvSupply::instance()
-            .set(&U256::from(period.as_u128()), integrate_inv_supply);
+        data::PeriodTimestamp::instance().set(&U256::from(period), block_timestamp.into());
+        data::IntegrateInvSupply::instance().set(&U256::from(period), integrate_inv_supply);
         let working_balance: U256 = data::WorkingBalances::instance().get(&addr);
         data::IntegrateFraction::instance().set(
             &addr,

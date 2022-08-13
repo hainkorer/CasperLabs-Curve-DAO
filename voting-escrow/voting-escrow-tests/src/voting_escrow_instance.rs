@@ -4,6 +4,7 @@ use casper_types::{
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct VOTINGESCROWInstance(TestContract);
+//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl VOTINGESCROWInstance {
     pub fn new_deploy(
@@ -148,15 +149,15 @@ impl VOTINGESCROWInstance {
         );
     }
 
-    pub fn balance_of_at_js_client(&self, owner: AccountHash, addr: Key, block: U256) {
+    pub fn balance_of_at_js_client(&self, owner: AccountHash, addr: Key, time: U256) {
         self.0.call_contract(
             owner,
             "balance_of_at_js_client",
             runtime_args! {
                 "addr" => addr,
-                "block" => block
+                "time" => time
             },
-            0,
+            123456789, // blocktime
         );
     }
 
@@ -180,14 +181,14 @@ impl VOTINGESCROWInstance {
             0,
         );
     }
-    pub fn total_supply_at_js_client(&self, owner: AccountHash, block: U256) {
+    pub fn total_supply_at_js_client(&self, owner: AccountHash, time: U256) {
         self.0.call_contract(
             owner,
             "total_supply_at_js_client",
             runtime_args! {
-                "block" => block
+                "time" => time
             },
-            0,
+            123456789, // blocktime
         );
     }
 

@@ -8,43 +8,58 @@ use casper_types::{
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_and_value_to_str, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
-pub const DEPOSIT_FOR_TYPE: U128 = U128([0, 0]);
-pub const CREATE_LOCK_TYPE: U128 = U128([1, 0]);
-pub const INCREASE_LOCK_AMOUNT: U128 = U128([2, 0]);
-pub const INCREASE_UNLOCK_TIME: U128 = U128([3, 0]);
+pub const DEPOSIT_FOR_TYPE: i128 = 0;
+pub const CREATE_LOCK_TYPE: i128 = 1;
+pub const INCREASE_LOCK_AMOUNT: i128 = 2;
+pub const INCREASE_UNLOCK_TIME: i128 = 3;
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
 pub const MAXTIME: U256 = U256([126144000000, 0, 0, 0]); // 4 years
 pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
-
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-
-pub fn account_zero_address() -> Key {
-    Key::from_formatted_str(
-        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
-    )
-    .unwrap()
-}
 
 // We cannot really do block numbers per se b/c slope is per time, not per block
 // and per block could be fairly bad b/c Ethereum changes blocktimes.
 // What we can do is to extrapolate ***At functions
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Point {
-    pub bias: U128,
-    pub slope: U128, // - dweight / dt
+    bias: (bool, U128),
+    slope: (bool, U128), // - dweight / dt
     pub ts: U256,
-    pub blk: U256, // block
+}
+
+impl Point {
+    pub fn set_bias(&mut self, value: i128) {
+        self.bias = i128_to_tuple(value);
+    }
+
+    pub fn bias(&self) -> i128 {
+        tuple_to_i128(self.bias)
+    }
+
+    pub fn set_slope(&mut self, value: i128) {
+        self.slope = i128_to_tuple(value);
+    }
+
+    pub fn slope(&self) -> i128 {
+        tuple_to_i128(self.slope)
+    }
 }
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct LockedBalance {
-    pub amount: U128,
+    amount: (bool, U128),
     pub end: U256,
+}
+
+impl LockedBalance {
+    pub fn set_amount(&mut self, value: i128) {
+        self.amount = i128_to_tuple(value);
+    }
+
+    pub fn amount(&self) -> i128 {
+        tuple_to_i128(self.amount)
+    }
 }
 
 pub const LOCKED: &str = "locked";
@@ -144,12 +159,14 @@ impl SlopeChanges {
         Dict::init(SLOPE_CHANGES)
     }
 
-    pub fn get(&self, time: &U256) -> U128 {
-        self.dict.get(time.to_string().as_str()).unwrap_or_default()
+    pub fn get(&self, time: &U256) -> i128 {
+        let ret: (bool, U128) = self.dict.get(time.to_string().as_str()).unwrap_or_default();
+        tuple_to_i128(ret)
     }
 
-    pub fn set(&self, time: &U256, value: U128) {
-        self.dict.set(time.to_string().as_str(), value);
+    pub fn set(&self, time: &U256, value: i128) {
+        self.dict
+            .set(time.to_string().as_str(), i128_to_tuple(value));
     }
 }
 

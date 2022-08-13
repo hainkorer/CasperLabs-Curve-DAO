@@ -8,7 +8,8 @@ use casper_types::{
     runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
+
 pub enum MINTEREvent {
     Minted {
         recipient: Key,
@@ -124,7 +125,7 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
         }
         data::set_lock(1);
         for item in &gauge_addrs {
-            if *item == data::zero_address() || *item == data::account_zero_address() {
+            if *item == zero_address() || *item == account_zero_address() {
                 break;
             }
             self._mint_for(*item, self.get_caller())

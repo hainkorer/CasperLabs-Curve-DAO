@@ -6,7 +6,7 @@ use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U128, 
 use core::convert::TryInto;
 
 use casperlabs_contract_utils::{get_key, set_key};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub const YEAR: U256 = U256([31536000, 0, 0, 0]);
 pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);
@@ -78,10 +78,6 @@ pub fn get_is_updated() -> bool {
 }
 pub fn set_is_updated(is_updated: bool) {
     set_key(IS_UPDATED, is_updated);
-}
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
 }
 pub fn set_hash(contract_hash: Key) {
     set_key(SELF_CONTRACT_HASH, contract_hash);
