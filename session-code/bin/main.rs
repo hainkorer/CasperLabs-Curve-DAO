@@ -151,7 +151,7 @@ pub extern "C" fn call() {
             store(CLAIM, ret);
         }
         CLAIM_MANY => {
-            let receivers: Vec<Key> = runtime::get_named_arg("receivers");
+            let receivers: Vec<String> = runtime::get_named_arg("receivers");
             let ret: bool = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
