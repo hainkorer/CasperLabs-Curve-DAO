@@ -55,12 +55,13 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let controller_package_hash = ContractPackageHash::new(controller_hash_add_array);
-        let ret: U128 = runtime::call_versioned_contract(
+        let ret: (bool, U128) = runtime::call_versioned_contract(
             controller_package_hash,
             None,
             "gauge_types",
             runtime_args! {"addr" => gauge_addr},
         );
+        let ret: i128 = tuple_to_i128(ret);
 
         if ret < 0.into() {
             //dev: gauge is not added
