@@ -1,5 +1,3 @@
-use core::convert::TryInto;
-
 use alloc::{string::ToString, vec::Vec};
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{
@@ -7,63 +5,19 @@ use casper_types::{
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
 pub const TOKEN_CHECKPOINT_DEADLINE: U256 = U256([86400000, 0, 0, 0]);
 
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-
-pub fn tuple_to_i128(value: (bool, U128)) -> i128 {
-    if value.0 {
-        let val: i128 = value.1.as_u128().try_into().unwrap();
-        -val
-    } else {
-        value.1.as_u128().try_into().unwrap()
-    }
-}
-
-pub fn i128_to_tuple(value: i128) -> (bool, U128) {
-    let mut val: (bool, U128) = (false, 0.into());
-    if value < 0 {
-        val.0 = true;
-        val.1 = (-value).into();
-    } else {
-        val.0 = false;
-        val.1 = value.into();
-    }
-    val
-}
-
-// We cannot really do block numbers per se b/c slope is per time, not per block
-// and per block could be fairly bad b/c Ethereum changes blocktimes.
-// What we can do is to extrapolate ***At functions
+/// We cannot really do block numbers per se b/c slope is per time, not per block
+/// and per block could be fairly bad b/c Ethereum changes blocktimes.
+/// What we can do is to extrapolate ***At functions
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Point {
-    bias: (bool, U128),
-    slope: (bool, U128), // - dweight / dt
+    pub bias: (bool, U128),
+    pub slope: (bool, U128), // - dweight / dt
     pub ts: U256,
-}
-
-impl Point {
-    pub fn set_bias(&mut self, value: i128) {
-        self.bias = i128_to_tuple(value);
-    }
-
-    pub fn bias(&self) -> i128 {
-        tuple_to_i128(self.bias)
-    }
-
-    pub fn set_slope(&mut self, value: i128) {
-        self.slope = i128_to_tuple(value);
-    }
-
-    pub fn slope(&self) -> i128 {
-        tuple_to_i128(self.slope)
-    }
 }
 
 pub const TIME_CURSOR_OF: &str = "time_cursor_of";

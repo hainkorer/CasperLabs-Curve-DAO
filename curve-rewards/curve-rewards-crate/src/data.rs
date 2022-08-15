@@ -1,14 +1,10 @@
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub const TEN_E_NINE: u128 = 1000000000;
 pub const DURATION: U256 = U256([604800000, 0, 0, 0]);
-//Zero Address
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
+
 //Dict
 pub struct UserRewardPerTokenPaid {
     dict: Dict,

@@ -11,11 +11,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use voting_escrow_crate::{
-    self,
-    data::{self, i128_to_tuple},
-    VOTINGESCROW,
-};
+use voting_escrow_crate::{self, data, utils::*, VOTINGESCROW};
 
 #[derive(Default)]
 struct VotingEscrow(OnChainContractStorage);

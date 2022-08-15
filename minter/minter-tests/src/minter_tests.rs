@@ -164,7 +164,7 @@ fn test_minter_mint() {
         },
         0,
     );
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     let weight = U256::from(1000000);
     add_gauge(
         &gauge_controller,
@@ -200,7 +200,7 @@ fn test_minter_mint() {
         },
         0,
     );
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     add_gauge(
         &gauge_controller,
         owner,
@@ -234,7 +234,7 @@ fn test_minter_mint_many() {
         },
         0,
     );
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     let weight = U256::from(1000000);
     add_gauge(
         &gauge_controller,
@@ -270,7 +270,7 @@ fn test_minter_mint_many() {
         },
         0,
     );
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     add_gauge(
         &gauge_controller,
         owner,
@@ -306,7 +306,7 @@ fn test_minter_mint_for() {
         },
         0,
     );
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     let weight = U256::from(1000000);
     add_gauge(
         &gauge_controller,
@@ -342,7 +342,7 @@ fn test_minter_mint_for() {
         },
         0,
     );
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     add_gauge(
         &gauge_controller,
         owner,

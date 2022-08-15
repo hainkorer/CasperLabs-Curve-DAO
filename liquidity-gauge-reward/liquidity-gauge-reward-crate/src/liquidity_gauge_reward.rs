@@ -12,7 +12,7 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
 
 #[allow(clippy::too_many_arguments)]
 pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storage> {

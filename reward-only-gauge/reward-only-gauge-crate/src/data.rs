@@ -6,7 +6,7 @@ use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::U
 use casper_types::{bytesrepr::Bytes, system::CallStackElement, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const CLAIM_FREQUENCY: U256 = U256([3600000, 0, 0, 0]);
@@ -292,18 +292,6 @@ pub fn reward_data() -> RewardData {
 
 pub fn set_reward_data(reward_data: RewardData) {
     set_key(REWARD_DATA, reward_data);
-}
-
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-
-pub fn account_zero_address() -> Key {
-    Key::from_formatted_str(
-        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
-    )
-    .unwrap()
 }
 
 pub fn admin() -> Key {

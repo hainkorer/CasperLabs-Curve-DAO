@@ -9,7 +9,7 @@ use casper_types::bytesrepr::ToBytes;
 use casper_types::CLTyped;
 use casper_types::{ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(CURVE_TOKEN_V3_RESULT) {
@@ -70,10 +70,6 @@ impl Allowances {
     }
 }
 
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
 pub fn get_name() -> String {
     get_key(CURVE_TOKEN_V3_NAME).unwrap_or_default()
 }

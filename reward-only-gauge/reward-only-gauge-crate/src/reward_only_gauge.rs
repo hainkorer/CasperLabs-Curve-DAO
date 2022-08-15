@@ -1,8 +1,7 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, account_zero_address, zero_address, Allowances, Balances, ClaimData, ClaimDataStruct,
-    RewardBalances, RewardData, RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver,
-    CLAIM_FREQUENCY, MAX_REWARDS,
+    self, Allowances, Balances, ClaimData, ClaimDataStruct, RewardBalances, RewardData,
+    RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver, CLAIM_FREQUENCY, MAX_REWARDS,
 };
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
@@ -11,7 +10,7 @@ use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::bytesrepr::Bytes;
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
 
 pub enum REWARDONLYGAUGEEvent {
     Withdraw {

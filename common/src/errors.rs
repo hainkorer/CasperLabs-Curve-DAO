@@ -797,6 +797,7 @@ pub enum Error {
     VestingEscrowSimpleUnderFlow3 = 11214,
     /// 65,540 for (Vesting Escrow Simple Under flow4)
     VestingEscrowSimpleUnderFlow4 = 11215,
+
     /// 65,540 for (Voting Escrow Invalid Decimals)
     VotingEscrowInvalidDecimals = 11301,
     /// 65,540 for (Voting Escrow Admin Only)

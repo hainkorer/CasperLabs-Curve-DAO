@@ -262,7 +262,7 @@ fn test_increase_unlock_time() {
         0,
     );
     instance.create_lock(owner, value, unlock_time);
-    instance.increase_unlock_time(owner, unlock_time + WEEK);
+    instance.increase_unlock_time(owner, unlock_time + unlock_time);
 }
 
 #[test]
@@ -401,7 +401,7 @@ fn test_total_supply_at() {
             "package_hash" => Key::Hash(instance.package_hash()),
             "time" => time,
         },
-        123,
+        0,
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY_AT.into()]);
     assert_eq!(ret, 0.into(), "Invalid default total supply");

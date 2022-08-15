@@ -17,7 +17,7 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
 
 /// @notice Votes have a weight depending on time, so that users are committed to the future of (whatever they are voting for)
 /// @dev Vote weight decays linearly over time. Lock time cannot be more than `MAXTIME` (4 years).
@@ -669,10 +669,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn balance_of_at(&self, addr: Key, mut time: U256) -> U256 {
         time = time
             .checked_div(WEEK)
-            .unwrap_or_revert_with(Error::VotingEscrowWeekMultiplicationError1)
+            .unwrap_or_revert_with(Error::VotingEscrowWeekDivisionError1)
             .checked_mul(WEEK)
-            .unwrap_or_revert_with(Error::VotingEscrowWeekDivisionError1);
-
+            .unwrap_or_revert_with(Error::VotingEscrowWeekMultiplicationError1);
         if time > U256::from(u64::from(get_blocktime())) {
             runtime::revert(ApiError::from(Error::VotingEscrowInvalidBlockTimestamp1));
         }
@@ -831,9 +830,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     fn total_supply_at(&self, mut time: U256) -> U256 {
         time = time
             .checked_div(WEEK)
-            .unwrap_or_revert_with(Error::VotingEscrowWeekMultiplicationError2)
+            .unwrap_or_revert_with(Error::VotingEscrowWeekDivisionError2)
             .checked_mul(WEEK)
-            .unwrap_or_revert_with(Error::VotingEscrowWeekDivisionError2);
+            .unwrap_or_revert_with(Error::VotingEscrowWeekMultiplicationError2);
 
         if time > U256::from(u64::from(runtime::get_blocktime())) {
             runtime::revert(Error::VotingEscrowInvalidBlockTimestamp2);

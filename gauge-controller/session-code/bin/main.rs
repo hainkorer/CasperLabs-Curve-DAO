@@ -34,7 +34,7 @@ pub extern "C" fn call() {
     match entrypoint.as_str() {
         GAUGE_TYPES => {
             let addr: Key = runtime::get_named_arg("addr");
-            let ret: U128 = runtime::call_versioned_contract(
+            let ret: (bool, U128) = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 GAUGE_TYPES,
@@ -81,7 +81,7 @@ pub extern "C" fn call() {
             store(GET_GAUGE_WEIGHT, ret);
         }
         GET_TYPE_WEIGHT => {
-            let type_id: U128 = runtime::get_named_arg("type_id");
+            let type_id: (bool, U128) = runtime::get_named_arg("type_id");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
@@ -102,7 +102,7 @@ pub extern "C" fn call() {
             store(GET_TOTAL_WEIGHT, ret);
         }
         GET_WEIGHTS_SUM_PER_TYPE => {
-            let type_id: U128 = runtime::get_named_arg("type_id");
+            let type_id: (bool, U128) = runtime::get_named_arg("type_id");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,

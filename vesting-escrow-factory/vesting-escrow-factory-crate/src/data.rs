@@ -1,7 +1,7 @@
 use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub const MIN_VESTING_DURATION: U256 = U256([86400000 * 365, 0, 0, 0]);
 
@@ -14,18 +14,6 @@ pub fn set_vesting_escrow_simple_contract(vesting_escrow_simple_contract: Key) {
         VESTING_ESCROW_SIMPLE_CONTRACT,
         vesting_escrow_simple_contract,
     );
-}
-
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-
-pub fn account_zero_address() -> Key {
-    Key::from_formatted_str(
-        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
-    )
-    .unwrap()
 }
 
 pub fn admin() -> Key {

@@ -192,7 +192,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         0,
     );
     let addr: Key = Key::Account(owner);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.call_contract(
         owner,
         "add_gauge",
@@ -211,7 +211,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         0,
     );
     let addr1: Key = Key::Hash(deploy_liquidity_gauge_v3.package_hash());
-    let gauge_type_1: U128 = 1.into();
+    let gauge_type_1: (bool, U128) = (false, 1.into());
     gauge_controller.call_contract(
         owner,
         "add_gauge",

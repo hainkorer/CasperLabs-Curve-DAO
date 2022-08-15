@@ -1,11 +1,6 @@
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key};
 use casperlabs_contract_utils::{get_key, set_key};
-use common::keys::*;
-
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
+use common::{keys::*, utils::*};
 
 pub fn get_ownership_admin() -> Key {
     get_key(OWNERSHIP_ADMIN).unwrap_or_else(zero_address)

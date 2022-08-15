@@ -1,14 +1,13 @@
 use crate::alloc::string::ToString;
-use crate::data::{
-    self, account_zero_address, zero_address, DisabledAt, FundAdmins, InitialLocked, TotalClaimed,
-};
+use crate::data::{self, DisabledAt, FundAdmins, InitialLocked, TotalClaimed};
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
+
 pub enum VESTINGESCROWEvent {
     Fund { recipient: Key, amount: U256 },
     Claim { recipient: Key, claimed: U256 },
@@ -107,7 +106,7 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             runtime::revert(Error::VestingEscrowOnlyAdmin2);
         }
         let _admin = self.future_admin();
-        if _admin == data::zero_address() {
+        if _admin == zero_address() {
             //Vesting Escrow Admin Not Set
             runtime::revert(Error::VestingEscrowAdminNotSet);
         }

@@ -3,12 +3,10 @@ use alloc::{
     vec::Vec,
 };
 use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{system::CallStackElement, ContractPackageHash, Key, U128, U256};
+use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use casperlabs_contract_utils::{
-    get_key, key_and_value_to_str, key_to_str, set_key, values_to_str, Dict,
-};
-use common::keys::*;
+use casperlabs_contract_utils::*;
+use common::{keys::*, utils::*};
 
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
 pub const WEIGHT_VOTE_DELAY: U256 = U256([864000000, 0, 0, 0]);
@@ -42,11 +40,11 @@ impl GaugeTypeNames {
         Dict::init(GAUGE_TYPE_NAMES_DICT)
     }
 
-    pub fn get(&self, owner: &U128) -> String {
+    pub fn get(&self, owner: &i128) -> String {
         self.dict.get(&owner.to_string()).unwrap_or_default()
     }
 
-    pub fn set(&self, owner: &U128, value: String) {
+    pub fn set(&self, owner: &i128, value: String) {
         self.dict.set(&owner.to_string(), value);
     }
 }
@@ -66,12 +64,12 @@ impl GaugeTypes_ {
         Dict::init(GAUGE_TYPES_DICT)
     }
 
-    pub fn get(&self, owner: &Key) -> U128 {
-        self.dict.get(&key_to_str(owner)).unwrap_or_default()
+    pub fn get(&self, owner: &Key) -> i128 {
+        tuple_to_i128(self.dict.get(&key_to_str(owner)).unwrap_or_default())
     }
 
-    pub fn set(&self, owner: &Key, value: U128) {
-        self.dict.set(&key_to_str(owner), value);
+    pub fn set(&self, owner: &Key, value: i128) {
+        self.dict.set(&key_to_str(owner), i128_to_tuple(value));
     }
 }
 
@@ -305,13 +303,13 @@ impl PointsSum {
         Dict::init(POINTS_SUM_DICT)
     }
 
-    pub fn get(&self, owner: &U128, recipient: &U256) -> Point {
-        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
+    pub fn get(&self, owner: &i128, recipient: &U256) -> Point {
+        let key_: String = values_to_str(&owner.to_string(), recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, owner: &U128, recipient: &U256, value: Point) {
-        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
+    pub fn set(&self, owner: &i128, recipient: &U256, value: Point) {
+        let key_: String = values_to_str(&owner.to_string(), recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -331,13 +329,13 @@ impl ChangesSum {
         Dict::init(CHANGES_SUM_DICT)
     }
 
-    pub fn get(&self, owner: &U128, recipient: &U256) -> U256 {
-        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
+    pub fn get(&self, owner: &i128, recipient: &U256) -> U256 {
+        let key_: String = values_to_str(&owner.to_string(), recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, owner: &U128, recipient: &U256, value: U256) {
-        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
+    pub fn set(&self, owner: &i128, recipient: &U256, value: U256) {
+        let key_: String = values_to_str(&owner.to_string(), recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -381,13 +379,13 @@ impl PointsTypeWeight {
         Dict::init(POINTS_TYPE_WEIGHT_DICT)
     }
 
-    pub fn get(&self, owner: &U128, recipient: &U256) -> U256 {
-        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
+    pub fn get(&self, owner: &i128, recipient: &U256) -> U256 {
+        let key_: String = values_to_str(&owner.to_string(), recipient);
         self.dict.get(key_.as_str()).unwrap_or_default()
     }
 
-    pub fn set(&self, owner: &U128, recipient: &U256, value: U256) {
-        let key_: String = values_to_str(&U256::from(owner.as_u128()), recipient);
+    pub fn set(&self, owner: &i128, recipient: &U256, value: U256) {
+        let key_: String = values_to_str(&owner.to_string(), recipient);
         self.dict.set(key_.as_str(), value);
     }
 }
@@ -423,16 +421,6 @@ impl TimeTypeWeight {
     }
 }
 
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-pub fn account_zero_address() -> Key {
-    Key::from_formatted_str(
-        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
-    )
-    .unwrap()
-}
 pub fn time_total() -> U256 {
     get_key(TIME_TOTAL).unwrap_or_default()
 }
@@ -465,19 +453,19 @@ pub fn set_token(token: Key) {
     set_key(TOKEN, token);
 }
 
-pub fn n_gauge_types() -> U128 {
-    get_key(N_GAUGE_TYPES).unwrap_or_default()
+pub fn n_gauge_types() -> i128 {
+    tuple_to_i128(get_key(N_GAUGE_TYPES).unwrap_or_default())
 }
 
-pub fn set_n_gauge_types(n_gauge_types: U128) {
-    set_key(N_GAUGE_TYPES, n_gauge_types);
+pub fn set_n_gauge_types(n_gauge_types: i128) {
+    set_key(N_GAUGE_TYPES, i128_to_tuple(n_gauge_types));
 }
-pub fn n_gauges() -> U128 {
-    get_key(N_GAUGES).unwrap_or_default()
+pub fn n_gauges() -> i128 {
+    tuple_to_i128(get_key(N_GAUGES).unwrap_or_default())
 }
 
-pub fn set_n_gauges(n_gauges: U128) {
-    set_key(N_GAUGES, n_gauges);
+pub fn set_n_gauges(n_gauges: i128) {
+    set_key(N_GAUGES, i128_to_tuple(n_gauges));
 }
 
 pub fn voting_escrow() -> Key {
