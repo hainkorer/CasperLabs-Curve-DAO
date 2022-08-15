@@ -10,7 +10,7 @@ use common::{keys::*, utils::*};
 
 pub const YEAR: U256 = U256([31536000, 0, 0, 0]);
 pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);
-pub const INITIAL_RATE: U256 = U256([604800, 0, 0, 0]);
+pub const INITIAL_RATE: U256 = U256([604800000, 0, 0, 0]);
 pub const RATE_REDUCTION_TIME: U256 = YEAR;
 pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115002721024, 0, 0, 0]);
 
