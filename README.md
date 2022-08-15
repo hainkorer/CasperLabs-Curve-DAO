@@ -76,9 +76,10 @@ curl -O https://repo.casperlabs.io/casper-repo-pubkey.asc
 sudo apt-key add casper-repo-pubkey.ascr
 sudo apt update
 # Install the Casper client software
+Install Casper-client
 cargo +nightly install casper-client
 # To check Casper Client Version
-casper-client --version
+Casper-client --version
 # Commands for help
 casper-client --help
 casper-client <command> --help

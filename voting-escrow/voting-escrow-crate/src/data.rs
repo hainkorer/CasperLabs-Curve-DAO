@@ -16,8 +16,8 @@ pub const DEPOSIT_FOR_TYPE: i128 = 0;
 pub const CREATE_LOCK_TYPE: i128 = 1;
 pub const INCREASE_LOCK_AMOUNT: i128 = 2;
 pub const INCREASE_UNLOCK_TIME: i128 = 3;
-pub const WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
-pub const MAXTIME: U256 = U256([126227704000, 0, 0, 0]); // 4 years
+pub const WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
+pub const MAXTIME: U256 = U256([126144000, 0, 0, 0]); // 4 years
 pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
 
 pub fn zero_address() -> Key {

@@ -70,7 +70,7 @@ build-contract-vesting-escrow-factory:
 
 build-contract-liquidity-gauge-v3:
 	cargo build --release -p liquidity-gauge-v3-session-code -p liquidity-gauge-v3 -p erc20 -p minter -p voting-escrow -p gauge-controller -p erc20_crv  --target wasm32-unknown-unknown
-
+	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
 build-contract-vesting-escrow-simple:
 	cargo build --release -p erc20 -p vesting-escrow-simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true
@@ -272,7 +272,6 @@ test-curve-rewards:
 
 test-liquidity-gauge-v3: 
 	make build-contract-liquidity-gauge-v3 && make copy-wasm-file-liquidity-gauge-v3 && make test-only-liquidity-gauge-v3
-
 all:
 	make test-curve-token-v3
 	make test-erc20

@@ -21,6 +21,31 @@ impl GAUGECONLTROLLERInstance {
     pub fn instance(gauge_controller: TestContract) -> GAUGECONLTROLLERInstance {
         GAUGECONLTROLLERInstance(gauge_controller)
     }
+
+    pub fn proxy(env: &TestEnv, gauge_controller: Key, sender: AccountHash) -> TestContract {
+        TestContract::new(
+            env,
+            "gauge-controller-proxy-token.wasm",
+            "proxy_test",
+            sender,
+            runtime_args! {
+                "gauge_controller" => gauge_controller
+            },
+            0,
+        )
+    }
+    pub fn proxy2(env: &TestEnv, gauge_controller: Key, sender: AccountHash) -> TestContract {
+        TestContract::new(
+            env,
+            "gauge-controller-proxy-token.wasm",
+            "proxy_test2",
+            sender,
+            runtime_args! {
+                "gauge_controller" => gauge_controller
+            },
+            0,
+        )
+    }
     pub fn deploy_voting_escrow(
         env: &TestEnv,
         contract_name: &str,
@@ -201,7 +226,7 @@ impl GAUGECONLTROLLERInstance {
                 "gauge_addr" => _gauge_addr.into(),
                 "user_weight" => _user_weight,
             },
-            1000000000,
+            1000000,
         );
     }
 

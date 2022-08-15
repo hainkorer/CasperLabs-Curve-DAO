@@ -9,8 +9,8 @@ use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
 use common::keys::*;
 
-pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
-pub const TOKEN_CHECKPOINT_DEADLINE: U256 = U256([86400000, 0, 0, 0]);
+pub const WEEK: U256 = U256([604800, 0, 0, 0]);
+pub const TOKEN_CHECKPOINT_DEADLINE: U256 = U256([86400, 0, 0, 0]);
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")

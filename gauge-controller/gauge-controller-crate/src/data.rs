@@ -10,8 +10,8 @@ use casperlabs_contract_utils::{
 };
 use common::keys::*;
 
-pub const WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
-pub const WEIGHT_VOTE_DELAY: U256 = U256([864000000, 0, 0, 0]);
+pub const WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
+pub const WEIGHT_VOTE_DELAY: U256 = U256([864000, 0, 0, 0]);
 pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]

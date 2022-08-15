@@ -766,8 +766,10 @@ pub enum Error {
     VestingEscrowFactoryStartTimeTooSoon = 11107,
     /// 65,540 for (Vesting Escrow Factory Admin Not Set)
     VestingEscrowFactoryAdminNotSet = 11108,
-    ///Vesting Escrow simple errors
     /// 65,540 for (Vesting Escrow Simple Initialize Once)
+
+    ///Vesting Escrow simple errors
+    ///
     VestingEscrowSimpleOnlyInitializeOnce = 11201,
     /// 65,540 for (Vesting Escrow Simple Admin Only1)
     VestingEscrowSimpleAdminOnly1 = 11202,
@@ -797,6 +799,7 @@ pub enum Error {
     VestingEscrowSimpleUnderFlow3 = 11214,
     /// 65,540 for (Vesting Escrow Simple Under flow4)
     VestingEscrowSimpleUnderFlow4 = 11215,
+
     /// 65,540 for (Voting Escrow Invalid Decimals)
     VotingEscrowInvalidDecimals = 11301,
     /// 65,540 for (Voting Escrow Admin Only)
@@ -841,6 +844,8 @@ pub enum Error {
     VotingEscrowCanOnlyIncreaseLockDuration = 11321,
     /// 65,540 for (Voting Escrow The Lock Didnt Expire)
     VotingEscrowTheLockDidntExpire = 11322,
+    /// 65,540 for (Voting Escrow Invalid Block Number)
+    VotingEscrowInvalidBlockTimestamp = 11323,
     /// 65,541 for (Voting Escrow Division Error 1)
     VotingEscrowDivisionError1 = 11324,
     /// 65,542 for (Voting Escrow Division Error 2)
@@ -995,18 +1000,6 @@ pub enum Error {
     VotingEscrowAdditionError25 = 11406,
     /// 65,624 for (Voting Escrow Addition Error 26)
     VotingEscrowAdditionError26 = 11407,
-    /// 65,625 for (Voting Escrow Week Multiplication Error 1)
-    VotingEscrowWeekMultiplicationError1 = 11408,
-    /// 65,626 for (Voting Escrow Week Division Error 1)
-    VotingEscrowWeekDivisionError1 = 11409,
-    /// 65,627 for (Voting Escrow Week Multiplication Error 2)
-    VotingEscrowWeekMultiplicationError2 = 11410,
-    /// 65,628 for (Voting Escrow Week Division Error 2)
-    VotingEscrowWeekDivisionError2 = 11411,
-    /// 65,637 for (Voting Escrow Invalid Block Timestamp 1)
-    VotingEscrowInvalidBlockTimestamp1 = 11420,
-    /// 65,638 for (Voting Escrow Invalid Block Timestamp 2)
-    VotingEscrowInvalidBlockTimestamp2 = 11421,
 
     /// 65,718 for (Liquidity Gauge Wrapper Unauthorized)
     GaugeWrapperUnauthorized = 11501,
@@ -1177,59 +1170,20 @@ pub enum Error {
     LiquidityGuageV3Unauthorized = 11826,
     /// 65,540 for (Liquidity guage v3 Underflow 10)
     LiquidityGaugeUnderFlow10 = 11827,
-    /// 65,540 for (Liquidity guage v3 Underflow 11)
+    /// 65,540 for (Liquidity guage v3 Underflow 10)
     LiquidityGaugeUnderFlow11 = 11828,
     /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGuageV3KickNotAllowed = 11829,
-    /// 65,540 for (Liquidity guage v3 TokenIsZeroAddress)
+    /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGaugeTokenIsZeroAddress = 11830,
-    /// 65,540 for (Liquidity guage v3 zero total supply)
+    /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGaugeZeroTotalSupply = 11831,
-    /// 65,540 for (Liquidity guage v3 failed deposit)
+    /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGaugeFailedToDeposit = 11832,
-    /// 65,540 for (Liquidity guage v3 failed to withdraw)
+    /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGaugeFailedToWithdraw = 11833,
-    /// 65,540 for (Liquidity guage v3 cannot modify existing reward token)
+    /// 65,540 for (Liquidity guage v3 Kick not allowed)
     LiquidityGaugeCannotModifyExistingRewardtoken = 11834,
-    /// 65,540 for (Liquidity guage v3 Kick not needed)
-    LiquidityGuageV3KickNotNeeded = 11835,
-    /// 65,540 for (Liquidity guage locked 2)
-    LiquidityGaugeLocked2 = 11836,
-    /// 65,540 for (Liquidity guage v3 locked 3)
-    LiquidityGaugeLocked3 = 11837,
-    /// 65,540 for (Liquidity guage v3 locked 4)
-    LiquidityGaugeLocked4 = 11838,
-    /// 65,540 for (Liquidity guage v3 locked 5)
-    LiquidityGaugeLocked5 = 11839,
-    /// 65,540 for (Liquidity guage v3 locked 6)
-    LiquidityGaugeLocked6 = 11840,
-    /// 65,540 for (Liquidity guage v3 locked 7)
-    LiquidityGaugeLocked7 = 11841,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 1)
-    LiquidityGaugeArithmeticError1 = 11842,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 2)
-    LiquidityGaugeArithmeticError2 = 11843,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 3)
-    LiquidityGaugeArithmeticError3 = 11844,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 4)
-    LiquidityGaugeArithmeticError4 = 11845,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 5)
-    LiquidityGaugeArithmeticError5 = 11846,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 6)
-    LiquidityGaugeArithmeticError6 = 11847,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 7)
-    LiquidityGaugeArithmeticError7 = 11848,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 8)
-    LiquidityGaugeArithmeticError8 = 11849,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 9)
-    LiquidityGaugeArithmeticError9 = 11850,
-    /// 65,540 for (Liquidity guage locked 10)
-    LiquidityGaugeArithmeticError10 = 11851,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 11)
-    LiquidityGaugeArithmeticError11 = 11852,
-    /// 65,540 for (Liquidity guage v3 Arithmetic error 12)
-    LiquidityGaugeArithmeticError12 = 11853,
-
     /// 65,540 for (Lp Token Wrapper Addition Error 1)
     LpTokenWrapperAdditionError1 = 11901,
     /// 65,540 for (Lp Token Wrapper Addition Error 2)

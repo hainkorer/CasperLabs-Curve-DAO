@@ -4,6 +4,7 @@ use casper_types::{
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub struct FEEDISTRIBUTORInstance(TestContract);
+//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl FEEDISTRIBUTORInstance {
     pub fn new_deploy(
@@ -65,7 +66,7 @@ impl FEEDISTRIBUTORInstance {
         );
     }
 
-    pub fn claim_many_js_client(&self, owner: AccountHash, receivers: Vec<String>) {
+    pub fn claim_many_js_client(&self, owner: AccountHash, receivers: Vec<Key>) {
         self.0.call_contract(
             owner,
             "claim_many_js_client",

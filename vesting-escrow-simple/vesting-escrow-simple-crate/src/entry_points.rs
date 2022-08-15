@@ -109,6 +109,76 @@ pub fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-
+    //Variables
+    entry_points.add_entry_point(EntryPoint::new(
+        "token",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "start_time",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "end_time",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "initial_locked",
+        vec![Parameter::new("owner", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "total_claimed",
+        vec![Parameter::new("owner", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "initial_locked_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "can_disable",
+        vec![],
+        bool::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "disabled_at",
+        vec![Parameter::new("owner", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_admin",
+        vec![],
+        Key::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
     entry_points
 }

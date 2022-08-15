@@ -1,7 +1,7 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec, vec::Vec};
+use alloc::{boxed::Box, collections::BTreeSet, format, vec, vec::Vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -109,22 +109,14 @@ fn claim_js_client() {
 
 #[no_mangle]
 fn claim_many() {
-    let _receivers: Vec<String> = runtime::get_named_arg("receivers");
-    let mut receivers: Vec<Key> = Vec::new();
-    for receiver in &_receivers {
-        receivers.push(Key::from_formatted_str(receiver).unwrap());
-    }
+    let receivers: Vec<Key> = runtime::get_named_arg("receivers");
     let ret: bool = FeeDistributor::default().claim_many(receivers);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 #[no_mangle]
 fn claim_many_js_client() {
-    let _receivers: Vec<String> = runtime::get_named_arg("receivers");
-    let mut receivers: Vec<Key> = Vec::new();
-    for receiver in &_receivers {
-        receivers.push(Key::from_formatted_str(receiver).unwrap());
-    }
+    let receivers: Vec<Key> = runtime::get_named_arg("receivers");
     let ret: bool = FeeDistributor::default().claim_many(receivers);
     js_ret(ret);
 }
@@ -333,7 +325,7 @@ fn get_entry_points() -> EntryPoints {
         "claim_many",
         vec![Parameter::new(
             "receivers",
-            CLType::List(Box::new(String::cl_type())),
+            CLType::List(Box::new(Key::cl_type())),
         )],
         bool::cl_type(),
         EntryPointAccess::Public,
@@ -343,7 +335,7 @@ fn get_entry_points() -> EntryPoints {
         "claim_many_js_client",
         vec![Parameter::new(
             "receivers",
-            CLType::List(Box::new(String::cl_type())),
+            CLType::List(Box::new(Key::cl_type())),
         )],
         <()>::cl_type(),
         EntryPointAccess::Public,

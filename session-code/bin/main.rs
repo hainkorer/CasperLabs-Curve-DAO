@@ -35,7 +35,7 @@ pub extern "C" fn call() {
         // Voting Escrow
         GET_LAST_USER_SLOPE => {
             let addr: Key = runtime::get_named_arg("addr");
-            let ret: (bool, U128) = runtime::call_versioned_contract(
+            let ret: U128 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 GET_LAST_USER_SLOPE,
@@ -87,14 +87,14 @@ pub extern "C" fn call() {
         }
         BALANCE_OF_AT => {
             let addr: Key = runtime::get_named_arg("addr");
-            let time: U256 = runtime::get_named_arg("time");
+            let block: U256 = runtime::get_named_arg("block");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 BALANCE_OF_AT,
                 runtime_args! {
                     "addr" => addr,
-                    "time" => time
+                    "block" => block
                 },
             );
             store(BALANCE_OF_AT, ret);
@@ -112,13 +112,13 @@ pub extern "C" fn call() {
             store(TOTAL_SUPPLY, ret);
         }
         TOTAL_SUPPLY_AT => {
-            let time: U256 = runtime::get_named_arg("time");
+            let block: U256 = runtime::get_named_arg("block");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 TOTAL_SUPPLY_AT,
                 runtime_args! {
-                    "time" => time,
+                    "block" => block,
                 },
             );
             store(TOTAL_SUPPLY_AT, ret);
@@ -151,7 +151,7 @@ pub extern "C" fn call() {
             store(CLAIM, ret);
         }
         CLAIM_MANY => {
-            let receivers: Vec<String> = runtime::get_named_arg("receivers");
+            let receivers: Vec<Key> = runtime::get_named_arg("receivers");
             let ret: bool = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
