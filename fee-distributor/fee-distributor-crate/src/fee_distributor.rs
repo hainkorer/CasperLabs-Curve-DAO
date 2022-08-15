@@ -1,5 +1,3 @@
-use core::convert::TryInto;
-
 use crate::{data::*, event::FeeDistributorEvent};
 use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};

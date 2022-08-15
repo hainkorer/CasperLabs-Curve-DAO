@@ -119,7 +119,7 @@ fn reward_per_token() {
         200,
     );
     let ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
-    assert_eq!(ret, 186007.into(), "invalid result");
+    assert_eq!(ret, 180.into(), "invalid result");
 }
 #[test]
 fn earned() {
@@ -142,7 +142,7 @@ fn earned() {
         200,
     );
     let ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
-    let v: u128 = 2480100000000000000_u128;
+    let v: u128 = 2400000000000000_u128;
     assert_eq!(ret, v.into(), "invalid result");
 }
 #[test]
