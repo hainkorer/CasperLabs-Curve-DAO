@@ -137,10 +137,10 @@ fn test_claim_js_client() {
 #[test]
 fn test_claim_many() {
     let (env, owner, instance, _) = deploy();
-    let receivers: Vec<Key> = vec![
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
+    let receivers: Vec<String> = vec![
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
     ];
     TestContract::new(
         &env,
@@ -161,10 +161,10 @@ fn test_claim_many() {
 #[test]
 fn test_claim_many_js_client() {
     let (env, owner, instance, _) = deploy();
-    let receivers: Vec<Key> = vec![
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
+    let receivers: Vec<String> = vec![
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
     ];
     instance.claim_many_js_client(owner, receivers);
     let ret: bool = instance.key_value(RESULT.to_string());
@@ -219,6 +219,8 @@ fn test_apply_admin() {
 fn test_toggle_allow_checkpoint_token() {
     let (_, owner, instance, _) = deploy();
     instance.toggle_allow_checkpoint_token(owner);
+    let can_checkpoint_token: bool = instance.key_value("can_checkpoint_token".into());
+    assert!(can_checkpoint_token, "Cannot checkpoint");
 }
 
 #[test]
@@ -234,6 +236,8 @@ fn test_kill_me() {
         0,
     );
     instance.kill_me(owner);
+    let is_killed: bool = instance.key_value("is_killed".into());
+    assert!(is_killed, "Contract not killed");
 }
 
 #[test]
