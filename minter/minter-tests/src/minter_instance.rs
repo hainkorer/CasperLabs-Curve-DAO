@@ -275,7 +275,7 @@ pub fn add_gauge<T: Into<Key>>(
     gauge_controller: &TestContract,
     sender: AccountHash,
     addr: T,
-    gauge_type: U128,
+    gauge_type: (bool, U128),
     weight: Option<U256>,
 ) {
     gauge_controller.call_contract(

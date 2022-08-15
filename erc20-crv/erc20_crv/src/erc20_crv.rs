@@ -12,7 +12,7 @@ use casper_contract::{
 use casper_types::{ApiError, ContractPackageHash, Key, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use casperlabs_erc20::{self, data as erc20_data, ERC20};
-use common::errors::*;
+use common::{errors::*, utils::*};
 
 pub enum Erc20CrvEvent {
     Transfer {
@@ -92,7 +92,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         erc20_data::Balances::instance().set(&self.get_caller(), data::get_init_supply());
         erc20_data::set_total_supply(data::get_init_supply());
         self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
-            from: data::zero_address(),
+            from: zero_address(),
             to: self.get_caller(),
             value: data::get_init_supply(),
         });
@@ -337,7 +337,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         if self.get_caller() != data::get_minter() {
             runtime::revert(ApiError::from(Error::Erc20CRVMinterOnly));
         }
-        if to == data::zero_address() {
+        if to == zero_address() {
             runtime::revert(ApiError::from(Error::Erc20CRVZeroAddress));
         }
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -363,7 +363,7 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 .unwrap_or_revert_with(Error::Erc20CRVOverFlow19),
         );
         self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
-            from: data::zero_address(),
+            from: zero_address(),
             to,
             value: amount,
         });

@@ -6,4 +6,5 @@ pub mod data;
 pub mod event;
 pub mod liquidity_gauge_v3;
 
+pub use common::utils;
 pub use liquidity_gauge_v3::LIQUIDITYTGAUGEV3;

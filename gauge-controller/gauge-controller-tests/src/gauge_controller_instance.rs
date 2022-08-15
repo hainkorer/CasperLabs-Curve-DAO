@@ -162,7 +162,7 @@ impl GAUGECONLTROLLERInstance {
         );
     }
 
-    pub fn change_type_weight(&self, sender: AccountHash, type_id: U128, weight: U256) {
+    pub fn change_type_weight(&self, sender: AccountHash, type_id: (bool, U128), weight: U256) {
         self.0.call_contract(
             sender,
             "change_type_weight",
@@ -199,7 +199,7 @@ impl GAUGECONLTROLLERInstance {
         &self,
         sender: AccountHash,
         addr: T,
-        gauge_type: U128,
+        gauge_type: (bool, U128),
         weight: Option<U256>,
     ) {
         self.0.call_contract(

@@ -10,11 +10,10 @@ use casper_contract::{
 use casper_types::{
     bytesrepr::Bytes, runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash,
     EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs,
-    URef, U128, U256,
+    URef, U256,
 };
-
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use liquidity_gauge_v3_crate::{self, data, LIQUIDITYTGAUGEV3};
+use liquidity_gauge_v3_crate::{self, data, utils::*, LIQUIDITYTGAUGEV3};
 
 #[derive(Default)]
 struct LiquidityGaugeV3(OnChainContractStorage);
@@ -397,7 +396,7 @@ fn working_supply() {
 }
 #[no_mangle]
 fn period() {
-    runtime::ret(CLValue::from_t(data::get_period()).unwrap_or_revert());
+    runtime::ret(CLValue::from_t(i128_to_tuple(data::get_period())).unwrap_or_revert());
 }
 #[no_mangle]
 fn period_timestamp() {
@@ -798,7 +797,7 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "period",
         vec![],
-        U128::cl_type(),
+        CLType::Tuple2([Box::new(CLType::Bool), Box::new(CLType::U128)]),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

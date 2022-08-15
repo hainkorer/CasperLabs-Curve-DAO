@@ -273,7 +273,7 @@ fn test_gauge_controller_change_type_weight() {
     );
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
 }
@@ -290,7 +290,7 @@ fn test_gauge_controller_change_type_weight_by_user() {
     );
     assert_eq!(gauge_controller.admin(), Key::from(_owner));
     assert_eq!(gauge_controller.time_total(), U256::from(0));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_user, type_id, weight);
 }
@@ -324,8 +324,8 @@ fn test_gauge_controller_add_gauge() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
-    let _weight: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
+    let _weight: U256 = 1.into();
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
 }
 
@@ -344,7 +344,7 @@ fn test_gauge_controller_add_gauge_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_user, _user, gauge_type, None);
 }
 
@@ -362,11 +362,11 @@ fn test_gauge_controller_add_gauge_multiple_time() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
 }
 
@@ -385,11 +385,11 @@ fn test_gauge_controller_add_gauge_multiple_time_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_user, _user1, gauge_type, None);
 }
 
@@ -407,7 +407,7 @@ fn test_gauge_controller_change_gauge_weight() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let weight: U256 = 2.into();
     gauge_controller.change_gauge_weight(_owner, _user, weight);
@@ -427,7 +427,7 @@ fn test_gauge_controller_change_gauge_weight_multiple_time() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let weight: U256 = 2.into();
     gauge_controller.change_gauge_weight(_owner, _user, weight);
@@ -450,7 +450,7 @@ fn test_gauge_controller_change_gauge_weight_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let weight: U256 = 2.into();
     gauge_controller.change_gauge_weight(_user, _user, weight);
@@ -537,7 +537,7 @@ fn test_gauge_controller_vote_for_gauge_weights() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(owner, _user, gauge_type, None);
     let weight: U256 = 0.into();
     gauge_controller.vote_for_gauge_weights(owner, _user, weight);
@@ -589,7 +589,7 @@ fn test_gauge_controller_vote_for_gauge_weights_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(owner, _user, gauge_type, None);
     let weight: U256 = 0.into();
     gauge_controller.vote_for_gauge_weights(_user, _user, weight);
@@ -640,13 +640,13 @@ fn test_gauge_controller_vote_for_gauge_weights_multiple_time() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(owner, _user, gauge_type, None);
     let weight: U256 = 0.into();
     gauge_controller.vote_for_gauge_weights(owner, _user, weight);
     let name: String = "type2".to_string();
     gauge_controller.add_type(owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(owner, _user1, gauge_type, None);
     let weight: U256 = 1.into();
     gauge_controller.vote_for_gauge_weights(owner, _user1, weight);
@@ -666,7 +666,7 @@ fn test_gauge_controller_gauge_types() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     TestContract::new(
         &env,
@@ -681,8 +681,8 @@ fn test_gauge_controller_gauge_types() {
         0,
     );
 
-    let ret: U128 = env.query_account_named_key(_owner, &[GAUGE_TYPES.into()]);
-    assert_eq!(ret, 0.into());
+    let ret: (bool, U128) = env.query_account_named_key(_owner, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, (false, 0.into()));
 }
 
 #[test]
@@ -699,7 +699,7 @@ fn test_gauge_controller_gauge_types_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     TestContract::new(
         &env,
@@ -714,8 +714,8 @@ fn test_gauge_controller_gauge_types_by_user() {
         0,
     );
 
-    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
-    assert_eq!(ret, 0.into());
+    let ret: (bool, U128) = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, (false, 0.into()));
 }
 
 #[test]
@@ -732,11 +732,11 @@ fn test_gauge_controller_gauge_types_by_user_multiple_times() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
     TestContract::new(
         &env,
@@ -751,8 +751,8 @@ fn test_gauge_controller_gauge_types_by_user_multiple_times() {
         0,
     );
 
-    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
-    assert_eq!(ret, 0.into());
+    let ret: (bool, U128) = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, (false, 0.into()));
 
     TestContract::new(
         &env,
@@ -767,8 +767,8 @@ fn test_gauge_controller_gauge_types_by_user_multiple_times() {
         0,
     );
 
-    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
-    assert_eq!(ret, 1.into());
+    let ret: (bool, U128) = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, (false, 1.into()));
 }
 
 #[test]
@@ -785,11 +785,11 @@ fn test_gauge_controller_gauge_types_multiple_times() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, None);
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, None);
     TestContract::new(
         &env,
@@ -804,8 +804,8 @@ fn test_gauge_controller_gauge_types_multiple_times() {
         0,
     );
 
-    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
-    assert_eq!(ret, 0.into());
+    let ret: (bool, U128) = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, (false, 0.into()));
 
     TestContract::new(
         &env,
@@ -820,8 +820,8 @@ fn test_gauge_controller_gauge_types_multiple_times() {
         0,
     );
 
-    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
-    assert_eq!(ret, 1.into());
+    let ret: (bool, U128) = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, (false, 1.into()));
 }
 
 #[test]
@@ -850,8 +850,8 @@ fn test_gauge_controller_gauge_types_without_adding_gauge_types() {
         0,
     );
 
-    let ret: U128 = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
-    assert_eq!(ret, 0.into());
+    let ret: (bool, U128) = env.query_account_named_key(_user, &[GAUGE_TYPES.into()]);
+    assert_eq!(ret, (false, 0.into()));
 }
 
 #[test]
@@ -868,11 +868,11 @@ fn test_gauge_controller_gauge_relative_weight() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 
     TestContract::new(
@@ -906,11 +906,11 @@ fn test_gauge_controller_gauge_relative_weight_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 
     TestContract::new(
@@ -974,11 +974,11 @@ fn test_gauge_controller_gauge_relative_weight_write() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 
     TestContract::new(
@@ -1012,11 +1012,11 @@ fn test_gauge_controller_gauge_relative_weight_write_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
 
     TestContract::new(
@@ -1050,13 +1050,13 @@ fn test_gauge_controller_get_gauge_weight() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(1000000.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
 
@@ -1091,13 +1091,13 @@ fn test_gauge_controller_get_gauge_weight_multiple_users() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
 
@@ -1147,13 +1147,13 @@ fn test_gauge_controller_get_type_weight() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
 
@@ -1165,7 +1165,7 @@ fn test_gauge_controller_get_type_weight() {
         runtime_args! {
             "entrypoint" => String::from(GET_TYPE_WEIGHT),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "type_id"=>gauge_type
+            "type_id"=>type_id
         },
         1000000000,
     );
@@ -1188,13 +1188,13 @@ fn test_gauge_controller_get_total_weight() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
     TestContract::new(
@@ -1205,7 +1205,7 @@ fn test_gauge_controller_get_total_weight() {
         runtime_args! {
             "entrypoint" => String::from(GET_TOTAL_WEIGHT),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "type_id"=>gauge_type
+            "type_id"=>type_id
         },
         1000000000,
     );
@@ -1228,13 +1228,13 @@ fn test_gauge_controller_get_total_weight_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
     TestContract::new(
@@ -1245,7 +1245,7 @@ fn test_gauge_controller_get_total_weight_by_user() {
         runtime_args! {
             "entrypoint" => String::from(GET_TOTAL_WEIGHT),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "type_id"=>gauge_type
+            "type_id"=>type_id
         },
         1000000000,
     );
@@ -1268,13 +1268,13 @@ fn test_gauge_controller_get_weights_sum_per_type() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
     TestContract::new(
@@ -1285,7 +1285,7 @@ fn test_gauge_controller_get_weights_sum_per_type() {
         runtime_args! {
             "entrypoint" => String::from(GET_WEIGHTS_SUM_PER_TYPE),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "type_id"=>gauge_type
+            "type_id"=>type_id
         },
         1000000000,
     );
@@ -1308,13 +1308,13 @@ fn test_gauge_controller_get_weights_sum_per_type_by_user() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
     TestContract::new(
@@ -1325,7 +1325,7 @@ fn test_gauge_controller_get_weights_sum_per_type_by_user() {
         runtime_args! {
             "entrypoint" => String::from(GET_WEIGHTS_SUM_PER_TYPE),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "type_id"=>gauge_type
+            "type_id"=>type_id
         },
         1000000000,
     );
@@ -1348,13 +1348,13 @@ fn test_gauge_controller_get_weights_sum_per_type_multiple_times() {
     assert_eq!(gauge_controller.time_total(), U256::from(0));
     let name: String = "type".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 0.into();
+    let gauge_type: (bool, U128) = (false, 0.into());
     gauge_controller.add_gauge(_owner, _user, gauge_type, Some(500.into()));
     let name: String = "type2".to_string();
     gauge_controller.add_type(_owner, name, None);
-    let gauge_type: U128 = 1.into();
+    let gauge_type: (bool, U128) = (false, 1.into());
     gauge_controller.add_gauge(_owner, _user1, gauge_type, Some(1000000.into()));
-    let type_id: U128 = 1.into();
+    let type_id: (bool, U128) = (false, 1.into());
     let weight: U256 = 2.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
     TestContract::new(
@@ -1365,14 +1365,14 @@ fn test_gauge_controller_get_weights_sum_per_type_multiple_times() {
         runtime_args! {
             "entrypoint" => String::from(GET_WEIGHTS_SUM_PER_TYPE),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "type_id"=>gauge_type
+            "type_id"=>type_id
         },
         1000000000,
     );
 
     let ret: U256 = env.query_account_named_key(_owner, &[GET_WEIGHTS_SUM_PER_TYPE.into()]);
     assert_eq!(ret, 1000000.into());
-    let type_id: U128 = 0.into();
+    let type_id: (bool, U128) = (false, 0.into());
     let weight: U256 = 3.into();
     gauge_controller.change_type_weight(_owner, type_id, weight);
     TestContract::new(
@@ -1383,11 +1383,11 @@ fn test_gauge_controller_get_weights_sum_per_type_multiple_times() {
         runtime_args! {
             "entrypoint" => String::from(GET_WEIGHTS_SUM_PER_TYPE),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "type_id"=>gauge_type
+            "type_id"=>type_id
         },
         1000000000,
     );
 
     let ret: U256 = env.query_account_named_key(_owner, &[GET_WEIGHTS_SUM_PER_TYPE.into()]);
-    assert_eq!(ret, 1000000.into());
+    assert_eq!(ret, 500.into());
 }

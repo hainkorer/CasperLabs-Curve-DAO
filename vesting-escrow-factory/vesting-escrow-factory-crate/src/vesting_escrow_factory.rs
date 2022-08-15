@@ -7,8 +7,9 @@ use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
 use vesting_escrow_simple_crate::entry_points::get_entry_points;
+
 pub enum VESTINGESCROWFACTORYEvent {
     CommitOwnership { admin: Key },
     ApplyOwnership { admin: Key },
@@ -125,7 +126,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             runtime::revert(Error::VestingEscrowFactoryOnlyAdmin2);
         }
         let _admin = self.future_admin();
-        if _admin == data::zero_address() {
+        if _admin == zero_address() {
             //Vesting Escrow Admin Not Set
             runtime::revert(Error::VestingEscrowFactoryAdminNotSet);
         }
