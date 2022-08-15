@@ -86,7 +86,7 @@ impl GAUGEPROXYInstance {
         gauge: Key,
         reward_contract: Key,
         sigs: Bytes,
-        reward_tokens: Vec<String>,
+        reward_tokens: Vec<Key>,
     ) {
         self.0.call_contract(
             owner,

@@ -627,7 +627,10 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("spender", Key::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -738,7 +741,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("addr", CLType::Option(Box::new(CLType::Key))),
             Parameter::new("receiver", CLType::Option(Box::new(CLType::Key))),
         ],
-        U256::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -749,7 +752,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("addr", CLType::Option(Box::new(CLType::Key))),
             Parameter::new("claim_rewards", CLType::Option(Box::new(bool::cl_type()))),
         ],
-        U256::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -759,7 +762,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("value", U256::cl_type()),
             Parameter::new("claim_rewards", CLType::Option(Box::new(bool::cl_type()))),
         ],
-        U256::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

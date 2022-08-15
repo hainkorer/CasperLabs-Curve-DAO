@@ -3,7 +3,10 @@ use alloc::string::String;
 use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::{
-    contract_api::{runtime, storage},
+    contract_api::{
+        runtime::{self},
+        storage,
+    },
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{

@@ -93,8 +93,8 @@ fn test_deploy_vesting_contract() {
     );
     let _amount: U256 = 10.into();
     let _can_disable = false;
-    let _vesting_duration: U256 = 20304001000000u64.into();
-    let _vesting_start: U256 = 100000000.into();
+    let _vesting_duration: U256 = 20304001.into();
+    let _vesting_start: U256 = 100000.into();
 
     target.call_contract(
         owner,

@@ -16,7 +16,7 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct LIQUIDITYGUAGEV3INSTANCEInstance(TestContract);
-#[allow(clippy::too_many_arguments)]
+
 impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn instance(liquidity_gauge_v3: TestContract) -> LIQUIDITYGUAGEV3INSTANCEInstance {
         LIQUIDITYGUAGEV3INSTANCEInstance(liquidity_gauge_v3)

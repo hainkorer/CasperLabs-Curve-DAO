@@ -121,6 +121,11 @@ fn total_claimed() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
+fn claim() {
+    let owner: Option<Key> = runtime::get_named_arg("owner");
+    Token::default().claim(owner);
+}
+#[no_mangle]
 fn start_time() {
     let ret: U256 = Token::default().start_time();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
@@ -550,6 +555,16 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "vested_of",
         vec![Parameter::new("recipient", Key::cl_type())],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "claim",
+        vec![Parameter::new(
+            "addr",
+            CLType::Option(Box::new(CLType::Key)),
+        )],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

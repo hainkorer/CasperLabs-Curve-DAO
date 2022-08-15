@@ -47,7 +47,9 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
         _can_disable: bool,
         _vesting_duration: U256,
         _vesting_start: Option<U256>,
+        // _vesting_escrow_simple_contract: Key,
     ) -> Key {
+        // data::set_vesting_escrow_simple_contract(_vesting_escrow_simple_contract);
         let vesting_start: U256 = if let Some(..) = _vesting_start {
             _vesting_start.unwrap()
         } else {
@@ -64,6 +66,7 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             //Vesting Escrow Duration Too Soon
             runtime::revert(Error::VestingEscrowFactoryDurationTooShort);
         } else {
+            // let _contract: Key = _vesting_escrow_simple_contract;
             let name: String = "VESTINGESCROWSIMPLE".to_string();
             let (package_hash, _) = storage::create_contract_package_at_hash();
             let (contract_hash, _) =

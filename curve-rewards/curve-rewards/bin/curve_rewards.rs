@@ -340,7 +340,7 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "set_reward_distribution",
         vec![Parameter::new("reward_distribution", Key::cl_type())],
-        Key::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -417,6 +417,13 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "reward_rate",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "last_update_time",
         vec![],
         U256::cl_type(),
         EntryPointAccess::Public,

@@ -259,13 +259,17 @@ fn period_timestamp() {
 #[no_mangle]
 fn integrate_inv_supply() {
     let owner: U256 = runtime::get_named_arg("owner");
-    runtime::ret(CLValue::from_t(data::PeriodTimestamp::instance().get(&owner)).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(data::IntegrateInvSupply::instance().get(&owner)).unwrap_or_revert(),
+    );
 }
 
 #[no_mangle]
 fn integrate_inv_supply_of() {
-    let owner: U256 = runtime::get_named_arg("owner");
-    runtime::ret(CLValue::from_t(data::PeriodTimestamp::instance().get(&owner)).unwrap_or_revert());
+    let owner: Key = runtime::get_named_arg("owner");
+    runtime::ret(
+        CLValue::from_t(data::IntegrateInvSupplyOf::instance().get(&owner)).unwrap_or_revert(),
+    );
 }
 
 #[no_mangle]
@@ -598,7 +602,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "integrate_inv_supply_of",
-        vec![Parameter::new("owner", U256::cl_type())],
+        vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

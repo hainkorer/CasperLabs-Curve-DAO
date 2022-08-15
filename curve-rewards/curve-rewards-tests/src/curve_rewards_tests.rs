@@ -142,7 +142,7 @@ fn earned() {
         200,
     );
     let ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
-    let v: u128 = 2400000000000000u128;
+    let v: u128 = 2400000000000000_u128;
     assert_eq!(ret, v.into(), "invalid result");
 }
 #[test]
