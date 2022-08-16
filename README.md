@@ -270,10 +270,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name | Type       |
-| -------------- | -----------|
-| addr           | Option<Key>|
-| receiver       | Option<Key>|
+| Parameter Name | Type         |
+| -------------- | ------------ |
+| addr           | Option`<Key>`|
+| receiver       | Option`<Key>`|
 
 This method **returns** nothing.
 
@@ -282,11 +282,11 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name | Type       |
-| -------------- | -----------|
-| value          |U256        |
-| addr           |Option<Key> |
-| claim_rewards  |Option<bool>|
+| Parameter Name | Type         |
+| -------------- | ------------ |
+| value          |U256          |
+| addr           |Option`<Key>` |
+| claim_rewards  |Option`<bool>`|
 
 This method **returns** nothing.
 
@@ -295,10 +295,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name | Type       |
-| -------------- | -----------|
-| value          |U256        |
-| claim_rewards  |Option<bool>|
+| Parameter Name | Type         |
+| -------------- | -------------|
+| value          |U256          |
+| claim_rewards  |Option`<bool>`|
 
 This method **returns** nothing.
 - #### transfer <a id="RewardOnlyGauge-transfer"></a>
@@ -367,11 +367,11 @@ This method **returns** `Result<(),u32>`.
 
 Following is the table of parameters.
 
-| Parameter Name | Type       |
-| -------------- | ---------- |
-| reward_contract| Key        |
-| claim_sig      | Bytes      |
-| reward_tokens  | Vec<String>|
+| Parameter Name | Type         |
+| -------------- | ------------ |
+| reward_contract| Key          |
+| claim_sig      | Bytes        |
+| reward_tokens  | Vec`<String>`|
 
 This method **returns** nothing.
 
@@ -613,11 +613,11 @@ This method **returns** `U128`.
 
 Following is the table of parameters.
 
-| Parameter Name | Type       |
-| -------------- | -----------|
-| addr           | Key        |
-| type_id        | Key        |
-| weight         |Option<U256>|
+| Parameter Name | Type         |
+| -------------- | -------------|
+| addr           | Key          |
+| type_id        | Key          |
+| weight         |Option`<U256>`|
 
 This method **returns** nothing.
 
@@ -669,10 +669,10 @@ This method **returns** `U256`.
 
 Following is the table of parameters.
 
-| Parameter Name | Type          |
-| -------------- | --------------|
-| name           | String        |
-| weight         | Option<U256>  |
+| Parameter Name | Type            |
+| -------------- | ----------------|
+| name           | String          |
+| weight         | Option`<U256>`  |
 
 This method **returns** nothing.
 
@@ -999,9 +999,9 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name | Type         |
-| -------------- | ------------ |
-| gauge_addr     | Vec<String>  |
+| Parameter Name | Type           |
+| -------------- | -------------- |
+| gauge_addr     | Vec`<String>`  |
 
 This method **returns** nothing.
 
@@ -1547,9 +1547,9 @@ This method **returns** `U256`.
 
 Following is the table of parameters.
 
-| Parameter Name      | Type         |
-| ------------------- | ------------ |
-| addr                | Option<Key>  |
+| Parameter Name      | Type           |
+| ------------------- | -------------- |
+| addr                | Option`<Key>`  |
 
 This method **returns** nothing.
 
@@ -1570,10 +1570,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name      | Type        |
-| ------------------- | ----------- |
-| value               | U256        |
-| addr                | Option<Key> |
+| Parameter Name      | Type          |
+| ------------------- | ------------- |
+| value               | U256          |
+| addr                | Option`<Key>` |
 
 This method **returns** nothing.
 
@@ -1897,9 +1897,9 @@ This method **returns** `U256`.
 
 Following is the table of parameters.
 
-| Parameter Name      | Type         |
-| ------------------- | ------------ |
-| addr                | Option<Key>  |
+| Parameter Name      | Type           |
+| ------------------- | -------------- |
+| addr                | Option`<Key>`  |
 
 This method **returns** nothing.
 
@@ -1920,10 +1920,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name      | Type        |
-| ------------------- | ----------- |
-| value               | U256        |
-| addr                | Option<Key> |
+| Parameter Name      | Type          |
+| ------------------- | ------------- |
+| value               | U256          |
+| addr                | Option`<Key>` |
 
 This method **returns** nothing.
 
@@ -2313,10 +2313,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name      | Type        |
-| ------------------- | ----------- |
-| value               | U256        |
-| addr                | Option<Key> |
+| Parameter Name      | Type          |
+| ------------------- | ------------- |
+| value               | U256          |
+| addr                | Option`<Key>` |
 
 This method **returns** nothing.
 
@@ -2338,7 +2338,7 @@ Following is the table of parameters.
 
 | Parameter Name      | Type         |
 | ------------------- | ------------ |
-| addr                | Option<Key>  |
+| addr                | Option`<Key>`|
 
 This method **returns** nothing.
 
@@ -2823,10 +2823,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name      | Type         |
-| ------------------- | ------------ |
-| addr                | Option<Key>  |
-| receiver            | Option<Key>  |
+| Parameter Name      | Type           |
+| ------------------- | -------------- |
+| addr                | Option`<Key>`  |
+| receiver            | Option`<Key>`  |
 
 This method **returns** nothing.
 
@@ -2846,11 +2846,11 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name      | Type         |
-| ------------------- | ------------ |
-| value               | U256         |
-| addr                | Option<Key>  |
-| claim_rewards       | Option<bool> |
+| Parameter Name      | Type           |
+| ------------------- | -------------- |
+| value               | U256           |
+| addr                | Option`<Key>`  |
+| claim_rewards       | Option`<bool>` |
 
 This method **returns** nothing.
 
@@ -2859,10 +2859,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name      | Type         |
-| ------------------- | ------------ |
-| value               | U256         |
-| claim_rewards       | Option<bool> |
+| Parameter Name      | Type           |
+| ------------------- | -------------- |
+| value               | U256           |
+| claim_rewards       | Option`<bool>` |
 
 This method **returns** nothing.
 
@@ -2933,11 +2933,11 @@ This method **returns** `Result<(),u32>`.
 
 Following is the table of parameters.
 
-| Parameter Name | Type       |
-| -------------- | ---------- |
-| reward_contract| Key        |
-| claim_sig      | Bytes      |
-| reward_tokens  | Vec<String>|
+| Parameter Name | Type         |
+| -------------- | ------------ |
+| reward_contract| Key          |
+| claim_sig      | Bytes        |
+| reward_tokens  | Vec`<String>`|
 
 This method **returns** nothing.
 
@@ -3814,9 +3814,9 @@ This method **returns** `U256`.
 
 Following is the table of parameters.
 
-| Parameter Name | Type      |
-| -------------- | --------- |
-| receivers      | Vec<Key>  |
+| Parameter Name | Type        |
+| -------------- | ----------- |
+| receivers      | Vec`<Key>`  |
 
 This method **returns** `bool`.
 
@@ -4130,12 +4130,12 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name | Type    |
-| -------------- | ------- |
-| gauge          | Key     |
-| reward_contract| Key     |
-| sigs           | Bytes   |
-| reward_tokens  | Vec<Key>|
+| Parameter Name | Type      |
+| -------------- | --------- |
+| gauge          | Key       |
+| reward_contract| Key       |
+| sigs           | Bytes     |
+| reward_tokens  | Vec`<Key>`|
 
 This method **returns** nothing.
 
@@ -4262,12 +4262,12 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name | Type    |
-| -------------- | ------- |
-| gauge          | Key     |
-| reward_contract| Key     |
-| sigs           | Bytes   |
-| reward_tokens  | Vec<Key>|
+| Parameter Name | Type      |
+| -------------- | --------- |
+| gauge          | Key       |
+| reward_contract| Key       |
+| sigs           | Bytes     |
+| reward_tokens  | Vec`<Key>`|
 
 This method **returns** nothing.
 
@@ -4614,10 +4614,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name     | Type        |
-| ------------------ | ----------- |
-| recipients         | Vec<String> |
-| amounts            | Vec<U256>   |
+| Parameter Name     | Type          |
+| ------------------ | ------------- |
+| recipients         | Vec`<String>` |
+| amounts            | Vec`<U256>`   |
 
 This method **returns** nothing.
 
@@ -4710,9 +4710,9 @@ This method **returns** `U256`.
 
 Following is the table of parameters.
 
-| Parameter Name     | Type         |
-| ------------------ | ------------ |
-| addr               | Option<Key>  |
+| Parameter Name     | Type           |
+| ------------------ | -------------- |
+| addr               | Option`<Key>`  |
 
 This method **returns** `U256`.
 
@@ -4986,9 +4986,9 @@ This method **returns** `U256`.
 
 Following is the table of parameters.
 
-| Parameter Name     | Type         |
-| ------------------ | ------------ |
-| addr               | Option<Key>  |
+| Parameter Name     | Type           |
+| ------------------ | -------------- |
+| addr               | Option`<Key>`  |
 
 This method **returns** `U256`.
 
@@ -5142,14 +5142,14 @@ Following are the VestingEscrowFactory's entry point methods.
 
 Following is the table of parameters.
 
-| Parameter Name     | Type         |
-| ------------------ | ------------ |
-| token              | Key          |
-| recipient          | Key          |
-| amount             | U256         |
-| can_disable        | bool         |
-| vesting_duration   | U256         |
-| vesting_start      | Option<U256> |
+| Parameter Name     | Type           |
+| ------------------ | -------------- |
+| token              | Key            |
+| recipient          | Key            |
+| amount             | U256           |
+| can_disable        | bool           |
+| vesting_duration   | U256           |
+| vesting_start      | Option`<U256>` |
 
 This method **returns** `Key`.
 
@@ -5300,9 +5300,9 @@ This method **returns** `U256`.
 
 Following is the table of parameters.
 
-| Parameter Name     | Type         |
-| ------------------ | ------------ |
-| addr               | Option<Key>  |
+| Parameter Name     | Type           |
+| ------------------ | -------------- |
+| addr               | Option`<Key>`  |
 
 This method **returns** `U256`.
 
@@ -5580,10 +5580,10 @@ This method **returns** nothing.
 
 Following is the table of parameters.
 
-| Parameter Name | Type          |
-| -------------- | ------------- |
-| addr           | Key           |
-| t              | Option<U256>  |
+| Parameter Name | Type            |
+| -------------- | --------------- |
+| addr           | Key             |
+| t              | Option`<U256>`  |
 
 This method **returns** `U256`.
 
@@ -5604,9 +5604,9 @@ This method **returns** `U256`.
 
 Following is the table of parameters.
 
-| Parameter Name | Type          |
-| -------------- | ------------- |
-| t              | Option<U256>  |
+| Parameter Name | Type            |
+| -------------- | --------------- |
+| t              | Option`<U256>`  |
 
 This method **returns** `U256`.
 
