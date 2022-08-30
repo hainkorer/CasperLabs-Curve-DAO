@@ -500,9 +500,8 @@ To run the Contracts make sure you are in the root folder.
 Make sure `wasm32-unknown-unknown` is installed.
 
 ```
-make prepare
+  make prepare
 ```
-
 It's also recommended to have [wasm-strip](https://github.com/WebAssembly/wabt)
 available in your PATH to reduce the size of compiled Wasm.
 
@@ -511,30 +510,30 @@ available in your PATH to reduce the size of compiled Wasm.
 You can run this commands to build individual smart contracts.
 
 ```
-build-contract-curve-token-v3
-build-liquidity-gauge-reward-wrapper-session-code
-build-i-reward-distribution-recipient	
-build-contract-erc20
-build-contract-erc20-crv
-build-contract-fee-distributor
-build-contract-gauge-controller
-build-contract-gauge-proxy
-build-contract-liquidity-gauge-reward
-build-contract-liquidity-gauge-reward-wrapper
-build-contract-liquidity-gauge-wrapper
-build-contract-minter
-build-contract-reward-only-gauge
-build-contract-vesting-escrow
-build-contract-vesting-escrow-factory
-build-contract-liquidity-gauge-v3
-build-contract-vesting-escrow-simple
-build-contract-voting-escrow
-build-contract-ownable
-build-contract-ownable-test-contract
-build-lp-token-wrapper-session-code
-build-lp-token-wrapper
-build-curve-rewards-session-code
-build-curve-rewards
+  make build-contract-curve-token-v3
+  make build-liquidity-gauge-reward-wrapper-session-code
+  make build-i-reward-distribution-recipient	
+  make build-contract-erc20
+  make build-contract-erc20-crv
+  make build-contract-fee-distributor
+  make build-contract-gauge-controller
+  make build-contract-gauge-proxy
+  make build-contract-liquidity-gauge-reward
+  make build-contract-liquidity-gauge-reward-wrapper
+  make build-contract-liquidity-gauge-wrapper
+  make build-contract-minter
+  make build-contract-reward-only-gauge
+  make build-contract-vesting-escrow
+  make build-contract-vesting-escrow-factory
+  make build-contract-liquidity-gauge-v3
+  make build-contract-vesting-escrow-simple
+  make build-contract-voting-escrow
+  make build-contract-ownable
+  make build-contract-ownable-test-contract
+  make build-lp-token-wrapper-session-code
+  make build-lp-token-wrapper
+  make build-curve-rewards-session-code
+  make build-curve-rewards
 ```
 
 #### Test individual Smart Contract
