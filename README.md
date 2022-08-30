@@ -41,6 +41,403 @@ https://docs.google.com/spreadsheets/d/1Rzh1LERQyGiGpHB3djlT1Tk0LNQ18q_eLBWFDPm2
     - [Individual Test Cases](#individual-test-cases)
     - [All Test Cases](#all-test-cases)
   - [Known contract hashes](#known-contract-hashes)
+  - [Deploying Reward Only Gauge contract manually](#deploying-reward-only-gauge-contract-manually)
+    - [Entry Point methods](#RewardOnlyGauge-entry-point-methods)
+        - [decimals](#RewardOnlyGauge-decimals)
+        - [reward_contract](#RewardOnlyGauge-reward-contract)
+        - [last_claim](#RewardOnlyGauge-last-claim)
+        - [claimable_reward](#RewardOnlyGauge-claimable-reward)
+        - [claimable_reward_write](#RewardOnlyGauge-claimable-reward-write)
+        - [set_rewards_receiver](#RewardOnlyGauge-set-rewards-receiver)
+        - [claim_rewards](#RewardOnlyGauge-claim-rewards)
+        - [deposit](#RewardOnlyGauge-deposit)
+        - [withdraw](#RewardOnlyGauge-withdraw)
+        - [transfer](#RewardOnlyGauge-transfer)
+        - [transfer_from](#RewardOnlyGauge-transfer-from)
+        - [approve](#RewardOnlyGauge-approve)
+        - [increase_allowance](#RewardOnlyGauge-increase-allowance)
+        - [decrease_allowance](#RewardOnlyGauge-decrease_allowance)
+        - [set_rewards](#RewardOnlyGauge-set-rewards)
+        - [commit_transfer_ownership](#RewardOnlyGauge-commit-transfer-ownership)
+        - [accept_transfer_ownership](#RewardOnlyGauge-accept-transfer-ownership)
+        - [decimals](#RewardOnlyGauge-decimals)
+        - [future_admin](#RewardOnlyGauge-future-admin)
+        - [admin](#RewardOnlyGauge-admin)
+        - [reward_integral_for](#RewardOnlyGauge-reward-integral-for)
+        - [reward_integral](#RewardOnlyGauge-reward-integral)
+        - [claim_sig](#RewardOnlyGauge-claim-sig)
+        - [rewards_receiver](#RewardOnlyGauge-rewards-receiver)
+        - [reward_balances](#RewardOnlyGauge-reward-balances)
+        - [reward_tokens](#RewardOnlyGauge-reward-tokens)
+        - [lp_token](#RewardOnlyGauge-lp-token)
+        - [balance_of](#RewardOnlyGauge-balance-of)
+        - [total_supply](#RewardOnlyGauge-total-supply)
+        - [allowance](#RewardOnlyGauge-allowance)
+        - [name](#RewardOnlyGauge-name)
+        - [symbol](#RewardOnlyGauge-symbol)
+  - [Deploying Gauge Controller contract manually](#deploying-gauge-controller-contract-manually)
+    - [Entry Point methods](#GaugeController-entry-point-methods)
+        - [commit_transfer_ownership](#GaugeController-commit-transfer-ownership)
+        - [apply_transfer_ownership](#GaugeController-apply-transfer-ownership)
+        - [gauge_types](#GaugeController-gauge-types)
+        - [add_gauge](#GaugeController-add-gauge)
+        - [checkpoint](#GaugeController-checkpoint)
+        - [checkpoint_gauge](#GaugeController-checkpoint-gauge)
+        - [gauge_relative_weight](#GaugeController-gauge-relative-weight)
+        - [gauge_relative_weight_write](#GaugeController-gauge-relative-weight-write)
+        - [add_type](#GaugeController-add-type)
+        - [change_type_weight](#GaugeController-change-type-weight)
+        - [change_gauge_weight](#GaugeController-change-gauge-weight)
+        - [vote_for_gauge_weights](#GaugeController-vote-for-gauge-weights)
+        - [get_gauge_weight](#GaugeController-get-gauge-weight)
+        - [get_type_weight](#GaugeController-get-type-weight)
+        - [get_total_weight](#GaugeController-get-total-weight)
+        - [get_weights_sum_per_type](#GaugeController-get-weights-sum-per-type)
+        - [future_admin](#GaugeController-future-admin)
+        - [admin](#GaugeController-admin)
+        - [token](#GaugeController-token)
+        - [voting_escrow](#GaugeController-voting-escrow)
+        - [n_gauge_types](#GaugeController-n-gauge-types)
+        - [n_gauges](#GaugeController-n-gauges)
+        - [gauge_type_names](#GaugeController-gauge-type-names)
+        - [gauges](#GaugeController-gauges)
+        - [vote_user_slopes](#GaugeController-vote-user-slopes)
+        - [vote_user_power](#GaugeController-vote-user-power)
+        - [last_user_vote](#GaugeController-last-user-vote)
+        - [points_weight](#GaugeController-points-weight)
+        - [time-weight](#GaugeController-time-weight)
+        - [points_sum](#GaugeController-points-sum)
+        - [time_sum](#GaugeController-time-sum)
+        - [points_total](#GaugeController-points-total)
+        - [time_total](#GaugeController-time-total)
+        - [points_type_weight](#GaugeController-points-type-weight)
+        - [time_type_weight](#GaugeController-time-type-weight)
+  - [Deploying Minter contract manually](#deploying-minter-contract-manually)
+    - [Entry Point methods](#Minter-entry-point-methods)
+        - [mint](#Minter-mint)
+        - [mint_many](#Minter-mint-many)
+        - [mint_for](#Minter-mint-for)
+        - [toggle_approve_mint](#Minter-toggle-approve-mint)
+        - [token](#Minter-token)
+        - [Controller](#Minter-Controller)
+        - [allowed_to_mint_for](#Minter-allowed-to-mint-for)
+        - [minted](#Minter-minted)
+  - [Deploying Curve Rewards contract manually](#deploying-curve-rewards-contract-manually)
+    - [Entry Point methods](#CurveRewards-entry-point-methods)
+        - [last_time_reward_applicable](#CurveRewards-last-time-reward-applicable)
+        - [reward_per_token](#CurveRewards-reward-per-token)
+        - [earned](#CurveRewards-earned)
+        - [stake](#CurveRewards-stake)
+        - [withdraw](#CurveRewards-withdraw)
+        - [exit](#CurveRewards-exit)
+        - [get_reward](#CurveRewards-get-reward)
+        - [notify_reward_amount](#CurveRewards-notify-reward-amount)
+        - [total_supply](#CurveRewards-total-supply)
+        - [balance_of](#CurveRewards-balance-of)
+        - [stake_lp](#CurveRewards-notify-stake-lp)
+        - [withdraw_lp](#CurveRewards-withdraw-lp)
+        - [set_reward_distribution](#CurveRewards-set-reward-distribution)
+        - [owner](#CurveRewards-owner)
+        - [is_owner](#CurveRewards-is-owner)
+        - [renounce_ownership](#CurveRewards-renounce-ownership)
+        - [transfer_ownership](#CurveRewards-transfer-ownership)
+        - [uni](#CurveRewards-uni)
+        - [snx](#CurveRewards-snx)
+        - [duration](#CurveRewards-duration)
+        - [period_finish](#CurveRewards-period-finish)
+        - [reward_rate](#CurveRewards-reward-rate)
+        - [last_update_time](#CurveRewards-last-update-time)
+        - [reward_per_token_stored](#CurveRewards-reward-per-token-stored)
+        - [user_reward_per_token_paid](#CurveRewards-user-reward-per-token-paid)
+        - [rewards](#CurveRewards-rewards)
+  - [Deploying Lp Token Wrapper contract manually](#deploying-lp-token-wrapper-contract-manually)
+    - [Entry Point methods](#LpTokenWrapper-entry-point-methods)
+        - [stake](#LpTokenWrapper-stake)
+        - [withdraw](#LpTokenWrapper-withdraw)
+        - [total_supply](#LpTokenWrapper-total-supply)
+        - [balance_of](#LpTokenWrapper-balance-of)
+        - [uni](#LpTokenWrapper-uni)
+  - [Deploying Ownable contract manually](#deploying-ownable-contract-manually)
+    - [Entry Point methods](#Ownable-entry-point-methods)
+        - [owner](#Ownable-owner)
+        - [is_owner](#Ownable-is-owner)
+        - [renounce_ownership](#Ownable-renounce-ownership)
+        - [transfer_ownership](#Ownable-transfer-ownership)
+  - [Deploying Liquidity Gauge Wrapper contract manually](#deploying-liquidity-gauge-wrapper-contract-manually)
+    - [Entry Point methods](#LiquidityGaugeWrapper-entry-point-methods)
+      - [user_checkpoint](#LiquidityGaugeWrapper-user-checkpoint)
+      - [claimable_tokens](#LiquidityGaugeWrapper-claimable-tokens)
+      - [claim_tokens](#LiquidityGaugeWrapper-claim-tokens)
+      - [set_approve_deposit](#LiquidityGaugeWrapper-set-approve-deposit)
+      - [deposit](#LiquidityGaugeWrapper-deposit)
+      - [withdraw](#LiquidityGaugeWrapper-user-checkpoint)
+      - [allowance](#LiquidityGaugeWrapper-allowance)
+      - [transfer](#LiquidityGaugeWrapper-transfer)
+      - [transfer_from](#LiquidityGaugeWrapper-transfer-from)
+      - [approve](#LiquidityGaugeWrapper-approve)
+      - [increase_allowance](#LiquidityGaugeWrapper-increase-allowance)
+      - [decrease_allowance](#LiquidityGaugeWrapper-decrease-allowance)
+      - [kill_me](#LiquidityGaugeWrapper-kill-me)
+      - [commit_transfer_ownership](#LiquidityGaugeWrapper-commit-transfer-ownership)
+      - [apply_transfer_ownership](#LiquidityGaugeWrapper-apply-transfer-ownership)
+      - [minter](#LiquidityGaugeWrapper-minter)
+      - [crv_token](#LiquidityGaugeWrapper-crv-token)
+      - [lp_token](#LiquidityGaugeWrapper-lp-token)
+      - [gauge](#LiquidityGaugeWrapper-gauge)
+      - [balance_of](#LiquidityGaugeWrapper-balance-of)
+      - [total_supply](#LiquidityGaugeWrapper-total-supply)
+      - [name](#LiquidityGaugeWrapper-name)
+      - [symbol](#LiquidityGaugeWrapper-symbol)
+      - [decimals](#LiquidityGaugeWrapper-decimals)
+      - [future_admin](#LiquidityGaugeWrapper-future-admin)
+      - [admin](#LiquidityGaugeWrapper-admin)
+      - [claimable_crv](#LiquidityGaugeWrapper-claimable-crv)
+      - [approved_to_deposit](#LiquidityGaugeWrapper-approved-to-deposit)
+      - [is_killed](#LiquidityGaugeWrapper-is-killed)
+  - [Deploying Liquidity Gauge Reward Wrapper contract manually](#deploying-liquidity-gauge-reward-wrapper-contract-manually)
+    - [Entry Point methods](#LiquidityGaugeRewardWrapper-entry-point-methods)
+      - [user_checkpoint](#LiquidityGaugeRewardWrapper-user-checkpoint)
+      - [claimable_tokens](#LiquidityGaugeRewardWrapper-claimable-tokens)
+      - [claimable_reward](#LiquidityGaugeRewardWrapper-claimable-reward)
+      - [claim_tokens](#LiquidityGaugeRewardWrapper-claim-tokens)
+      - [set_approve_deposit](#LiquidityGaugeRewardWrapper-set-approve-deposit)
+      - [deposit](#LiquidityGaugeRewardWrapper-deposit)
+      - [withdraw](#LiquidityGaugeRewardWrapper-withdraw)
+      - [allowance](#LiquidityGaugeRewardWrapper-claim-tokens)
+      - [transfer](#LiquidityGaugeRewardWrapper-transfer)
+      - [transfer_from](#LiquidityGaugeRewardWrapper-transfer-from)
+      - [approve](#LiquidityGaugeRewardWrapper-approve)
+      - [increase_allowance](#LiquidityGaugeRewardWrapper-increase-allowance)
+      - [decrease_allowance](#LiquidityGaugeRewardWrapper-decrease-allowance)
+      - [kill_me](#LiquidityGaugeRewardWrapper-kill-me)
+      - [commit_transfer_ownership](#LiquidityGaugeRewardWrapper-commit-transfer-ownership)
+      - [apply_transfer_ownership](#LiquidityGaugeRewardWrapper-apply-transfer-ownership)
+      - [minter](#LiquidityGaugeRewardWrapper-minter)
+      - [crv_token](#LiquidityGaugeRewardWrapper-crv-token)
+      - [lp_token](#LiquidityGaugeRewardWrapper-lp-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [gauge](#LiquidityGaugeRewardWrapper-gauge)
+      - [balance_of](#LiquidityGaugeRewardWrapper-balance-of)
+      - [total_supply](#LiquidityGaugeRewardWrapper-total-supply)
+      - [name](#LiquidityGaugeRewardWrapper-name)
+      - [symbol](#LiquidityGaugeRewardWrapper-symbol)
+      - [decimals](#LiquidityGaugeRewardWrapper-decimals)
+      - [future_admin](#LiquidityGaugeRewardWrapper-future-admin)
+      - [admin](#LiquidityGaugeRewardWrapper-admin)
+      - [claimable_crv](#LiquidityGaugeRewardWrapper-claimable-crv)
+      - [approved_to_deposit](#LiquidityGaugeRewardWrapper-approved-to-deposit)
+      - [is_killed](#LiquidityGaugeRewardWrapper-is-killed)
+      - [reward_integral_for](#LiquidityGaugeRewardWrapper-reward-integral-for)
+      - [reward_integral](#LiquidityGaugeRewardWrapper-reward-integral)
+      - [claimable_rewards](#LiquidityGaugeRewardWrapper-claimable-rewards)
+
+      
+  - [Deploying Liquidity Gauge Reward contract manually](#deploying-liquidity-gauge-reward-contract-manually)
+    - [Entry Point methods](#LiquidityGaugeReward-entry-point-methods)
+        - [user_checkpoint](#LiquidityGaugeReward-user-checkpoint)
+        - [claimable_tokens](#LiquidityGaugeReward-claimable-tokens)
+        - [claimable_reward](#LiquidityGaugeReward-claimable-reward)
+        - [kick](#LiquidityGaugeReward-kick)
+        - [set_approve_deposit](#LiquidityGaugeReward-set-approve-deposit)
+        - [deposit](#LiquidityGaugeReward-deposit)
+        - [withdraw](#LiquidityGaugeReward-withdraw)
+        - [claim_rewards](#LiquidityGaugeReward-claim-rewards)
+        - [integrate_checkpoint](#LiquidityGaugeReward-integrate-checkpoint)
+        - [kill_me](#LiquidityGaugeReward-kill-me)
+        - [commit_transfer_ownership](#LiquidityGaugeReward-commit-transfer-ownership)
+        - [apply_transfer_ownership](#LiquidityGaugeReward-apply-transfer-ownership)
+        - [toggle_external_rewards_claim](#LiquidityGaugeReward-toggle-external-rewards-claim)
+        - [minter](#LiquidityGaugeReward-minter)
+        - [crv_token](#LiquidityGaugeReward-crv-token)
+        - [lp_token](#LiquidityGaugeReward-lp-token)
+        - [controller](#LiquidityGaugeReward-controller)
+        - [voting_escrow](#LiquidityGaugeReward-voting-escrow)
+        - [balance_of](#LiquidityGaugeReward-balance-of)
+        - [total_supply](#LiquidityGaugeReward-total-supply)
+        - [future_epoch_time](#LiquidityGaugeReward-future-epoch-time)
+        - [approved_to_deposit](#LiquidityGaugeReward-approved-to-deposit)
+        - [working_balances](#LiquidityGaugeReward-working-balances)
+        - [working_supply](#LiquidityGaugeReward-working-supply)
+        - [period](#LiquidityGaugeReward-period)
+        - [period_timestamp](#LiquidityGaugeReward-period-timestamp)
+        - [integrate_inv_supply](#LiquidityGaugeReward-integrate-inv-supply)
+        - [integrate_inv_supply_of](#LiquidityGaugeReward-integrate-inv-supply-of)
+        - [integrate_checkpoint_of](#LiquidityGaugeReward-integrate-checkpoint-of)
+        - [integrate_fraction](#LiquidityGaugeReward-integrate-fraction)
+        - [inflation_rate](#LiquidityGaugeReward-inflation-rate)
+        - [reward_contract](#LiquidityGaugeReward-reward-contract)
+        - [rewarded_token](#LiquidityGaugeReward-rewarded-token)
+        - [reward_integral](#LiquidityGaugeReward-reward-integral)
+        - [reward_integral_for](#LiquidityGaugeReward-reward-integral-for)
+        - [rewards_for](#LiquidityGaugeReward-rewards-for)
+        - [claimed_rewards_for](#LiquidityGaugeReward-claimed-rewards-for)
+        - [admin](#LiquidityGaugeReward-admin)
+        - [future_admin](#LiquidityGaugeReward-future-admin)
+        - [is_killed](#LiquidityGaugeReward-is-killed)
+        - [is_claiming_rewards](#LiquidityGaugeReward-is-claiming-rewards)
+  - [Deploying Liquidity Gauge V3 contract manually](#deploying-liquidity-gauge-v3-contract-manually)
+      - [Entry Point methods](#LiquidityGaugeV3-entry-point-methods)
+          - [decimals](#LiquidityGaugeV3-decimals)
+          - [integrate_checkpoint](#LiquidityGaugeV3-integrate-checkpoint)
+          - [user_checkpoint](#LiquidityGaugeV3-user-checkpoint)
+          - [claimable_tokens](#LiquidityGaugeV3-claimable-tokens)
+          - [reward_contract](#LiquidityGaugeV3-reward-contract)
+          - [last_claim](#LiquidityGaugeV3-last-claim)
+          - [claimed_reward](#LiquidityGaugeV3-claimed-reward)
+          - [claimable_reward](#LiquidityGaugeV3-claimable-reward)
+          - [claimable_reward_write](#LiquidityGaugeV3-claimable-reward-write)
+          - [set_rewards_receiver](#LiquidityGaugeV3-set-rewards-receiver)
+          - [claim_rewards](#LiquidityGaugeV3-claim-rewards)
+          - [kick](#LiquidityGaugeV3-kick)
+          - [deposit](#LiquidityGaugeV3-deposit)
+          - [withdraw](#LiquidityGaugeV3-withdraw)
+          - [transfer](#LiquidityGaugeV3-transfer)
+          - [transfer_from](#LiquidityGaugeV3-transfer-from)
+          - [approve](#LiquidityGaugeV3-approve)
+          - [increase_allowance](#LiquidityGaugeV3-increase-allowance)
+          - [decrease_allowance](#LiquidityGaugeV3-decrease-allowance)
+          - [set_rewards](#LiquidityGaugeV3-set-rewards)
+          - [set_killed](#LiquidityGaugeV3-set-killed)
+          - [commit_transfer_ownership](#LiquidityGaugeV3-commit-transfer-ownership)
+          - [accept_transfer_ownership](#LiquidityGaugeV3-accept-transfer-ownership)
+          - [minter](#LiquidityGaugeV3-minter)
+          - [crv_token](#LiquidityGaugeV3-crv-token)
+          - [lp_token](#LiquidityGaugeV3-lp-token)
+          - [controller](#LiquidityGaugeV3-controller)
+          - [voting_escrow](#LiquidityGaugeV3-voting-escrow)
+          - [future_epoch_time](#LiquidityGaugeV3-future-epoch-time)
+          - [balance_of](#LiquidityGaugeV3-balance-of)
+          - [total_supply](#LiquidityGaugeV3-total-supply)
+          - [allowance](#LiquidityGaugeV3-allowance)
+          - [name](#LiquidityGaugeV3-name)
+          - [symbol](#LiquidityGaugeV3-symbol)
+          - [working_balances](#LiquidityGaugeV3-working-balances)
+          - [working_supply](#LiquidityGaugeV3-working-supply)
+          - [period](#LiquidityGaugeV3-period)
+          - [period_timestamp](#LiquidityGaugeV3-period-timestamp)
+          - [integrate_inv_supply](#LiquidityGaugeV3-integrate-inv-supply)
+          - [integrate_inv_supply_of](#LiquidityGaugeV3-integrate-inv-supply-of)
+          - [integrate_checkpoint_of](#LiquidityGaugeV3-integrate-checkpoint-of)
+          - [integrate_fraction](#LiquidityGaugeV3-integrate-fraction)
+          - [inflation_rate](#LiquidityGaugeV3-inflation-rate)
+          - [reward_tokens](#LiquidityGaugeV3-reward-tokens)
+          - [rewards_receiver](#LiquidityGaugeV3-rewards-receiver)
+          - [reward_integral](#LiquidityGaugeV3-reward-integral)
+          - [reward_integral_for](#LiquidityGaugeV3-reward-integral-for)
+          - [admin](#LiquidityGaugeV3-admin)
+          - [future_admin](#LiquidityGaugeV3-future-admin)
+          - [is_killed](#LiquidityGaugeV3-is-killed)
+  - [Deploying Curve Token V3 contract manually](#deploying-curve-token-v3-contract-manually)
+      - [Entry Point methods](#CurveTokenV3-entry-point-methods)
+          - [decimals](#CurveTokenV3-decimals)
+          - [transfer](#CurveTokenV3-transfer)
+          - [transfer_from](#CurveTokenV3-transfer-from)
+          - [approve](#CurveTokenV3-approve)
+          - [increase_allowance](#CurveTokenV3-increase-allowance)
+          - [decrease_allowance](#CurveTokenV3-decrease-allowance)
+          - [mint](#CurveTokenV3-mint)
+          - [burn_from](#CurveTokenV3-burn-from)
+          - [set_minter](#CurveTokenV3-set-minter)
+          - [set_name](#CurveTokenV3-set-name)
+          - [name](#CurveTokenV3-name)
+          - [symbol](#CurveTokenV3-symbol)
+          - [total_supply](#CurveTokenV3-total-supply)
+          - [minter](#CurveTokenV3-minter)
+          - [balance_of](#CurveTokenV3-balance-of)
+          - [allowance](#CurveTokenV3-allowance)
+  - [Deploying ERC20 CRV contract manually](#deploying-erc20-crv-contract-manually)
+      - [Entry Point methods](#ERC20CRV-entry-point-methods)
+          - [start_epoch_time_write](#ERC20CRV-start-epoch-time-write)
+          - [future-epoch-time-write](#ERC20CRV-future-epoch-time-write)
+          - [available_supply](#ERC20CRV-available-supply)
+          - [mintable_in_timeframe](#ERC20CRV-mintable-in-timeframe)
+          - [set_minter](#ERC20CRV-set-minter)
+          - [set_admin](#ERC20CRV-set-admin)
+          - [total_supply](#ERC20CRV-total-supply)
+          - [allowance](#ERC20CRV-allowance)
+          - [transfer](#ERC20CRV-transfer)
+          - [transfer_from](#ERC20CRV-transfer-from)
+          - [approve](#ERC20CRV-approve)
+          - [mint](#ERC20CRV-mint)
+          - [burn](#ERC20CRV-burn)
+          - [set_name](#ERC20CRV-set-name)
+          - [name](#ERC20CRV-name)
+          - [symbol](#ERC20CRV-symbol)
+          - [decimals](#ERC20CRV-decimals)
+          - [balance_of](#ERC20CRV-balance-of)
+          - [minter](#ERC20CRV-minter)
+          - [admin](#ERC20CRV-admin)
+          - [mining_epoch](#ERC20CRV-mining-epoch)
+          - [rate](#ERC20CRV-rate)
+  - [Deploying Fee Distributor contract manually](#deploying-fee-distributor-contract-manually)
+      - [Entry Point methods](#FeeDistributor-entry-point-methods)
+          - [checkpoint_token](#FeeDistributor-checkpoint-token)
+          - [ve_for_at](#FeeDistributor-ve-for-at)
+          - [checkpoint-total-supply](#FeeDistributor-checkpoint-total-supply)
+          - [claim](#FeeDistributor-claim)
+          - [claim_many](#FeeDistributor-claim-many)
+          - [burn](#FeeDistributor-burn)
+          - [commit_admin](#FeeDistributor-commit-admin)
+          - [apply_admin](#FeeDistributor-apply-admin)
+          - [toggle_allow_checkpoint_token](#FeeDistributor-toggle-allow-checkpoint-token)
+          - [kill_me](#FeeDistributor-kill-me)
+          - [recover_balance](#FeeDistributor-recover-balance)
+          - [start_time](#FeeDistributor-start-time)
+          - [time_cursor](#FeeDistributor-time-cursor)
+          - [time_cursor_of](#FeeDistributor-time-cursor-of)
+          - [user_epoch_of](#FeeDistributor-user-epoch-of)
+          - [last_token_time](#FeeDistributor-last-token-time)
+          - [tokens_per_week](#FeeDistributor-tokens-per-week)
+          - [voting_escrow](#FeeDistributor-voting-escrow)
+          - [token](#FeeDistributor-token)
+          - [total_received](#FeeDistributor-total-received)
+          - [token_last_balance](#FeeDistributor-token-last-balance)
+          - [ve_supply](#FeeDistributor-ve-supply)
+          - [admin](#FeeDistributor-admin)
+          - [future_admin](#FeeDistributor-future-admin)
+          - [can_checkpoint_token](#FeeDistributor-can-checkpoint-token)
+          - [emergency_return](#FeeDistributor-emergency-return)
+          - [is_killed](#FeeDistributor-is-killed)
+  - [Deploying Gauge Proxy contract manually](#deploying-gauge-proxy-contract-manually)
+      - [Entry Point methods](#GaugeProxy-entry-point-methods)
+          - [commit_set_admins](#GaugeProxy-commit-set-admins)
+          - [accept_set_admins](#GaugeProxy-accept-set-admins)
+          - [commit_transfer_ownership](#GaugeProxy-commit-transfer-ownership)
+          - [accept_transfer_ownership](#GaugeProxy-accept-transfer-ownership)
+          - [set_killed](#GaugeProxy-set-killed)
+          - [set_rewards](#GaugeProxy-set-rewards)
+          - [ownership_admin](#GaugeProxy-ownership-admin)
+          - [emergency_admin](#GaugeProxy-emergency-admin)
+          - [future_ownership_admin](#GaugeProxy-future-ownership-admin)
+          - [future_emergency_admin](#GaugeProxy-future-emergency-admin)
+  - [Deploying I Reward Distribution Recipient contract manually](#deploying-i-reward-distribution-recipient-contract-manually)
+      - [Entry Point methods](#IRewardDistributionRecipient-entry-point-methods)
+          - [rate](#IRewardDistributionRecipient-rate)
+          - [rate](#IRewardDistributionRecipient-rate)
+          - [rate](#IRewardDistributionRecipient-rate)
+          - [rate](#IRewardDistributionRecipient-rate)
+          - [rate](#IRewardDistributionRecipient-rate)
+          - [rate](#IRewardDistributionRecipient-rate)
+          - [rate](#IRewardDistributionRecipient-rate)
+          - [rate](#IRewardDistributionRecipient-rate)
+          - [rate](#IRewardDistributionRecipient-rate)
+  - [Deploying Vesting Escrow contract manually](#deploying-vesting-escrow-contract-manually)
+      - [Entry Point methods](#VestingEscrow-entry-point-methods)
+          - [rate](#VestingEscrow-rate)
+          - [rate](#VestingEscrow-rate)
+          - [rate](#VestingEscrow-rate)
+          - [rate](#VestingEscrow-rate)
+          - [rate](#VestingEscrow-rate)
+          - [rate](#VestingEscrow-rate)
+          - [rate](#VestingEscrow-rate)
+  - [Deploying Vesting Escrow Simple contract manually](#deploying-vesting-escrow-simple-contract-manually)
+      - [Entry Point methods](#VestingEscrowSimple-entry-point-methods)
+  - [Deploying Vesting Escrow Factory contract manually](#deploying-vesting-escrow-factory-contract-manually)
+      - [Entry Point methods](#VestingEscrowFactory-entry-point-methods)
+  - [Deploying Voting Escrow contract manually](#deploying-voting-escrow-contract-manually)
+      - [Entry Point methods](#VotingEscrow-entry-point-methods)
+
+
 
 ### Install the prerequisites
 
@@ -52,34 +449,36 @@ sudo apt update
 # Install the command-line JSON processor
 sudo apt install jq -y
 # Install rust
+# Choose cutomize intallation to install nightly version
+# Install the nightly version (by default stable toolchain is installed)
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-#Install the nightly version (by default stable toolchain is installed)
 rustup install nightly
-#Check that nightly toolchain version is installed(this will list stable and nightly versions)
+# Check that nightly toolchain version is installed(this will list stable and nightly versions)
 rustup toolchain list
-#Set rust nightly as default
+# Set rust nightly as default
 rustup default nightly
 # Install wasm32-unknown-unknown
 rustup target add wasm32-unknown-unknown
-#rust Version
+# Rust Version
 rustup --version
-#Install Cmake
- sudo apt-get -y install cmake
+# Install Cmake
+sudo apt-get -y install cmake
 Note:https://cgold.readthedocs.io/en/latest/first-step/installation.html
-#cmake Version
+# cmake Version
 cmake --version
-#Installing the Casper Crates
+# Installing the Casper Crates
 cargo install cargo-casper
 # Add Casper repository
 echo "deb https://repo.casperlabs.io/releases" bionic main | sudo tee -a /etc/apt/sources.list.d/casper.list
 curl -O https://repo.casperlabs.io/casper-repo-pubkey.asc
-sudo apt-key add casper-repo-pubkey.ascr
+sudo apt-key add casper-repo-pubkey.asc
 sudo apt update
+sudo apt install libssl-dev
+sudo apt install pkg-config
 # Install the Casper client software
-Install Casper-client
 cargo +nightly install casper-client
 # To check Casper Client Version
-Casper-client --version
+casper-client --version
 # Commands for help
 casper-client --help
 casper-client <command> --help
@@ -112,26 +511,30 @@ available in your PATH to reduce the size of compiled Wasm.
 You can run this commands to build individual smart contracts.
 
 ```
-make build-contract-curve-token-v3
-make build-contract-erc20
-make build-i-reward-distribution-recipient
-make build-contract-erc20-crv
-make build-contract-fee-distributor
-make build-contract-gauge-proxy
-make build-contract-liquidity-gauge-reward
-make build-contract-liquidity-gauge-reward-wrapper
-make build-contract-liquidity-gauge-wrapper
-make build-contract-vesting-escrow-factory
-make build-contract-liquidity-gauge-v3
-make build-contract-vesting-escrow-simple
-make build-contract-voting-escrow
-make build-contract-ownable
-make build-lp-token-wrapper
-make build-curve-rewards
-make build-contract-minter
-make build-contract-gauge-controller
-make build-contract-reward-only-gauge
-make build-contract-vesting-escrow
+build-contract-curve-token-v3
+build-liquidity-gauge-reward-wrapper-session-code
+build-i-reward-distribution-recipient	
+build-contract-erc20
+build-contract-erc20-crv
+build-contract-fee-distributor
+build-contract-gauge-controller
+build-contract-gauge-proxy
+build-contract-liquidity-gauge-reward
+build-contract-liquidity-gauge-reward-wrapper
+build-contract-liquidity-gauge-wrapper
+build-contract-minter
+build-contract-reward-only-gauge
+build-contract-vesting-escrow
+build-contract-vesting-escrow-factory
+build-contract-liquidity-gauge-v3
+build-contract-vesting-escrow-simple
+build-contract-voting-escrow
+build-contract-ownable
+build-contract-ownable-test-contract
+build-lp-token-wrapper-session-code
+build-lp-token-wrapper
+build-curve-rewards-session-code
+build-curve-rewards
 ```
 
 #### Test individual Smart Contract
@@ -139,7 +542,7 @@ make build-contract-vesting-escrow
 You can run this commands to build individual smart contracts.
 
 ```
-	make test-curve-token-v3
+  make test-curve-token-v3
 	make test-erc20
 	make test-erc20-crv
 	make test-fee-distributor
@@ -160,13 +563,22 @@ You can run this commands to build individual smart contracts.
 	make test-liquidity-gauge-v3
 ```
 
-#### Run ALL Smart Contracts
+#### Run All Smart Contracts
 
 Run this command to build & test all smart contract.
 
 ```
 make all
 ```
+
+#### Check Lint in Smart Contracts
+
+Run this command to build & test all smart contract.
+
+```
+make check-lint
+```
+
 ### Deploying Reward Only Gauge contract manually
 
 If you need to deploy the `Reward Only Gauge` contract manually you need to pass some parameters. Following is the command to deploy the `Reward Only Gauge contract`.
@@ -1096,7 +1508,7 @@ Following are the CurveRewards's entry point methods.
 - #### last_time_reward_applicable <a id="CurveRewards-last-time-reward-applicable"></a>
   Retruns the min value between blocktime and period_finish.
 
-Following is the table of parameters.
+  Following is the table of parameters.
 
 | Parameter Name | Type |
 | -------------- | ---- |
@@ -1376,6 +1788,7 @@ sudo casper-client put-deploy \
     --session-path path_to_wasm_file \
     --payment-amount 10000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
+    --session-arg="uni:Key='Address of ERC20 Contract Package Hash'" \
     --session-arg="contract_name:string='contract_name'"
 ```
 
@@ -2716,7 +3129,7 @@ Following is the table of parameters.
 | Parameter Name | Type |
 | -------------- | ---- |
 
-This method **returns** `U256`.
+This method **returns** `u8`.
 
 - #### integrate_checkpoint <a id="LiquidityGaugeV3-integrate-checkpoint"></a>
   Return the U256.
@@ -4179,330 +4592,6 @@ Following is the table of parameters.
 
 This method **returns** `Key`.
 
-### Deploying Gauge Proxy contract manually
-
-If you need to deploy the `Gauge Proxy` contract manually you need to pass some parameters. Following is the command to deploy the `Gauge Proxy contract`.
-
-```bash
-sudo casper-client put-deploy \
-    --chain-name chain_name \
-    --node-address http://$NODE_ADDRESS:7777/ \
-    --secret-key path_to_secret_key.pem \
-    --session-path path_to_wasm_file \
-    --payment-amount 10000000000 \
-    --session-arg="public_key:public_key='Public Key In Hex'" \
-    --session-arg="ownership_admin:Key='ownership_admin address'" \
-    --session-arg="emergency_admin:Key='emergency_admin address'" \
-    --session-arg="contract_name:string='contract_name'"
-```
-
-## Entry Point methods <a id="GaugeProxy-entry-point-methods"></a>
-
-Following are the GaugeProxy's entry point methods.
-
-- #### commit_set_admins <a id="GaugeProxy-commit-set-admins"></a>
-  Set ownership admin to `o_admin` and emergency admin to `e_admin`.
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-| o_admin        | Key  |
-| e_admin        | Key  |
-
-This method **returns** nothing.
-
-- #### accept_set_admins <a id="GaugeProxy-accept-set-admins"></a>
-   Apply the effects of `commit_set_admins`. Only callable by the new owner admin. 
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-
-This method **returns** nothing.
-
-- #### commit_transfer_ownership <a id="GaugeProxy-commit-transfer-ownership"></a>
-  Transfer ownership for liquidity gauge `gauge` to `new_owner`.
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-| gauge          | Key  |
-| new_owner      | Key  |
-
-This method **returns** nothing.
-
-- #### accept_transfer_ownership <a id="GaugeProxy-accept-transfer-ownership"></a>
-  Apply transferring ownership of `gauge`.
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-| gauge          | Key  |
-
-This method **returns** nothing.
-
-- #### set_killed <a id="GaugeProxy-set-killed"></a>
-  Set the killed status for `gauge`. When killed, the gauge always yields a rate of 0 and so cannot mint CRV. 
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-| gauge          | Key  |
-| is_killed      | bool |
-
-This method **returns** nothing.
-
-- #### set_rewards <a id="GaugeProxy-set-rewards"></a>
-  Set the active reward contract for `_gauge`. 
-
-Following is the table of parameters.
-
-| Parameter Name | Type      |
-| -------------- | --------- |
-| gauge          | Key       |
-| reward_contract| Key       |
-| sigs           | Bytes     |
-| reward_tokens  | Vec`<Key>`|
-
-This method **returns** nothing.
-
-- #### ownership_admin <a id="GaugeProxy-ownership-admin"></a>
-   Return ownership_admin. 
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-
-This method **returns** `Key`.
-
-- #### emergency_admin <a id="GaugeProxy-emergency-admin"></a>
-   Return emergency_admin. 
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-
-This method **returns** `Key`.
-
-- #### future_ownership_admin <a id="GaugeProxy-future-ownership-admin"></a>
-   Return future_ownership_admin. 
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-
-This method **returns** `Key`.
-
-- #### future_emergency_admin <a id="GaugeProxy-future-emergency-admin"></a>
-   Return future_emergency_admin. 
-
-Following is the table of parameters.
-
-| Parameter Name | Type |
-| -------------- | ---- |
-
-This method **returns** `Key`.
-
-### Deploying ERC20 contract manually
-
-If you need to deploy the `ERC20 contract` manually you need to pass the some parameters. Following is the command to deploy the `ERC20 contract`.
-
-```bash
-sudo casper-client put-deploy \
-    --chain-name chain_name \
-    --node-address http://$NODE_ADDRESS:7777/ \
-    --secret-key path_to_secret_key.pem \
-    --session-path path_to_wasm_file \
-    --payment-amount 10000000000 \
-    --session-arg="public_key:public_key='Public Key In Hex'" \
-    --session-arg="name:string='token-name'" \
-    --session-arg="symbol:string='token-symbol'" \
-    --session-arg="decimals:u8='unsigned integer value'" \
-    --session-arg="initial_supply:u256='unsigned integer value'" \
-    --session-arg="contract_name:string='contract_name'"
-```
-
-## Entry Point methods <a id="erc20-entry-point-methods"></a>
-
-Following are the ERC20's entry point methods.
-
-- #### transfer <a id="erc20-transfer"></a>
-Lets ` self.get_caller() ` send pool tokens to a recipient hash.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-recipient | Key
-amount | U256
-
-
-This method **returns** nothing.
-
-- #### transfer_from <a id="erc20-transfer-from"></a>
-Sends pool tokens from one hash to another.
-<br>User needs to call approve method before calling the ` tranfer_from `.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-owner | Key
-recipient | Key
-amount | U256
-
-
-This method **returns** nothing.
-<br>**Recommendation:** 
-The exploit is mitigated through use of functions that increase/decrease the allowance relative to its current value, such as `increaseAllowance()` and `decreaseAllowance()`,
-Pending community agreement on an ERC standard that would protect against this exploit, we recommend that developers of applications dependent on approve() / transferFrom()
-should keep in mind that they have to set allowance to 0 first and verify if it was used before setting the new value.
-<br>**Note:**  Teams who decide to wait for such a standard should make these
-recommendations to app developers who work with their token contract.
-
-- #### permit <a id="erc20-permit"></a>
-Sets the allowance for a spender where approval is granted via a signature.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-public | String
-signature | String
-owner | Key
-spender | Key
-value | U256
-deadline | u64
-
-
-This method **returns** nothing.
-
-
-- #### approve <a id="erc20-approve"></a>
-Lets ` self.get_caller() ` set their allowance for a spender.
-<br>user needs to call this `approve` method before calling the `transfer_from` method.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-spender | Key
-amount | U256
-
-This method **returns** nothing.
-<br>**Recommendation:** 
-The exploit is mitigated through use of functions that increase/decrease the allowance relative to its current value, such as `increaseAllowance()` and `decreaseAllowance()`,
-Pending community agreement on an ERC standard that would protect against this exploit, we recommend that developers of applications dependent on approve() / transferFrom()
-should keep in mind that they have to set allowance to 0 first and verify if it was used before setting the new value.
-<br>**Note:**  Teams who decide to wait for such a standard should make these
-recommendations to app developers who work with their token contract.
-
-- #### balance_of <a id="erc20-balance-of"></a>
-This method will return the balance of owner in `ERC20 Contract`.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-owner | Key
-
-
-This method **returns** U256.
-
-
-- #### nonce <a id="erc20-nonce"></a>
-Returns the current `nonce` for an address for use in ` permit `.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-owner | Key
-
-
-This method **returns** U256.
-
-
-- #### allowance <a id="erc20-allowance"></a>
-Returns the amount of liquidity tokens owned by an hash that a spender is allowed to transfer via ` transfer_from `.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-owner | Key
-spender | Key
-
-
-This method **returns** U256.
-
-
-- #### total_supply <a id="erc20-total-supply"></a>
-Returns the total amount of pool tokens for a pair.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-
-
-This method **returns** U256.
-
-
-- #### mint <a id="erc20-mint"></a>
-This method mints the number of tokens provided by user against the hash provided by user.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-to | Key
-amount | U256
-
-This method **returns** nothing.
-
-
-- #### burn <a id="erc20-burn"></a>
-This method burns the number of tokens provided by user against the hash provided by user.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-from | Key
-amount | U256
-
-This method **returns** nothing.
-<br>**Note:** To `burn` the tokens against the hash provided by user, User needs to `mint` tokens first in `ERC20`.
-
-- #### name <a id="erc20-name"></a>
-Returns the `name` of tokens for a pair.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-
-This method **returns** String.
-
-- #### symbol <a id="erc20-symbol"></a>
-Returns the `symbol` of tokens for a pair.
-
-Following is the table of parameters.
-
-Parameter Name | Type
----|---
-
-This method **returns** String.
-
 ### Deploying I Reward Distribution Recipient contract manually
 
 If you need to deploy the `I Reward Distribution Recipient` contract manually you need to pass some parameters. Following is the command to deploy the `I Reward Distribution Recipient contract`.
@@ -5444,7 +5533,7 @@ sudo casper-client put-deploy \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="token_addr:Key='``ERC20CRV` token address'" \
     --session-arg="name:String='Token name'" \
-    --session-arg="name:String='Token symbol'" \
+    --session-arg="symbol:String='Token symbol'" \
     --session-arg="version:String='Contract version'" \
     --session-arg="contract_name:string='contract_name'"
 ```

@@ -28,7 +28,7 @@ build-contract-curve-token-v3:
 build-liquidity-gauge-reward-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-reward-wrapper-session-code --target wasm32-unknown-unknown
 build-i-reward-distribution-recipient:
-	cargo build --release -p i-reward-distribution-recipient --target wasm32-unknown-unknown
+	cargo build --release -p session-code -p i-reward-distribution-recipient --target wasm32-unknown-unknown
 build-liquidity-gauge-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-wrapper-session-code --target wasm32-unknown-unknown	
 build-contract-erc20:
@@ -47,7 +47,7 @@ build-contract-gauge-proxy:
 	cargo build --release -p gauge-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/gauge-proxy.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward:
-	cargo build --release -p curve-rewards -p session-code -p erc20_crv -p erc20 -p voting-escrow -p gauge-controller  -p minter -p liquidity-gauge-reward --target wasm32-unknown-unknown
+	cargo build --release -p liquidity-gauge-reward-session-code -p curve-rewards -p session-code -p erc20_crv -p erc20 -p voting-escrow -p gauge-controller  -p minter -p liquidity-gauge-reward --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward-wrapper:
 	cargo build --release -p erc20_crv -p erc20 -p minter -p voting-escrow -p gauge-controller -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p curve-rewards --target wasm32-unknown-unknown
@@ -78,9 +78,7 @@ build-contract-voting-escrow:
 	cargo build --release -p session-code -p erc20 -p voting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-ownable:
-	cargo build --release -p ownable --target wasm32-unknown-unknown
-build-contract-ownable-test-contract:
-	cargo build --release -p test --target wasm32-unknown-unknown
+	cargo build --release -p ownable-session-code -p ownable --target wasm32-unknown-unknown
 build-lp-token-wrapper-session-code:
 	cargo build --release -p lp-token-wrapper-session-code --target wasm32-unknown-unknown
 build-lp-token-wrapper:
@@ -160,6 +158,7 @@ copy-wasm-file-liquidity-gauge-reward:
 	cp ${wasm_src_path}/erc20-token.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-token.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/liquidity-gauge-reward-session-code.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/minter-token.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${liquidity_gauge_reward_des_wasm}
@@ -218,10 +217,11 @@ copy-wasm-file-liquidity-gauge-v3:
 	cp ${root_directory}${wasm_src_path}voting-escrow.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}liquidity_gauge_v3_session_code.wasm ${liquidity_gauge_v3_des_wasm}
 copy-wasm-file-ownable:
-	cp ${wasm_src_path}/ownable_test.wasm ${ownable_des_wasm}
 	cp ${wasm_src_path}/ownable.wasm ${ownable_des_wasm}
+	cp ${wasm_src_path}/ownable-session-code.wasm ${ownable_des_wasm}
 copy-wasm-file-i-reward-distribution-recipient:
 	cp ${wasm_src_path}/i-reward-distribution-recipient.wasm ${i_reward_distribution_recipient_des_wasm}
+	cp ${wasm_src_path}/session-code.wasm ${i_reward_distribution_recipient_des_wasm}
 copy-wasm-file-lp-token-wrapper:
 	cp ${wasm_src_path}/erc20-token.wasm ${lp_token_wrapper_des_wasm}
 	cp ${wasm_src_path}/lp-token-wrapper.wasm ${lp_token_wrapper_des_wasm}
@@ -262,7 +262,7 @@ test-gauge-controller:
 test-voting-escrow:
 	make build-contract-voting-escrow && make copy-wasm-file-voting-escrow && make test-only-voting-escrow
 test-ownable:
-	make build-contract-ownable && make build-contract-ownable-test-contract && make copy-wasm-file-ownable && make test-only-ownable
+	make build-contract-ownable && make copy-wasm-file-ownable && make test-only-ownable
 test-i-reward-distribution-recipient:
 	make build-i-reward-distribution-recipient && make copy-wasm-file-i-reward-distribution-recipient && make test-only-i-reward-distribution-recipient
 test-lp-token-wrapper:

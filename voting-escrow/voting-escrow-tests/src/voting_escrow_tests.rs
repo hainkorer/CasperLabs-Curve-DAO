@@ -82,15 +82,6 @@ fn test_get_last_user_slope() {
 }
 
 #[test]
-fn test_get_last_user_slope_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
-    instance.get_last_user_slope_js_client(owner, addr);
-    let ret: (bool, U128) = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, (false, 0.into()), "Invalid default value");
-}
-
-#[test]
 fn test_user_point_history_ts() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
@@ -113,16 +104,6 @@ fn test_user_point_history_ts() {
 }
 
 #[test]
-fn test_user_point_history_ts_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
-    let idx: U256 = 10.into();
-    instance.user_point_history_ts_js_client(owner, addr, idx);
-    let ret: U256 = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into(), "Invalid default value");
-}
-
-#[test]
 fn test_locked_end() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
@@ -139,15 +120,6 @@ fn test_locked_end() {
         0,
     );
     let ret: U256 = env.query_account_named_key(owner, &[LOCKED_END.into()]);
-    assert_eq!(ret, 0.into(), "Invalid default value");
-}
-
-#[test]
-fn test_locked_end_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
-    instance.locked_end_js_client(owner, addr);
-    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
@@ -317,16 +289,6 @@ fn test_balance_of() {
 }
 
 #[test]
-fn test_balance_of_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
-    let t: U256 = 123.into();
-    instance.balance_of_js_client(owner, addr, Some(t));
-    let ret: U256 = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into(), "Invalid default balance");
-}
-
-#[test]
 fn test_balance_of_at() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
@@ -346,16 +308,6 @@ fn test_balance_of_at() {
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF_AT.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
-}
-
-#[test]
-fn test_balance_of_at_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
-    let time: U256 = 123.into();
-    instance.balance_of_at_js_client(owner, addr, time);
-    let ret: U256 = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into(), "Invalid default balance");
 }
 
 #[test]
@@ -379,15 +331,6 @@ fn test_total_supply() {
 }
 
 #[test]
-fn test_total_supply_js_client() {
-    let (_, owner, instance, _) = deploy();
-    let t: U256 = 123.into();
-    instance.total_supply_js_client(owner, Some(t));
-    let ret: U256 = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into(), "Invalid default total supply");
-}
-
-#[test]
 fn test_total_supply_at() {
     let (env, owner, instance, _) = deploy();
     let time: U256 = 123.into();
@@ -404,15 +347,6 @@ fn test_total_supply_at() {
         0,
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY_AT.into()]);
-    assert_eq!(ret, 0.into(), "Invalid default total supply");
-}
-
-#[test]
-fn test_total_supply_at_js_client() {
-    let (_, owner, instance, _) = deploy();
-    let time: U256 = 123.into();
-    instance.total_supply_at_js_client(owner, time);
-    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default total supply");
 }
 

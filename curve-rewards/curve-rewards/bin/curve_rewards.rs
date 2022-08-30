@@ -10,14 +10,11 @@ use casper_types::{
     runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use casperlabs_contract_utils::{set_key, ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use casperlabs_i_reward_distribution_recipient::IREWARDDISTRIBUTIONRECIPIENT;
 use casperlabs_lp_token_wrapper::{data as LpToken, LPTOKENWRAPPER};
 use casperlabs_ownable::OWNABLE;
-use curve_rewards_crate::{
-    data::{self, *},
-    CURVEREWARDS,
-};
+use curve_rewards_crate::{data, CURVEREWARDS};
 #[derive(Default)]
 struct CurveRewards(OnChainContractStorage);
 
@@ -57,11 +54,6 @@ fn total_supply() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn total_supply_js_client() {
-    let ret: U256 = LPTOKENWRAPPER::total_supply(&CurveRewards::default());
-    set_key("total_supply", ret);
-}
-#[no_mangle]
 fn balance_of() {
     let owner: Key = runtime::get_named_arg("owner");
     let ret: U256 = LPTOKENWRAPPER::balance_of(&CurveRewards::default(), owner);
@@ -91,31 +83,15 @@ fn last_time_reward_applicable() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn last_time_reward_applicable_js_client() {
-    let ret: U256 = CurveRewards::default().last_time_reward_applicable();
-    js_ret(ret);
-}
-#[no_mangle]
 fn reward_per_token() {
     let ret: U256 = CurveRewards::default().reward_per_token();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn reward_per_token_js_client() {
-    let ret: U256 = CurveRewards::default().reward_per_token();
-    js_ret(ret);
 }
 #[no_mangle]
 fn earned() {
     let account: Key = runtime::get_named_arg("account");
     let ret: U256 = CurveRewards::default().earned(account);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn earned_js_client() {
-    let account: Key = runtime::get_named_arg("account");
-    let ret: U256 = CurveRewards::default().earned(account);
-    js_ret(ret);
 }
 #[no_mangle]
 fn stake() {
@@ -149,16 +125,6 @@ fn owner() {
 fn is_owner() {
     let ret: bool = OWNABLE::is_owner(&CurveRewards::default());
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn owner_js_client() {
-    let ret: Key = OWNABLE::owner(&CurveRewards::default());
-    js_ret(ret)
-}
-#[no_mangle]
-fn is_owner_js_client() {
-    let ret: bool = OWNABLE::is_owner(&CurveRewards::default());
-    js_ret(ret)
 }
 #[no_mangle]
 fn renounce_ownership() {
@@ -247,27 +213,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "last_time_reward_applicable_js_client",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "reward_per_token_js_client",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "earned_js_client",
-        vec![Parameter::new("account", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "stake",
         vec![Parameter::new("amount", U256::cl_type())],
         <()>::cl_type(),
@@ -310,13 +255,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "total_supply_js_client",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
         vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
@@ -355,20 +293,6 @@ fn get_entry_points() -> EntryPoints {
         "is_owner",
         vec![],
         bool::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "owner_js_client",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "is_owner_js_client",
-        vec![],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

@@ -12,11 +12,7 @@ use casper_types::{
     U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use liquidity_gauge_reward_crate::{
-    self,
-    data::{self, *},
-    LIQUIDITYGAUGEREWARD,
-};
+use liquidity_gauge_reward_crate::{self, data, LIQUIDITYGAUGEREWARD};
 
 #[derive(Default)]
 struct LiquidityGaugeReward(OnChainContractStorage);
@@ -80,13 +76,6 @@ fn user_checkpoint() {
 }
 
 #[no_mangle]
-fn user_checkpoint_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: bool = LiquidityGaugeReward::default().user_checkpoint(addr);
-    js_ret(ret);
-}
-
-#[no_mangle]
 fn claimable_tokens() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = LiquidityGaugeReward::default().claimable_tokens(addr);
@@ -94,24 +83,10 @@ fn claimable_tokens() {
 }
 
 #[no_mangle]
-fn claimable_tokens_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeReward::default().claimable_tokens(addr);
-    js_ret(ret);
-}
-
-#[no_mangle]
 fn claimable_reward() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = LiquidityGaugeReward::default().claimable_reward(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn claimable_reward_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeReward::default().claimable_reward(addr);
-    js_ret(ret);
 }
 
 #[no_mangle]
@@ -151,12 +126,6 @@ fn claim_rewards() {
 fn integrate_checkpoint() {
     let ret: U256 = LiquidityGaugeReward::default().integrate_checkpoint();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn integrate_checkpoint_js_client() {
-    let ret: U256 = LiquidityGaugeReward::default().integrate_checkpoint();
-    js_ret(ret);
 }
 
 #[no_mangle]
@@ -375,13 +344,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "user_checkpoint_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "claimable_tokens",
         vec![Parameter::new("addr", Key::cl_type())],
         U256::cl_type(),
@@ -389,23 +351,9 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "claimable_tokens_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "claimable_reward",
         vec![Parameter::new("addr", Key::cl_type())],
         U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_reward_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -460,13 +408,6 @@ fn get_entry_points() -> EntryPoints {
         "integrate_checkpoint",
         vec![],
         U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "integrate_checkpoint_js_client",
-        vec![],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
