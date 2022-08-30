@@ -79,8 +79,6 @@ build-contract-voting-escrow:
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-ownable:
 	cargo build --release -p ownable-session-code -p ownable --target wasm32-unknown-unknown
-build-contract-ownable-test-contract:
-	cargo build --release -p test --target wasm32-unknown-unknown
 build-lp-token-wrapper-session-code:
 	cargo build --release -p lp-token-wrapper-session-code --target wasm32-unknown-unknown
 build-lp-token-wrapper:
@@ -219,7 +217,6 @@ copy-wasm-file-liquidity-gauge-v3:
 	cp ${root_directory}${wasm_src_path}voting-escrow.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}liquidity_gauge_v3_session_code.wasm ${liquidity_gauge_v3_des_wasm}
 copy-wasm-file-ownable:
-	cp ${wasm_src_path}/ownable_test.wasm ${ownable_des_wasm}
 	cp ${wasm_src_path}/ownable.wasm ${ownable_des_wasm}
 	cp ${wasm_src_path}/ownable-session-code.wasm ${ownable_des_wasm}
 copy-wasm-file-i-reward-distribution-recipient:
@@ -265,7 +262,7 @@ test-gauge-controller:
 test-voting-escrow:
 	make build-contract-voting-escrow && make copy-wasm-file-voting-escrow && make test-only-voting-escrow
 test-ownable:
-	make build-contract-ownable && make build-contract-ownable-test-contract && make copy-wasm-file-ownable && make test-only-ownable
+	make build-contract-ownable && make copy-wasm-file-ownable && make test-only-ownable
 test-i-reward-distribution-recipient:
 	make build-i-reward-distribution-recipient && make copy-wasm-file-i-reward-distribution-recipient && make test-only-i-reward-distribution-recipient
 test-lp-token-wrapper:
