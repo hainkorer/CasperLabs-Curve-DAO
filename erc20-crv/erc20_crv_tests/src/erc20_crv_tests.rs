@@ -40,7 +40,7 @@ fn burn() {
             "to"=>to,
             "amount"=>amount
         },
-        1000000000,
+        1000000000000,
     );
 
     let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
@@ -80,7 +80,7 @@ fn test_start_epoch_time_write() {
         1000000000,
     );
     let ret: U256 = env.query_account_named_key(owner, &[START_EPOCH_TIME_WRITE.into()]);
-    assert_eq!(ret, 100086400.into());
+    assert_eq!(ret, U256::from(6855040) * U256::from(10000));
 }
 
 #[test]
@@ -95,11 +95,11 @@ fn test_future_epoch_time_write() {
             "entrypoint" => String::from(FUTURE_EPOCH_TIME_WRITE),
             "package_hash" => Key::Hash(contract.package_hash())
         },
-        1000000000,
+        1000000000000,
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[FUTURE_EPOCH_TIME_WRITE.into()]);
-    assert_eq!(ret, 131622400.into());
+    assert_eq!(ret, U256::from(131622400) * U256::from(1000));
 }
 #[test]
 fn test_available_supply() {
@@ -114,7 +114,7 @@ fn test_available_supply() {
             "entrypoint" => String::from(AVAILABLE_SUPPLY),
             "package_hash" => Key::Hash(contract.package_hash())
         },
-        1000000000,
+        1000000000000,
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[AVAILABLE_SUPPLY.into()]);
@@ -124,8 +124,8 @@ fn test_available_supply() {
 fn test_mintable_in_timeframe() {
     let (env, owner, contract) = deploy();
     contract.update_mining_parameters(owner);
-    let start: U256 = 50000000.into();
-    let end: U256 = 100000000.into();
+    let start: U256 = U256::from(50000000) * U256::from(1000);
+    let end: U256 = U256::from(100000000) * U256::from(1000);
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -137,7 +137,7 @@ fn test_mintable_in_timeframe() {
             "start"=>start,
             "end"=>end
         },
-        1000000000,
+        1000000000000,
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[MINTABLE_IN_TIMEFRAME.into()]);
@@ -161,7 +161,7 @@ fn test_mint() {
             "to"=>to,
             "amount"=>amount
         },
-        1000000000,
+        1000000000000,
     );
 
     let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
