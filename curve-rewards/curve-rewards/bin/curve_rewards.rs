@@ -14,10 +14,7 @@ use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use casperlabs_i_reward_distribution_recipient::IREWARDDISTRIBUTIONRECIPIENT;
 use casperlabs_lp_token_wrapper::{data as LpToken, LPTOKENWRAPPER};
 use casperlabs_ownable::OWNABLE;
-use curve_rewards_crate::{
-    data,
-    CURVEREWARDS,
-};
+use curve_rewards_crate::{data, CURVEREWARDS};
 #[derive(Default)]
 struct CurveRewards(OnChainContractStorage);
 

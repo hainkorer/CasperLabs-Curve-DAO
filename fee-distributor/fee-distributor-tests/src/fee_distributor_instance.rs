@@ -37,7 +37,6 @@ impl FEEDISTRIBUTORInstance {
             .call_contract(owner, "checkpoint_token", runtime_args! {}, 0);
     }
 
-
     pub fn checkpoint_total_supply(&self, owner: AccountHash) {
         self.0
             .call_contract(owner, "checkpoint_total_supply", runtime_args! {}, 0);

@@ -103,7 +103,6 @@ fn user_point_history_ts() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-
 /// @notice Get timestamp when `_addr`'s lock finishes
 /// @param _addr User wallet
 /// @return Epoch time of the lock end
@@ -113,7 +112,6 @@ fn locked_end() {
     let ret: U256 = VotingEscrow::default().locked_end(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
 
 /// @notice Record global data to checkpoint
 #[no_mangle]
@@ -190,7 +188,6 @@ fn balance_of_at() {
     let ret: U256 = VotingEscrow::default().balance_of_at(addr, time);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
-
 
 /// @notice Calculate total voting power
 /// @dev Adheres to the ERC20 `totalSupply` interface for Aragon compatibility

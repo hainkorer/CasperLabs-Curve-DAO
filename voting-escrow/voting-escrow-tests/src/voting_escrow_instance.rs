@@ -111,7 +111,7 @@ impl VOTINGESCROWInstance {
             0,
         );
     }
-   
+
     pub fn change_controller(&self, owner: AccountHash, new_controller: Key) {
         self.0.call_contract(
             owner,

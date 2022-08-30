@@ -103,7 +103,6 @@ fn test_user_point_history_ts() {
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
-
 #[test]
 fn test_locked_end() {
     let (env, owner, instance, _) = deploy();
@@ -123,7 +122,6 @@ fn test_locked_end() {
     let ret: U256 = env.query_account_named_key(owner, &[LOCKED_END.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
-
 
 #[test]
 fn test_checkpoint() {
@@ -290,7 +288,6 @@ fn test_balance_of() {
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
 
-
 #[test]
 fn test_balance_of_at() {
     let (env, owner, instance, _) = deploy();
@@ -312,7 +309,6 @@ fn test_balance_of_at() {
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF_AT.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
 }
-
 
 #[test]
 fn test_total_supply() {
@@ -353,7 +349,6 @@ fn test_total_supply_at() {
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY_AT.into()]);
     assert_eq!(ret, 0.into(), "Invalid default total supply");
 }
-
 
 #[test]
 fn test_change_controller() {

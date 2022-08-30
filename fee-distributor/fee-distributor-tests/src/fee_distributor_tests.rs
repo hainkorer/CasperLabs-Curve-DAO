@@ -115,7 +115,6 @@ fn test_claim() {
     assert_eq!(ret, 0.into(), "Invalid default claim value");
 }
 
-
 #[test]
 fn test_claim_many() {
     let (env, owner, instance, _) = deploy();
@@ -228,4 +227,3 @@ fn test_recover_balance() {
     let ret: bool = env.query_account_named_key(owner, &[RECOVER_BALANCE.into()]);
     assert!(ret, "Balance recovered should be true");
 }
-

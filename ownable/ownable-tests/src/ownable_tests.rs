@@ -1,5 +1,5 @@
 use crate::ownable_instance::OWNABLEInstance;
-use casper_types::{account::AccountHash, Key, runtime_args,RuntimeArgs};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 fn deploy() -> (TestEnv, AccountHash, TestContract) {
@@ -35,13 +35,13 @@ fn is_owner() {
         300,
     );
     let ret: bool = env.query_account_named_key(owner, &[IS_OWNER.into()]);
-    let res:bool = true;
-    assert_eq!(ret,res);
+    let res: bool = true;
+    assert_eq!(ret, res);
 }
 #[test]
 fn transfer_ownership() {
     let (env, owner, instance) = deploy();
     let instance = OWNABLEInstance::contract_instance(instance);
-    let new_owner:Key = env.next_user().into();
+    let new_owner: Key = env.next_user().into();
     instance.transfer_ownership(owner, new_owner);
 }

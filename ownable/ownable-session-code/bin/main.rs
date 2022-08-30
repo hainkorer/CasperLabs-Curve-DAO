@@ -9,9 +9,7 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{
-    bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef,
-};
+use casper_types::{bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef};
 use common::keys::*;
 
 // Key is the same a destination
