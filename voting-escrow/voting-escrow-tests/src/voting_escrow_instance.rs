@@ -46,41 +46,6 @@ impl VOTINGESCROWInstance {
         self.0
             .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, 0);
     }
-
-    pub fn get_last_user_slope_js_client(&self, owner: AccountHash, addr: Key) {
-        self.0.call_contract(
-            owner,
-            "get_last_user_slope_js_client",
-            runtime_args! {
-                "addr" => addr
-            },
-            0,
-        );
-    }
-
-    pub fn user_point_history_ts_js_client(&self, owner: AccountHash, addr: Key, idx: U256) {
-        self.0.call_contract(
-            owner,
-            "user_point_history_ts_js_client",
-            runtime_args! {
-                "addr" => addr,
-                "idx" => idx,
-            },
-            0,
-        );
-    }
-
-    pub fn locked_end_js_client(&self, owner: AccountHash, addr: Key) {
-        self.0.call_contract(
-            owner,
-            "locked_end_js_client",
-            runtime_args! {
-                "addr" => addr,
-            },
-            0,
-        );
-    }
-
     pub fn checkpoint(&self, owner: AccountHash) {
         self.0
             .call_contract(owner, "checkpoint", runtime_args! {}, 0);
@@ -136,41 +101,6 @@ impl VOTINGESCROWInstance {
         self.0
             .call_contract(owner, "withdraw", runtime_args! {}, time);
     }
-
-    pub fn balance_of_js_client(&self, owner: AccountHash, addr: Key, t: Option<U256>) {
-        self.0.call_contract(
-            owner,
-            "balance_of_js_client",
-            runtime_args! {
-                "addr" => addr,
-                "t" => t
-            },
-            0,
-        );
-    }
-
-    pub fn balance_of_at_js_client(&self, owner: AccountHash, addr: Key, time: U256) {
-        self.0.call_contract(
-            owner,
-            "balance_of_at_js_client",
-            runtime_args! {
-                "addr" => addr,
-                "time" => time
-            },
-            123456789, // blocktime
-        );
-    }
-
-    pub fn total_supply_js_client(&self, owner: AccountHash, t: Option<U256>) {
-        self.0.call_contract(
-            owner,
-            "total_supply_js_client",
-            runtime_args! {
-                "t" => t
-            },
-            0,
-        );
-    }
     pub fn total_supply(&self, owner: AccountHash, t: Option<U256>) {
         self.0.call_contract(
             owner,
@@ -181,17 +111,7 @@ impl VOTINGESCROWInstance {
             0,
         );
     }
-    pub fn total_supply_at_js_client(&self, owner: AccountHash, time: U256) {
-        self.0.call_contract(
-            owner,
-            "total_supply_at_js_client",
-            runtime_args! {
-                "time" => time
-            },
-            123456789, // blocktime
-        );
-    }
-
+   
     pub fn change_controller(&self, owner: AccountHash, new_controller: Key) {
         self.0.call_contract(
             owner,

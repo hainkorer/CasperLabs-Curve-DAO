@@ -74,14 +74,7 @@ impl ERC20CRVInstance {
             1000000000,
         );
     }
-    pub fn start_epoch_time_write_js_client(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "start_epoch_time_write_js_client",
-            runtime_args! {},
-            1000000000,
-        );
-    }
+
     pub fn future_epoch_time_write(&self, sender: AccountHash) {
         self.0.call_contract(
             sender,
@@ -90,41 +83,15 @@ impl ERC20CRVInstance {
             1000000000,
         );
     }
-    pub fn future_epoch_time_write_js_client(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "future_epoch_time_write_js_client",
-            runtime_args! {},
-            1000000000,
-        );
-    }
+
     pub fn available_supply(&self, sender: AccountHash) {
         self.0
             .call_contract(sender, "available_supply", runtime_args! {}, 1000000000);
-    }
-    pub fn available_supply_js_client(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "available_supply_js_client",
-            runtime_args! {},
-            1000000000,
-        );
     }
     pub fn mintable_in_timeframe(&self, sender: AccountHash, start: U256, end: U256) {
         self.0.call_contract(
             sender,
             "mintable_in_timeframe",
-            runtime_args! {
-                "start"=>start,
-                "end"=>end
-            },
-            0,
-        );
-    }
-    pub fn mintable_in_timeframe_js_client(&self, sender: AccountHash, start: U256, end: U256) {
-        self.0.call_contract(
-            sender,
-            "mintable_in_timeframe_js_client",
             runtime_args! {
                 "start"=>start,
                 "end"=>end
@@ -143,17 +110,7 @@ impl ERC20CRVInstance {
             1000000000,
         );
     }
-    pub fn mint_js_client(&self, sender: AccountHash, to: Key, amount: U256) {
-        self.0.call_contract(
-            sender,
-            "mint_js_client",
-            runtime_args! {
-                "to"=>to,
-                "amount"=>amount
-            },
-            1000000000,
-        );
-    }
+
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
     }

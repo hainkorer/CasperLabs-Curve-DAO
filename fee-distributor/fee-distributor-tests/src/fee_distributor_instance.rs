@@ -37,54 +37,10 @@ impl FEEDISTRIBUTORInstance {
             .call_contract(owner, "checkpoint_token", runtime_args! {}, 0);
     }
 
-    pub fn ve_for_at_js_client(&self, owner: AccountHash, user: Key, timestamp: U256) {
-        self.0.call_contract(
-            owner,
-            "ve_for_at_js_client",
-            runtime_args! {
-                "user" => user,
-                "timestamp" => timestamp
-            },
-            0,
-        );
-    }
 
     pub fn checkpoint_total_supply(&self, owner: AccountHash) {
         self.0
             .call_contract(owner, "checkpoint_total_supply", runtime_args! {}, 0);
-    }
-
-    pub fn claim_js_client(&self, owner: AccountHash, addr: Key) {
-        self.0.call_contract(
-            owner,
-            "claim_js_client",
-            runtime_args! {
-                "addr" => addr
-            },
-            0,
-        );
-    }
-
-    pub fn claim_many_js_client(&self, owner: AccountHash, receivers: Vec<String>) {
-        self.0.call_contract(
-            owner,
-            "claim_many_js_client",
-            runtime_args! {
-                "receivers" => receivers
-            },
-            0,
-        );
-    }
-
-    pub fn burn_js_client(&self, owner: AccountHash, coin: Key) {
-        self.0.call_contract(
-            owner,
-            "burn_js_client",
-            runtime_args! {
-                "coin" => coin
-            },
-            0,
-        );
     }
 
     pub fn commit_admin(&self, owner: AccountHash, addr: Key) {
@@ -110,17 +66,6 @@ impl FEEDISTRIBUTORInstance {
 
     pub fn kill_me(&self, owner: AccountHash) {
         self.0.call_contract(owner, "kill_me", runtime_args! {}, 0);
-    }
-
-    pub fn recover_balance_js_client(&self, owner: AccountHash, coin: Key) {
-        self.0.call_contract(
-            owner,
-            "recover_balance_js_client",
-            runtime_args! {
-                "coin" => coin
-            },
-            0,
-        );
     }
 
     pub fn package_hash(&self) -> [u8; 32] {
