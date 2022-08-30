@@ -47,21 +47,10 @@ fn total_supply() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn total_supply_js_client() {
-    let ret: U256 = LpTokenWrapper::default().total_supply();
-    js_ret(ret)
-}
-#[no_mangle]
 fn balance_of() {
     let owner: Key = runtime::get_named_arg("owner");
     let ret: U256 = LpTokenWrapper::default().balance_of(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn balance_of_js_client() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let ret: U256 = LpTokenWrapper::default().balance_of(owner);
-    js_ret(ret)
 }
 #[no_mangle]
 fn stake() {
@@ -100,23 +89,9 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "total_supply_js_client",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
         vec![Parameter::new("owner", Key::cl_type())],
         U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "balance_of_js_client",
-        vec![Parameter::new("owner", Key::cl_type())],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

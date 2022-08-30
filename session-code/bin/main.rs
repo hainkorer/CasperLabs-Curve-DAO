@@ -186,6 +186,16 @@ pub extern "C" fn call() {
             );
             store(RECOVER_BALANCE, ret);
         }
+        //IRewardDistributionRecipient
+        IS_OWNER => {
+            let ret: bool = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                IS_OWNER,
+                runtime_args! {},
+            );
+            store(IS_OWNER, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }
