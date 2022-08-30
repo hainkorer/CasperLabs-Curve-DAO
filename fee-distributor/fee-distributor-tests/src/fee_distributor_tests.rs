@@ -90,16 +90,6 @@ fn test_ve_for_at() {
 }
 
 #[test]
-fn test_ve_for_at_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let user: Key = Key::Account(env.next_user());
-    let timestamp: U256 = 123.into();
-    instance.ve_for_at_js_client(owner, user, timestamp);
-    let ret: U256 = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into(), "Invalid default ve value");
-}
-
-#[test]
 fn test_checkpoint_total_supply() {
     let (_, owner, instance, _) = deploy();
     instance.checkpoint_total_supply(owner);
@@ -122,15 +112,6 @@ fn test_claim() {
         0,
     );
     let ret: U256 = env.query_account_named_key(owner, &[CLAIM.into()]);
-    assert_eq!(ret, 0.into(), "Invalid default claim value");
-}
-
-#[test]
-fn test_claim_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
-    instance.claim_js_client(owner, addr);
-    let ret: U256 = instance.key_value(RESULT.to_string());
     assert_eq!(ret, 0.into(), "Invalid default claim value");
 }
 
@@ -159,19 +140,6 @@ fn test_claim_many() {
 }
 
 #[test]
-fn test_claim_many_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let receivers: Vec<String> = vec![
-        env.next_user().to_formatted_string(),
-        env.next_user().to_formatted_string(),
-        env.next_user().to_formatted_string(),
-    ];
-    instance.claim_many_js_client(owner, receivers);
-    let ret: bool = instance.key_value(RESULT.to_string());
-    assert!(ret, "Claim should come true");
-}
-
-#[test]
 fn test_burn() {
     let (env, owner, instance, erc20) = deploy();
     let coin: Key = Key::Hash(erc20.package_hash());
@@ -189,15 +157,6 @@ fn test_burn() {
     );
     let ret: bool = env.query_account_named_key(owner, &[BURN.into()]);
     assert!(ret, "Claim should come true");
-}
-
-#[test]
-fn test_burn_js_client() {
-    let (_, owner, instance, erc20) = deploy();
-    let coin: Key = Key::Hash(erc20.package_hash());
-    instance.burn_js_client(owner, coin);
-    let ret: bool = instance.key_value(RESULT.to_string());
-    assert!(ret, "Burn should come true");
 }
 
 #[test]
@@ -266,23 +225,5 @@ fn test_recover_balance() {
         0,
     );
     let ret: bool = env.query_account_named_key(owner, &[RECOVER_BALANCE.into()]);
-    assert!(ret, "Balance recovered should be true");
-}
-
-#[test]
-fn test_recover_balance_js_client() {
-    let (_, owner, instance, erc20) = deploy();
-    let coin: Key = Key::Hash(erc20.package_hash());
-    erc20.call_contract(
-        owner,
-        "mint",
-        runtime_args! {
-            "to" => Key::Hash(instance.package_hash()),
-            "amount" => U256::from(10000)
-        },
-        0,
-    );
-    instance.recover_balance_js_client(owner, coin);
-    let ret: bool = instance.key_value(RESULT.to_string());
     assert!(ret, "Balance recovered should be true");
 }

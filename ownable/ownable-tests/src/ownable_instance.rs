@@ -27,23 +27,6 @@ impl OWNABLEInstance {
             0,
         )
     }
-    pub fn proxy(
-        env: &TestEnv,
-        contract_name: &str,
-        sender: AccountHash,
-        ownable: Key,
-    ) -> TestContract {
-        TestContract::new(
-            env,
-            "ownable_test.wasm",
-            contract_name,
-            sender,
-            runtime_args! {
-                "ownable" => ownable
-            },
-            0,
-        )
-    }
     pub fn owner(&self, sender: AccountHash) {
         self.0.call_contract(sender, "owner", runtime_args! {}, 0);
     }

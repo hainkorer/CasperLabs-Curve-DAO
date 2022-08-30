@@ -82,13 +82,6 @@ fn test_start_epoch_time_write() {
     let ret: U256 = env.query_account_named_key(owner, &[START_EPOCH_TIME_WRITE.into()]);
     assert_eq!(ret, 100086400.into());
 }
-#[test]
-fn test_start_epoch_time_write_js_client() {
-    let (_, owner, contract) = deploy();
-    contract.start_epoch_time_write_js_client(owner);
-    let ret: U256 = contract.key_value(RESULT.to_string());
-    assert_eq!(ret, 100086400.into());
-}
 
 #[test]
 fn test_future_epoch_time_write() {
@@ -109,14 +102,6 @@ fn test_future_epoch_time_write() {
     assert_eq!(ret, 131622400.into());
 }
 #[test]
-fn test_future_epoch_time_write_js_client() {
-    let (_, owner, contract) = deploy();
-    contract.future_epoch_time_write_js_client(owner);
-    let ret: U256 = contract.key_value(RESULT.to_string());
-
-    assert_eq!(ret, 131622400.into());
-}
-#[test]
 fn test_available_supply() {
     let (env, owner, contract) = deploy();
 
@@ -133,13 +118,6 @@ fn test_available_supply() {
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[AVAILABLE_SUPPLY.into()]);
-    assert_eq!(ret, 130303030300u128.into());
-}
-#[test]
-fn test_available_supply_js_client() {
-    let (_, owner, contract) = deploy();
-    contract.available_supply_js_client(owner);
-    let ret: U256 = contract.key_value(RESULT.to_string());
     assert_eq!(ret, 130303030300u128.into());
 }
 #[test]
@@ -166,15 +144,6 @@ fn test_mintable_in_timeframe() {
     assert_eq!(ret, 0.into());
 }
 #[test]
-fn test_mintable_in_timeframe_js_client() {
-    let (_, owner, contract) = deploy();
-    let start: U256 = 50000000.into();
-    let end: U256 = 100000000.into();
-    contract.mintable_in_timeframe_js_client(owner, start, end);
-    let ret: U256 = contract.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into());
-}
-#[test]
 fn test_mint() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::Account(owner);
@@ -196,16 +165,5 @@ fn test_mint() {
     );
 
     let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
-    assert!(ret);
-}
-#[test]
-fn test_mint_js_client() {
-    let (_, owner, contract) = deploy();
-    let to: Key = Key::Account(owner);
-    let amount: U256 = 10.into();
-    let minter = Key::from(owner);
-    contract.set_minter(owner, minter);
-    contract.mint_js_client(owner, to, amount);
-    let ret: bool = contract.key_value(RESULT.to_string());
     assert!(ret);
 }

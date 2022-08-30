@@ -13,7 +13,7 @@ use casper_types::{
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use liquidity_gauge_wrapper_crate::{
     self,
-    data::{self, *},
+    data::{self},
     LIQUIDITYGAUGEWRAPPER,
 };
 
@@ -72,24 +72,12 @@ fn user_checkpoint() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn user_checkpoint_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: bool = LiquidityGaugeWrapper::default().user_checkpoint(addr);
-    js_ret(ret);
-}
-#[no_mangle]
 fn claimable_tokens() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = LiquidityGaugeWrapper::default().claimable_tokens(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-#[no_mangle]
-fn claimable_tokens_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeWrapper::default().claimable_tokens(addr);
-    js_ret(ret);
-}
 #[no_mangle]
 fn claim_tokens() {
     let addr: Option<Key> = runtime::get_named_arg("addr");
@@ -266,26 +254,13 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "user_checkpoint_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "claimable_tokens",
         vec![Parameter::new("addr", Key::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_tokens_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
+
     entry_points.add_entry_point(EntryPoint::new(
         "claim_tokens",
         vec![Parameter::new(

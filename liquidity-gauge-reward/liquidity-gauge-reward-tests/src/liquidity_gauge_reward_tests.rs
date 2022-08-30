@@ -1,6 +1,7 @@
 use crate::liquidity_gauge_reward_instance::LIQUIDITYGAUGEREWARDInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
+use common::keys::*;
 
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
@@ -165,23 +166,59 @@ fn test_deploy() {
 
 #[test]
 fn test_user_checkpoint() {
-    let (_, owner, instance, _) = deploy();
+    let (env, owner, instance, _) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let addr: Key = Key::Account(owner);
-    instance.user_checkpoint(owner, addr);
+    TestContract::new(
+        &env,
+        "liquidity-gauge-reward-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(USER_CHECKPOINT),
+            "package_hash" => package_hash,
+            "addr" => addr,
+        },
+        300,
+    );
 }
 
 #[test]
 fn test_claimable_tokens() {
-    let (_env, owner, instance, _) = deploy();
+    let (env, owner, instance, _) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let addr: Key = Key::Account(owner);
-    instance.claimable_tokens(owner, addr);
+    TestContract::new(
+        &env,
+        "liquidity-gauge-reward-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMABLE_TOKENS),
+            "package_hash" => package_hash,
+            "addr" => addr,
+        },
+        300,
+    );
 }
 
 #[test]
 fn test_claimable_reward() {
-    let (_env, owner, instance, _) = deploy();
+    let (env, owner, instance, _) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
     let addr: Key = Key::Account(owner);
-    instance.claimable_reward(owner, addr);
+    TestContract::new(
+        &env,
+        "liquidity-gauge-reward-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(CLAIMABLE_TOKENS),
+            "package_hash" => package_hash,
+            "addr" => addr,
+        },
+        300,
+    );
 }
 
 #[test]
@@ -252,8 +289,19 @@ fn test_claim_rewards() {
 
 #[test]
 fn test_integrate_checkpoint() {
-    let (_env, owner, instance, _) = deploy();
-    instance.integrate_checkpoint(owner);
+    let (env, owner, instance, _) = deploy();
+    let package_hash = Key::Hash(instance.package_hash());
+    TestContract::new(
+        &env,
+        "liquidity-gauge-reward-session-code.wasm",
+        SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(INTEGRATE_CHECKPOINT),
+            "package_hash" => package_hash,
+        },
+        300,
+    );
 }
 
 #[test]
