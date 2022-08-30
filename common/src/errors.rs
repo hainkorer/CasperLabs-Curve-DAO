@@ -398,7 +398,7 @@ pub enum Error {
     FeeDistributorAdditionError8 = 10650,
     /// 65,572 for (Fee Distributor Addition9)
     FeeDistributorAdditionError9 = 10651,
-    /// 65,573 for (Fee Distributor Addstion10)
+    /// 65,573 for (Fee Distributor Addition10)
     FeeDistributorAdditionError10 = 10652,
     /// 65,574 for (Fee Distributor Addition11)
     FeeDistributorAdditionError11 = 10653,
@@ -852,7 +852,7 @@ pub enum Error {
     VotingEscrowDivisionError4 = 11326,
     /// 65,545 for (Voting Escrow Division Error 5)
     VotingEscrowDivisionError5 = 11327,
-    /// 65,546 for (Voting Escrow DivSsion Error 6)
+    /// 65,546 for (Voting Escrow Division Error 6)
     VotingEscrowDivisionError6 = 11328,
     /// 65,547 for (Voting Escrow Division Error 7)
     VotingEscrowDivisionError7 = 11329,
