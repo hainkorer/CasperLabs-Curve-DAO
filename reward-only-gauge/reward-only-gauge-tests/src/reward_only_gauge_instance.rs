@@ -52,7 +52,7 @@ impl REWARDONLYGAUGEInstance {
                 "symbol" => symbol,
                 "decimals" => decimals,
             },
-            100000000,
+            10000000000000,
         )
     }
 

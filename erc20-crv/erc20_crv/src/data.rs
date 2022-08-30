@@ -8,14 +8,14 @@ use core::convert::TryInto;
 use casperlabs_contract_utils::{get_key, set_key};
 use common::{keys::*, utils::*};
 
-pub const YEAR: U256 = U256([31536000, 0, 0, 0]);
+pub const YEAR: U256 = U256([31536000000, 0, 0, 0]);
 pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);
 pub const INITIAL_RATE: U256 = U256([604800000, 0, 0, 0]);
 pub const RATE_REDUCTION_TIME: U256 = YEAR;
 pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115002721024, 0, 0, 0]);
 
 pub const RATE_DENOMINATOR: U256 = U256([10000000000000000000, 0, 0, 0]); //10^18
-pub const INFLATION_DELAY: U256 = U256([86400, 0, 0, 0]);
+pub const INFLATION_DELAY: U256 = U256([86400000, 0, 0, 0]);
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {

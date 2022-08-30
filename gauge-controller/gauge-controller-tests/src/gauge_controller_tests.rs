@@ -9,7 +9,7 @@ const TOKEN_NAME: &str = "ERC20";
 const TOKEN_SYMBOL: &str = "ERC";
 const DECIMALS: u8 = 8;
 const INIT_TOTAL_SUPPLY: u64 = 0;
-pub const VOTING_ESCROW_WEEK: U256 = U256([604800, 0, 0, 0]); // all future times are rounded by week
+pub const VOTING_ESCROW_WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
 
 fn deploy() -> (
     TestEnv,

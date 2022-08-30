@@ -24,7 +24,7 @@ impl ERC20CRVInstance {
                 "symbol" => symbol,
                 "decimals" => decimals,
             },
-            100000000,
+            100000000000,
         ))
     }
     pub fn set_minter(&self, sender: AccountHash, minter: Key) {
@@ -62,7 +62,7 @@ impl ERC20CRVInstance {
             sender,
             "update_mining_parameters",
             runtime_args! {},
-            1000000000,
+            1000000000000,
         );
     }
 
@@ -71,7 +71,7 @@ impl ERC20CRVInstance {
             sender,
             "start_epoch_time_write",
             runtime_args! {},
-            1000000000,
+            1000000000000,
         );
     }
 
@@ -80,13 +80,13 @@ impl ERC20CRVInstance {
             sender,
             "future_epoch_time_write",
             runtime_args! {},
-            1000000000,
+            1000000000000,
         );
     }
 
     pub fn available_supply(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "available_supply", runtime_args! {}, 1000000000);
+            .call_contract(sender, "available_supply", runtime_args! {}, 1000000000000);
     }
     pub fn mintable_in_timeframe(&self, sender: AccountHash, start: U256, end: U256) {
         self.0.call_contract(
@@ -107,7 +107,7 @@ impl ERC20CRVInstance {
                 "to"=>to,
                 "amount"=>amount
             },
-            1000000000,
+            1000000000000,
         );
     }
 
