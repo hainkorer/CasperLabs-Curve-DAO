@@ -32,57 +32,50 @@ pub extern "C" fn call() {
     let package_hash: Key = runtime::get_named_arg("package_hash");
 
     match entrypoint.as_str() {
-        // LP TOKEN WRAPPER
-        LAST_TIME_REWARD_APPLICABLE => {
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                LAST_TIME_REWARD_APPLICABLE,
-                runtime_args! {},
-            );
-            store(LAST_TIME_REWARD_APPLICABLE, ret);
-        }
-        IS_OWNER => {
+        USER_CHECKPOINT => {
+            let addr: Key = runtime::get_named_arg("addr");
             let ret: bool = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                IS_OWNER,
-                runtime_args! {},
-            );
-            store(IS_OWNER, ret);
-        }
-        REWARD_PER_TOKEN => {
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                REWARD_PER_TOKEN,
-                runtime_args! {},
-            );
-            store(REWARD_PER_TOKEN, ret);
-        }
-        EARNED => {
-            let account: Key = runtime::get_named_arg("account");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                EARNED,
+                USER_CHECKPOINT,
                 runtime_args! {
-                    "account" => account,
+                    "addr" => addr,
                 },
             );
-            store(EARNED, ret);
+            store(USER_CHECKPOINT, ret);
         }
-        BALANCE_OF => {
-            let owner: Key = runtime::get_named_arg("owner");
+        CLAIMABLE_TOKENS => {
+            let addr: Key = runtime::get_named_arg("addr");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                BALANCE_OF,
+                CLAIMABLE_TOKENS,
                 runtime_args! {
-                    "owner" => owner,
+                    "addr" => addr,
                 },
             );
-            store(BALANCE_OF, ret);
+            store(CLAIMABLE_TOKENS, ret);
+        }
+        CLAIMABLE_REWARD => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                CLAIMABLE_REWARD,
+                runtime_args! {
+                    "addr" => addr,
+                },
+            );
+            store(CLAIMABLE_REWARD, ret);
+        }
+        INTEGRATE_CHECKPOINT => {
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                INTEGRATE_CHECKPOINT,
+                runtime_args! {},
+            );
+            store(INTEGRATE_CHECKPOINT, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
