@@ -15,7 +15,7 @@ use casperlabs_i_reward_distribution_recipient::IREWARDDISTRIBUTIONRECIPIENT;
 use casperlabs_lp_token_wrapper::{data as LpToken, LPTOKENWRAPPER};
 use casperlabs_ownable::OWNABLE;
 use curve_rewards_crate::{
-    data::{self, *},
+    data,
     CURVEREWARDS,
 };
 #[derive(Default)]
@@ -128,16 +128,6 @@ fn owner() {
 fn is_owner() {
     let ret: bool = OWNABLE::is_owner(&CurveRewards::default());
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn owner_js_client() {
-    let ret: Key = OWNABLE::owner(&CurveRewards::default());
-    js_ret(ret)
-}
-#[no_mangle]
-fn is_owner_js_client() {
-    let ret: bool = OWNABLE::is_owner(&CurveRewards::default());
-    js_ret(ret)
 }
 #[no_mangle]
 fn renounce_ownership() {
@@ -306,20 +296,6 @@ fn get_entry_points() -> EntryPoints {
         "is_owner",
         vec![],
         bool::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "owner_js_client",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "is_owner_js_client",
-        vec![],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
