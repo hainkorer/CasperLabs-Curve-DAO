@@ -114,6 +114,14 @@ https://docs.google.com/spreadsheets/d/1Rzh1LERQyGiGpHB3djlT1Tk0LNQ18q_eLBWFDPm2
         - [time_type_weight](#GaugeController-time-type-weight)
   - [Deploying Minter contract manually](#deploying-minter-contract-manually)
     - [Entry Point methods](#Minter-entry-point-methods)
+        - [mint](#Minter-mint)
+        - [mint_many](#Minter-mint-many)
+        - [mint_for](#Minter-mint-for)
+        - [toggle_approve_mint](#Minter-toggle-approve-mint)
+        - [token](#Minter-token)
+        - [Controller](#Minter-Controller)
+        - [allowed_to_mint_for](#Minter-allowed-to-mint-for)
+        - [minted](#Minter-minted)
   - [Deploying Curve Rewards contract manually](#deploying-curve-rewards-contract-manually)
     - [Entry Point methods](#CurveRewards-entry-point-methods)
         - [last_time_reward_applicable](#CurveRewards-last-time-reward-applicable)
@@ -157,8 +165,67 @@ https://docs.google.com/spreadsheets/d/1Rzh1LERQyGiGpHB3djlT1Tk0LNQ18q_eLBWFDPm2
         - [transfer_ownership](#Ownable-transfer-ownership)
   - [Deploying Liquidity Gauge Wrapper contract manually](#deploying-liquidity-gauge-wrapper-contract-manually)
     - [Entry Point methods](#LiquidityGaugeWrapper-entry-point-methods)
+      - [user_checkpoint](#LiquidityGaugeWrapper-user-checkpoint)
+      - [claimable_tokens](#LiquidityGaugeWrapper-claimable-tokens)
+      - [claim_tokens](#LiquidityGaugeWrapper-claim-tokens)
+      - [set_approve_deposit](#LiquidityGaugeWrapper-set-approve-deposit)
+      - [deposit](#LiquidityGaugeWrapper-deposit)
+      - [withdraw](#LiquidityGaugeWrapper-user-checkpoint)
+      - [allowance](#LiquidityGaugeWrapper-allowance)
+      - [transfer](#LiquidityGaugeWrapper-transfer)
+      - [transfer_from](#LiquidityGaugeWrapper-transfer-from)
+      - [approve](#LiquidityGaugeWrapper-approve)
+      - [increase_allowance](#LiquidityGaugeWrapper-increase-allowance)
+      - [decrease_allowance](#LiquidityGaugeWrapper-decrease-allowance)
+      - [kill_me](#LiquidityGaugeWrapper-kill-me)
+      - [commit_transfer_ownership](#LiquidityGaugeWrapper-commit-transfer-ownership)
+      - [apply_transfer_ownership](#LiquidityGaugeWrapper-apply-transfer-ownership)
+      - [minter](#LiquidityGaugeWrapper-minter)
+      - [crv_token](#LiquidityGaugeWrapper-crv-token)
+      - [lp_token](#LiquidityGaugeWrapper-lp-token)
+      - [gauge](#LiquidityGaugeWrapper-gauge)
+      - [balance_of](#LiquidityGaugeWrapper-balance-of)
+      - [total_supply](#LiquidityGaugeWrapper-total-supply)
+      - [name](#LiquidityGaugeWrapper-name)
+      - [symbol](#LiquidityGaugeWrapper-symbol)
+      - [decimals](#LiquidityGaugeWrapper-decimals)
+      - [future_admin](#LiquidityGaugeWrapper-future-admin)
+      - [admin](#LiquidityGaugeWrapper-admin)
+      - [claimable_crv](#LiquidityGaugeWrapper-claimable-crv)
+      - [approved_to_deposit](#LiquidityGaugeWrapper-approved-to-deposit)
+      - [is_killed](#LiquidityGaugeWrapper-is-killed)
   - [Deploying Liquidity Gauge Reward Wrapper contract manually](#deploying-liquidity-gauge-reward-wrapper-contract-manually)
     - [Entry Point methods](#LiquidityGaugeRewardWrapper-entry-point-methods)
+      - [user_checkpoint](#LiquidityGaugeRewardWrapper-user-checkpoint)
+      - [claimable_tokens](#LiquidityGaugeRewardWrapper-claimable-tokens)
+      - [claimable_reward](#LiquidityGaugeRewardWrapper-claimable-reward)
+      - [claim_tokens](#LiquidityGaugeRewardWrapper-claim-tokens)
+      - [set_approve_deposit](#LiquidityGaugeRewardWrapper-set-approve-deposit)
+      - [deposit](#LiquidityGaugeRewardWrapper-deposit)
+      - [withdraw](#LiquidityGaugeRewardWrapper-withdraw)
+      - [allowance](#LiquidityGaugeRewardWrapper-claim-tokens)
+      - [transfer](#LiquidityGaugeRewardWrapper-transfer)
+      - [transfer_from](#LiquidityGaugeRewardWrapper-transfer-from)
+      - [approve](#LiquidityGaugeRewardWrapper-approve)
+      - [increase_allowance](#LiquidityGaugeRewardWrapper-increase-allowance)
+      - [decrease_allowance](#LiquidityGaugeRewardWrapper-decrease-allowance)
+      - [kill_me](#LiquidityGaugeRewardWrapper-kill-me)
+      - [commit_transfer_ownership](#LiquidityGaugeRewardWrapper-commit-transfer-ownership)
+      - [apply_transfer_ownership](#LiquidityGaugeRewardWrapper-apply-transfer-ownership)
+      - [minter](#LiquidityGaugeRewardWrapper-minter)
+      - [crv_token](#LiquidityGaugeRewardWrapper-crv-token)
+      - [lp_token](#LiquidityGaugeRewardWrapper-lp-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+      - [rewarded_token](#LiquidityGaugeRewardWrapper-rewarded-token)
+
+      
   - [Deploying Liquidity Gauge Reward contract manually](#deploying-liquidity-gauge-reward-contract-manually)
     - [Entry Point methods](#LiquidityGaugeReward-entry-point-methods)
   - [Deploying Liquidity Gauge V3 contract manually](#deploying-liquidity-gauge-v3-contract-manually)
@@ -1253,7 +1320,7 @@ Following are the CurveRewards's entry point methods.
 - #### last_time_reward_applicable <a id="CurveRewards-last-time-reward-applicable"></a>
   Retruns the min value between blocktime and period_finish.
 
-Following is the table of parameters.
+  Following is the table of parameters.
 
 | Parameter Name | Type |
 | -------------- | ---- |
@@ -1533,6 +1600,7 @@ sudo casper-client put-deploy \
     --session-path path_to_wasm_file \
     --payment-amount 10000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
+    --session-arg="uni:Key='Address of ERC20 Contract Package Hash'" \
     --session-arg="contract_name:string='contract_name'"
 ```
 
@@ -5277,7 +5345,7 @@ sudo casper-client put-deploy \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="token_addr:Key='``ERC20CRV` token address'" \
     --session-arg="name:String='Token name'" \
-    --session-arg="name:String='Token symbol'" \
+    --session-arg="symbol:String='Token symbol'" \
     --session-arg="version:String='Contract version'" \
     --session-arg="contract_name:string='contract_name'"
 ```
