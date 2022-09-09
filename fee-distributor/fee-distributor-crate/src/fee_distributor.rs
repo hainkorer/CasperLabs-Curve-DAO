@@ -268,17 +268,19 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         );
         U256::max(
             (tuple_to_i128(pt.bias)
-                .checked_sub(tuple_to_i128(pt.slope))
-                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError6)
-                .checked_mul(
-                    timestamp
-                        .checked_sub(pt.ts)
-                        .unwrap_or_revert_with(Error::FeeDistributorSubtractionError7)
-                        .to_string()
-                        .parse()
-                        .unwrap(),
+                .checked_sub(
+                    tuple_to_i128(pt.slope)
+                        .checked_mul(
+                            timestamp
+                                .checked_sub(pt.ts)
+                                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError7)
+                                .to_string()
+                                .parse()
+                                .unwrap(),
+                        )
+                        .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError5),
                 )
-                .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError5))
+                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError6))
             .into(),
             0.into(),
         )
@@ -326,10 +328,14 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                     &t,
                     i128::max(
                         tuple_to_i128(pt.bias)
-                            .checked_sub(tuple_to_i128(pt.slope))
-                            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError9)
-                            .checked_mul(dt)
-                            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError10),
+                            .checked_sub(
+                                tuple_to_i128(pt.slope)
+                                    .checked_mul(dt)
+                                    .unwrap_or_revert_with(
+                                        Error::FeeDistributorMultiplicationError12,
+                                    ),
+                            )
+                            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError9),
                         0.into(),
                     )
                     .into(),
@@ -440,10 +446,11 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                     .unwrap();
                 let balance_of: U256 = U256::max(
                     tuple_to_i128(old_user_point.bias)
-                        .checked_sub(dt)
+                        .checked_sub(
+                            dt.checked_mul(tuple_to_i128(old_user_point.slope))
+                                .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError8),
+                        )
                         .unwrap_or_revert_with(Error::FeeDistributorSubtractionError13)
-                        .checked_mul(tuple_to_i128(old_user_point.slope))
-                        .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError8)
                         .into(),
                     0.into(),
                 );

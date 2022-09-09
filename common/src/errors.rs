@@ -440,6 +440,8 @@ pub enum Error {
     FeeDistributorMultiplicationError10 = 10671,
     /// 65,594 for (Fee Distributor Multiplication11)
     FeeDistributorMultiplicationError11 = 10672,
+    /// 65,595 for (Fee Distributor Multiplication12)
+    FeeDistributorMultiplicationError12 = 10673,
     // Gauge Controller
     /// 76,236 for (Gauge Controller Address Zero1)
     GaugeControllerAddressZero1 = 10701,
