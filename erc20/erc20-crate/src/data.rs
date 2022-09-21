@@ -116,13 +116,6 @@ pub fn get_domain_separator() -> String {
     get_key(DOMAIN_SEPARATOR).unwrap_or_revert()
 }
 
-pub fn set_permit_type_hash(permit_type_hash: String) {
-    set_key(PERMIT_TYPE_HASH, permit_type_hash);
-}
-
-pub fn get_permit_type_hash() -> String {
-    get_key(PERMIT_TYPE_HASH).unwrap_or_revert()
-}
 pub fn set_hash(contract_hash: Key) {
     set_key(SELF_CONTRACT_HASH, contract_hash);
 }
