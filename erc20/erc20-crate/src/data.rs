@@ -108,14 +108,6 @@ pub fn set_total_supply(total_supply: U256) {
     set_key(TOTAL_SUPPLY, total_supply);
 }
 
-pub fn set_domain_separator(domain_separator: String) {
-    set_key(DOMAIN_SEPARATOR, domain_separator);
-}
-
-pub fn get_domain_separator() -> String {
-    get_key(DOMAIN_SEPARATOR).unwrap_or_revert()
-}
-
 pub fn set_hash(contract_hash: Key) {
     set_key(SELF_CONTRACT_HASH, contract_hash);
 }
