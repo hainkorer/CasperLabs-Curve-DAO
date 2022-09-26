@@ -54,9 +54,6 @@ pub const START_EPOCH_TIME_WRITE: &str = "start_epoch_time_write";
 pub const AVAILABLE_SUPPLY: &str = "available_supply";
 pub const MINT: &str = "mint";
 pub const MINTABLE_IN_TIMEFRAME: &str = "mintable_in_timeframe";
-// ERC-20
-pub const DOMAIN_SEPARATOR: &str = "domain_separator";
-pub const PERMIT_TYPE_HASH: &str = "permit_type_hash";
 // ERC-20 CRV
 pub const MINING_EPOCH: &str = "mining_epoch";
 pub const IS_UPDATED: &str = "is_updated";
