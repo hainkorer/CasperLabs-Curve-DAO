@@ -381,10 +381,10 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         erc20_data::set_name(name);
         erc20_data::set_symbol(symbol);
     }
+    ///@notice Burn `value` tokens belonging to `msg.sender`
+    ///@dev Emits a Transfer event with a destination of 0x00
+    ///@param value The amount that will be burned
     fn burn_caller(&mut self, value: U256) {
-        if self.get_caller() != data::get_minter() {
-            runtime::revert(ApiError::from(Error::Erc20CRVOnlyMinterAllowed2));
-        }
         ERC20::burn(self, self.get_caller(), value);
     }
     fn erc20_crv_emit(&self, erc20_crv_event: &Erc20CrvEvent) {
