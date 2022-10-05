@@ -460,12 +460,13 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         RewardsFor::instance()
             .get(&addr)
             .checked_add(
-                user_balance.checked_mul(
-                    I.checked_sub(RewardIntegralFor::instance().get(&addr))
-                        .unwrap_or_revert(),
-                ),
+                user_balance
+                    .checked_mul(
+                        I.checked_sub(RewardIntegralFor::instance().get(&addr))
+                            .unwrap_or_revert(),
+                    )
+                    .unwrap_or_revert(),
             )
-            .unwrap_or_revert()
             .unwrap_or_revert()
             .checked_div(10.into())
             .unwrap_or_revert()
