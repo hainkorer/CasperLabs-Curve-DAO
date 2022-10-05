@@ -4,14 +4,10 @@ use alloc::collections::BTreeMap;
 use alloc::{format, string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{
-    system::mint::Error as MintError, BlockTime, ContractHash, ContractPackageHash, Key, URef, U256,
-};
+use casper_types::{system::mint::Error as MintError, ContractPackageHash, Key, URef, U256};
 use casperlabs_contract_utils::{set_key, ContractContext, ContractStorage};
 use common::errors::*;
 use cryptoxide::ed25519;
-use hex::encode;
-use renvm_sig::{hash_message, keccak256};
 
 pub enum ERC20Event {
     Approval {
