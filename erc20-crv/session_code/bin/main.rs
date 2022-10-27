@@ -87,7 +87,36 @@ pub extern "C" fn call() {
             );
             store(MINTABLE_IN_TIMEFRAME, ret);
         }
-
+        TRANSFER => {
+            let recipient: Key = runtime::get_named_arg("recipient");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                TRANSFER,
+                runtime_args! {
+                    "recipient"=>recipient,
+                    "amount"=>amount
+                },
+            );
+            store(TRANSFER, ret);
+        }
+        TRANSFER_FROM => {
+            let owner: Key = runtime::get_named_arg("owner");
+            let recipient: Key = runtime::get_named_arg("recipient");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                TRANSFER_FROM,
+                runtime_args! {
+                    "owner"=>owner,
+                    "recipient"=>recipient,
+                    "amount"=>amount
+                },
+            );
+            store(TRANSFER_FROM, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

@@ -456,6 +456,8 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("start_time", U256::cl_type()),
             Parameter::new("end_time", U256::cl_type()),
             Parameter::new("can_disable", bool::cl_type()),
+            Parameter::new("contract_hash", ContractHash::cl_type()),
+            Parameter::new("package_hash", ContractPackageHash::cl_type()),
         ],
         bool::cl_type(),
         EntryPointAccess::Public,

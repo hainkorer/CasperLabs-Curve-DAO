@@ -166,6 +166,34 @@ pub extern "C" fn call() {
             );
             store(USER_CHECKPOINT, ret);
         }
+        INCREASE_ALLOWANCE => {
+            let spender: Key = runtime::get_named_arg("spender");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                INCREASE_ALLOWANCE,
+                runtime_args! {
+                    "spender"=>spender,
+                    "amount"=>amount
+                },
+            );
+            store(INCREASE_ALLOWANCE, ret);
+        }
+        DECREASE_ALLOWANCE => {
+            let spender: Key = runtime::get_named_arg("spender");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                DECREASE_ALLOWANCE,
+                runtime_args! {
+                    "spender"=>spender,
+                    "amount"=>amount
+                },
+            );
+            store(DECREASE_ALLOWANCE, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }
