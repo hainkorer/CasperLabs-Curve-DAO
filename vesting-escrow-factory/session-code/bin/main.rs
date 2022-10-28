@@ -10,7 +10,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U256,
+    bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, ContractHash, Key, RuntimeArgs, URef, U256,
 };
 use common::keys::*;
 
