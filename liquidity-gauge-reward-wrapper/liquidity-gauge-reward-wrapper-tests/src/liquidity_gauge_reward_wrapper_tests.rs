@@ -18,7 +18,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
             "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     )
 }
 // CRV
@@ -32,9 +32,8 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
             "decimals" => 9_u8,
-            "supply" => U256::from(TEN_E_NINE * 10000000000000000)
         },
-        200000000000,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     )
 }
 // Voting Escrow
@@ -57,7 +56,7 @@ fn deploy_voting_escrow(
             "symbol" => symbol,
             "version" => version,
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     )
 }
 //gauge_controller
@@ -76,7 +75,7 @@ fn deploy_gauge_controller(
             "token" => token,
             "voting_escrow" => voting_escrow,
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     )
 }
 //Reward
@@ -92,7 +91,7 @@ fn deploy_reward(env: &TestEnv, owner: AccountHash) -> TestContract {
             "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     )
 }
 //Minter
@@ -106,7 +105,7 @@ fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key
             "controller" => controller,
             "token" => token,
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     )
 }
 //Curve Rewards
@@ -125,7 +124,7 @@ fn deploy_curve_rewards(
             "token" => token,
             "reward" => reward
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     )
 }
 // Liquidity Guage Reward
@@ -149,7 +148,7 @@ fn deploy_liquidity_gauge_reward(
             "rewarded_token" => token,
             "admin" => Key::Account(owner)
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     )
 }
 fn deploy() -> (TestEnv, AccountHash, TestContract) {
@@ -202,31 +201,31 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         owner,
         "mint",
         runtime_args! {"to" => to , "amount" => amount},
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     erc20.call_contract(
         owner,
         "approve",
         runtime_args! {"spender" => to , "amount" => amount},
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     reward.call_contract(
         owner,
         "mint",
         runtime_args! {"to" => to , "amount" => amount},
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     erc20_crv.call_contract(
         owner,
         "set_minter",
         runtime_args! {"minter" => Key::Account(owner)},
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     erc20_crv.call_contract(
         owner,
         "mint",
         runtime_args! {"to" => to , "amount" => amount_1},
-        2000000000000000000,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now() + 86400000,
     );
 
     let _name: String = "type".to_string();
@@ -234,7 +233,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         owner,
         "add_type",
         runtime_args! {"name" => _name, "weight" => None::<U256> },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let addr: Key = Key::Account(owner);
     let gauge_type: (bool, U128) = (false, 0.into());
@@ -246,14 +245,14 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
             "gauge_type" => gauge_type,
             "weight" => None::<U256>
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let _name_1: String = "type1".to_string();
     gauge_controller.call_contract(
         owner,
         "add_type",
         runtime_args! {"name" => _name_1, "weight" => None::<U256> },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let addr1: Key = Key::Hash(deploy_liquidity_gauge_reward.package_hash());
     let gauge_type_1: (bool, U128) = (false, 1.into());
@@ -265,7 +264,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
             "gauge_type" => gauge_type_1,
             "weight"=>None::<U256>
         },
-        0,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     (env, owner, liquidity_gauge_reward_wrapper_instance)
 }
@@ -289,7 +288,7 @@ fn test_user_checkpoint() {
             "package_hash" => package_hash,
             "addr" => addr,
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
     assert!(ret, "{} {}", true, "Invalid result");
@@ -312,7 +311,7 @@ fn test_claimable_tokens() {
             "package_hash" => package_hash,
             "addr" => addr,
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
 }
 #[test]
@@ -333,7 +332,7 @@ fn test_claimable_reward() {
             "package_hash" => package_hash,
             "addr" => addr,
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
     assert_eq!(ret, 0.into(), "Invalid result");
@@ -356,7 +355,7 @@ fn test_claim_tokens() {
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, U256::from(TEN_E_NINE * 1000), "Invalid result");
@@ -380,7 +379,7 @@ fn test_set_approve_deposit() {
             "owner" => Key::Account(owner) ,
             "spender" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let ret: bool = env.query_account_named_key(owner, &[APPROVED_TO_DEPOSIT.into()]);
     assert!(ret, "{} {}", true, "Invalid result");
@@ -402,7 +401,7 @@ fn test_deposit() {
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, U256::from(TEN_E_NINE * 1000), "Invalid result");
@@ -426,7 +425,7 @@ fn test_withdraw() {
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let v: u128 = 990000000000_u128;
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
@@ -452,7 +451,7 @@ fn test_allowance() {
             "owner" => Key::Account(owner),
             "spender" => user_1
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let v: u128 = 100000000000_u128;
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
@@ -477,7 +476,7 @@ fn test_transfer() {
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let v: u128 = 990000000000_u128;
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
@@ -513,7 +512,7 @@ fn test_transfer_from() {
             "owner" => Key::Account(owner),
             "spender" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let v: u128 = 90000000000_u128;
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
@@ -541,7 +540,7 @@ fn test_approve() {
             "owner" => Key::Account(owner),
             "spender" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let v: u128 = 100000000000_u128;
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
@@ -574,7 +573,7 @@ fn test_increase_allowance() {
             "owner" => Key::Account(owner),
             "spender" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let v: u128 = 110000000000_u128;
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
@@ -607,7 +606,7 @@ fn test_decrease_allowance() {
             "owner" => Key::Account(owner),
             "spender" => Key::Account(owner)
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let v: u128 = 90000000000_u128;
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
@@ -634,7 +633,7 @@ fn test_kill_me() {
             "entrypoint" => String::from(IS_KILLED),
             "package_hash" => package_hash,
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let ret: bool = env.query_account_named_key(owner, &[IS_KILLED.into()]);
     assert!(ret, "{} {}", true, "Invalid result");
@@ -656,7 +655,7 @@ fn test_commit_transfer_ownership() {
             "entrypoint" => String::from(FUTURE_ADMIN),
             "package_hash" => package_hash,
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let ret: Key = env.query_account_named_key(owner, &[FUTURE_ADMIN.into()]);
     assert_eq!(ret, addr, "Invalid result");
@@ -680,7 +679,7 @@ fn test_apply_transfer_ownership() {
             "entrypoint" => String::from(ADMIN),
             "package_hash" => package_hash,
         },
-        300,
+        LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
     );
     let ret: Key = env.query_account_named_key(owner, &[ADMIN.into()]);
     assert_eq!(ret, addr, "Invalid result");

@@ -32,7 +32,7 @@ fn is_owner() {
             "entrypoint" => String::from(IS_OWNER),
             "package_hash" => package_hash,
         },
-        300,
+        OWNABLEInstance::now(),
     );
     let ret: bool = env.query_account_named_key(owner, &[IS_OWNER.into()]);
     let res: bool = true;
