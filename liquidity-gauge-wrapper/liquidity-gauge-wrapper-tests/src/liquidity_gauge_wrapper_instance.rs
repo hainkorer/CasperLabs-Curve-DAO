@@ -1,3 +1,4 @@
+use std::time::SystemTime;
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
@@ -29,7 +30,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "gauge" => gauge,
                 "admin" => admin,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         )
     }
     pub fn user_checkpoint(&self, owner: AccountHash, addr: Key) {
@@ -39,7 +40,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
             runtime_args! {
                 "addr" => addr
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn claimable_tokens(&self, owner: AccountHash, addr: Key) {
@@ -49,7 +50,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
             runtime_args! {
                 "addr" => addr
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn claim_tokens(&self, owner: AccountHash, addr: Option<Key>) {
@@ -59,7 +60,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
             runtime_args! {
                 "addr" => addr
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn set_approve_deposit(&self, owner: AccountHash, addr: Key, can_deposit: bool) {
@@ -70,7 +71,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "addr" => addr,
                 "can_deposit" => can_deposit
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn deposit(&self, owner: AccountHash, value: U256, addr: Option<Key>) {
@@ -81,7 +82,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "value" => value,
                 "addr" => addr,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn withdraw(&self, owner: AccountHash, value: U256, addr: Key) {
@@ -92,7 +93,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "value" => value,
                 "addr" => addr,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn allowance(&self, owner: AccountHash, key: Key, spender: Key) {
@@ -103,7 +104,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "owner" => key,
                 "spender" => spender,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn transfer(&self, owner: AccountHash, recipient: Key, amount: U256) {
@@ -114,7 +115,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "recipient" => recipient,
                 "amount" => amount,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn transfer_from(&self, owner: AccountHash, key: Key, recipient: Key, amount: U256) {
@@ -126,7 +127,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "recipient" => recipient,
                 "amount" => amount,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn approve(&self, owner: AccountHash, spender: Key, amount: U256) {
@@ -137,7 +138,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "spender" => spender,
                 "amount" => amount,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn increase_allowance(&self, owner: AccountHash, spender: Key, amount: U256) {
@@ -148,7 +149,7 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "spender" => spender,
                 "amount" => amount,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn decrease_allowance(&self, owner: AccountHash, spender: Key, amount: U256) {
@@ -159,11 +160,11 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
                 "spender" => spender,
                 "amount" => amount,
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
     pub fn kill_me(&self, owner: AccountHash) {
-        self.0.call_contract(owner, "kill_me", runtime_args! {}, 0);
+        self.0.call_contract(owner, "kill_me", runtime_args! {}, LIQUIDITYGAUGEWRAPPERInstance::now());
     }
     pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key) {
         self.0.call_contract(
@@ -172,13 +173,13 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
             runtime_args! {
                 "addr" => addr
             },
-            0,
+            LIQUIDITYGAUGEWRAPPERInstance::now(),
         );
     }
 
     pub fn apply_transfer_ownership(&self, owner: AccountHash) {
         self.0
-            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, 0);
+            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, LIQUIDITYGAUGEWRAPPERInstance::now());
     }
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
@@ -187,5 +188,12 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
     // Get stored key values
     pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
         self.0.query_named_key(key)
+    }
+
+    pub fn now() -> u64 {
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
     }
 }
