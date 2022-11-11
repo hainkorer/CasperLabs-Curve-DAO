@@ -119,6 +119,7 @@ fn reward_per_token() {
         CURVEREWARDSInstance::now(),
     );
     let _ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
+    //This assert is commented because value is continously changing due to blocktime
     // assert_eq!(ret, 180.into(), "invalid result");
 }
 #[test]
@@ -143,6 +144,7 @@ fn earned() {
     );
     let _ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
     let _v: u128 = 2400000000000000_u128;
+    //This assert is commented because value is continously changing due to blocktime
     // assert_eq!(ret, v.into(), "invalid result");
 }
 #[test]
@@ -202,7 +204,7 @@ fn withdraw_panic() {
 #[test]
 fn get_reward() {
     let (env, owner, instance) = deploy();
-    
+
     let package_hash = Key::Hash(instance.package_hash());
     let curve_rewards_instance = CURVEREWARDSInstance::contract_instance(instance);
     let amount: U256 = U256::from(TEN_E_NINE * 20);
@@ -288,6 +290,7 @@ fn notify_reward_amount() {
         CURVEREWARDSInstance::now(),
     );
     let _ret: U256 = env.query_account_named_key(owner, &[LAST_TIME_REWARD_APPLICABLE.into()]);
+    //This assert is commented because value is continously changing due to blocktime
     //assert_eq!(ret, (1668081752971 as u128).into(), "invalid result");
     TestContract::new(
         &env,
