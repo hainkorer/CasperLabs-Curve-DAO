@@ -161,6 +161,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract,u64) {
         "LGW".to_string(),
         Key::Hash(deploy_liquidity_gauge_v3.package_hash()),
         Key::Account(owner),
+        block_time
     );
     // For Minting Purpose
     let to = Key::Hash(liquidity_gauge_wrapper_instance.package_hash());
@@ -273,10 +274,10 @@ fn test_claimable_tokens() {
 }
 #[test]
 fn test_claim_tokens() {
-    let (_, owner, instance,_) = deploy();
+    let (_, owner, instance,block_time) = deploy();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.claim_tokens(owner, None);
+    liquidity_gauge_wrapper_instance.claim_tokens(owner, None,block_time);
 }
 #[test]
 fn test_set_approve_deposit() {
@@ -285,7 +286,7 @@ fn test_set_approve_deposit() {
     let addr: Key = Key::Account(owner);
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.set_approve_deposit(owner, addr, true);
+    liquidity_gauge_wrapper_instance.set_approve_deposit(owner, addr, true,block_time);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -308,7 +309,7 @@ fn test_deposit() {
     let package_hash = Key::Hash(instance.package_hash());
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 10), None);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 10), None,block_time);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -327,11 +328,11 @@ fn test_deposit() {
 #[should_panic]
 #[test]
 fn test_withdraw_panic() {
-    let (_, owner, instance,_) = deploy();
+    let (_, owner, instance,block_time) = deploy();
     let addr: Key = Key::Account(owner);
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.withdraw(owner, U256::from(TEN_E_NINE * 10), addr);
+    liquidity_gauge_wrapper_instance.withdraw(owner, U256::from(TEN_E_NINE * 10), addr,block_time);
 }
 
 #[test]
@@ -341,8 +342,8 @@ fn test_withdraw() {
     let addr: Key = Key::Account(owner);
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
-    liquidity_gauge_wrapper_instance.withdraw(owner, U256::from(TEN_E_NINE * 10), addr);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None,block_time);
+    liquidity_gauge_wrapper_instance.withdraw(owner, U256::from(TEN_E_NINE * 10), addr,block_time);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -365,11 +366,12 @@ fn test_allowance() {
     let package_hash = Key::Hash(instance.package_hash());
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None,block_time);
     liquidity_gauge_wrapper_instance.approve(
         owner,
         Key::Account(owner),
         U256::from(TEN_E_NINE * 100),
+        block_time
     );
     TestContract::new(
         &env,
@@ -391,11 +393,11 @@ fn test_allowance() {
 #[should_panic]
 #[test]
 fn test_transfer_panic() {
-    let (env, owner, instance,_) = deploy();
+    let (env, owner, instance,block_time) = deploy();
     let recipient: Key = env.next_user().into();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.transfer(owner, recipient, U256::from(TEN_E_NINE * 10));
+    liquidity_gauge_wrapper_instance.transfer(owner, recipient, U256::from(TEN_E_NINE * 10),block_time);
 }
 #[test]
 fn test_transfer() {
@@ -404,8 +406,8 @@ fn test_transfer() {
     let recipient: Key = env.next_user().into();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
-    liquidity_gauge_wrapper_instance.transfer(owner, recipient, U256::from(TEN_E_NINE * 10));
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None,block_time);
+    liquidity_gauge_wrapper_instance.transfer(owner, recipient, U256::from(TEN_E_NINE * 10),block_time);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -429,17 +431,19 @@ fn test_transfer_from() {
     let recipient: Key = env.next_user().into();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None);
+    liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 1000), None,block_time);
     liquidity_gauge_wrapper_instance.approve(
         owner,
         Key::Account(owner),
         U256::from(TEN_E_NINE * 100),
+        block_time
     );
     liquidity_gauge_wrapper_instance.transfer_from(
         owner,
         Key::Account(owner),
         recipient,
         U256::from(TEN_E_NINE * 10),
+        block_time
     );
     TestContract::new(
         &env,
@@ -461,7 +465,7 @@ fn test_transfer_from() {
 #[should_panic]
 #[test]
 fn test_transfer_from_panic() {
-    let (env, owner, instance,_) = deploy();
+    let (env, owner, instance,block_time) = deploy();
     let recipient: Key = env.next_user().into();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
@@ -470,6 +474,7 @@ fn test_transfer_from_panic() {
         Key::Account(owner),
         recipient,
         100000000.into(),
+        block_time
     );
 }
 #[test]
@@ -482,6 +487,7 @@ fn test_approve() {
         owner,
         Key::Account(owner),
         U256::from(TEN_E_NINE * 100),
+        block_time
     );
     TestContract::new(
         &env,
@@ -510,11 +516,13 @@ fn test_increase_allowance() {
         owner,
         Key::Account(owner),
         U256::from(TEN_E_NINE * 100),
+        block_time
     );
     liquidity_gauge_wrapper_instance.increase_allowance(
         owner,
         Key::Account(owner),
         U256::from(TEN_E_NINE * 10),
+        block_time
     );
     TestContract::new(
         &env,
@@ -543,11 +551,13 @@ fn test_decrease_allowance() {
         owner,
         Key::Account(owner),
         U256::from(TEN_E_NINE * 100),
+        block_time
     );
     liquidity_gauge_wrapper_instance.decrease_allowance(
         owner,
         Key::Account(owner),
         U256::from(TEN_E_NINE * 10),
+        block_time
     );
     TestContract::new(
         &env,
@@ -569,13 +579,14 @@ fn test_decrease_allowance() {
 #[should_panic]
 #[test]
 fn test_decrease_allowance_panic() {
-    let (_, owner, instance,_) = deploy();
+    let (_, owner, instance,block_time) = deploy();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
     liquidity_gauge_wrapper_instance.decrease_allowance(
         owner,
         Key::Account(owner),
         U256::from(TEN_E_NINE * 10),
+        block_time
     );
 }
 #[test]
@@ -584,7 +595,7 @@ fn test_kill_me() {
     let package_hash = Key::Hash(instance.package_hash());
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.kill_me(owner);
+    liquidity_gauge_wrapper_instance.kill_me(owner,block_time);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -606,7 +617,7 @@ fn test_commit_transfer_ownership() {
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
     let addr: Key = Key::Account(owner);
-    liquidity_gauge_wrapper_instance.commit_transfer_ownership(owner, addr);
+    liquidity_gauge_wrapper_instance.commit_transfer_ownership(owner, addr,block_time);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -629,8 +640,8 @@ fn test_apply_transfer_ownership() {
     let addr: Key = Key::Account(owner);
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.commit_transfer_ownership(owner, addr);
-    liquidity_gauge_wrapper_instance.apply_transfer_ownership(owner);
+    liquidity_gauge_wrapper_instance.commit_transfer_ownership(owner, addr,block_time);
+    liquidity_gauge_wrapper_instance.apply_transfer_ownership(owner,block_time);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -648,8 +659,8 @@ fn test_apply_transfer_ownership() {
 #[should_panic]
 #[test]
 fn test_apply_transfer_ownership_panic() {
-    let (_, owner, instance,_) = deploy();
+    let (_, owner, instance,block_time) = deploy();
     let liquidity_gauge_wrapper_instance =
         LIQUIDITYGAUGEWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_wrapper_instance.apply_transfer_ownership(owner);
+    liquidity_gauge_wrapper_instance.apply_transfer_ownership(owner,block_time);
 }
