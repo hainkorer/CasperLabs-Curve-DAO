@@ -17,6 +17,7 @@ impl CURVEREWARDSInstance {
         sender: AccountHash,
         token: Key,
         reward: Key,
+        block_time:u64
     ) -> TestContract {
         TestContract::new(
             env,
@@ -27,62 +28,44 @@ impl CURVEREWARDSInstance {
                 "token" => token,
                 "reward" => reward
             },
-            CURVEREWARDSInstance::now(),
+            block_time
         )
     }
-    pub fn last_time_reward_applicable(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "last_time_reward_applicable", runtime_args! {}, CURVEREWARDSInstance::now());
-    }
-    pub fn reward_per_token(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "reward_per_token", runtime_args! {}, CURVEREWARDSInstance::now());
-    }
-    pub fn earned(&self, sender: AccountHash, account: Key) {
-        self.0.call_contract(
-            sender,
-            "earned",
-            runtime_args! {
-                "account" => account
-            },
-            CURVEREWARDSInstance::now(),
-        );
-    }
-    pub fn stake(&self, sender: AccountHash, amount: U256) {
+    pub fn stake(&self, sender: AccountHash, amount: U256,block_time:u64) {
         self.0.call_contract(
             sender,
             "stake",
             runtime_args! {
                 "amount" => amount
             },
-            CURVEREWARDSInstance::now(),
+            block_time
         );
     }
-    pub fn withdraw(&self, sender: AccountHash, amount: U256) {
+    pub fn withdraw(&self, sender: AccountHash, amount: U256,block_time:u64) {
         self.0.call_contract(
             sender,
             "withdraw",
             runtime_args! {
                 "amount" => amount
             },
-            CURVEREWARDSInstance::now(),
+            block_time
         );
     }
-    pub fn get_reward(&self, sender: AccountHash) {
+    pub fn get_reward(&self, sender: AccountHash,block_time:u64) {
         self.0
-            .call_contract(sender, "get_reward", runtime_args! {}, CURVEREWARDSInstance::now());
+            .call_contract(sender, "get_reward", runtime_args! {}, block_time);
     }
-    pub fn exit(&self, sender: AccountHash) {
-        self.0.call_contract(sender, "exit", runtime_args! {}, CURVEREWARDSInstance::now());
+    pub fn exit(&self, sender: AccountHash,block_time:u64) {
+        self.0.call_contract(sender, "exit", runtime_args! {}, block_time);
     }
-    pub fn notify_reward_amount(&self, sender: AccountHash, reward: U256) {
+    pub fn notify_reward_amount(&self, sender: AccountHash, reward: U256,block_time:u64) {
         self.0.call_contract(
             sender,
             "notify_reward_amount",
             runtime_args! {
                 "reward" => reward,
             },
-            CURVEREWARDSInstance::now(),
+            block_time,
         );
     }
     // Result methods

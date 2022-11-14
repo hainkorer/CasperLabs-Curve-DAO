@@ -108,7 +108,6 @@ members = [
   "curve-rewards/curve-rewards",
   "curve-rewards/curve-rewards-crate",
   "curve-rewards/curve-rewards-tests",
-  "curve-rewards/curve-rewards-session-code",
   #LIQUIDITY GAUGE V3
   "liquidity-gauge-v3/liquidity-gauge-v3",
   "liquidity-gauge-v3/liquidity-gauge-v3-crate",

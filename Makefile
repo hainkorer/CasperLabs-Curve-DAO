@@ -83,10 +83,8 @@ build-lp-token-wrapper-session-code:
 	cargo build --release -p test-session-code --target wasm32-unknown-unknown
 build-lp-token-wrapper:
 	cargo build --release -p lp-token-wrapper --target wasm32-unknown-unknown
-build-curve-rewards-session-code:
-	cargo build --release -p curve-rewards-session-code --target wasm32-unknown-unknown
 build-curve-rewards:
-	cargo build --release -p erc20 -p curve-rewards --target wasm32-unknown-unknown
+	cargo build --release -p erc20 -p test-session-code -p curve-rewards --target wasm32-unknown-unknown
 
 test-only-curve-token-v3:
 	cargo test -p curve-token-v3-tests
@@ -231,7 +229,7 @@ copy-wasm-file-lp-token-wrapper:
 copy-wasm-file-curve-rewards:
 	cp ${wasm_src_path}/erc20-token.wasm ${curve_rewards_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${curve_rewards_des_wasm}
-	cp ${wasm_src_path}/curve-rewards-session-code.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/test-session-code.wasm ${curve_rewards_des_wasm}
 
 test-gauge-proxy:
 	make build-contract-gauge-proxy && make copy-wasm-file-gauge-proxy && make test-only-gauge-proxy
@@ -270,7 +268,7 @@ test-i-reward-distribution-recipient:
 test-lp-token-wrapper:
 	make build-contract-erc20 && make build-lp-token-wrapper && make copy-wasm-file-lp-token-wrapper && make test-only-lp-token-wrapper
 test-curve-rewards:
-	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
+	make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
 
 test-liquidity-gauge-v3: 
 	make build-contract-liquidity-gauge-v3 && make copy-wasm-file-liquidity-gauge-v3 && make test-only-liquidity-gauge-v3
