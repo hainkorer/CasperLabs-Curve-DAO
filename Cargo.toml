@@ -4,6 +4,8 @@ members = [
   "common",
   # SESSION CODE
   "session-code",
+  # Test Session Code
+  "test-session-code",
   # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
   "curve-token-v3/curve-token-v3-tests",
