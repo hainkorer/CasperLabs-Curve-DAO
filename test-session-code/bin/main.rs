@@ -120,6 +120,15 @@ pub extern "C" fn call() {
             );
             store(IS_OWNER, ret);
         }
+        TOTAL_SUPPLY => {
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                TOTAL_SUPPLY,
+                runtime_args! {},
+            );
+            store(TOTAL_SUPPLY, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

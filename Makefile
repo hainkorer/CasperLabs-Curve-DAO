@@ -80,7 +80,7 @@ build-contract-voting-escrow:
 build-contract-ownable:
 	cargo build --release -p test-session-code -p ownable --target wasm32-unknown-unknown
 build-lp-token-wrapper-session-code:
-	cargo build --release -p lp-token-wrapper-session-code --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code --target wasm32-unknown-unknown
 build-lp-token-wrapper:
 	cargo build --release -p lp-token-wrapper --target wasm32-unknown-unknown
 build-curve-rewards-session-code:
@@ -227,7 +227,7 @@ copy-wasm-file-i-reward-distribution-recipient:
 copy-wasm-file-lp-token-wrapper:
 	cp ${wasm_src_path}/erc20-token.wasm ${lp_token_wrapper_des_wasm}
 	cp ${wasm_src_path}/lp-token-wrapper.wasm ${lp_token_wrapper_des_wasm}
-	cp ${wasm_src_path}/lp-token-wrapper-session-code.wasm ${lp_token_wrapper_des_wasm}
+	cp ${wasm_src_path}/test-session-code.wasm ${lp_token_wrapper_des_wasm}
 copy-wasm-file-curve-rewards:
 	cp ${wasm_src_path}/erc20-token.wasm ${curve_rewards_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${curve_rewards_des_wasm}
@@ -268,7 +268,7 @@ test-ownable:
 test-i-reward-distribution-recipient:
 	make build-i-reward-distribution-recipient && make copy-wasm-file-i-reward-distribution-recipient && make test-only-i-reward-distribution-recipient
 test-lp-token-wrapper:
-	make build-contract-erc20 && make build-lp-token-wrapper-session-code && make build-lp-token-wrapper && make copy-wasm-file-lp-token-wrapper && make test-only-lp-token-wrapper
+	make build-contract-erc20 && make build-lp-token-wrapper && make copy-wasm-file-lp-token-wrapper && make test-only-lp-token-wrapper
 test-curve-rewards:
 	make build-curve-rewards-session-code && make build-curve-rewards && make copy-wasm-file-curve-rewards && make test-only-curve-rewards
 

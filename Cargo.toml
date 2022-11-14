@@ -104,7 +104,6 @@ members = [
   "lp-token-wrapper/lp-token-wrapper",
   "lp-token-wrapper/lp-token-wrapper-crate",
   "lp-token-wrapper/lp-token-wrapper-tests",
-  "lp-token-wrapper/lp-token-wrapper-session-code",
   # Curve Rewards
   "curve-rewards/curve-rewards",
   "curve-rewards/curve-rewards-crate",
