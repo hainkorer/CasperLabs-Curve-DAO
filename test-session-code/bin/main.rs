@@ -32,6 +32,18 @@ pub extern "C" fn call() {
     let package_hash: Key = runtime::get_named_arg("package_hash");
 
     match entrypoint.as_str() {
+        CLAIMABLE_REWARD => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                CLAIMABLE_REWARD,
+                runtime_args! {
+                    "addr" => addr,
+                },
+            );
+            store(CLAIMABLE_REWARD, ret);
+        }
         ALLOWANCE => {
             let owner: Key = runtime::get_named_arg("owner");
             let spender: Key = runtime::get_named_arg("spender");
@@ -98,6 +110,15 @@ pub extern "C" fn call() {
                 runtime_args! {},
             );
             store(IS_KILLED, ret);
+        }
+        IS_OWNER => {
+            let ret: bool = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                IS_OWNER,
+                runtime_args! {},
+            );
+            store(IS_OWNER, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };

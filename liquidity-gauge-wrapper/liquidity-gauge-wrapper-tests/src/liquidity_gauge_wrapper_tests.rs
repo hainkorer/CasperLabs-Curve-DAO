@@ -311,8 +311,8 @@ fn test_deposit() {
     liquidity_gauge_wrapper_instance.deposit(owner, U256::from(TEN_E_NINE * 10), None);
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -345,8 +345,8 @@ fn test_withdraw() {
     liquidity_gauge_wrapper_instance.withdraw(owner, U256::from(TEN_E_NINE * 10), addr);
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -373,8 +373,8 @@ fn test_allowance() {
     );
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),
@@ -408,8 +408,8 @@ fn test_transfer() {
     liquidity_gauge_wrapper_instance.transfer(owner, recipient, U256::from(TEN_E_NINE * 10));
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -443,8 +443,8 @@ fn test_transfer_from() {
     );
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),
@@ -485,8 +485,8 @@ fn test_approve() {
     );
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),
@@ -518,8 +518,8 @@ fn test_increase_allowance() {
     );
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),
@@ -551,8 +551,8 @@ fn test_decrease_allowance() {
     );
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),
@@ -587,8 +587,8 @@ fn test_kill_me() {
     liquidity_gauge_wrapper_instance.kill_me(owner);
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(IS_KILLED),
@@ -609,8 +609,8 @@ fn test_commit_transfer_ownership() {
     liquidity_gauge_wrapper_instance.commit_transfer_ownership(owner, addr);
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(FUTURE_ADMIN),
@@ -633,8 +633,8 @@ fn test_apply_transfer_ownership() {
     liquidity_gauge_wrapper_instance.apply_transfer_ownership(owner);
     TestContract::new(
         &env,
-        "liquidity-gauge-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ADMIN),

@@ -78,7 +78,7 @@ build-contract-voting-escrow:
 	cargo build --release -p session-code -p erc20 -p voting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-ownable:
-	cargo build --release -p ownable-session-code -p ownable --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p ownable --target wasm32-unknown-unknown
 build-lp-token-wrapper-session-code:
 	cargo build --release -p lp-token-wrapper-session-code --target wasm32-unknown-unknown
 build-lp-token-wrapper:
@@ -220,7 +220,7 @@ copy-wasm-file-liquidity-gauge-v3:
 	cp ${root_directory}${wasm_src_path}liquidity_gauge_v3_session_code.wasm ${liquidity_gauge_v3_des_wasm}
 copy-wasm-file-ownable:
 	cp ${wasm_src_path}/ownable.wasm ${ownable_des_wasm}
-	cp ${wasm_src_path}/ownable-session-code.wasm ${ownable_des_wasm}
+	cp ${wasm_src_path}/test-session-code.wasm ${ownable_des_wasm}
 copy-wasm-file-i-reward-distribution-recipient:
 	cp ${wasm_src_path}/i-reward-distribution-recipient.wasm ${i_reward_distribution_recipient_des_wasm}
 	cp ${wasm_src_path}/session-code.wasm ${i_reward_distribution_recipient_des_wasm}

@@ -18,6 +18,7 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
         symbol: String,
         gauge: Key,
         admin: Key,
+        block_time:u64
     ) -> TestContract {
         TestContract::new(
             env,
@@ -30,51 +31,51 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "gauge" => gauge,
                 "admin" => admin,
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time,
         )
     }
 
-    pub fn user_checkpoint(&self, owner: AccountHash, addr: Key) {
+    pub fn user_checkpoint(&self, owner: AccountHash, addr: Key,block_time:u64) {
         self.0.call_contract(
             owner,
             "user_checkpoint",
             runtime_args! {
                 "addr" => addr
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time,
         );
     }
-    pub fn claimable_tokens(&self, owner: AccountHash, addr: Key) {
+    pub fn claimable_tokens(&self, owner: AccountHash, addr: Key,block_time:u64) {
         self.0.call_contract(
             owner,
             "claimable_tokens",
             runtime_args! {
                 "addr" => addr
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time,
         );
     }
-    pub fn claimable_reward(&self, owner: AccountHash, addr: Key) {
+    pub fn claimable_reward(&self, owner: AccountHash, addr: Key,block_time:u64) {
         self.0.call_contract(
             owner,
             "claimable_reward",
             runtime_args! {
                 "addr" => addr
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time,
         );
     }
-    pub fn claim_tokens(&self, owner: AccountHash, addr: Option<Key>) {
+    pub fn claim_tokens(&self, owner: AccountHash, addr: Option<Key>,block_time:u64) {
         self.0.call_contract(
             owner,
             "claim_tokens",
             runtime_args! {
                 "addr" => addr
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn set_approve_deposit(&self, owner: AccountHash, addr: Key, can_deposit: bool) {
+    pub fn set_approve_deposit(&self, owner: AccountHash, addr: Key, can_deposit: bool,block_time:u64) {
         self.0.call_contract(
             owner,
             "set_approve_deposit",
@@ -82,10 +83,10 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "addr" => addr,
                 "can_deposit" => can_deposit
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn deposit(&self, owner: AccountHash, value: U256, addr: Option<Key>) {
+    pub fn deposit(&self, owner: AccountHash, value: U256, addr: Option<Key>,block_time:u64) {
         self.0.call_contract(
             owner,
             "deposit",
@@ -93,10 +94,10 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "value" => value,
                 "addr" => addr,
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn withdraw(&self, owner: AccountHash, value: U256, addr: Key) {
+    pub fn withdraw(&self, owner: AccountHash, value: U256, addr: Key,block_time:u64) {
         self.0.call_contract(
             owner,
             "withdraw",
@@ -104,21 +105,10 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "value" => value,
                 "addr" => addr,
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn allowance(&self, owner: AccountHash, key: Key, spender: Key) {
-        self.0.call_contract(
-            owner,
-            "allowance",
-            runtime_args! {
-                "owner" => key,
-                "spender" => spender,
-            },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
-        );
-    }
-    pub fn transfer(&self, owner: AccountHash, recipient: Key, amount: U256) {
+    pub fn transfer(&self, owner: AccountHash, recipient: Key, amount: U256,block_time:u64) {
         self.0.call_contract(
             owner,
             "transfer",
@@ -126,10 +116,10 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "recipient" => recipient,
                 "amount" => amount,
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn transfer_from(&self, owner: AccountHash, key: Key, recipient: Key, amount: U256) {
+    pub fn transfer_from(&self, owner: AccountHash, key: Key, recipient: Key, amount: U256,block_time:u64) {
         self.0.call_contract(
             owner,
             "transfer_from",
@@ -138,10 +128,10 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "recipient" => recipient,
                 "amount" => amount,
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn approve(&self, owner: AccountHash, spender: Key, amount: U256) {
+    pub fn approve(&self, owner: AccountHash, spender: Key, amount: U256,block_time:u64) {
         self.0.call_contract(
             owner,
             "approve",
@@ -149,10 +139,10 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "spender" => spender,
                 "amount" => amount,
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn increase_allowance(&self, owner: AccountHash, spender: Key, amount: U256) {
+    pub fn increase_allowance(&self, owner: AccountHash, spender: Key, amount: U256,block_time:u64) {
         self.0.call_contract(
             owner,
             "increase_allowance",
@@ -160,10 +150,10 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "spender" => spender,
                 "amount" => amount,
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn decrease_allowance(&self, owner: AccountHash, spender: Key, amount: U256) {
+    pub fn decrease_allowance(&self, owner: AccountHash, spender: Key, amount: U256,block_time:u64) {
         self.0.call_contract(
             owner,
             "decrease_allowance",
@@ -171,27 +161,27 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
                 "spender" => spender,
                 "amount" => amount,
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
-    pub fn kill_me(&self, owner: AccountHash) {
-        self.0.call_contract(owner, "kill_me", runtime_args! {}, LIQUIDITYGAUGEREWARDWRAPPERInstance::now());
+    pub fn kill_me(&self, owner: AccountHash,block_time:u64) {
+        self.0.call_contract(owner, "kill_me", runtime_args! {}, block_time);
     }
 
-    pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key) {
+    pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key,block_time:u64) {
         self.0.call_contract(
             owner,
             "commit_transfer_ownership",
             runtime_args! {
                 "addr" => addr
             },
-            LIQUIDITYGAUGEREWARDWRAPPERInstance::now(),
+            block_time
         );
     }
 
-    pub fn apply_transfer_ownership(&self, owner: AccountHash) {
+    pub fn apply_transfer_ownership(&self, owner: AccountHash,block_time:u64) {
         self.0
-            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, LIQUIDITYGAUGEREWARDWRAPPERInstance::now());
+            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, block_time);
     }
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
