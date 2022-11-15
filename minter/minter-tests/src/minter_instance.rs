@@ -86,27 +86,23 @@ impl MINTERInstance {
             block_time,
         )
     }
-    pub fn deploy_liquidity_gauge_reward(
+    pub fn deploy_liquidity_gauge(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
         lp_addr: Key,
         minter: Key,
-        reward_contract: Key,
-        rewarded_token: Key,
         admin: Key,
         block_time:u64
     ) -> TestContract {
         TestContract::new(
             env,
-            "liquidity-gauge-reward.wasm",
+            "liquidity-gauge-v3.wasm",
             contract_name,
             sender,
             runtime_args! {
                 "lp_addr" => lp_addr,
                 "minter" => minter,
-                "reward_contract" => reward_contract,
-                "rewarded_token" => rewarded_token,
                 "admin" => admin,
             },
             block_time,

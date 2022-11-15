@@ -25,25 +25,6 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     )
 }
 
-fn deploy_curve_rewards(
-    env: &TestEnv,
-    sender: AccountHash,
-    token: Key,
-    reward: Key,
-) -> TestContract {
-    TestContract::new(
-        env,
-        "curve-rewards.wasm",
-        "curve-rewards",
-        sender,
-        runtime_args! {
-            "token" => token,
-            "reward" => reward
-        },
-        0,
-    )
-}
-
 fn deploy() -> (
     TestEnv,
     MINTERInstance,
@@ -97,21 +78,12 @@ fn deploy() -> (
         Key::Hash(gauge_controller.package_hash()),
         block_time
     );
-    let curve_rewards = deploy_curve_rewards(
+    let liquidity_gauge = MINTERInstance::deploy_liquidity_gauge(
         &env,
-        owner,
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-    );
-
-    let liquidity_gauge_reward = MINTERInstance::deploy_liquidity_gauge_reward(
-        &env,
-        "Liquidity Gauge Reward",
+        "Liquidity Gauge",
         owner,
         Key::Hash(_token.package_hash()),
         Key::Hash(minter.package_hash()),
-        Key::Hash(curve_rewards.package_hash()),
-        Key::Hash(_token.package_hash()),
         Key::Account(owner),
         block_time
     );
@@ -122,7 +94,7 @@ fn deploy() -> (
         _token,
         voting_escrow,
         gauge_controller,
-        liquidity_gauge_reward,
+        liquidity_gauge,
         erc20_crv,
         block_time
     )
@@ -137,7 +109,7 @@ fn test_deploy() {
         _token,
         _voting_escrow,
         gauge_controller,
-        _liquidity_gauge_reward,
+        _liquidity_gauge,
         erc20_crv,
         _
     ) = deploy();
@@ -158,7 +130,7 @@ fn test_minter_mint() {
         token,
         _voting_escrow,
         gauge_controller,
-        liquidity_gauge_reward,
+        liquidity_gauge,
         _erc20_crv,
         block_time
     ) = deploy();
@@ -179,26 +151,17 @@ fn test_minter_mint() {
     add_gauge(
         &gauge_controller,
         owner,
-        Key::Hash(liquidity_gauge_reward.package_hash()),
+        Key::Hash(liquidity_gauge.package_hash()),
         gauge_type,
         Some(weight),
         block_time
     );
-
-    let curve_rewards = deploy_curve_rewards(
-        &env,
-        owner,
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-    );
-    let liquidity_gauge_reward_1 = MINTERInstance::deploy_liquidity_gauge_reward(
+    let liquidity_gauge_1 = MINTERInstance::deploy_liquidity_gauge(
         &env,
         "Liquidity Gauge Reward 1",
         owner,
         Key::Hash(token.package_hash()),
         Key::from(minter.contract_package_hash()),
-        Key::Hash(curve_rewards.package_hash()),
-        Key::Hash(token.package_hash()),
         Key::Account(owner),
         block_time
     );
@@ -216,12 +179,12 @@ fn test_minter_mint() {
     add_gauge(
         &gauge_controller,
         owner,
-        Key::Hash(liquidity_gauge_reward_1.package_hash()),
+        Key::Hash(liquidity_gauge_1.package_hash()),
         gauge_type,
         Some(weight),
         block_time
     );
-    minter.mint(owner, Key::Hash(liquidity_gauge_reward_1.package_hash()),block_time);
+    minter.mint(owner, Key::Hash(liquidity_gauge_1.package_hash()),block_time);
 }
 
 #[test]
@@ -233,7 +196,7 @@ fn test_minter_mint_many() {
         token,
         _voting_escrow,
         gauge_controller,
-        liquidity_gauge_reward,
+        liquidity_gauge,
         _erc20_crv,
         block_time
     ) = deploy();
@@ -253,26 +216,17 @@ fn test_minter_mint_many() {
     add_gauge(
         &gauge_controller,
         owner,
-        Key::Hash(liquidity_gauge_reward.package_hash()),
+        Key::Hash(liquidity_gauge.package_hash()),
         gauge_type,
         Some(weight),
         block_time
     );
-
-    let curve_rewards = deploy_curve_rewards(
+    let liquidity_gauge_1 = MINTERInstance::deploy_liquidity_gauge(
         &env,
-        owner,
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-    );
-    let liquidity_gauge_reward_1 = MINTERInstance::deploy_liquidity_gauge_reward(
-        &env,
-        "Liquidity Gauge Reward 1",
+        "Liquidity Gauge 1",
         owner,
         Key::Hash(token.package_hash()),
         Key::from(minter.contract_package_hash()),
-        Key::Hash(curve_rewards.package_hash()),
-        Key::Hash(token.package_hash()),
         Key::Account(owner),
         block_time
     );
@@ -290,13 +244,13 @@ fn test_minter_mint_many() {
     add_gauge(
         &gauge_controller,
         owner,
-        Key::Hash(liquidity_gauge_reward_1.package_hash()),
+        Key::Hash(liquidity_gauge_1.package_hash()),
         gauge_type,
         Some(weight),
         block_time
     );
     let gauge_addrs: Vec<String> =
-        vec![Key::Hash(liquidity_gauge_reward_1.package_hash()).to_formatted_string()];
+        vec![Key::Hash(liquidity_gauge_1.package_hash()).to_formatted_string()];
     minter.mint_many(owner, gauge_addrs,block_time);
 }
 
@@ -309,7 +263,7 @@ fn test_minter_mint_for() {
         token,
         _voting_escrow,
         gauge_controller,
-        liquidity_gauge_reward,
+        liquidity_gauge,
         _erc20_crv,
         block_time
     ) = deploy();
@@ -329,26 +283,17 @@ fn test_minter_mint_for() {
     add_gauge(
         &gauge_controller,
         owner,
-        Key::Hash(liquidity_gauge_reward.package_hash()),
+        Key::Hash(liquidity_gauge.package_hash()),
         gauge_type,
         Some(weight),
         block_time
     );
-
-    let curve_rewards = deploy_curve_rewards(
+    let liquidity_gauge_1 = MINTERInstance::deploy_liquidity_gauge(
         &env,
-        owner,
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-    );
-    let liquidity_gauge_reward_1 = MINTERInstance::deploy_liquidity_gauge_reward(
-        &env,
-        "Liquidity Gauge Reward 1",
+        "Liquidity Gauge 1",
         owner,
         Key::Hash(token.package_hash()),
         Key::from(minter.contract_package_hash()),
-        Key::Hash(curve_rewards.package_hash()),
-        Key::Hash(token.package_hash()),
         Key::Account(owner),
         block_time
     );
@@ -366,7 +311,7 @@ fn test_minter_mint_for() {
     add_gauge(
         &gauge_controller,
         owner,
-        Key::Hash(liquidity_gauge_reward_1.package_hash()),
+        Key::Hash(liquidity_gauge_1.package_hash()),
         gauge_type,
         Some(weight),
         block_time
@@ -374,7 +319,7 @@ fn test_minter_mint_for() {
 
     minter.mint_for(
         owner,
-        Key::Hash(liquidity_gauge_reward_1.package_hash()),
+        Key::Hash(liquidity_gauge_1.package_hash()),
         Key::from(owner),
         block_time
     );
@@ -402,10 +347,10 @@ fn test_minter_mint_with_deposit() {
         env,
         minter,
         owner,
-        token,
+        _token,
         _voting_escrow,
         gauge_controller,
-        liquidity_gauge_reward,
+        liquidity_gauge,
         _erc20_crv,
         block_time
     ) = deploy();
@@ -426,28 +371,19 @@ fn test_minter_mint_with_deposit() {
     add_gauge(
         &gauge_controller,
         owner,
-        Key::Hash(liquidity_gauge_reward.package_hash()),
+        Key::Hash(liquidity_gauge.package_hash()),
         gauge_type,
         Some(weight),
         block_time
     );
-
-    let curve_rewards = deploy_curve_rewards(
-        &env,
-        owner,
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-    );
     let lp_token = deploy_erc20(&env, owner);
     let value: U256 = 100000000.into();
-    let liquidity_gauge_reward_1 = MINTERInstance::deploy_liquidity_gauge_reward(
+    let liquidity_gauge_1 = MINTERInstance::deploy_liquidity_gauge(
         &env,
-        "Liquidity Gauge Reward 1",
+        "Liquidity Gauge 1",
         owner,
         Key::Hash(lp_token.package_hash()),
         Key::from(minter.contract_package_hash()),
-        Key::Hash(curve_rewards.package_hash()),
-        Key::Hash(token.package_hash()),
         Key::Account(owner),
         block_time
     );
@@ -465,7 +401,7 @@ fn test_minter_mint_with_deposit() {
     add_gauge(
         &gauge_controller,
         owner,
-        Key::Hash(liquidity_gauge_reward_1.package_hash()),
+        Key::Hash(liquidity_gauge_1.package_hash()),
         gauge_type,
         Some(weight),
         block_time
@@ -485,19 +421,20 @@ fn test_minter_mint_with_deposit() {
         owner,
         "approve",
         runtime_args! {
-            "spender" => Key::Hash(liquidity_gauge_reward_1.package_hash()),
+            "spender" => Key::Hash(liquidity_gauge_1.package_hash()),
             "amount" => approve_value
         },
         block_time,
     );
-    liquidity_gauge_reward_1.call_contract(
+    liquidity_gauge_1.call_contract(
         owner,
         "deposit",
         runtime_args! {
             "value" => value,
-            "addr" =>  None::<Key>
+            "addr" =>  None::<Key>,
+            "claim_rewards" => None::<bool>
         },
         block_time
     );
-    minter.mint(owner, Key::Hash(liquidity_gauge_reward_1.package_hash()),block_time);
+    minter.mint(owner, Key::Hash(liquidity_gauge_1.package_hash()),block_time);
 }
