@@ -61,8 +61,8 @@ fn total_supply() {
     lp_token_wrapper_instance.stake(owner, amount);
     TestContract::new(
         &env,
-        "lp-token-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY),
@@ -82,8 +82,8 @@ fn balance_of() {
     lp_token_wrapper_instance.stake(owner, amount);
     TestContract::new(
         &env,
-        "lp-token-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -104,8 +104,8 @@ fn stake() {
     lp_token_wrapper_instance.stake(owner, amount);
     TestContract::new(
         &env,
-        "lp-token-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -128,8 +128,8 @@ fn withdraw() {
     lp_token_wrapper_instance.withdraw(owner, withdraw_amount);
     TestContract::new(
         &env,
-        "lp-token-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),

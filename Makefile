@@ -79,10 +79,8 @@ build-contract-voting-escrow:
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-ownable:
 	cargo build --release -p test-session-code -p ownable --target wasm32-unknown-unknown
-build-lp-token-wrapper-session-code:
-	cargo build --release -p test-session-code --target wasm32-unknown-unknown
 build-lp-token-wrapper:
-	cargo build --release -p lp-token-wrapper --target wasm32-unknown-unknown
+	cargo build --release  -p test-session-code -p lp-token-wrapper --target wasm32-unknown-unknown
 build-curve-rewards:
 	cargo build --release -p erc20 -p test-session-code -p curve-rewards --target wasm32-unknown-unknown
 
