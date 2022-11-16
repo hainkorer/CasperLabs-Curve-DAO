@@ -56,7 +56,7 @@ build-contract-liquidity-gauge-wrapper:
 	cargo build --release -p erc20_crv -p erc20 -p test-session-code -p minter -p liquidity-gauge-v3 -p voting-escrow -p gauge-controller -p liquidity-gauge-wrapper-session-code -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-wrapper.wasm 2>/dev/null | true
 build-contract-minter:
-	cargo build --release -p erc20 -p erc20_crv -p erc20-crv-session-code -p liquidity-gauge-reward -p voting-escrow -p gauge-controller -p minter --target wasm32-unknown-unknown
+	cargo build --release -p erc20 -p erc20_crv -p erc20-crv-session-code -p liquidity-gauge-v3 -p liquidity-gauge-reward -p voting-escrow -p gauge-controller -p minter --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/minter-token.wasm 2>/dev/null | true
 build-contract-reward-only-gauge:
 	cargo build --release -p erc20 -p erc20_crv -p curve-rewards -p reward-only-gauge -p reward-only-gauge-session-code --target wasm32-unknown-unknown
@@ -188,6 +188,7 @@ copy-wasm-file-minter:
 	cp ${wasm_src_path}/minter-token.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-token.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward.wasm ${minter_des_wasm}
+	cp ${wasm_src_path}/liquidity-gauge-v3.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${minter_des_wasm}
 copy-wasm-file-reward-only-gauge:
 	cp ${wasm_src_path}/erc20_crv.wasm ${reward_only_gauge_des_wasm}
