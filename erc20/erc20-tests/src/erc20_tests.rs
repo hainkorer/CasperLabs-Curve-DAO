@@ -165,7 +165,7 @@ fn test_erc20_transfer_from() {
     let amount: U256 = 1.into();
     // Minting to proxy contract as it is the intermediate caller to transfer
     token.mint(owner, package_hash, mint_amount);
-
+    
     proxy.approve(owner, package_hash2, allowance);
     assert_eq!(token.balance_of(owner), 1000.into());
 
