@@ -1,6 +1,8 @@
 // Common Keys
 pub const SESSION_CODE_WASM: &str = "session-code.wasm";
 pub const SESSION_CODE_NAME: &str = "session_code";
+pub const TEST_SESSION_CODE_WASM: &str = "test-session-code.wasm";
+pub const TEST_SESSION_CODE_NAME: &str = "test_session_code";
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_CONTRACT_PACKAGE_HASH: &str = "self_contract_package_hash";
 pub const VESTING_ESCROW_SIMPLE_CONTRACT_HASH: &str = "vesting_escrow_simple_contract_hash";

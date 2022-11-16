@@ -25,8 +25,8 @@ fn is_owner() {
     let package_hash = Key::Hash(instance.package_hash());
     TestContract::new(
         &env,
-        "ownable-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(IS_OWNER),

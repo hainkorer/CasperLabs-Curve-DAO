@@ -4,6 +4,8 @@ members = [
   "common",
   # SESSION CODE
   "session-code",
+  # Test Session Code
+  "test-session-code",
   # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
   "curve-token-v3/curve-token-v3-tests",
@@ -95,7 +97,6 @@ members = [
   "ownable/ownable",
   "ownable/ownable-crate",
   "ownable/ownable-tests",
-  "ownable/ownable-session-code",
   # IREWARDDISTRIBUTIONRECIPIENT
   "i-reward-distribution-recipient/i-reward-distribution-recipient",
   "i-reward-distribution-recipient/i-reward-distribution-recipient-crate",
@@ -104,12 +105,10 @@ members = [
   "lp-token-wrapper/lp-token-wrapper",
   "lp-token-wrapper/lp-token-wrapper-crate",
   "lp-token-wrapper/lp-token-wrapper-tests",
-  "lp-token-wrapper/lp-token-wrapper-session-code",
   # Curve Rewards
   "curve-rewards/curve-rewards",
   "curve-rewards/curve-rewards-crate",
   "curve-rewards/curve-rewards-tests",
-  "curve-rewards/curve-rewards-session-code",
   #LIQUIDITY GAUGE V3
   "liquidity-gauge-v3/liquidity-gauge-v3",
   "liquidity-gauge-v3/liquidity-gauge-v3-crate",

@@ -32,29 +32,17 @@ pub extern "C" fn call() {
     let package_hash: Key = runtime::get_named_arg("package_hash");
 
     match entrypoint.as_str() {
-        USER_CHECKPOINT => {
-            let addr: Key = runtime::get_named_arg("addr");
-            let ret: bool = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                USER_CHECKPOINT,
-                runtime_args! {
-                    "addr" => addr,
-                },
-            );
-            store(USER_CHECKPOINT, ret);
-        }
-        CLAIMABLE_TOKENS => {
+        CLAIMABLE_REWARD => {
             let addr: Key = runtime::get_named_arg("addr");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                CLAIMABLE_TOKENS,
+                CLAIMABLE_REWARD,
                 runtime_args! {
                     "addr" => addr,
                 },
             );
-            store(CLAIMABLE_TOKENS, ret);
+            store(CLAIMABLE_REWARD, ret);
         }
         ALLOWANCE => {
             let owner: Key = runtime::get_named_arg("owner");
@@ -122,6 +110,54 @@ pub extern "C" fn call() {
                 runtime_args! {},
             );
             store(IS_KILLED, ret);
+        }
+        IS_OWNER => {
+            let ret: bool = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                IS_OWNER,
+                runtime_args! {},
+            );
+            store(IS_OWNER, ret);
+        }
+        TOTAL_SUPPLY => {
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                TOTAL_SUPPLY,
+                runtime_args! {},
+            );
+            store(TOTAL_SUPPLY, ret);
+        }
+        LAST_TIME_REWARD_APPLICABLE => {
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                LAST_TIME_REWARD_APPLICABLE,
+                runtime_args! {},
+            );
+            store(LAST_TIME_REWARD_APPLICABLE, ret);
+        }
+        REWARD_PER_TOKEN => {
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                REWARD_PER_TOKEN,
+                runtime_args! {},
+            );
+            store(REWARD_PER_TOKEN, ret);
+        }
+        EARNED => {
+            let account: Key = runtime::get_named_arg("account");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                EARNED,
+                runtime_args! {
+                    "account" => account,
+                },
+            );
+            store(EARNED, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
