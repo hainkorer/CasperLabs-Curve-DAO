@@ -25,14 +25,14 @@ fn is_owner() {
     let package_hash = Key::Hash(instance.package_hash());
     TestContract::new(
         &env,
-        "ownable-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(IS_OWNER),
             "package_hash" => package_hash,
         },
-        300,
+        OWNABLEInstance::now(),
     );
     let ret: bool = env.query_account_named_key(owner, &[IS_OWNER.into()]);
     let res: bool = true;

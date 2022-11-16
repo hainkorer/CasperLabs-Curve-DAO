@@ -1,13 +1,9 @@
-use std::collections::BTreeMap;
-
+use std::time::SystemTime;
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
-
-pub type TokenId = U256;
-pub type Meta = BTreeMap<String, String>;
 
 pub struct LPTOKENWRAPPERInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
@@ -29,12 +25,12 @@ impl LPTOKENWRAPPERInstance {
             runtime_args! {
                 "uni" => uni,
             },
-            0,
+            LPTOKENWRAPPERInstance::now(),
         )
     }
     pub fn total_supply(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "total_supply", runtime_args! {}, 0);
+            .call_contract(sender, "total_supply", runtime_args! {}, LPTOKENWRAPPERInstance::now());
     }
     pub fn balance_of(&self, sender: AccountHash, account: Key) {
         self.0.call_contract(
@@ -43,7 +39,7 @@ impl LPTOKENWRAPPERInstance {
             runtime_args! {
                 "account" => account
             },
-            0,
+            LPTOKENWRAPPERInstance::now(),
         );
     }
     pub fn stake(&self, sender: AccountHash, amount: U256) {
@@ -53,7 +49,7 @@ impl LPTOKENWRAPPERInstance {
             runtime_args! {
                 "amount" => amount
             },
-            0,
+            LPTOKENWRAPPERInstance::now(),
         );
     }
     pub fn withdraw(&self, sender: AccountHash, amount: U256) {
@@ -63,7 +59,7 @@ impl LPTOKENWRAPPERInstance {
             runtime_args! {
                 "amount" => amount
             },
-            0,
+            LPTOKENWRAPPERInstance::now(),
         );
     }
     // Result methods
@@ -73,5 +69,12 @@ impl LPTOKENWRAPPERInstance {
 
     pub fn package_hash(&self) -> ContractPackageHash {
         self.0.query_named_key("self_package_hash".to_string())
+    }
+
+    pub fn now() -> u64 {
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
     }
 }

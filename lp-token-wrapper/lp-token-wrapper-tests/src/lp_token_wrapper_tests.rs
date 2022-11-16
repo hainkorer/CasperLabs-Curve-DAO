@@ -16,7 +16,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
             "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 10000000000000)
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     )
 }
 fn deploy() -> (TestEnv, AccountHash, TestContract) {
@@ -37,13 +37,13 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         owner,
         "mint",
         runtime_args! {"to" => to , "amount" => amount},
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     erc20.call_contract(
         owner,
         "approve",
         runtime_args! {"spender" => to , "amount" => amount},
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     (env, owner, lp_token_wrapper_instance)
 }
@@ -68,7 +68,7 @@ fn total_supply() {
             "entrypoint" => String::from(TOTAL_SUPPLY),
             "package_hash" => package_hash,
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
     assert_eq!(ret, amount, "Invalid result");
@@ -90,7 +90,7 @@ fn balance_of() {
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, amount, "Invalid result");
@@ -112,7 +112,7 @@ fn stake() {
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, amount, "Invalid result");
@@ -136,7 +136,7 @@ fn withdraw() {
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, withdraw_amount, "Invalid result");

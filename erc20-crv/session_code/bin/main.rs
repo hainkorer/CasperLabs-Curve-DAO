@@ -104,8 +104,7 @@ pub extern "C" fn call() {
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 TOTAL_SUPPLY,
-                runtime_args! {
-                },
+                runtime_args! {},
             );
             store(TOTAL_SUPPLY, ret);
         }
@@ -170,7 +169,7 @@ pub extern "C" fn call() {
         ALLOWANCE => {
             let owner: Key = runtime::get_named_arg("owner");
             let spender: Key = runtime::get_named_arg("spender");
-            let ret: U256= runtime::call_versioned_contract(
+            let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 ALLOWANCE,
@@ -181,7 +180,6 @@ pub extern "C" fn call() {
             );
             store(ALLOWANCE, ret);
         }
-
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }
