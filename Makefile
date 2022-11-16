@@ -65,7 +65,7 @@ build-contract-vesting-escrow:
 	cargo build --release -p vesting-escrow-session-code -p erc20 -p vesting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow.wasm 2>/dev/null | true
 build-contract-vesting-escrow-factory:
-	cargo build --release -p vesting-escrow-simple -p erc20 -p vesting-escrow-factory --target wasm32-unknown-unknown
+	cargo build --release -p vesting-escrow-simple -p erc20 -p vesting-escrow-factory -p vesting-escrow-factory-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-factory.wasm 2>/dev/null | true
 
 build-contract-liquidity-gauge-v3:
@@ -194,7 +194,6 @@ copy-wasm-file-reward-only-gauge:
 	cp ${wasm_src_path}/reward-only-gauge-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-session-code.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${reward_only_gauge_des_wasm}
-	
 copy-wasm-file-vesting-escrow:
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-token.wasm ${vesting_escrow_des_wasm}
@@ -202,12 +201,12 @@ copy-wasm-file-vesting-escrow:
 copy-wasm-file-vesting-escrow-factory:
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-factory-token.wasm ${vesting_escrow_factory_des_wasm}
+	cp ${wasm_src_path}/vesting-escrow-factory-session-code.wasm ${vesting_escrow_factory_des_wasm}
 copy-wasm-file-voting-escrow:
 	cp ${wasm_src_path}/session-code.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/erc20-token.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/*.wasm ${voting_escrow_des_wasm}
-
 copy-wasm-file-liquidity-gauge-v3:
 	cp ${root_directory}${wasm_src_path}liquidity-gauge-v3.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${liquidity_gauge_v3_des_wasm}
