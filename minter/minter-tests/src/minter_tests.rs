@@ -158,7 +158,7 @@ fn test_minter_mint() {
     );
     let liquidity_gauge_1 = MINTERInstance::deploy_liquidity_gauge(
         &env,
-        "Liquidity Gauge Reward 1",
+        "Liquidity Gauge 1",
         owner,
         Key::Hash(token.package_hash()),
         Key::from(minter.contract_package_hash()),

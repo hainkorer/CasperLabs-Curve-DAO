@@ -41,7 +41,7 @@ build-contract-fee-distributor:
 	cargo build --release -p session-code -p erc20 -p voting-escrow -p fee-distributor --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/fee-distributor.wasm 2>/dev/null | true
 build-contract-gauge-controller:
-	cargo build --release -p gauge-controller-session-code -p erc20 -p voting-escrow -p gauge-controller --target wasm32-unknown-unknown
+	cargo build --release -p minter -p liquidity-gauge-v3 -p gauge-controller-session-code -p erc20 -p voting-escrow -p gauge-controller --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/gauge-controller-token.wasm 2>/dev/null | true
 build-contract-gauge-proxy:
 	cargo build --release -p gauge-proxy --target wasm32-unknown-unknown
@@ -147,6 +147,8 @@ copy-wasm-file-gauge-controller:
 	cp ${wasm_src_path}/erc20-token.wasm ${gauge_controller_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${gauge_controller_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-token.wasm ${gauge_controller_des_wasm}
+	cp ${wasm_src_path}/minter-token.wasm ${gauge_controller_des_wasm}
+	cp ${wasm_src_path}/liquidity-gauge-v3.wasm ${gauge_controller_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-session-code.wasm ${gauge_controller_des_wasm}
 copy-wasm-file-gauge-proxy:
 	cp ${wasm_src_path}/gauge-proxy.wasm ${gauge_proxy_des_wasm}
