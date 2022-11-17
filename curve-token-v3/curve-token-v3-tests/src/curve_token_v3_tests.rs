@@ -1,11 +1,21 @@
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 
-use crate::curve_token_v3_instance::CURVETOKENV3Instance;
+use crate::curve_token_v3_instance::{now, CURVETOKENV3Instance};
 
 const NAME: &str = "CRVTokenV3";
 const SYMBOL: &str = "CRV3";
 pub const TEN_E_NINE: u128 = 1000000000;
+fn call(env: &TestEnv, owner: AccountHash, runtime_args: RuntimeArgs) {
+    TestContract::new(
+        env,
+        "curve-token-v3-session-code.wasm",
+        "curve-token-v3-session-code",
+        owner,
+        runtime_args,
+        now(),
+    );
+}
 fn deploy_token_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
         env,
@@ -18,7 +28,7 @@ fn deploy_token_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
             "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 1000000000000000000)
         },
-        0,
+        now(),
     )
 }
 fn deploy_reward(env: &TestEnv, owner: AccountHash) -> TestContract {
@@ -33,7 +43,7 @@ fn deploy_reward(env: &TestEnv, owner: AccountHash) -> TestContract {
             "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 1000000000000000000000)
         },
-        0,
+        now(),
     )
 }
 fn deploy_curve_rewards(
@@ -51,17 +61,10 @@ fn deploy_curve_rewards(
             "token" => token,
             "reward" => reward,
         },
-        0,
+        now(),
     )
 }
-fn deploy() -> (
-    TestEnv,
-    CURVETOKENV3Instance,
-    AccountHash,
-    CURVETOKENV3Instance,
-    CURVETOKENV3Instance,
-    TestContract,
-) {
+fn deploy() -> (TestEnv, CURVETOKENV3Instance, AccountHash, TestContract) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let token_erc20 = deploy_token_erc20(&env, owner);
@@ -74,155 +77,224 @@ fn deploy() -> (
     );
     let token: TestContract =
         CURVETOKENV3Instance::new_deploy(&env, NAME, owner, NAME.to_string(), SYMBOL.to_string());
-    let test_contract: TestContract =
-        CURVETOKENV3Instance::proxy(&env, Key::Hash(token.contract_hash()), owner);
-    let test_contract2: TestContract =
-        CURVETOKENV3Instance::proxy2(&env, Key::Hash(token.contract_hash()), owner);
-
     (
         env,
         CURVETOKENV3Instance::instance(token),
         owner,
-        CURVETOKENV3Instance::instance(test_contract),
-        CURVETOKENV3Instance::instance(test_contract2),
         curve_reward,
     )
 }
 
 #[test]
-fn test_deploy() {
-    let (_, _, _, _, _, _) = deploy();
+fn deployment() {
+    let (_, _, _, _) = deploy();
 }
 #[test]
-fn test_decimals() {
-    let (_, _, owner, proxy, _, _) = deploy();
-    proxy.decimals(owner);
-    let res: U256 = proxy.result();
-    assert_eq!(res, 9.into());
+fn decimals() {
+    let (env, token, owner, _) = deploy();
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "decimals",
+            "package_hash" => Key::from(token.package_hash())
+        },
+    );
+    let decimals: U256 = env.query_account_named_key(owner, &["decimals".into()]);
+    assert_eq!(decimals, 9.into());
 }
 #[test]
-fn test_set_minter() {
-    let (_, token, owner, _, _, _) = deploy();
-    let _minter_arg: Key = Key::Account(owner);
+fn set_minter() {
+    let (env, token, owner, _) = deploy();
+    let _minter_arg: Key = Key::Account(env.next_user());
     token.set_minter(owner, _minter_arg);
+    let ret: Key = token.query("minter");
+    assert_eq!(ret, _minter_arg);
 }
 #[test]
-fn test_mint() {
-    let (_, token, owner, proxy, _, _) = deploy();
+fn mint() {
+    let (env, token, owner, _) = deploy();
     let _to_arg: Key = Key::from_formatted_str(
         "hash-0000000000000000000000010000000000000000000000000000000000020000",
     )
     .unwrap();
-    token.set_minter(owner, proxy.package_hash().into());
     let _value_arg: U256 = 2000000000.into();
-    proxy.mint(owner, _to_arg, _value_arg);
-    let res: bool = proxy.result();
-    assert!(res);
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "mint",
+            "package_hash" => Key::from(token.package_hash()),
+            "to" => _to_arg,
+            "amount" => _value_arg
+        },
+    );
+    let status: bool = env.query_account_named_key(owner, &["mint".into()]);
+    assert!(status);
 }
 #[test]
-fn test_transfer() {
-    let (_, token, owner, proxy, _, _) = deploy();
-    let _to_arg: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000",
-    )
-    .unwrap();
-    token.set_minter(owner, proxy.package_hash().into());
+fn transfer() {
+    let (env, token, owner, _) = deploy();
+    let own: Key = Key::Account(owner);
+    let _to_arg: Key = Key::Account(env.next_user());
     let _value_arg: U256 = 2000000000.into();
-    proxy.mint(owner, proxy.package_hash().into(), _value_arg);
-    proxy.transfer(owner, _to_arg, _value_arg);
-    let res: Result<(), u32> = proxy.result();
-    match res {
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "mint",
+            "package_hash" => Key::from(token.package_hash()),
+            "to" => own,
+            "amount" => _value_arg
+        },
+    );
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "transfer",
+            "package_hash" => Key::from(token.package_hash()),
+            "recipient" => _to_arg,
+            "amount" => _value_arg
+        },
+    );
+    let status: Result<(), u32> = env.query_account_named_key(owner, &["transfer".into()]);
+    match status {
         Ok(()) => {}
         Err(e) => panic!("Transfer Failed ERROR:{}", e),
     }
 }
 #[test]
-fn test_transfer_from() {
-    let (_, token, owner, proxy, proxy2, _) = deploy();
-    let to_arg: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000",
-    )
-    .unwrap();
-
-    token.set_minter(owner, proxy.package_hash().into());
+fn transfer_from() {
+    let (env, token, owner, _) = deploy();
+    let to = env.next_user();
     let _value_arg: U256 = 2000000000.into();
-    proxy.mint(owner, proxy.package_hash().into(), _value_arg);
-    proxy.approve(owner, proxy2.package_hash().into(), _value_arg);
-    proxy2.transfer_from(owner, proxy.package_hash().into(), to_arg, _value_arg);
-    let res: Result<(), u32> = proxy2.result();
-    match res {
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "mint",
+            "package_hash" => Key::from(token.package_hash()),
+            "to" => Key::Account(owner),
+            "amount" => _value_arg
+        },
+    );
+    token.approve(owner, Key::Account(to), _value_arg);
+    call(
+        &env,
+        to,
+        runtime_args! {
+            "entrypoint" => "transfer_from",
+            "package_hash" => Key::from(token.package_hash()),
+            "owner" => Key::Account(owner),
+            "recipient" => Key::Account(to),
+            "amount" => _value_arg
+        },
+    );
+    let status: Result<(), u32> = env.query_account_named_key(to, &["transfer_from".into()]);
+    match status {
         Ok(()) => {}
-        Err(e) => panic!("transfer_from Failed ERROR:{}", e),
+        Err(e) => panic!("Transfer from Failed ERROR:{}", e),
     }
 }
 #[test]
-fn test_approve() {
-    let (_, token, owner, proxy, _, _) = deploy();
-    let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000",
-    )
-    .unwrap();
-    token.set_minter(owner, proxy.package_hash().into());
+fn increase_allowance() {
+    let (env, token, owner, _) = deploy();
+    let spender = env.next_user();
     let _value_arg: U256 = 2000000000.into();
-    let approve_amount: U256 = 1000000000.into();
-    proxy.mint(owner, proxy.package_hash().into(), _value_arg);
-    proxy.approve(owner, spender, approve_amount);
-}
-#[test]
-fn test_increase_allowance() {
-    let (_, token, owner, proxy, _, _) = deploy();
-    let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000",
-    )
-    .unwrap();
-    token.set_minter(owner, proxy.package_hash().into());
-    let _value_arg: U256 = 2000000000.into();
-    let approve_amount: U256 = 1000000000.into();
-    proxy.mint(owner, proxy.package_hash().into(), _value_arg);
-
-    proxy.increase_allowance(owner, spender, approve_amount);
-    let res: Result<(), u32> = proxy.result();
-    match res {
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "mint",
+            "package_hash" => Key::from(token.package_hash()),
+            "to" => Key::Account(owner),
+            "amount" => _value_arg
+        },
+    );
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "increase_allowance",
+            "package_hash" => Key::from(token.package_hash()),
+            "spender" => Key::Account(spender),
+            "amount" => _value_arg
+        },
+    );
+    let status: Result<(), u32> =
+        env.query_account_named_key(owner, &["increase_allowance".into()]);
+    match status {
         Ok(()) => {}
         Err(e) => panic!("increase_allowance Failed ERROR:{}", e),
     }
 }
 #[test]
-fn test_decrease_allowance() {
-    let (_, token, owner, proxy, _, _) = deploy();
-    let spender: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000010000000000000000000000000000000000020000",
-    )
-    .unwrap();
-    token.set_minter(owner, proxy.package_hash().into());
+fn decrease_allowance() {
+    let (env, token, owner, _) = deploy();
+    let spender = env.next_user();
     let _value_arg: U256 = 2000000000.into();
-    let decrease_amount: U256 = 1000000000.into();
-    proxy.mint(owner, proxy.package_hash().into(), _value_arg);
-    proxy.approve(owner, spender, _value_arg);
-
-    proxy.decrease_allowance(owner, spender, decrease_amount);
-    let res: Result<(), u32> = proxy.result();
-    match res {
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "mint",
+            "package_hash" => Key::from(token.package_hash()),
+            "to" => Key::Account(owner),
+            "amount" => _value_arg
+        },
+    );
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "increase_allowance",
+            "package_hash" => Key::from(token.package_hash()),
+            "spender" => Key::Account(spender),
+            "amount" => _value_arg
+        },
+    );
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "decrease_allowance",
+            "package_hash" => Key::from(token.package_hash()),
+            "spender" => Key::Account(spender),
+            "amount" => _value_arg
+        },
+    );
+    let status: Result<(), u32> =
+        env.query_account_named_key(owner, &["decrease_allowance".into()]);
+    match status {
         Ok(()) => {}
         Err(e) => panic!("decrease_allowance Failed ERROR:{}", e),
     }
 }
 #[test]
-fn test_burn_from() {
-    let (_, token, owner, proxy, _, _) = deploy();
-
-    token.set_minter(owner, proxy.package_hash().into());
-    let mint_amount: U256 = 2000000000.into();
-    let burn_amount: U256 = 1000000000.into();
-    proxy.mint(owner, proxy.package_hash().into(), mint_amount);
-    proxy.burn_from(owner, proxy.package_hash().into(), burn_amount);
-    let res: bool = proxy.result();
-    assert!(res);
-}
-#[test]
-fn test_set_name() {
-    let (_, token, owner, _, _, curve_reward) = deploy();
-    let curve_rewards_package_hash = Key::Hash(curve_reward.package_hash());
-    token.set_minter(owner, curve_rewards_package_hash);
-    token.set_name(owner, "curve-token-v3".to_string(), "crvtok3".to_string());
+fn burn_from() {
+    let (env, token, owner, _) = deploy();
+    let _value_arg: U256 = 2000000000.into();
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "mint",
+            "package_hash" => Key::from(token.package_hash()),
+            "to" => Key::Account(owner),
+            "amount" => _value_arg
+        },
+    );
+    call(
+        &env,
+        owner,
+        runtime_args! {
+            "entrypoint" => "burn_from",
+            "package_hash" => Key::from(token.package_hash()),
+            "from" => Key::Account(owner),
+            "amount" => _value_arg
+        },
+    );
+    let status: bool = env.query_account_named_key(owner, &["burn_from".into()]);
+    assert!(status);
 }

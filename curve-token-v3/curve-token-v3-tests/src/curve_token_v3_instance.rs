@@ -3,41 +3,23 @@ use casper_types::{
     RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, time::SystemTime};
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
+
+pub fn now() -> u64 {
+    SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as u64
+}
 
 pub struct CURVETOKENV3Instance(TestContract);
 #[allow(clippy::too_many_arguments)]
 impl CURVETOKENV3Instance {
     pub fn instance(curvetokenv3: TestContract) -> CURVETOKENV3Instance {
         CURVETOKENV3Instance(curvetokenv3)
-    }
-
-    pub fn proxy(env: &TestEnv, curve_token_v3: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "crv3-proxy-token.wasm",
-            "proxy_test",
-            sender,
-            runtime_args! {
-                "curve_token_v3" => curve_token_v3,
-            },
-            0,
-        )
-    }
-    pub fn proxy2(env: &TestEnv, curve_token_v3: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "crv3-proxy-token.wasm",
-            "proxy2_test",
-            sender,
-            runtime_args! {
-                "curve_token_v3" => curve_token_v3,
-            },
-            0,
-        )
     }
 
     pub fn new_deploy(
@@ -56,7 +38,7 @@ impl CURVETOKENV3Instance {
                 "name" => name,
                 "symbol" => symbol
             },
-            0,
+            now(),
         )
     }
 
@@ -69,12 +51,12 @@ impl CURVETOKENV3Instance {
                 "name" => name,
                 "symbol" => symbol,
             },
-            0,
+            now(),
         );
     }
     pub fn decimals(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "decimals", runtime_args! {}, 0);
+            .call_contract(sender, "decimals", runtime_args! {}, now());
     }
     pub fn transfer(&self, sender: AccountHash, recipient: Key, amount: U256) {
         self.0.call_contract(
@@ -85,7 +67,7 @@ impl CURVETOKENV3Instance {
                 "amount" => amount
 
             },
-            0,
+            now(),
         );
     }
     pub fn transfer_from(&self, sender: AccountHash, owner: Key, recipient: Key, amount: U256) {
@@ -98,7 +80,7 @@ impl CURVETOKENV3Instance {
                 "amount" => amount
 
             },
-            0,
+            now(),
         );
     }
     pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256) {
@@ -110,7 +92,7 @@ impl CURVETOKENV3Instance {
                 "amount" => amount
 
             },
-            0,
+            now(),
         );
     }
     pub fn increase_allowance(&self, sender: AccountHash, spender: Key, amount: U256) {
@@ -122,7 +104,7 @@ impl CURVETOKENV3Instance {
                 "amount" => amount,
 
             },
-            0,
+            now(),
         );
     }
     pub fn decrease_allowance(&self, sender: AccountHash, spender: Key, amount: U256) {
@@ -134,7 +116,7 @@ impl CURVETOKENV3Instance {
                 "amount" => amount
 
             },
-            0,
+            now(),
         );
     }
     pub fn mint(&self, sender: AccountHash, to: Key, amount: U256) {
@@ -145,7 +127,7 @@ impl CURVETOKENV3Instance {
                 "to" => to,
                 "amount"=>amount
             },
-            0,
+            now(),
         );
     }
     pub fn burn_from(&self, sender: AccountHash, from: Key, amount: U256) {
@@ -157,7 +139,7 @@ impl CURVETOKENV3Instance {
                 "amount"=>amount
 
             },
-            0,
+            now(),
         );
     }
     pub fn set_minter(&self, sender: AccountHash, minter: Key) {
@@ -167,7 +149,7 @@ impl CURVETOKENV3Instance {
             runtime_args! {
                 "minter" => minter
             },
-            0,
+            now(),
         );
     }
     pub fn set_name(&self, sender: AccountHash, name: String, symbol: String) {
@@ -179,13 +161,13 @@ impl CURVETOKENV3Instance {
                 "symbol"=>symbol
 
             },
-            0,
+            now(),
         );
     }
 
     // Result methods
-    pub fn result<T: CLTyped + FromBytes>(&self) -> T {
-        self.0.query_named_key("result".to_string())
+    pub fn query<T: CLTyped + FromBytes>(&self, key: &str) -> T {
+        self.0.query_named_key(key.into())
     }
 
     pub fn package_hash(&self) -> ContractPackageHash {
