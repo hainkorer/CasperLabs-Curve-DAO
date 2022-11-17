@@ -1,4 +1,4 @@
-use crate::voting_escrow_instance::VOTINGESCROWInstance;
+use crate::voting_escrow_instance::{now, VOTINGESCROWInstance, MILLI_SECONDS_IN_DAY};
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
@@ -16,7 +16,7 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
             "symbol" => "ERC20",
             "decimals" => 9_u8
         },
-        0,
+        now(),
     )
 }
 
@@ -32,6 +32,7 @@ fn deploy() -> (TestEnv, AccountHash, VOTINGESCROWInstance, TestContract) {
         "VotingEscrow".into(),
         "VE".into(),
         "1".into(),
+        now(),
     );
 
     (env, owner, instance, erc20)
@@ -46,7 +47,7 @@ fn test_deploy() {
 fn test_commit_transfer_ownership() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
-    instance.commit_transfer_ownership(owner, addr);
+    instance.commit_transfer_ownership(owner, addr, now());
     let ret: Key = instance.key_value(FUTURE_ADMIN.to_string());
     assert_eq!(ret, addr, "Ownership not transferred");
 }
@@ -55,8 +56,8 @@ fn test_commit_transfer_ownership() {
 fn test_apply_transfer_ownership() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
-    instance.commit_transfer_ownership(owner, addr);
-    instance.apply_transfer_ownership(owner);
+    instance.commit_transfer_ownership(owner, addr, now());
+    instance.apply_transfer_ownership(owner, now());
     let ret: Key = instance.key_value(ADMIN.to_string());
     assert_eq!(ret, addr, "Ownership transfer not applied");
 }
@@ -75,7 +76,7 @@ fn test_get_last_user_slope() {
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => addr
         },
-        0,
+        now(),
     );
     let ret: (bool, U128) = env.query_account_named_key(owner, &[GET_LAST_USER_SLOPE.into()]);
     assert_eq!(ret, (false, 0.into()), "Invalid last user scope value");
@@ -97,7 +98,7 @@ fn test_user_point_history_ts() {
             "addr" => addr,
             "idx" => idx,
         },
-        0,
+        now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[USER_POINT_HISTORY_TS.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
@@ -117,7 +118,7 @@ fn test_locked_end() {
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => addr,
         },
-        0,
+        now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[LOCKED_END.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
@@ -126,7 +127,7 @@ fn test_locked_end() {
 #[test]
 fn test_checkpoint() {
     let (_, owner, instance, _) = deploy();
-    instance.checkpoint(owner);
+    instance.checkpoint(owner, now());
 }
 
 #[test]
@@ -142,7 +143,7 @@ fn test_deposit_for() {
             "to" => Key::Account(owner),
             "amount" => value + value
         },
-        0,
+        now(),
     );
     erc20.call_contract(
         owner,
@@ -151,10 +152,10 @@ fn test_deposit_for() {
             "spender" => Key::Hash(instance.package_hash()),
             "amount" => value + value
         },
-        0,
+        now(),
     );
-    instance.create_lock(owner, value, unlock_time);
-    instance.deposit_for(owner, addr, value);
+    instance.create_lock(owner, value, unlock_time, now());
+    instance.deposit_for(owner, addr, value, now());
 }
 
 #[test]
@@ -169,7 +170,7 @@ fn test_create_lock() {
             "to" => Key::Account(owner),
             "amount" => value
         },
-        0,
+        now(),
     );
     erc20.call_contract(
         owner,
@@ -178,9 +179,9 @@ fn test_create_lock() {
             "spender" => Key::Hash(instance.package_hash()),
             "amount" => value
         },
-        0,
+        now(),
     );
-    instance.create_lock(owner, value, unlock_time);
+    instance.create_lock(owner, value, unlock_time, now());
 }
 
 #[test]
@@ -195,7 +196,7 @@ fn test_increase_amount() {
             "to" => Key::Account(owner),
             "amount" => value + value
         },
-        0,
+        now(),
     );
     erc20.call_contract(
         owner,
@@ -204,10 +205,10 @@ fn test_increase_amount() {
             "spender" => Key::Hash(instance.package_hash()),
             "amount" => value + value
         },
-        0,
+        now(),
     );
-    instance.create_lock(owner, value, unlock_time);
-    instance.increase_amount(owner, value);
+    instance.create_lock(owner, value, unlock_time, now());
+    instance.increase_amount(owner, value, now());
 }
 
 #[test]
@@ -222,7 +223,7 @@ fn test_increase_unlock_time() {
             "to" => Key::Account(owner),
             "amount" => value + value
         },
-        0,
+        now(),
     );
     erc20.call_contract(
         owner,
@@ -231,17 +232,17 @@ fn test_increase_unlock_time() {
             "spender" => Key::Hash(instance.package_hash()),
             "amount" => value + value
         },
-        0,
+        now(),
     );
-    instance.create_lock(owner, value, unlock_time);
-    instance.increase_unlock_time(owner, unlock_time + unlock_time);
+    instance.create_lock(owner, value, unlock_time, now());
+    instance.increase_unlock_time(owner, unlock_time + unlock_time, now());
 }
 
 #[test]
 fn test_withdraw() {
     let (_, owner, instance, erc20) = deploy();
     let value: U256 = 1000.into();
-    let unlock_time: U256 = WEEK;
+    let unlock_time: U256 = U256::from(now()) + WEEK;
     erc20.call_contract(
         owner,
         "mint",
@@ -249,7 +250,7 @@ fn test_withdraw() {
             "to" => Key::Account(owner),
             "amount" => value + value
         },
-        0,
+        now(),
     );
     erc20.call_contract(
         owner,
@@ -258,10 +259,10 @@ fn test_withdraw() {
             "spender" => Key::Hash(instance.package_hash()),
             "amount" => value + value
         },
-        0,
+        now(),
     );
-    instance.create_lock(owner, value, unlock_time);
-    instance.withdraw(owner, 1234567891099);
+    instance.create_lock(owner, value, unlock_time, now());
+    instance.withdraw(owner, now() + (WEEK.as_u64() * 2));
     let ret: U256 = instance.key_value(SUPPLY.to_string());
     assert_eq!(ret, 0.into(), "Withdrawal not done");
 }
@@ -282,7 +283,7 @@ fn test_balance_of() {
             "addr" => addr,
             "t" => t
         },
-        0,
+        now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
@@ -292,7 +293,7 @@ fn test_balance_of() {
 fn test_balance_of_at() {
     let (env, owner, instance, _) = deploy();
     let addr: Key = Key::Account(env.next_user());
-    let time: U256 = 123.into();
+    let time: U256 = (now() - (10 * MILLI_SECONDS_IN_DAY)).into();
     TestContract::new(
         &env,
         SESSION_CODE_WASM,
@@ -304,7 +305,7 @@ fn test_balance_of_at() {
             "addr" => addr,
             "time" => time
         },
-        123456789, // blocktime
+        now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF_AT.into()]);
     assert_eq!(ret, 0.into(), "Invalid default value");
@@ -324,7 +325,7 @@ fn test_total_supply() {
             "package_hash" => Key::Hash(instance.package_hash()),
             "t" => t,
         },
-        0,
+        now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
     assert_eq!(ret, 0.into(), "Invalid default total supply");
@@ -344,7 +345,7 @@ fn test_total_supply_at() {
             "package_hash" => Key::Hash(instance.package_hash()),
             "time" => time,
         },
-        0,
+        now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY_AT.into()]);
     assert_eq!(ret, 0.into(), "Invalid default total supply");
@@ -354,7 +355,7 @@ fn test_total_supply_at() {
 fn test_change_controller() {
     let (env, owner, instance, _) = deploy();
     let new_controller: Key = Key::Account(env.next_user());
-    instance.change_controller(owner, new_controller);
+    instance.change_controller(owner, new_controller, now());
     let ret: Key = instance.key_value(CONTROLLER.to_string());
     assert_eq!(ret, new_controller, "Controller not changed");
 }

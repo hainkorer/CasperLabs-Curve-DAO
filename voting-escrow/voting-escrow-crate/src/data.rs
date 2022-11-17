@@ -23,9 +23,10 @@ pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
 // What we can do is to extrapolate ***At functions
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Point {
-    bias: (bool, U128),
-    slope: (bool, U128), // - dweight / dt
+    pub bias: (bool, U128),
+    pub slope: (bool, U128), // - dweight / dt
     pub ts: U256,
+    pub day: U256,
 }
 
 impl Point {
@@ -317,6 +318,7 @@ pub fn set_package_hash(package_hash: ContractPackageHash) {
     set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
-pub fn js_ret<T: CLTyped + ToBytes>(ret: T) {
-    set_key(RESULT, ret);
+pub fn time_to_min(time_ms: U256) -> U256 {
+    // (TIME / MS IN MIN) / NUM_OF_MINS
+    (time_ms / 60000) / 5
 }

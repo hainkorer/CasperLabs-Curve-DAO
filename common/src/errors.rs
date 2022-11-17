@@ -1010,6 +1010,20 @@ pub enum Error {
     VotingEscrowInvalidBlockTimestamp1 = 11404,
     /// 65,638 for (Voting Escrow Invalid Block Timestamp 2)
     VotingEscrowInvalidBlockTimestamp2 = 11405,
+    VotingEscrowAdditionError27,
+    VotingEscrowSubtractionError29,
+    VotingEscrowSubtractionError30,
+    VotingEscrowSubtractionError31,
+    VotingEscrowSubtractionError32,
+    VotingEscrowSubtractionError33,
+    VotingEscrowSubtractionError34,
+    VotingEscrowSubtractionError35,
+    VotingEscrowDivisionError10,
+    VotingEscrowDivisionError11,
+    VotingEscrowDivisionError12,
+    VotingEscrowMultiplicationError15,
+    VotingEscrowMultiplicationError16,
+    VestingEscrowNotController,
 
     /// 65,718 for (Liquidity Gauge Wrapper Unauthorized)
     GaugeWrapperUnauthorized = 11501,
