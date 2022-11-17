@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, time::SystemTime};
 
 use blake2::{
     digest::{Update, VariableOutput},
@@ -20,30 +20,7 @@ impl VESTINGESCROWInstance {
         VESTINGESCROWInstance(vesting_escrow)
     }
 
-    pub fn proxy(env: &TestEnv, vesting_escrow: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "vesting-escrow-proxy-token.wasm",
-            "proxy_test",
-            sender,
-            runtime_args! {
-                "vesting_escrow" => vesting_escrow
-            },
-            0,
-        )
-    }
-    pub fn proxy2(env: &TestEnv, vesting_escrow: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "vesting-escrow-proxy-token.wasm",
-            "proxy_test2",
-            sender,
-            runtime_args! {
-                "vesting_escrow" => vesting_escrow
-            },
-            0,
-        )
-    }
+    
     pub fn erc20(
         env: &TestEnv,
         sender: AccountHash,
@@ -63,7 +40,7 @@ impl VESTINGESCROWInstance {
                 "symbol" => symbol,
                 "decimals" => decimals
             },
-            0,
+            VESTINGESCROWInstance::now(),
         )
     }
 
@@ -89,68 +66,70 @@ impl VESTINGESCROWInstance {
                 "can_disable"=> _can_disable,
                 "fund_admins"=> _fund_admins,
             },
-            0,
+            VESTINGESCROWInstance::now(),
         )
     }
-
-    pub fn constructor(&self, sender: AccountHash, name: &str, admin: Key, lp_token: Key) {
-        self.0.call_contract(
-            sender,
-            "constructor",
-            runtime_args! {
-                "admin" => admin,
-                "name" => name,
-                "lp_token" => lp_token,
-            },
-            0,
-        );
-    }
-
-    pub fn commit_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash, addr: T) {
+    
+    pub fn commit_transfer_ownership<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        time_now: u64,
+        addr: T,
+    ) {
         self.0.call_contract(
             sender,
             "commit_transfer_ownership",
             runtime_args! {
                 "addr" => addr.into(),
             },
-            0,
+            time_now,
         );
     }
-    pub fn apply_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "apply_transfer_ownership", runtime_args! {}, 0);
+    pub fn apply_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash, time_now: u64) {
+        self.0.call_contract(
+            sender,
+            "apply_transfer_ownership",
+            runtime_args! {},
+            time_now,
+        );
     }
 
-    pub fn disable_fund_admins(&self, sender: AccountHash) {
+    pub fn disable_fund_admins(&self, sender: AccountHash, time_now: u64) {
         self.0
-            .call_contract(sender, "disable_fund_admins", runtime_args! {}, 0);
+            .call_contract(sender, "disable_fund_admins", runtime_args! {}, time_now);
     }
 
-    pub fn disable_can_disable(&self, sender: AccountHash) {
+    pub fn disable_can_disable(&self, sender: AccountHash, time_now: u64) {
         self.0
-            .call_contract(sender, "disable_can_disable", runtime_args! {}, 0);
+            .call_contract(sender, "disable_can_disable", runtime_args! {}, time_now);
     }
-    pub fn toggle_disable<T: Into<Key>>(&self, sender: AccountHash, _recipient: T) {
+    pub fn toggle_disable<T: Into<Key>>(&self, sender: AccountHash, time_now: u64, _recipient: T) {
         self.0.call_contract(
             sender,
             "toggle_disable",
             runtime_args! {
                 "recipient" => _recipient.into(),
             },
-            1000,
+            time_now,
         );
     }
-    pub fn add_tokens(&self, sender: AccountHash, _amount: U256) {
+    pub fn add_tokens(&self, sender: AccountHash, time_now: u64, _amount: U256) {
         self.0.call_contract(
             sender,
             "add_tokens",
             runtime_args! {
                 "amount" => _amount,
             },
-            0,
+            time_now,
         );
     }
-    pub fn fund(&self, sender: AccountHash, _recipients: Vec<String>, _amounts: Vec<U256>) {
+    pub fn fund(
+        &self,
+        sender: AccountHash,
+        time_now: u64,
+        _recipients: Vec<String>,
+        _amounts: Vec<U256>,
+    ) {
         self.0.call_contract(
             sender,
             "fund",
@@ -158,7 +137,7 @@ impl VESTINGESCROWInstance {
                 "recipients" => _recipients,
                 "amounts" => _amounts,
             },
-            0,
+            time_now,
         );
     }
 
@@ -220,6 +199,12 @@ impl VESTINGESCROWInstance {
     pub fn package_hash(&self) -> ContractPackageHash {
         self.0
             .query_named_key(String::from("self_contract_package_hash"))
+    }
+    pub fn now() -> u64 {
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
     }
 }
 

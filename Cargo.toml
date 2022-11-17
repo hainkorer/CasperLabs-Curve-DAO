@@ -62,6 +62,7 @@ members = [
   "vesting-escrow/vesting-escrow-crate",
   "vesting-escrow/vesting-escrow-tests",
   "vesting-escrow/session-code",
+  "vesting-escrow/vesting-escrow-session-code-js-client",
   # VESTING ESCROW FACTORY
   "vesting-escrow-factory/vesting-escrow-factory",
   "vesting-escrow-factory/vesting-escrow-factory-crate",
