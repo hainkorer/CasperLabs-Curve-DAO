@@ -57,6 +57,7 @@ members = [
   "reward-only-gauge/reward-only-gauge-crate",
   "reward-only-gauge/reward-only-gauge-tests",
   "reward-only-gauge/session-code",
+  "reward-only-gauge/reward-only-gauge-session-code-js-client",
   # VESTING ESCROW
   "vesting-escrow/vesting-escrow",
   "vesting-escrow/vesting-escrow-crate",
