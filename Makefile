@@ -38,7 +38,7 @@ build-contract-erc20-crv:
 	cargo build --release -p erc20-crv-session-code -p erc20_crv --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/erc20_crv.wasm 2>/dev/null | true
 build-contract-fee-distributor:
-	cargo build --release -p session-code -p erc20 -p voting-escrow -p fee-distributor --target wasm32-unknown-unknown
+	cargo build --release -p session-code -p erc20 -p voting-escrow -p fee-distributor -p erc20_crv --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/fee-distributor.wasm 2>/dev/null | true
 build-contract-gauge-controller:
 	cargo build --release -p gauge-controller-session-code -p erc20 -p voting-escrow -p gauge-controller --target wasm32-unknown-unknown
@@ -91,7 +91,7 @@ test-only-erc20:
 test-only-erc20-crv:
 	cargo test -p erc20_crv_tests
 test-only-fee-distributor:
-	cargo test -p fee-distributor-tests
+	cargo test -p fee-distributor-tests -- --test-threads=8
 test-only-gauge-controller:
 	cargo test -p gauge-controller-tests
 test-only-gauge-proxy:
@@ -141,6 +141,7 @@ copy-wasm-file-fee-distributor:
 	cp ${wasm_src_path}/erc20-token.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/fee-distributor.wasm ${fee_distributor_des_wasm}
+	cp ${wasm_src_path}/erc20_crv.wasm ${fee_distributor_des_wasm}
 copy-wasm-file-gauge-controller:
 	cp ${wasm_src_path}/erc20-token.wasm ${gauge_controller_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${gauge_controller_des_wasm}

@@ -13,9 +13,6 @@ use casper_types::{
     bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U128, U256,
 };
 use common::keys::*;
-use voting_escrow_crate::data::Point;
-
-const POINT_HISTORY: &str = "point_history";
 
 // Key is the same a destination
 fn store<T: CLTyped + ToBytes>(key: &str, value: T) {
@@ -36,18 +33,6 @@ pub extern "C" fn call() {
 
     match entrypoint.as_str() {
         // Voting Escrow
-        POINT_HISTORY => {
-            let epoch: U256 = runtime::get_named_arg("epoch");
-            let ret: Point = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                POINT_HISTORY,
-                runtime_args! {
-                    "epoch" => epoch
-                },
-            );
-            store(POINT_HISTORY, ret);
-        }
         GET_LAST_USER_SLOPE => {
             let addr: Key = runtime::get_named_arg("addr");
             let ret: (bool, U128) = runtime::call_versioned_contract(
@@ -154,7 +139,7 @@ pub extern "C" fn call() {
             store(VE_FOR_AT, ret);
         }
         CLAIM => {
-            let addr: Key = runtime::get_named_arg("addr");
+            let addr: Option<Key> = runtime::get_named_arg("addr");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,

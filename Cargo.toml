@@ -24,6 +24,7 @@ members = [
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",
   "fee-distributor/fee-distributor-tests",
+  "fee-distributor/fee-distributor-session-code-js-client",
   # GAUGE CONTROLLER
   "gauge-controller/gauge-controller",
   "gauge-controller/gauge-controller-crate",

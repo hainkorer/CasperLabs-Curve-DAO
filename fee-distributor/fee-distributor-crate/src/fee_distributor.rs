@@ -504,11 +504,16 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     ///     less than `max_epoch`, the account may claim again.
     /// @param _addr Address to claim fees for
     /// @return uint256 Amount of fees claimed in the call
-    fn claim(&self, addr: Key /*self.get_caller()*/) -> U256 {
+    fn claim(&self, addr: Option<Key> /*self.get_caller()*/) -> U256 {
         if get_lock() {
             runtime::revert(ApiError::from(Error::FeeDistributorIsLocked1));
         }
         set_lock(true);
+        let _addr: Key = if let Some(..) = addr {
+            addr.unwrap()
+        } else {
+            self.get_caller()
+        };
         if get_is_killed() {
             runtime::revert(ApiError::from(Error::FeeDistributorKilled1));
         }
@@ -530,7 +535,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             .unwrap_or_revert_with(Error::FeeDistributorDivisionError10)
             .checked_mul(WEEK)
             .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError10);
-        let amount: U256 = self._claim(addr, get_voting_escrow(), last_token_time);
+        let amount: U256 = self._claim(_addr, get_voting_escrow(), last_token_time);
         if amount != 0.into() {
             let token: Key = get_token();
             let ret: Result<(), u32> = runtime::call_versioned_contract(
