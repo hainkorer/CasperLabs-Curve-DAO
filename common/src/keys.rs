@@ -113,6 +113,7 @@ pub const CURVE_TOKEN_V3_ALLOWANCES_DICT: &str = "allowances";
 pub const CURVE_TOKEN_V3_TOTAL_SUPPLY: &str = "total_supply";
 pub const CURVE_TOKEN_V3_CURVE: &str = "curve";
 pub const CURVE_TOKEN_V3_MINTER: &str = "minter";
+pub const BURN_FROM: &str = "burn_from";
 // Gauge Controller
 pub const GAUGE_TYPE_NAMES_DICT: &str = "gauge_type_names";
 pub const GAUGE_TYPES_DICT: &str = "gauge_types_";
