@@ -105,7 +105,7 @@ test-only-liquidity-gauge-wrapper:
 test-only-minter:
 	cargo test -p minter-tests
 test-only-reward-only-gauge:
-	cargo test -p reward-only-gauge-tests
+	cargo test -p reward-only-gauge-tests -- --test-threads=3
 test-only-vesting-escrow:
 	cargo test -p vesting-escrow-tests
 test-only-vesting-escrow-factory:
@@ -194,6 +194,7 @@ copy-wasm-file-reward-only-gauge:
 	cp ${wasm_src_path}/reward-only-gauge-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-session-code.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${reward_only_gauge_des_wasm}
+	cp ${wasm_src_path}/erc20-token.wasm ${reward_only_gauge_des_wasm}
 copy-wasm-file-vesting-escrow:
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-token.wasm ${vesting_escrow_des_wasm}

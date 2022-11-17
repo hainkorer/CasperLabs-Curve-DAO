@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, time::SystemTime};
 
 use blake2::{
     digest::{Update, VariableOutput},
@@ -39,8 +39,7 @@ impl REWARDONLYGAUGEInstance {
         sender: AccountHash,
         name: &str,
         symbol: &str,
-        decimals: u8,
-        _supply: U256,
+        decimals: u8
     ) -> TestContract {
         TestContract::new(
             env,
@@ -52,7 +51,7 @@ impl REWARDONLYGAUGEInstance {
                 "symbol" => symbol,
                 "decimals" => decimals,
             },
-            10000000000000,
+            REWARDONLYGAUGEInstance::now(),
         )
     }
 
@@ -72,7 +71,7 @@ impl REWARDONLYGAUGEInstance {
                 "token" => token,
                 "reward" => reward
             },
-            0,
+            REWARDONLYGAUGEInstance::now(),
         )
     }
 
@@ -92,7 +91,7 @@ impl REWARDONLYGAUGEInstance {
                 "lp_token" => lp_token,
                 "admin" => admin,
             },
-            0,
+            REWARDONLYGAUGEInstance::now(),
         )
     }
 
@@ -105,11 +104,11 @@ impl REWARDONLYGAUGEInstance {
                 "name" => name,
                 "lp_token" => lp_token,
             },
-            0,
+            REWARDONLYGAUGEInstance::now(),
         );
     }
 
-    pub fn transfer<T: Into<Key>>(&self, sender: AccountHash, recipient: T, amount: U256) {
+    pub fn transfer<T: Into<Key>>(&self, sender: AccountHash, time_now:u64,recipient: T, amount: U256) {
         self.0.call_contract(
             sender,
             "transfer",
@@ -117,11 +116,11 @@ impl REWARDONLYGAUGEInstance {
                 "recipient" => recipient.into(),
                 "amount" => amount
             },
-            0,
+            time_now,
         );
     }
 
-    pub fn transfer_from(&self, sender: AccountHash, owner: Key, recipient: Key, amount: U256) {
+    pub fn transfer_from(&self, sender: AccountHash, time_now:u64,owner: Key, recipient: Key, amount: U256) {
         self.0.call_contract(
             sender,
             "transfer_from",
@@ -134,7 +133,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn approve<T: Into<Key>>(&self, sender: AccountHash, spender: T, amount: U256) {
+    pub fn approve<T: Into<Key>>(&self, sender: AccountHash,time_now:u64, spender: T, amount: U256) {
         self.0.call_contract(
             sender,
             "approve",
@@ -146,7 +145,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn increase_allowance<T: Into<Key>>(&self, sender: AccountHash, spender: T, amount: U256) {
+    pub fn increase_allowance<T: Into<Key>>(&self, sender: AccountHash,time_now:u64, spender: T, amount: U256) {
         self.0.call_contract(
             sender,
             "increase_allowance",
@@ -158,7 +157,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn decrease_allowance<T: Into<Key>>(&self, sender: AccountHash, spender: T, amount: U256) {
+    pub fn decrease_allowance<T: Into<Key>>(&self, sender: AccountHash,time_now:u64, spender: T, amount: U256) {
         self.0.call_contract(
             sender,
             "decrease_allowance",
@@ -170,33 +169,34 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn accept_transfer_ownership(&self, sender: AccountHash) {
+    pub fn accept_transfer_ownership(&self, sender: AccountHash,time_now:u64) {
         self.0
             .call_contract(sender, "accept_transfer_ownership", runtime_args! {}, 0);
     }
-    pub fn commit_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash, addr: T) {
+    pub fn commit_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash,time_now:u64, addr: T) {
         self.0.call_contract(
             sender,
             "commit_transfer_ownership",
             runtime_args! {
                 "addr" => addr.into(),
             },
-            0,
+            time_now,
         );
     }
-    pub fn set_rewards_receiver<T: Into<Key>>(&self, sender: AccountHash, _receiver: T) {
+    pub fn set_rewards_receiver<T: Into<Key>>(&self, sender: AccountHash,time_now:u64, _receiver: T) {
         self.0.call_contract(
             sender,
             "set_rewards_receiver",
             runtime_args! {
                 "receiver" => _receiver.into(),
             },
-            0,
+            time_now,
         );
     }
     pub fn set_rewards<T: Into<Key>>(
         &self,
         sender: AccountHash,
+        time_now:u64,
         _reward_contract: T,
         _claim_sig: Bytes,
         _reward_tokens: Vec<String>,
@@ -209,10 +209,10 @@ impl REWARDONLYGAUGEInstance {
                 "claim_sig" => _claim_sig,
                 "reward_tokens" => _reward_tokens,
             },
-            0,
+            time_now,
         );
     }
-    pub fn claim_rewards(&self, sender: AccountHash, _addr: Option<Key>, _receiver: Option<Key>) {
+    pub fn claim_rewards(&self, sender: AccountHash,time_now:u64, _addr: Option<Key>, _receiver: Option<Key>) {
         self.0.call_contract(
             sender,
             "claim_rewards",
@@ -220,13 +220,14 @@ impl REWARDONLYGAUGEInstance {
                 "addr" => _addr,
                 "receiver" => _receiver,
             },
-            0,
+            time_now,
         );
     }
 
     pub fn deposit(
         &self,
         sender: AccountHash,
+        time_now:u64,
         _value: U256,
         _addr: Option<Key>,
         _claim_rewards: Option<bool>,
@@ -239,11 +240,11 @@ impl REWARDONLYGAUGEInstance {
                 "addr" => _addr,
                 "claim_rewards" => _claim_rewards,
             },
-            0,
+            time_now,
         );
     }
 
-    pub fn withdraw(&self, sender: AccountHash, _value: U256, _claim_rewards: Option<bool>) {
+    pub fn withdraw(&self, sender: AccountHash,time_now:u64, _value: U256, _claim_rewards: Option<bool>) {
         self.0.call_contract(
             sender,
             "withdraw",
@@ -251,7 +252,7 @@ impl REWARDONLYGAUGEInstance {
                 "value" => _value,
                 "claim_rewards" => _claim_rewards,
             },
-            0,
+            time_now,
         );
     }
 
@@ -340,6 +341,12 @@ impl REWARDONLYGAUGEInstance {
     }
     pub fn lp_token(&self) -> Key {
         self.0.query_named_key(String::from("lp_token"))
+    }
+    pub fn now() -> u64 {
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
     }
 }
 
