@@ -368,7 +368,6 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             .checked_mul(WEEK)
             .unwrap_or_revert_with(Error::GaugeControllerMultiply5);
         let _total_weight = self.points_total(t);
-
         if _total_weight > U256::from(0) {
             let gauge_type: i128 = self
                 .gauge_types_(addr)
@@ -643,7 +642,6 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                         let mut _type_weight: U256 = self._get_type_weight(gauge_type);
                         let mut _old_sum: U256 = self._get_sum(gauge_type);
                         let mut _old_total: U256 = self._get_total();
-
                         let mut points_sum_result = self.points_sum(gauge_type, next_time);
                         (points_sum_result).bias = weight
                             .checked_add(_old_sum)

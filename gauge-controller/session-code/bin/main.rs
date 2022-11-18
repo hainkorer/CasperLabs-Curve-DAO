@@ -68,30 +68,8 @@ pub extern "C" fn call() {
             );
             store(GAUGE_RELATIVE_WEIGHT_WRITE, ret);
         }
-        GET_GAUGE_WEIGHT => {
-            let addr: Key = runtime::get_named_arg("addr");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                GET_GAUGE_WEIGHT,
-                runtime_args! {
-                    "addr"=>addr,
-                },
-            );
-            store(GET_GAUGE_WEIGHT, ret);
-        }
-        GET_TYPE_WEIGHT => {
-            let type_id: (bool, U128) = runtime::get_named_arg("type_id");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                GET_TYPE_WEIGHT,
-                runtime_args! {
-                    "type_id"=>type_id,
-                },
-            );
-            store(GET_TYPE_WEIGHT, ret);
-        }
+
+        
         GET_TOTAL_WEIGHT => {
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),

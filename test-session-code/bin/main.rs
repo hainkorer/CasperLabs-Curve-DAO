@@ -10,7 +10,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U256,
+    bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U256, U128,
 };
 use common::keys::*;
 
@@ -158,6 +158,42 @@ pub extern "C" fn call() {
                 },
             );
             store(EARNED, ret);
+        }
+        GET_TYPE_WEIGHT => {
+            let type_id: (bool, U128) = runtime::get_named_arg("type_id");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                GET_TYPE_WEIGHT,
+                runtime_args! {
+                    "type_id"=>type_id,
+                },
+            );
+            store(GET_TYPE_WEIGHT, ret);
+        }
+        GET_GAUGE_WEIGHT => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                GET_GAUGE_WEIGHT,
+                runtime_args! {
+                    "addr"=>addr,
+                },
+            );
+            store(GET_GAUGE_WEIGHT, ret);
+        }
+        GAUGES => {
+            let owner: U256 = runtime::get_named_arg("owner");
+            let ret: Key = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                GAUGES,
+                runtime_args! {
+                    "owner"=>owner,
+                },
+            );
+            store(GAUGES, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };

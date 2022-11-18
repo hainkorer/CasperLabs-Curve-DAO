@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 use std::time::SystemTime;
 use blake2::{
     digest::{Update, VariableOutput},
@@ -11,9 +10,6 @@ use casper_types::{
     runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U128, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
-
-pub type TokenId = U256;
-pub type Meta = BTreeMap<String, String>;
 
 pub struct GAUGECONLTROLLERInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
@@ -86,6 +82,20 @@ impl GAUGECONLTROLLERInstance {
                 "lp_addr" => lp_addr,
                 "minter" => minter,
                 "admin" => admin,
+            },
+            block_time,
+        )
+    }
+    pub fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash,block_time:u64) -> TestContract {
+        TestContract::new(
+            env,
+            "erc20_crv.wasm",
+            "erc20-crv",
+            sender,
+            runtime_args! {
+                "name" => "CRV",
+                "symbol" => "ERC20CRV",
+                "decimals" => 9_u8,
             },
             block_time,
         )
@@ -340,8 +350,11 @@ impl GAUGECONLTROLLERInstance {
             .unwrap_or_default()
     }
 
-    pub fn n_gauge_types(&self) -> U128 {
+    pub fn n_gauge_types(&self) -> (bool, U128) {
         self.0.query_named_key(String::from("n_gauge_types"))
+    }
+    pub fn n_gauges(&self) -> (bool, U128) {
+        self.0.query_named_key(String::from("n_gauges"))
     }
     pub fn token(&self) -> Key {
         self.0.query_named_key(String::from("token"))
@@ -374,6 +387,7 @@ impl GAUGECONLTROLLERInstance {
             .unwrap()
             .as_millis() as u64
     }
+    
 }
 
 pub fn key_to_str(key: &Key) -> String {
