@@ -195,6 +195,51 @@ pub extern "C" fn call() {
             );
             store(GAUGES, ret);
         }
+        GET_WEIGHTS_SUM_PER_TYPE => {
+            let type_id: (bool, U128) = runtime::get_named_arg("type_id");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                GET_WEIGHTS_SUM_PER_TYPE,
+                runtime_args! {
+                    "type_id"=>type_id,
+                },
+            );
+            store(GET_WEIGHTS_SUM_PER_TYPE, ret);
+        }
+        GET_TOTAL_WEIGHT => {
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                GET_TOTAL_WEIGHT,
+                runtime_args! {},
+            );
+            store(GET_TOTAL_WEIGHT, ret);
+        }
+        GAUGE_TYPES => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let ret: (bool, U128) = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                GAUGE_TYPES,
+                runtime_args! {
+                    "addr"=>addr,
+                },
+            );
+            store(GAUGE_TYPES, ret);
+        }
+        GAUGE_RELATIVE_WEIGHT => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                GAUGE_RELATIVE_WEIGHT,
+                runtime_args! {
+                    "addr"=>addr,
+                },
+            );
+            store(GAUGE_RELATIVE_WEIGHT, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }
