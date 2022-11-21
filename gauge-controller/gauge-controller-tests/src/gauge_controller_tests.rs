@@ -1047,7 +1047,8 @@ fn test_gauge_controller_gauge_relative_weight() {
         runtime_args! {
             "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "addr"=>Key::from(liquidity_gauge_1)
+            "addr"=>Key::from(liquidity_gauge_1),
+            "time" => None::<U256>
         },
         blocktime,
     );
@@ -1086,7 +1087,8 @@ fn test_gauge_controller_gauge_relative_weight_by_user() {
         runtime_args! {
             "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "addr"=>Key::from(liquidity_gauge_1)
+            "addr"=>Key::from(liquidity_gauge_1),
+            "time" => None::<U256>
         },
         blocktime,
     );
@@ -1117,7 +1119,8 @@ fn test_gauge_controller_gauge_relative_weight_without_adding_gauge() {
         runtime_args! {
             "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "addr"=>Key::from(liquidity_gauge)
+            "addr"=>Key::from(liquidity_gauge),
+            "time" => None::<U256>
         },
         blocktime,
     );
@@ -1156,7 +1159,8 @@ fn test_gauge_controller_gauge_relative_weight_write() {
         runtime_args! {
             "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT_WRITE),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "addr"=>Key::from(liquidity_gauge)
+            "addr"=>Key::from(liquidity_gauge),
+            "time" => None::<U256>
         },
         blocktime,
     );
@@ -1169,7 +1173,8 @@ fn test_gauge_controller_gauge_relative_weight_write() {
         runtime_args! {
             "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "addr"=>Key::from(liquidity_gauge)
+            "addr"=>Key::from(liquidity_gauge),
+            "time" => None::<U256>
         },
         blocktime+week,
     );
@@ -1208,7 +1213,8 @@ fn test_gauge_controller_gauge_relative_weight_write_by_user() {
         runtime_args! {
             "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT_WRITE),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "addr"=>Key::from(liquidity_gauge_1)
+            "addr"=>Key::from(liquidity_gauge_1),
+            "time" => None::<U256>
         },
         blocktime,
     );
@@ -1638,7 +1644,8 @@ fn  test_effect_on_following_period() {
         runtime_args! {
             "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
             "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-            "addr"=>liquidity_gauge
+            "addr"=>liquidity_gauge,
+            "time" => None::<U256>
         },
         blocktime+week,
     );

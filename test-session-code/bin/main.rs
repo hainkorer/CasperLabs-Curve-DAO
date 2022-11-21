@@ -230,12 +230,14 @@ pub extern "C" fn call() {
         }
         GAUGE_RELATIVE_WEIGHT => {
             let addr: Key = runtime::get_named_arg("addr");
+            let time: Option<U256> = runtime::get_named_arg("time");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 GAUGE_RELATIVE_WEIGHT,
                 runtime_args! {
                     "addr"=>addr,
+                    "time" => time
                 },
             );
             store(GAUGE_RELATIVE_WEIGHT, ret);
