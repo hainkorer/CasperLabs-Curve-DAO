@@ -159,6 +159,15 @@ pub extern "C" fn call() {
             );
             store(EARNED, ret);
         }
+        INTEGRATE_CHECKPOINT => {
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                INTEGRATE_CHECKPOINT,
+                runtime_args! {},
+            );
+            store(INTEGRATE_CHECKPOINT, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

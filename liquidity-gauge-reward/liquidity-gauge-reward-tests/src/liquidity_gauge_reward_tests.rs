@@ -3,23 +3,23 @@ use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 
-fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
+fn deploy_erc20(env: &TestEnv, sender: AccountHash,blocktime:u64) -> TestContract {
     TestContract::new(
         env,
         "erc20-token.wasm",
         "erc20",
         sender,
         runtime_args! {
-            "initial_supply" => U256::from(0),
+            "initial_supply" => U256::from(1000000000000 as u128),
             "name" => "Token",
             "symbol" => "ERC20",
             "decimals" => 9_u8
         },
-        0,
+        blocktime,
     )
 }
 
-fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
+fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash,blocktime:u64) -> TestContract {
     TestContract::new(
         env,
         "erc20_crv.wasm",
@@ -29,9 +29,8 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
             "name" => "CRV",
             "symbol" => "ERC20CRV",
             "decimals" => 9_u8,
-            "supply" => U256::from(0)
         },
-        200000000000,
+        blocktime,
     )
 }
 
@@ -40,6 +39,7 @@ fn deploy_curve_rewards(
     sender: AccountHash,
     token: Key,
     reward: Key,
+    blocktime:u64
 ) -> TestContract {
     TestContract::new(
         env,
@@ -50,7 +50,7 @@ fn deploy_curve_rewards(
             "token" => token,
             "reward" => reward
         },
-        0,
+        blocktime,
     )
 }
 
@@ -61,6 +61,7 @@ fn deploy_voting_escrow(
     name: String,
     symbol: String,
     version: String,
+    blocktime:u64
 ) -> TestContract {
     TestContract::new(
         env,
@@ -73,7 +74,7 @@ fn deploy_voting_escrow(
             "symbol" => symbol,
             "version" => version,
         },
-        0,
+        blocktime,
     )
 }
 
@@ -82,6 +83,7 @@ fn deploy_gauge_controller(
     sender: AccountHash,
     token: Key,
     voting_escrow: Key,
+    blocktime:u64
 ) -> TestContract {
     TestContract::new(
         env,
@@ -92,11 +94,11 @@ fn deploy_gauge_controller(
             "token" => token,
             "voting_escrow" => voting_escrow,
         },
-        0,
+        blocktime,
     )
 }
 
-fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key) -> TestContract {
+fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key,blocktime:u64) -> TestContract {
     TestContract::new(
         env,
         "minter-token.wasm",
@@ -106,7 +108,7 @@ fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key
             "controller" => controller,
             "token" => token,
         },
-        0,
+        blocktime,
     )
 }
 
@@ -115,11 +117,13 @@ fn deploy() -> (
     AccountHash,
     LIQUIDITYGAUGEREWARDInstance,
     TestContract,
+    u64
 ) {
+    let blocktime = LIQUIDITYGAUGEREWARDInstance::now();
     let env = TestEnv::new();
     let owner = env.next_user();
-    let erc20 = deploy_erc20(&env, owner);
-    let erc20_crv = deploy_erc20_crv(&env, owner);
+    let erc20 = deploy_erc20(&env, owner,blocktime);
+    let erc20_crv = deploy_erc20_crv(&env, owner,blocktime);
     let voting_escrow = deploy_voting_escrow(
         &env,
         owner,
@@ -127,24 +131,28 @@ fn deploy() -> (
         "Voting Escrow".into(),
         "VT".into(),
         "1".into(),
+        blocktime
     );
     let gauge_controller = deploy_gauge_controller(
         &env,
         owner,
         Key::Hash(erc20.package_hash()),
         Key::Hash(voting_escrow.package_hash()),
+        blocktime
     );
     let minter = deploy_minter(
         &env,
         owner,
         Key::Hash(gauge_controller.package_hash()),
         Key::Hash(erc20_crv.package_hash()),
+        blocktime
     );
     let curve_rewards = deploy_curve_rewards(
         &env,
         owner,
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
-        Key::Hash(deploy_erc20(&env, owner).package_hash()),
+        Key::Hash(deploy_erc20(&env, owner,blocktime).package_hash()),
+        Key::Hash(deploy_erc20(&env, owner,blocktime).package_hash()),
+        blocktime
     );
     let instance = LIQUIDITYGAUGEREWARDInstance::new_deploy(
         &env,
@@ -155,18 +163,19 @@ fn deploy() -> (
         Key::Hash(curve_rewards.package_hash()),
         Key::Hash(erc20.package_hash()),
         Key::Account(owner),
+        blocktime
     );
-    (env, owner, instance, erc20)
+    (env, owner, instance, erc20,blocktime)
 }
 
 #[test]
 fn test_deploy() {
-    let (_, _, _, _) = deploy();
+    let (_, _, _, _,_) = deploy();
 }
 
 #[test]
 fn test_user_checkpoint() {
-    let (env, owner, instance, _) = deploy();
+    let (env, owner, instance, _,blocktime) = deploy();
     let package_hash = Key::Hash(instance.package_hash());
     let addr: Key = Key::Account(owner);
     TestContract::new(
@@ -179,13 +188,16 @@ fn test_user_checkpoint() {
             "package_hash" => package_hash,
             "addr" => addr,
         },
-        300,
+        blocktime,
     );
+    let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
+    assert!(ret, "{} {}", true, "Invalid result");
 }
-
+//This function output depends on staking thats why no assert added
+// And staking is not included
 #[test]
 fn test_claimable_tokens() {
-    let (env, owner, instance, _) = deploy();
+    let (env, owner, instance, _,blocktime) = deploy();
     let package_hash = Key::Hash(instance.package_hash());
     let addr: Key = Key::Account(owner);
     TestContract::new(
@@ -198,41 +210,59 @@ fn test_claimable_tokens() {
             "package_hash" => package_hash,
             "addr" => addr,
         },
-        300,
+        blocktime,
     );
 }
-
+//This function output depends on staking thats why no assert added
+// Staking not included
 #[test]
 fn test_claimable_reward() {
-    let (env, owner, instance, _) = deploy();
+    let (env, owner, instance, _,blocktime) = deploy();
     let package_hash = Key::Hash(instance.package_hash());
     let addr: Key = Key::Account(owner);
     TestContract::new(
         &env,
-        "liquidity-gauge-reward-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(CLAIMABLE_TOKENS),
+            "entrypoint" => String::from(CLAIMABLE_REWARD),
             "package_hash" => package_hash,
             "addr" => addr,
         },
-        300,
+        blocktime,
     );
 }
 
 #[test]
 fn test_set_approve_deposit() {
-    let (_env, owner, instance, _) = deploy();
+    let (env, owner, instance, _,blocktime) = deploy();
     let addr: Key = Key::Account(owner);
+    let package_hash = instance.package_hash();
     let can_deposit: bool = true;
-    instance.set_approve_deposit(owner, addr, can_deposit);
+    instance.set_approve_deposit(owner, addr, can_deposit,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(APPROVED_TO_DEPOSIT),
+            "package_hash" => Key::Hash(package_hash),
+            "owner" => Key::Account(owner) ,
+            "spender" => Key::Account(owner)
+        },
+        blocktime
+    );
+    let ret: bool = env.query_account_named_key(owner, &[APPROVED_TO_DEPOSIT.into()]);
+    assert!(ret, "{} {}", true, "Invalid result");
 }
 
 #[test]
 fn test_deposit() {
-    let (_env, owner, instance, erc20) = deploy();
-    let value: U256 = 100.into();
+    let (env, owner, instance, erc20,blocktime) = deploy();
+    let value: U256 = U256::from(10000000000 as u128);
+    let package_hash = instance.package_hash();
     erc20.call_contract(
         owner,
         "mint",
@@ -240,7 +270,7 @@ fn test_deposit() {
             "to" => Key::Account(owner),
             "amount" => value
         },
-        0,
+        blocktime,
     );
     erc20.call_contract(
         owner,
@@ -249,16 +279,44 @@ fn test_deposit() {
             "spender" => Key::Hash(instance.package_hash()),
             "amount" => value
         },
-        0,
+        blocktime,
     );
-    instance.deposit(owner, None, value);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => Key::Hash(erc20.package_hash()),
+            "owner" => Key::Account(owner)
+        },
+        blocktime
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, U256::from(1010000000000 as u128), "Invalid result");
+    instance.deposit(owner, None, value,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => Key::Hash(package_hash),
+            "owner" => Key::Account(owner)
+        },
+        blocktime
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, U256::from(10000000000 as u128), "Invalid result");
 }
 
 #[test]
 fn test_withdraw() {
-    let (_env, owner, instance, erc20) = deploy();
+    let (env, owner, instance, erc20,blocktime) = deploy();
     let claim_rewards: bool = true;
-    let value: U256 = 100.into();
+    let value: U256 = U256::from(10000000000 as u128);
     erc20.call_contract(
         owner,
         "mint",
@@ -266,7 +324,7 @@ fn test_withdraw() {
             "to" => Key::Account(owner),
             "amount" => value
         },
-        0,
+        blocktime,
     );
     erc20.call_contract(
         owner,
@@ -275,59 +333,187 @@ fn test_withdraw() {
             "spender" => Key::Hash(instance.package_hash()),
             "amount" => value
         },
-        0,
+        blocktime,
     );
-    instance.deposit(owner, None, value);
-    instance.withdraw(owner, claim_rewards, value);
+    instance.deposit(owner, None, value,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "owner" => Key::Account(owner)
+        },
+        blocktime
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, U256::from(10000000000 as u128), "Invalid result");
+    instance.withdraw(owner, claim_rewards, value,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "owner" => Key::Account(owner)
+        },
+        blocktime
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+    assert_eq!(ret, U256::from(0 as u128), "Invalid result");
 }
+
+//This function output depends on staking thats why no assert added
+// Staking not included
 
 #[test]
 fn test_claim_rewards() {
-    let (_env, owner, instance, _) = deploy();
-    instance.claim_rewards(owner, None);
+    let (_env, owner, instance, _,blocktime) = deploy();
+    instance.claim_rewards(owner, None,blocktime);
 }
 
 #[test]
 fn test_integrate_checkpoint() {
-    let (env, owner, instance, _) = deploy();
+    let (env, owner, instance, _,blocktime) = deploy();
     let package_hash = Key::Hash(instance.package_hash());
     TestContract::new(
         &env,
-        "liquidity-gauge-reward-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(INTEGRATE_CHECKPOINT),
             "package_hash" => package_hash,
         },
-        300,
+        blocktime,
     );
+    let ret: U256 = env.query_account_named_key(owner, &[INTEGRATE_CHECKPOINT.into()]);
+    assert_eq!(ret, U256::from(blocktime), "Invalid result");
 }
 
 #[test]
 fn test_kill_me() {
-    let (_env, owner, instance, _) = deploy();
-    instance.kill_me(owner);
+    let (env, owner, instance, _,blocktime) = deploy();
+    instance.kill_me(owner,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(IS_KILLED),
+            "package_hash" => Key::Hash(instance.package_hash()),
+        },
+        blocktime
+    );
+    let ret: bool = env.query_account_named_key(owner, &[IS_KILLED.into()]);
+    assert!(ret, "{} {}", true, "Invalid result");
 }
 
 #[test]
 fn test_commit_transfer_ownership() {
-    let (_env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(owner);
-    instance.commit_transfer_ownership(owner, addr);
+    let (env, owner, instance, _,blocktime) = deploy();
+    let addr:Key = env.next_user().into();
+    instance.commit_transfer_ownership(owner, addr,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(FUTURE_ADMIN),
+            "package_hash" => Key::Hash(instance.package_hash()),
+        },
+        blocktime
+    );
+    let ret: Key = env.query_account_named_key(owner, &[FUTURE_ADMIN.into()]);
+    assert_eq!(ret, addr, "Invalid result");
 }
 
 #[test]
 fn test_apply_transfer_ownership() {
-    let (_env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(owner);
-    instance.commit_transfer_ownership(owner, addr);
-    instance.apply_transfer_ownership(owner);
+    let (env, owner, instance, _,blocktime) = deploy();
+    let addr:Key = env.next_user().into();
+    instance.commit_transfer_ownership(owner, addr,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(FUTURE_ADMIN),
+            "package_hash" => Key::Hash(instance.package_hash()),
+        },
+        blocktime
+    );
+    let ret: Key = env.query_account_named_key(owner, &[FUTURE_ADMIN.into()]);
+    assert_eq!(ret, addr, "Invalid result");
+    instance.apply_transfer_ownership(owner,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(ADMIN),
+            "package_hash" => Key::Hash(instance.package_hash()),
+        },
+        blocktime
+    );
+    let ret: Key = env.query_account_named_key(owner, &[ADMIN.into()]);
+    assert_eq!(ret, addr, "Invalid result");
 }
 
 #[test]
 fn test_toggle_external_rewards_claim() {
-    let (_env, owner, instance, _) = deploy();
+    let (_env, owner, instance, _,blocktime) = deploy();
     let val: bool = true;
-    instance.toggle_external_rewards_claim(owner, val);
+    instance.toggle_external_rewards_claim(owner, val,blocktime);
+    let ret:bool = instance.key_value("is_claiming_rewards".to_string());
+    assert_eq!(ret, true, "Invalid result");
 }
+
+#[should_panic]
+#[test]
+fn test_apply_transfer_ownership_panic() {
+    let (env, owner, instance, _,blocktime) = deploy();
+    let addr:Key = env.next_user().into();
+    instance.apply_transfer_ownership(owner,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(ADMIN),
+            "package_hash" => Key::Hash(instance.package_hash()),
+        },
+        blocktime
+    );
+    let ret: Key = env.query_account_named_key(owner, &[ADMIN.into()]);
+    assert_eq!(ret, addr, "Invalid result");
+}
+#[should_panic]
+#[test]
+fn test_withdraw_panic() {
+    let (env, owner, instance, _,blocktime) = deploy();
+    let value: U256 = U256::from(10000000000 as u128);
+    instance.withdraw(owner, true, value,blocktime);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF),
+            "package_hash" => Key::Hash(instance.package_hash()),
+            "owner" => Key::Account(owner)
+        },
+        blocktime
+    );
+}
+
