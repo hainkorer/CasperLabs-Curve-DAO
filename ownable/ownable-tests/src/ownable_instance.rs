@@ -1,9 +1,9 @@
-use std::time::SystemTime;
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
-    RuntimeArgs
+    RuntimeArgs,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::time::SystemTime;
 
 pub struct OWNABLEInstance(TestContract);
 
@@ -24,15 +24,20 @@ impl OWNABLEInstance {
         )
     }
     pub fn owner(&self, sender: AccountHash) {
-        self.0.call_contract(sender, "owner", runtime_args! {}, OWNABLEInstance::now());
+        self.0
+            .call_contract(sender, "owner", runtime_args! {}, OWNABLEInstance::now());
     }
     pub fn is_owner(&self, sender: AccountHash) {
         self.0
             .call_contract(sender, "is_owner", runtime_args! {}, OWNABLEInstance::now());
     }
     pub fn renounce_ownership(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "renounce_ownership", runtime_args! {}, OWNABLEInstance::now());
+        self.0.call_contract(
+            sender,
+            "renounce_ownership",
+            runtime_args! {},
+            OWNABLEInstance::now(),
+        );
     }
     pub fn transfer_ownership(&self, sender: AccountHash, new_owner: Key) {
         self.0.call_contract(

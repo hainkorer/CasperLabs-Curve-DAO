@@ -126,7 +126,7 @@ fn transfer() {
 }
 #[no_mangle]
 fn total_supply() {
-    let ret:U256 = ERC20::total_supply(&mut Erc20Crv::default());
+    let ret: U256 = ERC20::total_supply(&mut Erc20Crv::default());
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]

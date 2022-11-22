@@ -289,6 +289,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 .checked_add(1.into())
                 .unwrap_or_revert_with(Error::VotingEscrowAdditionError5);
             if t_i == U256::from(u64::from(get_blocktime())) {
+                last_point.blk = block_number().into();
                 break;
             } else {
                 PointHistory::instance().set(&epoch, last_point);
@@ -706,6 +707,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
 
     #[allow(unused_assignments)]
     fn balance_of_at(&self, addr: Key, block: U256) -> U256 {
+        if block > block_number().into() {
+            runtime::revert(ApiError::from(Error::VotingEscrowInvalidBlockNumber1));
+        }
         // Binary search
         let mut min: U256 = 0.into();
         let mut max: U256 = UserPointEpoch::instance().get(&addr);
@@ -719,7 +723,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 .unwrap_or_revert_with(Error::VotingEscrowAdditionError18)
                 .checked_add(1.into())
                 .unwrap_or_revert_with(Error::VotingEscrowAdditionError19)
-                .checked_add(2.into())
+                .checked_div(2.into())
                 .unwrap_or_revert_with(Error::VotingEscrowAdditionError20);
             if UserPointHistory::instance().get(&addr, &mid).blk <= block {
                 min = mid;
@@ -733,7 +737,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         let max_epoch: U256 = get_epoch();
         let epoch: U256 = self._find_block_epoch(block, max_epoch);
         let point_0: Point = PointHistory::instance().get(&epoch);
-        let mut d_day: U256 = 0.into();
+        let mut d_block: U256 = 0.into();
         let mut d_t: U256 = 0.into();
         if epoch < max_epoch {
             let point_1: Point = PointHistory::instance().get(
@@ -741,7 +745,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                     .checked_add(1.into())
                     .unwrap_or_revert_with(Error::VotingEscrowAdditionError21),
             );
-            d_day = point_1
+            d_block = point_1
                 .blk
                 .checked_sub(point_0.blk)
                 .unwrap_or_revert_with(Error::VotingEscrowSubtractionError32);
@@ -750,7 +754,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 .checked_sub(point_0.ts)
                 .unwrap_or_revert_with(Error::VotingEscrowSubtractionError16);
         } else {
-            d_day = U256::from(block_number())
+            d_block = U256::from(block_number())
                 .checked_sub(point_0.blk)
                 .unwrap_or_revert_with(Error::VotingEscrowSubtractionError33);
             d_t = U256::from(u64::from(get_blocktime()))
@@ -758,7 +762,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 .unwrap_or_revert_with(Error::VotingEscrowSubtractionError17);
         }
         let mut block_time: U256 = point_0.ts;
-        if d_day != 0.into() {
+        if d_block != 0.into() {
             block_time = block_time
                 .checked_add(
                     d_t.checked_mul(
@@ -767,7 +771,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                             .unwrap_or_revert_with(Error::VotingEscrowSubtractionError18),
                     )
                     .unwrap_or_revert_with(Error::VotingEscrowMultiplicationError9)
-                    .checked_div(d_day)
+                    .checked_div(d_block)
                     .unwrap_or_revert_with(Error::VotingEscrowDivisionError7),
                 )
                 .unwrap_or_revert_with(Error::VotingEscrowAdditionError22);
@@ -855,6 +859,9 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn total_supply_at(&self, block: U256) -> U256 {
+        if block > block_number().into() {
+            runtime::revert(ApiError::from(Error::VotingEscrowInvalidBlockNumber2));
+        }
         let epoch: U256 = get_epoch();
         let target_epoch: U256 = self._find_block_epoch(block, epoch);
         let point: Point = PointHistory::instance().get(&target_epoch);

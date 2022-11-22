@@ -184,8 +184,8 @@ fn balance_of() {
 #[no_mangle]
 fn balance_of_at() {
     let addr: Key = runtime::get_named_arg("addr");
-    let time: U256 = runtime::get_named_arg("time");
-    let ret: U256 = VotingEscrow::default().balance_of_at(addr, time);
+    let block: U256 = runtime::get_named_arg("block");
+    let ret: U256 = VotingEscrow::default().balance_of_at(addr, block);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -204,8 +204,8 @@ fn total_supply() {
 /// @return Total voting power at `_block`
 #[no_mangle]
 fn total_supply_at() {
-    let time: U256 = runtime::get_named_arg("time");
-    let ret: U256 = VotingEscrow::default().total_supply_at(time);
+    let block: U256 = runtime::get_named_arg("block");
+    let ret: U256 = VotingEscrow::default().total_supply_at(block);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -427,7 +427,7 @@ fn get_entry_points() -> EntryPoints {
         "balance_of_at",
         vec![
             Parameter::new("addr", Key::cl_type()),
-            Parameter::new("time", U256::cl_type()),
+            Parameter::new("block", U256::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -442,7 +442,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "total_supply_at",
-        vec![Parameter::new("time", U256::cl_type())],
+        vec![Parameter::new("block", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

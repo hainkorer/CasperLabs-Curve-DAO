@@ -1024,6 +1024,8 @@ pub enum Error {
     VotingEscrowMultiplicationError15,
     VotingEscrowMultiplicationError16,
     VestingEscrowNotController,
+    VotingEscrowInvalidBlockNumber1,
+    VotingEscrowInvalidBlockNumber2,
 
     /// 65,718 for (Liquidity Gauge Wrapper Unauthorized)
     GaugeWrapperUnauthorized = 11501,
