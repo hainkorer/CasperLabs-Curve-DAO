@@ -75,7 +75,7 @@ build-contract-vesting-escrow-simple:
 	cargo build --release -p erc20 -p vesting-escrow-simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true
 build-contract-voting-escrow:
-	cargo build --release -p session-code -p erc20 -p voting-escrow --target wasm32-unknown-unknown
+	cargo build --release -p session-code -p erc20 -p erc20_crv -p voting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-ownable:
 	cargo build --release -p test-session-code -p ownable --target wasm32-unknown-unknown
