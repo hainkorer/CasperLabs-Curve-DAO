@@ -13,6 +13,7 @@ casperlabs-test-env = "0.1.0"
 blake2 = "0.9.1"
 common = { path = "../../common" }
 hex = "0.4.3"
+casper_types_derive = "0.1.0"
 
 [features]
 default = ["casper-contract/std", "casper-types/std", "casper-contract/test-support"]

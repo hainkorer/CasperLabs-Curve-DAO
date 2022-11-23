@@ -643,8 +643,8 @@ fn test_vesting_escrow_vested_supply() {
 
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(VESTED_SUPPLY),
@@ -744,8 +744,8 @@ fn test_vesting_escrow_locked_supply() {
 
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(LOCKED_SUPPLY),
@@ -844,8 +844,8 @@ fn test_vesting_escrow_vested_of() {
     );
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(VESTED_OF),
@@ -859,8 +859,8 @@ fn test_vesting_escrow_vested_of() {
     assert_eq!(ret, U256::from(2 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(VESTED_OF),
@@ -874,8 +874,8 @@ fn test_vesting_escrow_vested_of() {
     assert_eq!(ret, U256::from(3 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(VESTED_OF),
@@ -889,8 +889,8 @@ fn test_vesting_escrow_vested_of() {
     assert_eq!(ret, U256::from(4 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(VESTED_OF),
@@ -990,13 +990,13 @@ fn test_vesting_escrow_balance_of() {
     );
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "recipient" => Key::Account(user_1),
+            "owner" => Key::Account(user_1),
         },
         time_now + MILLI_SECONDS_IN_DAY * 365,
     );
@@ -1005,13 +1005,13 @@ fn test_vesting_escrow_balance_of() {
     assert_eq!(ret, U256::from(2 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "recipient" => Key::Account(user_2),
+            "owner" => Key::Account(user_2),
         },
         time_now + MILLI_SECONDS_IN_DAY * 365,
     );
@@ -1020,13 +1020,13 @@ fn test_vesting_escrow_balance_of() {
     assert_eq!(ret, U256::from(3 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "recipient" => Key::Account(user_3),
+            "owner" => Key::Account(user_3),
         },
         time_now + MILLI_SECONDS_IN_DAY * 365,
     );
@@ -1035,13 +1035,13 @@ fn test_vesting_escrow_balance_of() {
     assert_eq!(ret, U256::from(4 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::from(vesting_escrow_instance.package_hash()),
-            "recipient" => Key::Account(user_4),
+            "owner" => Key::Account(user_4),
         },
         time_now + MILLI_SECONDS_IN_DAY * 365,
     );
@@ -1136,8 +1136,8 @@ fn test_vesting_escrow_locked_of() {
     );
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(LOCKED_OF),
@@ -1151,8 +1151,8 @@ fn test_vesting_escrow_locked_of() {
     assert_eq!(ret, U256::from(2 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(LOCKED_OF),
@@ -1166,8 +1166,8 @@ fn test_vesting_escrow_locked_of() {
     assert_eq!(ret, U256::from(3 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(LOCKED_OF),
@@ -1181,8 +1181,8 @@ fn test_vesting_escrow_locked_of() {
     assert_eq!(ret, U256::from(4 * TEN_E_NINE));
     TestContract::new(
         &env,
-        "vesting-escrow-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(LOCKED_OF),

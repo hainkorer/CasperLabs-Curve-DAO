@@ -21,12 +21,12 @@ fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance) {
 #[test]
 fn test_deploy() {
     let (env, owner, contract) = deploy();
-    assert_eq!(contract.get_init_supply(),1303030303000000000_i64.into());
-    assert_eq!(contract.get_admin(),Key::from(owner));
+    assert_eq!(contract.get_init_supply(), 1303030303000000000_i64.into());
+    assert_eq!(contract.get_admin(), Key::from(owner));
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -37,9 +37,8 @@ fn test_deploy() {
     );
 
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(ret,1303030303000000000_i64.into());
+    assert_eq!(ret, 1303030303000000000_i64.into());
     // assert_eq!(contract.get_start_epoch_time(),0.into());  //epcoh time will be last year from the current time
-   
 }
 
 #[test]
@@ -47,8 +46,8 @@ fn burn() {
     let (env, owner, contract) = deploy();
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY),
@@ -58,11 +57,11 @@ fn burn() {
     );
     let mut ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
     assert_eq!(ret, 1303030303000000000_i64.into());
-    contract.burn(owner,  1303030303000000000_i64.into());
+    contract.burn(owner, 1303030303000000000_i64.into());
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY),
@@ -70,7 +69,7 @@ fn burn() {
         },
         ERC20CRVInstance::now(),
     );
-   ret=env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
+    ret = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
     assert_eq!(ret, 0.into());
 }
 #[test]
@@ -89,7 +88,7 @@ fn test_set_minter() {
 fn test_update_mining_parameters() {
     let (_, owner, contract) = deploy();
     contract.update_mining_parameters(owner);
-    assert_eq!(contract.get_rate(),8714335457889396_i64.into());
+    assert_eq!(contract.get_rate(), 8714335457889396_i64.into());
 }
 #[test]
 fn test_start_epoch_time_write() {
@@ -105,9 +104,9 @@ fn test_start_epoch_time_write() {
         },
         ERC20CRVInstance::now(),
     );
-    let epcoh_time:U256=U256::from(ERC20CRVInstance::now()+MILLI_SECONDS_IN_DAY-31536000000);
+    let epcoh_time: U256 = U256::from(ERC20CRVInstance::now() + MILLI_SECONDS_IN_DAY - 31536000000);
     let ret: U256 = env.query_account_named_key(owner, &[START_EPOCH_TIME_WRITE.into()]);
-    assert_eq!(ret/60000, epcoh_time/60000);
+    assert_eq!(ret / 60000, epcoh_time / 60000);
 }
 
 #[test]
@@ -124,17 +123,17 @@ fn test_future_epoch_time_write() {
         },
         ERC20CRVInstance::now(),
     );
-    let futrue_epcoh_time:U256=U256::from(ERC20CRVInstance::now()+MILLI_SECONDS_IN_DAY);
+    let futrue_epcoh_time: U256 = U256::from(ERC20CRVInstance::now() + MILLI_SECONDS_IN_DAY);
     let ret: U256 = env.query_account_named_key(owner, &[FUTURE_EPOCH_TIME_WRITE.into()]);
-    assert_eq!(ret/60000, futrue_epcoh_time/60000);
+    assert_eq!(ret / 60000, futrue_epcoh_time / 60000);
 }
 #[test]
 fn test_available_supply() {
     let (env, owner, contract) = deploy();
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(AVAILABLE_SUPPLY),
@@ -142,7 +141,9 @@ fn test_available_supply() {
         },
         ERC20CRVInstance::now(),
     );
-    let available_supply=contract.get_start_epoch_supply()+(U256::from(ERC20CRVInstance::now())-contract.get_start_epoch_time())*contract.get_rate();
+    let available_supply = contract.get_start_epoch_supply()
+        + (U256::from(ERC20CRVInstance::now()) - contract.get_start_epoch_time())
+            * contract.get_rate();
     let ret: U256 = env.query_account_named_key(owner, &[AVAILABLE_SUPPLY.into()]);
     assert_eq!(ret, available_supply);
 }
@@ -151,8 +152,8 @@ fn test_total_supply() {
     let (env, owner, contract) = deploy();
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY),
@@ -168,11 +169,11 @@ fn test_mintable_in_timeframe() {
     let (env, owner, contract) = deploy();
     contract.update_mining_parameters(owner);
     let start: U256 = U256::from(ERC20CRVInstance::now());
-    let end: U256 =U256::from(start+86400000);
+    let end: U256 = U256::from(start + 86400000);
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(MINTABLE_IN_TIMEFRAME),
@@ -190,7 +191,7 @@ fn test_mintable_in_timeframe() {
 fn test_mint() {
     let (env, owner, contract) = deploy();
     let to: Key = Key::from(env.next_user());
-    let amount: U256 = U256::from(10*TEN_E_NINE);
+    let amount: U256 = U256::from(10 * TEN_E_NINE);
     let minter = Key::from(owner);
     contract.set_minter(owner, minter);
     TestContract::new(
@@ -204,7 +205,7 @@ fn test_mint() {
             "to"=>to,
             "amount"=>amount
         },
-        ERC20CRVInstance::now()+86400000
+        ERC20CRVInstance::now() + 86400000,
     );
 
     let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
@@ -214,7 +215,7 @@ fn test_mint() {
 fn test_increase_allowance() {
     let (env, owner, contract) = deploy();
     let spender: Key = Key::from(env.next_user());
-    let amount: U256 = U256::from(100*TEN_E_NINE);
+    let amount: U256 = U256::from(100 * TEN_E_NINE);
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -238,8 +239,8 @@ fn test_increase_allowance() {
 #[test]
 fn test_transfer() {
     let (env, owner, contract) = deploy();
-    let recipient:Key=Key::from(env.next_user());
-    let amount:U256=U256::from(100*TEN_E_NINE);
+    let recipient: Key = Key::from(env.next_user());
+    let amount: U256 = U256::from(100 * TEN_E_NINE);
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -261,8 +262,8 @@ fn test_transfer() {
     }
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -272,14 +273,14 @@ fn test_transfer() {
         ERC20CRVInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(ret,1303030203000000000_i64.into());
+    assert_eq!(ret, 1303030203000000000_i64.into());
 }
 #[test]
 fn test_transfer_from() {
     let (env, owner, contract) = deploy();
-    let spender:AccountHash=env.next_user();
-    let recipient:Key=Key::from(env.next_user());
-    let amount:U256=U256::from(100*TEN_E_NINE);
+    let spender: AccountHash = env.next_user();
+    let recipient: Key = Key::from(env.next_user());
+    let amount: U256 = U256::from(100 * TEN_E_NINE);
     contract.approve(owner, Key::from(spender), amount);
     TestContract::new(
         &env,
@@ -295,15 +296,15 @@ fn test_transfer_from() {
         },
         ERC20CRVInstance::now(),
     );
-   let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
+    let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
     match ret {
         Ok(()) => {}
         Err(e) => panic!("Tranfer Failed ERROR:{}", e),
     }
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -313,20 +314,19 @@ fn test_transfer_from() {
         ERC20CRVInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(ret,1303030203000000000_i64.into());
- 
+    assert_eq!(ret, 1303030203000000000_i64.into());
 }
 #[test]
 fn test_allowance() {
     let (env, owner, contract) = deploy();
-    let spender:AccountHash=env.next_user();
-    let recipient:Key=Key::from(env.next_user());
-    let amount:U256=U256::from(100*TEN_E_NINE);
+    let spender: AccountHash = env.next_user();
+    let recipient: Key = Key::from(env.next_user());
+    let amount: U256 = U256::from(100 * TEN_E_NINE);
     contract.approve(owner, Key::from(spender), amount);
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),
@@ -337,7 +337,7 @@ fn test_allowance() {
         ERC20CRVInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret,U256::from(100*TEN_E_NINE));
+    assert_eq!(ret, U256::from(100 * TEN_E_NINE));
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -352,15 +352,15 @@ fn test_allowance() {
         },
         ERC20CRVInstance::now(),
     );
-   let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
+    let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
     match ret {
         Ok(()) => {}
         Err(e) => panic!("Tranfer Failed ERROR:{}", e),
     }
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),
@@ -371,9 +371,5 @@ fn test_allowance() {
         ERC20CRVInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret,U256::from(0));
-    
- 
+    assert_eq!(ret, U256::from(0));
 }
-
-

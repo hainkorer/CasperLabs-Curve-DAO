@@ -1,7 +1,7 @@
-use std::time::SystemTime;
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
+use std::time::SystemTime;
 
 use casperlabs_test_env::{TestContract, TestEnv};
 const MILLI_SECONDS_IN_DAY: u64 = 86_400_000;
@@ -64,7 +64,7 @@ impl ERC20CRVInstance {
             sender,
             "update_mining_parameters",
             runtime_args! {},
-            ERC20CRVInstance::now()+MILLI_SECONDS_IN_DAY,
+            ERC20CRVInstance::now() + MILLI_SECONDS_IN_DAY,
         );
     }
 
@@ -76,7 +76,7 @@ impl ERC20CRVInstance {
             ERC20CRVInstance::now(),
         );
     }
-    pub fn approve(&self, sender: AccountHash,spender:Key,amount:U256) {
+    pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256) {
         self.0.call_contract(
             sender,
             "approve",
@@ -88,7 +88,6 @@ impl ERC20CRVInstance {
             0,
         );
     }
-
 
     pub fn available_supply(&self, sender: AccountHash) {
         self.0
@@ -112,7 +111,6 @@ impl ERC20CRVInstance {
     // pub fn get_mining_epoch(&self) -> U128 {
     //     self.0.query_named_key(String::from("mining_epoch"))
     // }
-   
 
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
