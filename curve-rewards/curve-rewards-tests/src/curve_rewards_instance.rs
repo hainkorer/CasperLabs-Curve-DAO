@@ -1,9 +1,9 @@
-use std::time::SystemTime;
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::time::SystemTime;
 
 pub struct CURVEREWARDSInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
@@ -17,7 +17,7 @@ impl CURVEREWARDSInstance {
         sender: AccountHash,
         token: Key,
         reward: Key,
-        block_time:u64
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -28,37 +28,38 @@ impl CURVEREWARDSInstance {
                 "token" => token,
                 "reward" => reward
             },
-            block_time
+            block_time,
         )
     }
-    pub fn stake(&self, sender: AccountHash, amount: U256,block_time:u64) {
+    pub fn stake(&self, sender: AccountHash, amount: U256, block_time: u64) {
         self.0.call_contract(
             sender,
             "stake",
             runtime_args! {
                 "amount" => amount
             },
-            block_time
+            block_time,
         );
     }
-    pub fn withdraw(&self, sender: AccountHash, amount: U256,block_time:u64) {
+    pub fn withdraw(&self, sender: AccountHash, amount: U256, block_time: u64) {
         self.0.call_contract(
             sender,
             "withdraw",
             runtime_args! {
                 "amount" => amount
             },
-            block_time
+            block_time,
         );
     }
-    pub fn get_reward(&self, sender: AccountHash,block_time:u64) {
+    pub fn get_reward(&self, sender: AccountHash, block_time: u64) {
         self.0
             .call_contract(sender, "get_reward", runtime_args! {}, block_time);
     }
-    pub fn exit(&self, sender: AccountHash,block_time:u64) {
-        self.0.call_contract(sender, "exit", runtime_args! {}, block_time);
+    pub fn exit(&self, sender: AccountHash, block_time: u64) {
+        self.0
+            .call_contract(sender, "exit", runtime_args! {}, block_time);
     }
-    pub fn notify_reward_amount(&self, sender: AccountHash, reward: U256,block_time:u64) {
+    pub fn notify_reward_amount(&self, sender: AccountHash, reward: U256, block_time: u64) {
         self.0.call_contract(
             sender,
             "notify_reward_amount",

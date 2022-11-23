@@ -9,6 +9,7 @@ pub const VESTING_ESCROW_SIMPLE_CONTRACT_HASH: &str = "vesting_escrow_simple_con
 pub const VESTING_ESCROW_SIMPLE_CONTRACT_PACKAGE_HASH: &str =
     "vesting_escrow_simple_contract_package_hash";
 pub const EVENT_TYPE: &str = "event_type";
+pub const GAUGES: &str = "gauges";
 pub const RESULT: &str = "result";
 pub const ADMIN: &str = "admin";
 pub const FUTURE_ADMIN: &str = "future_admin";

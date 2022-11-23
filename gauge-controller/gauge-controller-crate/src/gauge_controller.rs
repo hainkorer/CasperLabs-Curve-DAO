@@ -368,7 +368,6 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
             .checked_mul(WEEK)
             .unwrap_or_revert_with(Error::GaugeControllerMultiply5);
         let _total_weight = self.points_total(t);
-
         if _total_weight > U256::from(0) {
             let gauge_type: i128 = self
                 .gauge_types_(addr)
@@ -487,14 +486,24 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         });
     }
 
-    fn gauge_relative_weight(&mut self, addr: Key) -> U256 {
-        self._gauge_relative_weight(addr, U256::from(u64::from(runtime::get_blocktime())))
+    fn gauge_relative_weight(&mut self, addr: Key,time:Option<U256>) -> U256 {
+        let time_: U256 = if let Some(..) = time {
+            time.unwrap()
+        } else {
+            U256::from(u64::from(runtime::get_blocktime()))
+        };
+        self._gauge_relative_weight(addr,time_)
     }
 
-    fn gauge_relative_weight_write(&mut self, addr: Key) -> U256 {
+    fn gauge_relative_weight_write(&mut self, addr: Key,time:Option<U256>) -> U256 {
+        let time_: U256 = if let Some(..) = time {
+            time.unwrap()
+        } else {
+            U256::from(u64::from(runtime::get_blocktime()))
+        };
         self._get_weight(addr);
         self._get_total(); // Also calculates get_sum
-        self._gauge_relative_weight(addr, U256::from(u64::from(runtime::get_blocktime())))
+        self._gauge_relative_weight(addr, time_)
     }
 
     fn change_type_weight(&mut self, type_id: i128, weight: U256) {
@@ -643,7 +652,6 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                         let mut _type_weight: U256 = self._get_type_weight(gauge_type);
                         let mut _old_sum: U256 = self._get_sum(gauge_type);
                         let mut _old_total: U256 = self._get_total();
-
                         let mut points_sum_result = self.points_sum(gauge_type, next_time);
                         (points_sum_result).bias = weight
                             .checked_add(_old_sum)

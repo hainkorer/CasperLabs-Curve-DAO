@@ -117,7 +117,7 @@ fn decimals() {
 fn set_minter() {
     let (env, token, owner, _) = deploy();
     let _minter_arg: Key = Key::Account(env.next_user());
-    token.set_minter(owner, _minter_arg);
+    token.set_minter(owner, _minter_arg, now());
     let ret: Key = token.query("minter");
     assert_eq!(ret, _minter_arg);
 }
@@ -189,7 +189,7 @@ fn transfer_from() {
             "amount" => _value_arg
         },
     );
-    token.approve(owner, Key::Account(to), _value_arg);
+    token.approve(owner, Key::Account(to), _value_arg, now());
     call(
         &env,
         to,

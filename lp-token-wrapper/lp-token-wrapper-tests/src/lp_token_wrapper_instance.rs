@@ -1,9 +1,9 @@
-use std::time::SystemTime;
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, ContractPackageHash, Key,
     RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::time::SystemTime;
 
 pub struct LPTOKENWRAPPERInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
@@ -29,8 +29,12 @@ impl LPTOKENWRAPPERInstance {
         )
     }
     pub fn total_supply(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "total_supply", runtime_args! {}, LPTOKENWRAPPERInstance::now());
+        self.0.call_contract(
+            sender,
+            "total_supply",
+            runtime_args! {},
+            LPTOKENWRAPPERInstance::now(),
+        );
     }
     pub fn balance_of(&self, sender: AccountHash, account: Key) {
         self.0.call_contract(

@@ -2,10 +2,8 @@ use alloc::{
     string::{String, ToString},
     vec::Vec,
 };
-use casper_contract::unwrap_or_revert::UnwrapOrRevert;
-use casper_types::{
-    bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U128, U256,
-};
+use casper_contract::{contract_api::runtime::get_blocktime, unwrap_or_revert::UnwrapOrRevert};
+use casper_types::{ContractHash, ContractPackageHash, Key, U128, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_and_value_to_str, set_key, Dict};
 use common::{keys::*, utils::*};
@@ -23,9 +21,10 @@ pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
 // What we can do is to extrapolate ***At functions
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Point {
-    bias: (bool, U128),
-    slope: (bool, U128), // - dweight / dt
+    pub bias: (bool, U128),
+    pub slope: (bool, U128), // - dweight / dt
     pub ts: U256,
+    pub blk: U256,
 }
 
 impl Point {
@@ -317,6 +316,15 @@ pub fn set_package_hash(package_hash: ContractPackageHash) {
     set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
-pub fn js_ret<T: CLTyped + ToBytes>(ret: T) {
-    set_key(RESULT, ret);
+pub fn convert(a: U256, b: U256) -> i128 {
+    if a > b {
+        i128::from_str_radix((a - b).to_string().as_str(), 10).unwrap()
+    } else {
+        i128::from_str_radix((b - a).to_string().as_str(), 10).unwrap() * -1
+    }
+}
+
+pub fn block_number() -> u64 {
+    const AVG_BLOCK_TIME_IN_MS: u64 = 45000;
+    u64::from(get_blocktime()) / AVG_BLOCK_TIME_IN_MS
 }
