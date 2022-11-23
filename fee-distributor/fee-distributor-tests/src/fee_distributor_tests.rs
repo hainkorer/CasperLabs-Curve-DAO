@@ -125,8 +125,8 @@ fn test_ve_for_at() {
     let timestamp: U256 = time_now_u256;
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(VE_FOR_AT),

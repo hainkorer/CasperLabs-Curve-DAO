@@ -171,8 +171,8 @@ fn test_reward_contract() {
 
     TestContract::new(
         &env,
-        "reward-only-gauge-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(REWARD_CONTRACT),
@@ -211,8 +211,8 @@ fn test_last_claim() {
 
     TestContract::new(
         &env,
-        "reward-only-gauge-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(LAST_CLAIM),
@@ -245,8 +245,8 @@ fn test_claimed_reward() {
 
     TestContract::new(
         &env,
-        "reward-only-gauge-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(CLAIMED_REWARD),
@@ -953,11 +953,11 @@ fn test_claimable_reward() {
 
     TestContract::new(
         &env,
-        "reward-only-gauge-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(CLAIMABLE_REWARD),
+            "entrypoint" => String::from(CLAIMABLE_V3_REWARD),
             "package_hash" => Key::from(reward_only_gauge.contract_package_hash()),
             "addr"=>Key::from(user),
             "token"=>Key::Hash(lp_token.package_hash())

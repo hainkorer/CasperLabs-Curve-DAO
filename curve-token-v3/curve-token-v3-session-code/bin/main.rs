@@ -32,15 +32,6 @@ pub extern "C" fn call() {
     let package_hash: Key = runtime::get_named_arg("package_hash");
 
     match entrypoint.as_str() {
-        DECIMALS => {
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                DECIMALS,
-                runtime_args! {},
-            );
-            store(DECIMALS, ret);
-        }
         MINT => {
             let to: Key = runtime::get_named_arg("to");
             let amount: U256 = runtime::get_named_arg("amount");

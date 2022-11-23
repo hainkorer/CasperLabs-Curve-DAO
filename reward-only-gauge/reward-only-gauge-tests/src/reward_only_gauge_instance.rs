@@ -120,7 +120,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn transfer_from(&self, sender: AccountHash, time_now:u64,owner: Key, recipient: Key, amount: U256) {
+    pub fn transfer_from(&self, sender: AccountHash, _time_now:u64,owner: Key, recipient: Key, amount: U256) {
         self.0.call_contract(
             sender,
             "transfer_from",
@@ -133,7 +133,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn approve<T: Into<Key>>(&self, sender: AccountHash,time_now:u64, spender: T, amount: U256) {
+    pub fn approve<T: Into<Key>>(&self, sender: AccountHash,_time_now:u64, spender: T, amount: U256) {
         self.0.call_contract(
             sender,
             "approve",
@@ -145,7 +145,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn increase_allowance<T: Into<Key>>(&self, sender: AccountHash,time_now:u64, spender: T, amount: U256) {
+    pub fn increase_allowance<T: Into<Key>>(&self, sender: AccountHash,_time_now:u64, spender: T, amount: U256) {
         self.0.call_contract(
             sender,
             "increase_allowance",
@@ -157,7 +157,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn decrease_allowance<T: Into<Key>>(&self, sender: AccountHash,time_now:u64, spender: T, amount: U256) {
+    pub fn decrease_allowance<T: Into<Key>>(&self, sender: AccountHash,_time_now:u64, spender: T, amount: U256) {
         self.0.call_contract(
             sender,
             "decrease_allowance",
@@ -169,7 +169,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn accept_transfer_ownership(&self, sender: AccountHash,time_now:u64) {
+    pub fn accept_transfer_ownership(&self, sender: AccountHash,_time_now:u64) {
         self.0
             .call_contract(sender, "accept_transfer_ownership", runtime_args! {}, 0);
     }
