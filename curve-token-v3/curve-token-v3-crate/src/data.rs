@@ -84,13 +84,7 @@ pub fn get_symbol() -> String {
 pub fn set_symbol(symbol: String) {
     set_key(CURVE_TOKEN_V3_SYMBOL, symbol);
 }
-pub fn get_decimals() -> u8 {
-    get_key(CURVE_TOKEN_V3_DECIMALS).unwrap_or_default()
-}
 
-pub fn set_decimals(decimals: u8) {
-    set_key(CURVE_TOKEN_V3_DECIMALS, decimals);
-}
 pub fn get_total_supply() -> U256 {
     get_key(CURVE_TOKEN_V3_TOTAL_SUPPLY).unwrap_or_default()
 }

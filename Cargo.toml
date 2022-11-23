@@ -8,6 +8,8 @@ members = [
   "test-session-code",
   # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
+  "curve-token-v3/curve-token-v3-crate",
+  "curve-token-v3/curve-token-v3-session-code",
   "curve-token-v3/curve-token-v3-tests",
   # ERC20
   "erc20/erc20",
@@ -22,6 +24,7 @@ members = [
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",
   "fee-distributor/fee-distributor-tests",
+  "fee-distributor/fee-distributor-session-code-js-client",
   # GAUGE CONTROLLER
   "gauge-controller/gauge-controller",
   "gauge-controller/gauge-controller-crate",
@@ -55,15 +58,18 @@ members = [
   "reward-only-gauge/reward-only-gauge-crate",
   "reward-only-gauge/reward-only-gauge-tests",
   "reward-only-gauge/session-code",
+  "reward-only-gauge/reward-only-gauge-session-code-js-client",
   # VESTING ESCROW
   "vesting-escrow/vesting-escrow",
   "vesting-escrow/vesting-escrow-crate",
   "vesting-escrow/vesting-escrow-tests",
   "vesting-escrow/session-code",
+  "vesting-escrow/vesting-escrow-session-code-js-client",
   # VESTING ESCROW FACTORY
   "vesting-escrow-factory/vesting-escrow-factory",
   "vesting-escrow-factory/vesting-escrow-factory-crate",
   "vesting-escrow-factory/vesting-escrow-factory-tests",
+  "vesting-escrow-factory/session-code",
   # VESTING ESCROW SIMPLE
   "vesting-escrow-simple/vesting-escrow-simple-crate",
   "vesting-escrow-simple/vesting-escrow-simple",
@@ -78,11 +84,6 @@ members = [
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-crate",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-session-code",
-  # CURVE TOKEN V3
-  "curve-token-v3/curve-token-v3",
-  "curve-token-v3/curve-token-v3-crate",
-  "curve-token-v3/curve-token-v3-proxy",
-  "curve-token-v3/curve-token-v3-tests",
   # LIQUIDITY GAUGE WRAPPER
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper",
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-crate",

@@ -87,7 +87,7 @@ fn checkpoint_total_supply() {
 
 #[no_mangle]
 fn claim() {
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     let ret: U256 = FeeDistributor::default().claim(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -267,7 +267,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claim",
-        vec![Parameter::new("addr", Key::cl_type())],
+        vec![Parameter::new("addr", CLType::Option(Box::new(CLType::Key)))],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,

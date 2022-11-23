@@ -87,14 +87,14 @@ pub extern "C" fn call() {
         }
         BALANCE_OF_AT => {
             let addr: Key = runtime::get_named_arg("addr");
-            let time: U256 = runtime::get_named_arg("time");
+            let block: U256 = runtime::get_named_arg("block");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 BALANCE_OF_AT,
                 runtime_args! {
                     "addr" => addr,
-                    "time" => time
+                    "block" => block
                 },
             );
             store(BALANCE_OF_AT, ret);
@@ -112,13 +112,13 @@ pub extern "C" fn call() {
             store(TOTAL_SUPPLY, ret);
         }
         TOTAL_SUPPLY_AT => {
-            let time: U256 = runtime::get_named_arg("time");
+            let block: U256 = runtime::get_named_arg("block");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 TOTAL_SUPPLY_AT,
                 runtime_args! {
-                    "time" => time,
+                    "block" => block,
                 },
             );
             store(TOTAL_SUPPLY_AT, ret);
@@ -139,7 +139,7 @@ pub extern "C" fn call() {
             store(VE_FOR_AT, ret);
         }
         CLAIM => {
-            let addr: Key = runtime::get_named_arg("addr");
+            let addr: Option<Key> = runtime::get_named_arg("addr");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,

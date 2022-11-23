@@ -34,7 +34,7 @@ fn deploy() -> (
     TestContract,
     TestContract,
     TestContract,
-    u64
+    u64,
 ) {
     let block_time = MINTERInstance::now();
     let env = TestEnv::new();
@@ -46,9 +46,9 @@ fn deploy() -> (
         TOKEN_SYMBOL,
         DECIMALS,
         INIT_TOTAL_SUPPLY.into(),
-        block_time
+        block_time,
     );
-    let erc20_crv = MINTERInstance::deploy_erc20_crv(&env, owner,block_time);
+    let erc20_crv = MINTERInstance::deploy_erc20_crv(&env, owner, block_time);
 
     let voting_escrow = MINTERInstance::deploy_voting_escrow(
         &env,
@@ -58,7 +58,7 @@ fn deploy() -> (
         "VotingEscrow".into(),
         "VE".into(),
         "1".into(),
-        block_time
+        block_time,
     );
 
     let gauge_controller: TestContract = MINTERInstance::deploy_gauge_controller(
@@ -67,7 +67,7 @@ fn deploy() -> (
         owner,
         Key::Hash(erc20_crv.package_hash()),
         Key::Hash(voting_escrow.package_hash()),
-        block_time
+        block_time,
     );
 
     let minter: TestContract = MINTERInstance::new_deploy(
@@ -76,7 +76,7 @@ fn deploy() -> (
         owner,
         Key::Hash(erc20_crv.package_hash()),
         Key::Hash(gauge_controller.package_hash()),
-        block_time
+        block_time,
     );
     let liquidity_gauge = MINTERInstance::deploy_liquidity_gauge(
         &env,
@@ -85,7 +85,7 @@ fn deploy() -> (
         Key::Hash(_token.package_hash()),
         Key::Hash(minter.package_hash()),
         Key::Account(owner),
-        block_time
+        block_time,
     );
     (
         env,
@@ -96,7 +96,7 @@ fn deploy() -> (
         gauge_controller,
         liquidity_gauge,
         erc20_crv,
-        block_time
+        block_time,
     )
 }
 
@@ -111,7 +111,7 @@ fn test_deploy() {
         gauge_controller,
         _liquidity_gauge,
         erc20_crv,
-        _
+        _,
     ) = deploy();
     let _user = env.next_user();
     assert_eq!(minter.token(), Key::Hash(erc20_crv.package_hash()));
@@ -132,10 +132,10 @@ fn test_minter_mint() {
         gauge_controller,
         liquidity_gauge,
         _erc20_crv,
-        block_time
+        block_time,
     ) = deploy();
     let _user = env.next_user();
-    minter.toggle_approve_mint(owner, Key::from(owner),block_time);
+    minter.toggle_approve_mint(owner, Key::from(owner), block_time);
     let name: String = "type".to_string();
     gauge_controller.call_contract(
         owner,
@@ -154,7 +154,7 @@ fn test_minter_mint() {
         Key::Hash(liquidity_gauge.package_hash()),
         gauge_type,
         Some(weight),
-        block_time
+        block_time,
     );
     let liquidity_gauge_1 = MINTERInstance::deploy_liquidity_gauge(
         &env,
@@ -163,7 +163,7 @@ fn test_minter_mint() {
         Key::Hash(token.package_hash()),
         Key::from(minter.contract_package_hash()),
         Key::Account(owner),
-        block_time
+        block_time,
     );
     let name: String = "type1".to_string();
     gauge_controller.call_contract(
@@ -182,9 +182,13 @@ fn test_minter_mint() {
         Key::Hash(liquidity_gauge_1.package_hash()),
         gauge_type,
         Some(weight),
-        block_time
+        block_time,
     );
-    minter.mint(owner, Key::Hash(liquidity_gauge_1.package_hash()),block_time);
+    minter.mint(
+        owner,
+        Key::Hash(liquidity_gauge_1.package_hash()),
+        block_time,
+    );
 }
 
 #[test]
@@ -198,7 +202,7 @@ fn test_minter_mint_many() {
         gauge_controller,
         liquidity_gauge,
         _erc20_crv,
-        block_time
+        block_time,
     ) = deploy();
 
     let name: String = "type".to_string();
@@ -219,7 +223,7 @@ fn test_minter_mint_many() {
         Key::Hash(liquidity_gauge.package_hash()),
         gauge_type,
         Some(weight),
-        block_time
+        block_time,
     );
     let liquidity_gauge_1 = MINTERInstance::deploy_liquidity_gauge(
         &env,
@@ -228,7 +232,7 @@ fn test_minter_mint_many() {
         Key::Hash(token.package_hash()),
         Key::from(minter.contract_package_hash()),
         Key::Account(owner),
-        block_time
+        block_time,
     );
     let name: String = "type1".to_string();
     gauge_controller.call_contract(
@@ -247,11 +251,11 @@ fn test_minter_mint_many() {
         Key::Hash(liquidity_gauge_1.package_hash()),
         gauge_type,
         Some(weight),
-        block_time
+        block_time,
     );
     let gauge_addrs: Vec<String> =
         vec![Key::Hash(liquidity_gauge_1.package_hash()).to_formatted_string()];
-    minter.mint_many(owner, gauge_addrs,block_time);
+    minter.mint_many(owner, gauge_addrs, block_time);
 }
 
 #[test]
@@ -265,9 +269,9 @@ fn test_minter_mint_for() {
         gauge_controller,
         liquidity_gauge,
         _erc20_crv,
-        block_time
+        block_time,
     ) = deploy();
-    minter.toggle_approve_mint(owner, Key::from(owner),block_time);
+    minter.toggle_approve_mint(owner, Key::from(owner), block_time);
     let name: String = "type".to_string();
     gauge_controller.call_contract(
         owner,
@@ -286,7 +290,7 @@ fn test_minter_mint_for() {
         Key::Hash(liquidity_gauge.package_hash()),
         gauge_type,
         Some(weight),
-        block_time
+        block_time,
     );
     let liquidity_gauge_1 = MINTERInstance::deploy_liquidity_gauge(
         &env,
@@ -295,7 +299,7 @@ fn test_minter_mint_for() {
         Key::Hash(token.package_hash()),
         Key::from(minter.contract_package_hash()),
         Key::Account(owner),
-        block_time
+        block_time,
     );
     let name: String = "type1".to_string();
     gauge_controller.call_contract(
@@ -314,14 +318,14 @@ fn test_minter_mint_for() {
         Key::Hash(liquidity_gauge_1.package_hash()),
         gauge_type,
         Some(weight),
-        block_time
+        block_time,
     );
 
     minter.mint_for(
         owner,
         Key::Hash(liquidity_gauge_1.package_hash()),
         Key::from(owner),
-        block_time
+        block_time,
     );
 }
 
@@ -336,10 +340,10 @@ fn test_minter_toggle_approve_mint() {
         _gauge_controller,
         _liquidity_gauge_reward,
         _erc20_crv,
-        block_time
+        block_time,
     ) = deploy();
 
-    minter.toggle_approve_mint(owner, Key::Hash(token.package_hash()),block_time);
+    minter.toggle_approve_mint(owner, Key::Hash(token.package_hash()), block_time);
 }
 #[test]
 fn test_minter_mint_with_deposit() {
@@ -352,10 +356,10 @@ fn test_minter_mint_with_deposit() {
         gauge_controller,
         liquidity_gauge,
         _erc20_crv,
-        block_time
+        block_time,
     ) = deploy();
     let _user = env.next_user();
-    minter.toggle_approve_mint(owner, Key::from(owner),block_time);
+    minter.toggle_approve_mint(owner, Key::from(owner), block_time);
     let name: String = "type".to_string();
     gauge_controller.call_contract(
         owner,
@@ -374,7 +378,7 @@ fn test_minter_mint_with_deposit() {
         Key::Hash(liquidity_gauge.package_hash()),
         gauge_type,
         Some(weight),
-        block_time
+        block_time,
     );
     let lp_token = deploy_erc20(&env, owner);
     let value: U256 = 100000000.into();
@@ -385,7 +389,7 @@ fn test_minter_mint_with_deposit() {
         Key::Hash(lp_token.package_hash()),
         Key::from(minter.contract_package_hash()),
         Key::Account(owner),
-        block_time
+        block_time,
     );
     let name: String = "type1".to_string();
     gauge_controller.call_contract(
@@ -404,9 +408,9 @@ fn test_minter_mint_with_deposit() {
         Key::Hash(liquidity_gauge_1.package_hash()),
         gauge_type,
         Some(weight),
-        block_time
+        block_time,
     );
-    let mint_value:U256 =(10000000000 as u128).into();
+    let mint_value: U256 = (10000000000 as u128).into();
     lp_token.call_contract(
         owner,
         "mint",
@@ -416,7 +420,7 @@ fn test_minter_mint_with_deposit() {
         },
         block_time,
     );
-    let approve_value:U256 =(1000000000 as u128).into();
+    let approve_value: U256 = (1000000000 as u128).into();
     lp_token.call_contract(
         owner,
         "approve",
@@ -434,7 +438,11 @@ fn test_minter_mint_with_deposit() {
             "addr" =>  None::<Key>,
             "claim_rewards" => None::<bool>
         },
-        block_time
+        block_time,
     );
-    minter.mint(owner, Key::Hash(liquidity_gauge_1.package_hash()),block_time);
+    minter.mint(
+        owner,
+        Key::Hash(liquidity_gauge_1.package_hash()),
+        block_time,
+    );
 }

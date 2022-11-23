@@ -1,6 +1,7 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
+
 use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec};
 use casper_contract::{
     contract_api::{runtime, storage},
@@ -123,6 +124,33 @@ fn transfer() {
     let ret = ERC20::transfer(&mut Erc20Crv::default(), recipient, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+#[no_mangle]
+fn total_supply() {
+    let ret: U256 = ERC20::total_supply(&mut Erc20Crv::default());
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn increase_allowance() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = ERC20::increase_allowance(&mut Erc20Crv::default(), spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn decrease_allowance() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = ERC20::decrease_allowance(&mut Erc20Crv::default(), spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn allowance() {
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    let ret: U256 = ERC20::allowance(&mut Erc20Crv::default(), owner, spender);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
 //[no_mangle] of public variables
 #[no_mangle]
 fn name() {
@@ -262,10 +290,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("spender", Key::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -280,6 +305,49 @@ fn get_entry_points() -> EntryPoints {
             ok: Box::new(CLType::Unit),
             err: Box::new(CLType::U32),
         },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "total_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "increase_allowance",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "decrease_allowance",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "allowance",
+        vec![
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
+        ],
+        U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
