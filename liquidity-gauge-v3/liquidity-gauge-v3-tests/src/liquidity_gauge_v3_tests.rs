@@ -2,7 +2,7 @@ use crate::liquidity_gauge_v3_instance::LIQUIDITYGUAGEV3INSTANCEInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
-//Const
+
 pub const TEN_E_NINE: u128 = 1000000000;
 const NAME: &str = "LiquidityGaugeV3";
 //ERC20
@@ -21,7 +21,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
         0,
     )
 }
-// CRV
+//CRV
 fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
         env,
@@ -37,7 +37,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
         200000000000,
     )
 }
-// Voting Escrow
+//Voting Escrow
 fn deploy_voting_escrow(
     env: &TestEnv,
     sender: AccountHash,
@@ -94,7 +94,7 @@ fn deploy_minter(env: &TestEnv, sender: AccountHash, controller: Key, token: Key
         0,
     )
 }
-// Liquidity Guage V3
+//Liquidity Guage V3
 
 fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let env = TestEnv::new();
@@ -130,7 +130,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         Key::Hash(minter.package_hash()),
         Key::Account(owner),
     );
-    // For Minting Purpose
+    //For Minting Purpose
     let to = Key::Hash(liquidity_gauge_v3_instance.package_hash());
     let amount: U256 = U256::from(TEN_E_NINE * 100000000000000000000);
     let amount_1: U256 = U256::from(TEN_E_NINE * 100);
@@ -269,11 +269,11 @@ fn test_decimals() {
 
     TestContract::new(
         &env,
-        "liquidity_gauge_v3_session_code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(DECIMALS),
+            "entrypoint" => String::from(U8_DECIMALS),
             "package_hash" => Key::Hash(contract.package_hash())
         },
         0,
@@ -288,8 +288,8 @@ fn test_integrate_checkpoint() {
 
     TestContract::new(
         &env,
-        "liquidity_gauge_v3_session_code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(INTEGRATE_CHECKPOINT),
@@ -307,8 +307,8 @@ fn test_reward_contract() {
 
     TestContract::new(
         &env,
-        "liquidity_gauge_v3_session_code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(REWARD_CONTRACT),
@@ -332,8 +332,8 @@ fn test_last_claim() {
 
     TestContract::new(
         &env,
-        "liquidity_gauge_v3_session_code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(LAST_CLAIM),
@@ -352,8 +352,8 @@ fn test_claimed_reward() {
     let token = env.next_user();
     TestContract::new(
         &env,
-        "liquidity_gauge_v3_session_code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(CLAIMED_REWARD),
@@ -501,11 +501,11 @@ fn test_claimable_reward() {
     let token = env.next_user();
     TestContract::new(
         &env,
-        "liquidity_gauge_v3_session_code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        "SessionCOde",
         owner,
         runtime_args! {
-            "entrypoint" => String::from(CLAIMABLE_REWARD),
+            "entrypoint" => String::from(CLAIMABLE_V3_REWARD),
             "package_hash" => Key::Hash(contract.package_hash()),
             "addr"=>Key::from(addr),
             "token"=>Key::from(token)

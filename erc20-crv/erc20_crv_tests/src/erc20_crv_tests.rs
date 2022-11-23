@@ -25,8 +25,8 @@ fn test_deploy() {
     assert_eq!(contract.get_admin(), Key::from(owner));
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -46,8 +46,8 @@ fn burn() {
     let (env, owner, contract) = deploy();
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY),
@@ -60,8 +60,8 @@ fn burn() {
     contract.burn(owner, 1303030303000000000_i64.into());
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY),
@@ -132,8 +132,8 @@ fn test_available_supply() {
     let (env, owner, contract) = deploy();
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(AVAILABLE_SUPPLY),
@@ -152,8 +152,8 @@ fn test_total_supply() {
     let (env, owner, contract) = deploy();
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY),
@@ -172,8 +172,8 @@ fn test_mintable_in_timeframe() {
     let end: U256 = U256::from(start + 86400000);
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(MINTABLE_IN_TIMEFRAME),
@@ -262,8 +262,8 @@ fn test_transfer() {
     }
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -303,8 +303,8 @@ fn test_transfer_from() {
     }
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
@@ -325,8 +325,8 @@ fn test_allowance() {
     contract.approve(owner, Key::from(spender), amount);
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),
@@ -359,8 +359,8 @@ fn test_allowance() {
     }
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(ALLOWANCE),

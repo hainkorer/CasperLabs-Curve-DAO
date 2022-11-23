@@ -1,6 +1,6 @@
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
-
+use common::keys::*;
 use crate::curve_token_v3_instance::{now, CURVETOKENV3Instance};
 
 const NAME: &str = "CRVTokenV3";
@@ -11,6 +11,16 @@ fn call(env: &TestEnv, owner: AccountHash, runtime_args: RuntimeArgs) {
         env,
         "curve-token-v3-session-code.wasm",
         "curve-token-v3-session-code",
+        owner,
+        runtime_args,
+        now(),
+    );
+}
+fn test_call(env: &TestEnv, owner: AccountHash, runtime_args: RuntimeArgs) {
+    TestContract::new(
+        env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args,
         now(),
@@ -92,7 +102,7 @@ fn deployment() {
 #[test]
 fn decimals() {
     let (env, token, owner, _) = deploy();
-    call(
+    test_call(
         &env,
         owner,
         runtime_args! {

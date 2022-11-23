@@ -166,6 +166,8 @@ pub const CLAIMABLE_REWARDS: &str = "claimable_rewards";
 pub const USER_CHECKPOINT: &str = "user_checkpoint";
 pub const CLAIMABLE_TOKENS: &str = "claimable_tokens";
 pub const CLAIMABLE_REWARD: &str = "claimable_reward";
+pub const CLAIMABLE_V3_REWARD: &str = "claimable_reward_v3";
+pub const U8_DECIMALS: &str = "decimals_u8";
 pub const ALLOWANCE: &str = "allowance";
 // Gauge Controller Wasm Keys
 pub const GAUGE_TYPES: &str = "gauge_types";

@@ -124,20 +124,7 @@ pub extern "C" fn call() {
             store(TOTAL_SUPPLY_AT, ret);
         }
         // Fee Distributor
-        VE_FOR_AT => {
-            let user: Key = runtime::get_named_arg("user");
-            let timestamp: U256 = runtime::get_named_arg("timestamp");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                VE_FOR_AT,
-                runtime_args! {
-                    "user" => user,
-                    "timestamp" => timestamp
-                },
-            );
-            store(VE_FOR_AT, ret);
-        }
+        
         CLAIM => {
             let addr: Option<Key> = runtime::get_named_arg("addr");
             let ret: U256 = runtime::call_versioned_contract(
