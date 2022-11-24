@@ -90,7 +90,7 @@ pub extern "C" fn call() {
             );
             store(DECREASE_ALLOWANCE, ret);
         }
-    
+
         CLAIMABLE_REWARD_WRITE => {
             let addr: Key = runtime::get_named_arg("addr");
             let token: Key = runtime::get_named_arg("token");

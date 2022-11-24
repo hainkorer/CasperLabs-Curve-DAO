@@ -486,16 +486,16 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
         });
     }
 
-    fn gauge_relative_weight(&mut self, addr: Key,time:Option<U256>) -> U256 {
+    fn gauge_relative_weight(&mut self, addr: Key, time: Option<U256>) -> U256 {
         let time_: U256 = if let Some(..) = time {
             time.unwrap()
         } else {
             U256::from(u64::from(runtime::get_blocktime()))
         };
-        self._gauge_relative_weight(addr,time_)
+        self._gauge_relative_weight(addr, time_)
     }
 
-    fn gauge_relative_weight_write(&mut self, addr: Key,time:Option<U256>) -> U256 {
+    fn gauge_relative_weight_write(&mut self, addr: Key, time: Option<U256>) -> U256 {
         let time_: U256 = if let Some(..) = time {
             time.unwrap()
         } else {

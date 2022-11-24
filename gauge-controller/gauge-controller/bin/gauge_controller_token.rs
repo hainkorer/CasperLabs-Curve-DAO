@@ -117,7 +117,7 @@ fn package_hash() {
 fn gauge_relative_weight() {
     let addr: Key = runtime::get_named_arg("addr");
     let time: Option<U256> = runtime::get_named_arg("time");
-    let ret: U256 = Token::default().gauge_relative_weight(addr,time);
+    let ret: U256 = Token::default().gauge_relative_weight(addr, time);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -132,7 +132,7 @@ fn gauge_relative_weight() {
 fn gauge_relative_weight_write() {
     let addr: Key = runtime::get_named_arg("addr");
     let time: Option<U256> = runtime::get_named_arg("time");
-    let ret: U256 = Token::default().gauge_relative_weight_write(addr,time);
+    let ret: U256 = Token::default().gauge_relative_weight_write(addr, time);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
@@ -717,7 +717,7 @@ fn get_entry_points() -> EntryPoints {
         "gauge_relative_weight",
         vec![
             Parameter::new("addr", Key::cl_type()),
-            Parameter::new("time", CLType::Option(Box::new(U256::cl_type())))
+            Parameter::new("time", CLType::Option(Box::new(U256::cl_type()))),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -727,7 +727,7 @@ fn get_entry_points() -> EntryPoints {
         "gauge_relative_weight_write",
         vec![
             Parameter::new("addr", Key::cl_type()),
-            Parameter::new("time", CLType::Option(Box::new(U256::cl_type())))
+            Parameter::new("time", CLType::Option(Box::new(U256::cl_type()))),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,

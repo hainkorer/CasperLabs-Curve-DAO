@@ -1,7 +1,7 @@
+use crate::curve_token_v3_instance::{now, CURVETOKENV3Instance};
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
-use crate::curve_token_v3_instance::{now, CURVETOKENV3Instance};
 
 const NAME: &str = "CRVTokenV3";
 const SYMBOL: &str = "CRV3";

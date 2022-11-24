@@ -124,7 +124,6 @@ pub extern "C" fn call() {
             store(TOTAL_SUPPLY_AT, ret);
         }
         // Fee Distributor
-        
         CLAIM => {
             let addr: Option<Key> = runtime::get_named_arg("addr");
             let ret: U256 = runtime::call_versioned_contract(

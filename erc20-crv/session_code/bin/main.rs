@@ -50,7 +50,7 @@ pub extern "C" fn call() {
             );
             store(START_EPOCH_TIME_WRITE, ret);
         }
-        
+
         MINT => {
             let to: Key = runtime::get_named_arg("to");
             let amount: U256 = runtime::get_named_arg("amount");

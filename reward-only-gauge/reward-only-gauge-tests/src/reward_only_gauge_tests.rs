@@ -18,7 +18,13 @@ const TOKEN_SYMBOL: &str = "ERC";
 const DECIMALS: u8 = 9;
 const INIT_TOTAL_SUPPLY: u64 = 0;
 pub const TEN_E_NINE: u128 = 1000000000;
-fn deploy_erc20(env: &TestEnv, owner: AccountHash, name: &str,symbol: &str,decimals: u8) -> TestContract {
+fn deploy_erc20(
+    env: &TestEnv,
+    owner: AccountHash,
+    name: &str,
+    symbol: &str,
+    decimals: u8,
+) -> TestContract {
     TestContract::new(
         env,
         "erc20-token.wasm",
@@ -30,7 +36,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash, name: &str,symbol: &str,decim
             "decimals" => decimals,
             "initial_supply" => U256::from(TEN_E_NINE * 100000000000000000000)
         },
-    0,
+        0,
     )
 }
 fn deploy() -> (
@@ -39,12 +45,12 @@ fn deploy() -> (
     TestContract,
     AccountHash,
     TestContract,
-    u64
+    u64,
 ) {
     let env = TestEnv::new();
     let owner = env.next_user();
     let time_now: u64 = REWARDONLYGAUGEInstance::now();
-    let lp_token: TestContract = deploy_erc20(&env, owner,TOKEN_NAME,TOKEN_SYMBOL,DECIMALS);
+    let lp_token: TestContract = deploy_erc20(&env, owner, TOKEN_NAME, TOKEN_SYMBOL, DECIMALS);
     let curve_rewards: TestContract = REWARDONLYGAUGEInstance::curve_rewards(
         &env,
         "CURVEREWARDS",
@@ -58,22 +64,21 @@ fn deploy() -> (
         owner,
         Key::from(owner),
         Key::Hash(lp_token.package_hash()),
-        
     );
-  
+
     (
         env,
         REWARDONLYGAUGEInstance::instance(reward_only_gauge),
         lp_token,
         owner,
         curve_rewards,
-        time_now
+        time_now,
     )
 }
 
 #[test]
 fn test_deploy() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,_) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, _) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -90,7 +95,7 @@ fn test_deploy() {
 
 #[test]
 fn test_set_rewards_receiver() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -104,13 +109,13 @@ fn test_set_rewards_receiver() {
         Key::Hash(lp_token.package_hash())
     );
 
-    reward_only_gauge.set_rewards_receiver(owner,time_now, user);
+    reward_only_gauge.set_rewards_receiver(owner, time_now, user);
     assert_eq!(reward_only_gauge.rewards_receiver(owner), Key::from(user));
 }
 
 #[test]
 fn test_commit_transfer_ownership() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -124,14 +129,14 @@ fn test_commit_transfer_ownership() {
         Key::Hash(lp_token.package_hash())
     );
 
-    reward_only_gauge.commit_transfer_ownership(owner,time_now, user);
+    reward_only_gauge.commit_transfer_ownership(owner, time_now, user);
     assert_eq!(reward_only_gauge.admin(), owner.into());
     assert_eq!(reward_only_gauge.future_admin(), user.into());
 }
 
 #[test]
 fn test_accept_transfer_ownership() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -145,15 +150,15 @@ fn test_accept_transfer_ownership() {
         Key::Hash(lp_token.package_hash())
     );
 
-    reward_only_gauge.commit_transfer_ownership(owner,time_now, user);
+    reward_only_gauge.commit_transfer_ownership(owner, time_now, user);
     assert_eq!(reward_only_gauge.admin(), owner.into());
     assert_eq!(reward_only_gauge.future_admin(), user.into());
-    reward_only_gauge.accept_transfer_ownership(user,time_now);
+    reward_only_gauge.accept_transfer_ownership(user, time_now);
     assert_eq!(reward_only_gauge.admin(), user.into());
 }
 #[test]
 fn test_reward_contract() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -193,7 +198,7 @@ fn test_reward_contract() {
 
 #[test]
 fn test_last_claim() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -227,7 +232,7 @@ fn test_last_claim() {
 
 #[test]
 fn test_claimed_reward() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -263,7 +268,7 @@ fn test_claimed_reward() {
 
 #[test]
 fn test_approve() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -278,7 +283,7 @@ fn test_approve() {
     );
 
     let amount = 10.into();
-    reward_only_gauge.approve(owner, time_now,user, amount);
+    reward_only_gauge.approve(owner, time_now, user, amount);
     assert_eq!(
         reward_only_gauge.balance_of(owner),
         INIT_TOTAL_SUPPLY.into()
@@ -290,7 +295,7 @@ fn test_approve() {
 
 #[test]
 fn test_increase_allowance() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -331,7 +336,7 @@ fn test_increase_allowance() {
 
 #[test]
 fn test_decrease_allowance() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -391,7 +396,7 @@ fn test_decrease_allowance() {
 
 #[test]
 fn test_set_rewards() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -408,62 +413,14 @@ fn test_set_rewards() {
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
     let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
-    let lp_token1: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token1",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token2: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token2",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token3: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token3",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token4: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token4",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token5: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token5",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token6: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token6",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token7: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token7",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token8: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token8",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
+    let lp_token1: TestContract = deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
+    let lp_token2: TestContract = deploy_erc20(&env, owner, "Lp_token2", TOKEN_SYMBOL, DECIMALS);
+    let lp_token3: TestContract = deploy_erc20(&env, owner, "Lp_token3", TOKEN_SYMBOL, DECIMALS);
+    let lp_token4: TestContract = deploy_erc20(&env, owner, "Lp_token4", TOKEN_SYMBOL, DECIMALS);
+    let lp_token5: TestContract = deploy_erc20(&env, owner, "Lp_token5", TOKEN_SYMBOL, DECIMALS);
+    let lp_token6: TestContract = deploy_erc20(&env, owner, "Lp_token6", TOKEN_SYMBOL, DECIMALS);
+    let lp_token7: TestContract = deploy_erc20(&env, owner, "Lp_token7", TOKEN_SYMBOL, DECIMALS);
+    let lp_token8: TestContract = deploy_erc20(&env, owner, "Lp_token8", TOKEN_SYMBOL, DECIMALS);
 
     let reward_tokens: Vec<String> = vec![
         Key::Hash(lp_token1.package_hash()).to_formatted_string(),
@@ -526,7 +483,7 @@ fn test_set_rewards() {
 
 #[test]
 fn test_claim_rewards() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -543,62 +500,14 @@ fn test_claim_rewards() {
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
     let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
-    let lp_token1: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token1",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token2: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token2",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token3: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token3",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token4: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token4",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token5: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token5",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token6: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token6",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token7: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token7",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token8: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token8",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
+    let lp_token1: TestContract = deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
+    let lp_token2: TestContract = deploy_erc20(&env, owner, "Lp_token2", TOKEN_SYMBOL, DECIMALS);
+    let lp_token3: TestContract = deploy_erc20(&env, owner, "Lp_token3", TOKEN_SYMBOL, DECIMALS);
+    let lp_token4: TestContract = deploy_erc20(&env, owner, "Lp_token4", TOKEN_SYMBOL, DECIMALS);
+    let lp_token5: TestContract = deploy_erc20(&env, owner, "Lp_token5", TOKEN_SYMBOL, DECIMALS);
+    let lp_token6: TestContract = deploy_erc20(&env, owner, "Lp_token6", TOKEN_SYMBOL, DECIMALS);
+    let lp_token7: TestContract = deploy_erc20(&env, owner, "Lp_token7", TOKEN_SYMBOL, DECIMALS);
+    let lp_token8: TestContract = deploy_erc20(&env, owner, "Lp_token8", TOKEN_SYMBOL, DECIMALS);
 
     let reward_tokens: Vec<String> = vec![
         Key::Hash(lp_token1.package_hash()).to_formatted_string(),
@@ -651,7 +560,12 @@ fn test_claim_rewards() {
         reward_only_gauge.reward_tokens(7.into()),
         Key::Hash(lp_token8.package_hash())
     );
-    reward_only_gauge.claim_rewards(owner,time_now, Some(Key::from(owner)), Some(Key::from(user)));
+    reward_only_gauge.claim_rewards(
+        owner,
+        time_now,
+        Some(Key::from(owner)),
+        Some(Key::from(user)),
+    );
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -663,7 +577,7 @@ fn test_claim_rewards() {
 
 #[test]
 fn test_claimable_reward_write() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -680,62 +594,14 @@ fn test_claimable_reward_write() {
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
     let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
-    let lp_token1: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token1",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token2: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token2",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token3: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token3",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token4: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token4",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token5: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token5",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token6: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token6",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token7: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token7",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token8: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token8",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
+    let lp_token1: TestContract = deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
+    let lp_token2: TestContract = deploy_erc20(&env, owner, "Lp_token2", TOKEN_SYMBOL, DECIMALS);
+    let lp_token3: TestContract = deploy_erc20(&env, owner, "Lp_token3", TOKEN_SYMBOL, DECIMALS);
+    let lp_token4: TestContract = deploy_erc20(&env, owner, "Lp_token4", TOKEN_SYMBOL, DECIMALS);
+    let lp_token5: TestContract = deploy_erc20(&env, owner, "Lp_token5", TOKEN_SYMBOL, DECIMALS);
+    let lp_token6: TestContract = deploy_erc20(&env, owner, "Lp_token6", TOKEN_SYMBOL, DECIMALS);
+    let lp_token7: TestContract = deploy_erc20(&env, owner, "Lp_token7", TOKEN_SYMBOL, DECIMALS);
+    let lp_token8: TestContract = deploy_erc20(&env, owner, "Lp_token8", TOKEN_SYMBOL, DECIMALS);
 
     let reward_tokens: Vec<String> = vec![
         Key::Hash(lp_token1.package_hash()).to_formatted_string(),
@@ -788,7 +654,12 @@ fn test_claimable_reward_write() {
         reward_only_gauge.reward_tokens(7.into()),
         Key::Hash(lp_token8.package_hash())
     );
-    reward_only_gauge.claim_rewards(owner,time_now, Some(Key::from(owner)), Some(Key::from(user)));
+    reward_only_gauge.claim_rewards(
+        owner,
+        time_now,
+        Some(Key::from(owner)),
+        Some(Key::from(user)),
+    );
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -817,7 +688,7 @@ fn test_claimable_reward_write() {
 
 #[test]
 fn test_claimable_reward() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -834,62 +705,14 @@ fn test_claimable_reward() {
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
     let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
-    let lp_token1: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token1",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token2: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token2",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token3: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token3",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token4: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token4",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token5: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token5",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token6: TestContract =deploy_erc20(
-        &env,
-        owner,
-        "Lp_token6",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token7: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token7",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
-    let lp_token8: TestContract = deploy_erc20(
-        &env,
-        owner,
-        "Lp_token8",
-        TOKEN_SYMBOL,
-        DECIMALS
-    );
+    let lp_token1: TestContract = deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
+    let lp_token2: TestContract = deploy_erc20(&env, owner, "Lp_token2", TOKEN_SYMBOL, DECIMALS);
+    let lp_token3: TestContract = deploy_erc20(&env, owner, "Lp_token3", TOKEN_SYMBOL, DECIMALS);
+    let lp_token4: TestContract = deploy_erc20(&env, owner, "Lp_token4", TOKEN_SYMBOL, DECIMALS);
+    let lp_token5: TestContract = deploy_erc20(&env, owner, "Lp_token5", TOKEN_SYMBOL, DECIMALS);
+    let lp_token6: TestContract = deploy_erc20(&env, owner, "Lp_token6", TOKEN_SYMBOL, DECIMALS);
+    let lp_token7: TestContract = deploy_erc20(&env, owner, "Lp_token7", TOKEN_SYMBOL, DECIMALS);
+    let lp_token8: TestContract = deploy_erc20(&env, owner, "Lp_token8", TOKEN_SYMBOL, DECIMALS);
 
     let reward_tokens: Vec<String> = vec![
         Key::Hash(lp_token1.package_hash()).to_formatted_string(),
@@ -942,7 +765,12 @@ fn test_claimable_reward() {
         reward_only_gauge.reward_tokens(7.into()),
         Key::Hash(lp_token8.package_hash())
     );
-    reward_only_gauge.claim_rewards(owner, time_now,Some(Key::from(owner)), Some(Key::from(user)));
+    reward_only_gauge.claim_rewards(
+        owner,
+        time_now,
+        Some(Key::from(owner)),
+        Some(Key::from(user)),
+    );
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
@@ -971,7 +799,7 @@ fn test_claimable_reward() {
 
 #[test]
 fn test_deposit() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -998,7 +826,13 @@ fn test_deposit() {
         time_now,
     );
 
-    reward_only_gauge.deposit(owner,time_now, deposit, Some(Key::from(owner)), Some(false));
+    reward_only_gauge.deposit(
+        owner,
+        time_now,
+        deposit,
+        Some(Key::from(owner)),
+        Some(false),
+    );
 
     assert_eq!(
         reward_only_gauge.lp_token(),
@@ -1014,7 +848,7 @@ fn test_deposit() {
 
 #[test]
 fn test_withdraw() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -1041,7 +875,13 @@ fn test_withdraw() {
         time_now,
     );
 
-    reward_only_gauge.deposit(owner, time_now,deposit, Some(Key::from(owner)), Some(false));
+    reward_only_gauge.deposit(
+        owner,
+        time_now,
+        deposit,
+        Some(Key::from(owner)),
+        Some(false),
+    );
 
     assert_eq!(
         reward_only_gauge.lp_token(),
@@ -1053,7 +893,7 @@ fn test_withdraw() {
     assert_eq!(reward_only_gauge.total_supply(), 10.into());
     assert_eq!(reward_only_gauge.balance_of(owner), 10.into());
     assert_eq!(reward_only_gauge.balance_of(user), 0.into());
-    reward_only_gauge.withdraw(owner, time_now,deposit / 2, Some(false));
+    reward_only_gauge.withdraw(owner, time_now, deposit / 2, Some(false));
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
     assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
     assert_eq!(reward_only_gauge.decimals(), 9);
@@ -1064,7 +904,7 @@ fn test_withdraw() {
 
 #[test]
 fn test_transfer() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -1091,7 +931,13 @@ fn test_transfer() {
         time_now,
     );
 
-    reward_only_gauge.deposit(owner, time_now,deposit, Some(Key::from(owner)), Some(false));
+    reward_only_gauge.deposit(
+        owner,
+        time_now,
+        deposit,
+        Some(Key::from(owner)),
+        Some(false),
+    );
 
     assert_eq!(
         reward_only_gauge.lp_token(),
@@ -1136,7 +982,7 @@ fn test_transfer() {
 
 #[test]
 fn test_transfer_from() {
-    let (env, reward_only_gauge, lp_token, owner, _curve_rewards,time_now) = deploy();
+    let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
     let user = env.next_user();
 
     assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
@@ -1163,7 +1009,13 @@ fn test_transfer_from() {
         time_now,
     );
 
-    reward_only_gauge.deposit(owner, time_now,deposit, Some(Key::from(owner)), Some(false));
+    reward_only_gauge.deposit(
+        owner,
+        time_now,
+        deposit,
+        Some(Key::from(owner)),
+        Some(false),
+    );
 
     assert_eq!(
         reward_only_gauge.lp_token(),

@@ -1,4 +1,3 @@
-use std::time::SystemTime;
 use blake2::{
     digest::{Update, VariableOutput},
     VarBlake2b,
@@ -10,6 +9,7 @@ use casper_types::{
     runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U128, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::time::SystemTime;
 
 pub struct GAUGECONLTROLLERInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
@@ -25,7 +25,7 @@ impl GAUGECONLTROLLERInstance {
         name: String,
         symbol: String,
         version: String,
-        block_time:u64
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -48,7 +48,7 @@ impl GAUGECONLTROLLERInstance {
         symbol: &str,
         decimals: u8,
         supply: U256,
-        block_time:u64
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -71,7 +71,7 @@ impl GAUGECONLTROLLERInstance {
         lp_addr: Key,
         minter: Key,
         admin: Key,
-        block_time:u64
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -86,7 +86,7 @@ impl GAUGECONLTROLLERInstance {
             block_time,
         )
     }
-    pub fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash,block_time:u64) -> TestContract {
+    pub fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash, block_time: u64) -> TestContract {
         TestContract::new(
             env,
             "erc20_crv.wasm",
@@ -106,7 +106,7 @@ impl GAUGECONLTROLLERInstance {
         sender: AccountHash,
         token: Key,
         controller: Key,
-        block_time:u64
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -126,7 +126,7 @@ impl GAUGECONLTROLLERInstance {
         sender: AccountHash,
         token: Key,
         voting_escrow: Key,
-        block_time:u64
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -148,7 +148,7 @@ impl GAUGECONLTROLLERInstance {
         token: Key,
         controller: Key,
         reward_count: U256,
-        block_time:u64
+        block_time: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -163,7 +163,12 @@ impl GAUGECONLTROLLERInstance {
         );
     }
 
-    pub fn commit_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash, addr: T,block_time:u64) {
+    pub fn commit_transfer_ownership<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        addr: T,
+        block_time: u64,
+    ) {
         self.0.call_contract(
             sender,
             "commit_transfer_ownership",
@@ -173,16 +178,20 @@ impl GAUGECONLTROLLERInstance {
             block_time,
         );
     }
-    pub fn apply_transfer_ownership(&self, sender: AccountHash,block_time:u64) {
-        self.0
-            .call_contract(sender, "apply_transfer_ownership", runtime_args! {}, block_time);
+    pub fn apply_transfer_ownership(&self, sender: AccountHash, block_time: u64) {
+        self.0.call_contract(
+            sender,
+            "apply_transfer_ownership",
+            runtime_args! {},
+            block_time,
+        );
     }
 
-    pub fn checkpoint(&self, sender: AccountHash,block_time:u64) {
+    pub fn checkpoint(&self, sender: AccountHash, block_time: u64) {
         self.0
             .call_contract(sender, "checkpoint", runtime_args! {}, block_time);
     }
-    pub fn checkpoint_gauge<T: Into<Key>>(&self, sender: AccountHash, addr: T,block_time:u64) {
+    pub fn checkpoint_gauge<T: Into<Key>>(&self, sender: AccountHash, addr: T, block_time: u64) {
         self.0.call_contract(
             sender,
             "checkpoint_gauge",
@@ -193,7 +202,13 @@ impl GAUGECONLTROLLERInstance {
         );
     }
 
-    pub fn change_type_weight(&self, sender: AccountHash, type_id: (bool, U128), weight: U256,block_time:u64) {
+    pub fn change_type_weight(
+        &self,
+        sender: AccountHash,
+        type_id: (bool, U128),
+        weight: U256,
+        block_time: u64,
+    ) {
         self.0.call_contract(
             sender,
             "change_type_weight",
@@ -204,7 +219,13 @@ impl GAUGECONLTROLLERInstance {
             block_time,
         );
     }
-    pub fn change_gauge_weight<T: Into<Key>>(&self, sender: AccountHash, addr: T, weight: U256,block_time:u64) {
+    pub fn change_gauge_weight<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        addr: T,
+        weight: U256,
+        block_time: u64,
+    ) {
         self.0.call_contract(
             sender,
             "change_gauge_weight",
@@ -215,7 +236,13 @@ impl GAUGECONLTROLLERInstance {
             block_time,
         );
     }
-    pub fn add_type(&self, sender: AccountHash, _name: String, weight: Option<U256>,block_time:u64) {
+    pub fn add_type(
+        &self,
+        sender: AccountHash,
+        _name: String,
+        weight: Option<U256>,
+        block_time: u64,
+    ) {
         self.0.call_contract(
             sender,
             "add_type",
@@ -232,7 +259,7 @@ impl GAUGECONLTROLLERInstance {
         addr: T,
         gauge_type: (bool, U128),
         weight: Option<U256>,
-        block_time:u64
+        block_time: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -250,7 +277,7 @@ impl GAUGECONLTROLLERInstance {
         sender: AccountHash,
         _gauge_addr: T,
         _user_weight: U256,
-        block_time:u64
+        block_time: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -387,7 +414,6 @@ impl GAUGECONLTROLLERInstance {
             .unwrap()
             .as_millis() as u64
     }
-    
 }
 
 pub fn key_to_str(key: &Key) -> String {

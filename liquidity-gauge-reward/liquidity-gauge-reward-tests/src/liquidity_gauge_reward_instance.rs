@@ -1,8 +1,8 @@
-use std::time::SystemTime;
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::time::SystemTime;
 
 pub struct LIQUIDITYGAUGEREWARDInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
@@ -16,7 +16,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         reward_contract: Key,
         rewarded_token: Key,
         admin: Key,
-        blocktime:u64
+        blocktime: u64,
     ) -> LIQUIDITYGAUGEREWARDInstance {
         LIQUIDITYGAUGEREWARDInstance(TestContract::new(
             env,
@@ -34,7 +34,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         ))
     }
 
-    pub fn user_checkpoint(&self, owner: AccountHash, addr: Key,blocktime:u64) {
+    pub fn user_checkpoint(&self, owner: AccountHash, addr: Key, blocktime: u64) {
         self.0.call_contract(
             owner,
             "user_checkpoint",
@@ -45,7 +45,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn claimable_tokens(&self, owner: AccountHash, addr: Key,blocktime:u64) {
+    pub fn claimable_tokens(&self, owner: AccountHash, addr: Key, blocktime: u64) {
         self.0.call_contract(
             owner,
             "claimable_tokens",
@@ -56,7 +56,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn claimable_reward(&self, owner: AccountHash, addr: Key,blocktime:u64) {
+    pub fn claimable_reward(&self, owner: AccountHash, addr: Key, blocktime: u64) {
         self.0.call_contract(
             owner,
             "claimable_reward",
@@ -67,7 +67,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn kick(&self, owner: AccountHash, addr: Key,blocktime:u64) {
+    pub fn kick(&self, owner: AccountHash, addr: Key, blocktime: u64) {
         self.0.call_contract(
             owner,
             "kick",
@@ -78,7 +78,13 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn set_approve_deposit(&self, owner: AccountHash, addr: Key, can_deposit: bool,blocktime:u64) {
+    pub fn set_approve_deposit(
+        &self,
+        owner: AccountHash,
+        addr: Key,
+        can_deposit: bool,
+        blocktime: u64,
+    ) {
         self.0.call_contract(
             owner,
             "set_approve_deposit",
@@ -90,7 +96,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn deposit(&self, owner: AccountHash, addr: Option<Key>, value: U256,blocktime:u64) {
+    pub fn deposit(&self, owner: AccountHash, addr: Option<Key>, value: U256, blocktime: u64) {
         self.0.call_contract(
             owner,
             "deposit",
@@ -102,7 +108,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn withdraw(&self, owner: AccountHash, claim_rewards: bool, value: U256,blocktime:u64) {
+    pub fn withdraw(&self, owner: AccountHash, claim_rewards: bool, value: U256, blocktime: u64) {
         self.0.call_contract(
             owner,
             "withdraw",
@@ -114,7 +120,7 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn claim_rewards(&self, owner: AccountHash, addr: Option<Key>,blocktime:u64) {
+    pub fn claim_rewards(&self, owner: AccountHash, addr: Option<Key>, blocktime: u64) {
         self.0.call_contract(
             owner,
             "claim_rewards",
@@ -125,16 +131,17 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn integrate_checkpoint(&self, owner: AccountHash,blocktime:u64) {
+    pub fn integrate_checkpoint(&self, owner: AccountHash, blocktime: u64) {
         self.0
             .call_contract(owner, "integrate_checkpoint", runtime_args! {}, blocktime);
     }
 
-    pub fn kill_me(&self, owner: AccountHash,blocktime:u64) {
-        self.0.call_contract(owner, "kill_me", runtime_args! {}, blocktime);
+    pub fn kill_me(&self, owner: AccountHash, blocktime: u64) {
+        self.0
+            .call_contract(owner, "kill_me", runtime_args! {}, blocktime);
     }
 
-    pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key,blocktime:u64) {
+    pub fn commit_transfer_ownership(&self, owner: AccountHash, addr: Key, blocktime: u64) {
         self.0.call_contract(
             owner,
             "commit_transfer_ownership",
@@ -145,12 +152,16 @@ impl LIQUIDITYGAUGEREWARDInstance {
         );
     }
 
-    pub fn apply_transfer_ownership(&self, owner: AccountHash,blocktime:u64) {
-        self.0
-            .call_contract(owner, "apply_transfer_ownership", runtime_args! {}, blocktime);
+    pub fn apply_transfer_ownership(&self, owner: AccountHash, blocktime: u64) {
+        self.0.call_contract(
+            owner,
+            "apply_transfer_ownership",
+            runtime_args! {},
+            blocktime,
+        );
     }
 
-    pub fn toggle_external_rewards_claim(&self, owner: AccountHash, val: bool,blocktime:u64) {
+    pub fn toggle_external_rewards_claim(&self, owner: AccountHash, val: bool, blocktime: u64) {
         self.0.call_contract(
             owner,
             "toggle_external_rewards_claim",
