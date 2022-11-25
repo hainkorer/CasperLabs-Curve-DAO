@@ -1,10 +1,11 @@
 use crate::{data::*, event::GaugeProxyEvent};
+use alloc::string::String;
 use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
-use casper_types::bytesrepr::Bytes;
+
 use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef,
 };
@@ -115,7 +116,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
         set_lock(false);
     }
 
-    fn set_rewards(&self, gauge: Key, reward_contract: Key, sigs: Bytes, reward_tokens: Vec<Key>) {
+    fn set_rewards(&self, gauge: Key, reward_contract: Key, sigs: String, reward_tokens: Vec<Key>) {
         if self.get_caller() != get_ownership_admin() {
             runtime::revert(ApiError::from(Error::AccessDenied));
         };

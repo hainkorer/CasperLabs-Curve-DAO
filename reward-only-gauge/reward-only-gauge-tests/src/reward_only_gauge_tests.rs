@@ -1,4 +1,4 @@
-use casper_types::{account::AccountHash, bytesrepr::Bytes, runtime_args, Key, RuntimeArgs, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::reward_only_gauge_instance::REWARDONLYGAUGEInstance;
@@ -412,7 +412,7 @@ fn test_set_rewards() {
     );
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
-    let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
+    let claim_sig: String = "get_reward".to_string();
     let lp_token1: TestContract = deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
     let lp_token2: TestContract = deploy_erc20(&env, owner, "Lp_token2", TOKEN_SYMBOL, DECIMALS);
     let lp_token3: TestContract = deploy_erc20(&env, owner, "Lp_token3", TOKEN_SYMBOL, DECIMALS);
@@ -499,7 +499,7 @@ fn test_claim_rewards() {
     );
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
-    let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
+    let claim_sig: String = "get_reward".to_string();
     let lp_token1: TestContract = deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
     let lp_token2: TestContract = deploy_erc20(&env, owner, "Lp_token2", TOKEN_SYMBOL, DECIMALS);
     let lp_token3: TestContract = deploy_erc20(&env, owner, "Lp_token3", TOKEN_SYMBOL, DECIMALS);
@@ -593,7 +593,7 @@ fn test_claimable_reward_write() {
     );
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
-    let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
+    let claim_sig:String = "get_reward".to_string();
     let lp_token1: TestContract = deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
     let lp_token2: TestContract = deploy_erc20(&env, owner, "Lp_token2", TOKEN_SYMBOL, DECIMALS);
     let lp_token3: TestContract = deploy_erc20(&env, owner, "Lp_token3", TOKEN_SYMBOL, DECIMALS);
@@ -704,7 +704,7 @@ fn test_claimable_reward() {
     );
     assert_eq!(reward_only_gauge.allowance(owner, user), 0.into());
 
-    let claim_sig: Bytes = Bytes::from("get_reward".as_bytes());
+    let claim_sig: String = "get_reward".to_string();
     let lp_token1: TestContract = deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
     let lp_token2: TestContract = deploy_erc20(&env, owner, "Lp_token2", TOKEN_SYMBOL, DECIMALS);
     let lp_token3: TestContract = deploy_erc20(&env, owner, "Lp_token3", TOKEN_SYMBOL, DECIMALS);

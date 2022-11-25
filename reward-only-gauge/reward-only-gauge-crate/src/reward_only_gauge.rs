@@ -7,7 +7,7 @@ use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::bytesrepr::Bytes;
+
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
@@ -262,7 +262,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
     fn reward_data(&mut self) -> RewardData {
         data::reward_data()
     }
-    fn claim_sig(&mut self) -> Bytes {
+    fn claim_sig(&mut self) -> String {
         data::claim_sig()
     }
 
@@ -461,7 +461,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
     fn set_rewards(
         &mut self,
         _reward_contract: Key,
-        _claim_sig: Bytes,
+        _claim_sig: String,
         _reward_tokens: Vec<String>,
     ) {
         let lock = data::get_lock();

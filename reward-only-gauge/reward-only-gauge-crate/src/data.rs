@@ -3,7 +3,7 @@ use alloc::{
     vec::Vec,
 };
 use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{bytesrepr::Bytes, system::CallStackElement, ContractPackageHash, Key, U256};
+use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
 use common::{keys::*, utils::*};
@@ -251,11 +251,11 @@ pub fn set_name(name: String) {
     set_key(NAME, name);
 }
 
-pub fn claim_sig() -> Bytes {
+pub fn claim_sig() -> String {
     get_key(CLAIM_SIG).unwrap_or_revert()
 }
 
-pub fn set_claim_sig(claim_sig: Bytes) {
+pub fn set_claim_sig(claim_sig: String) {
     set_key(CLAIM_SIG, claim_sig);
 }
 

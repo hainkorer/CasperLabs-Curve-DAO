@@ -10,7 +10,6 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::bytesrepr::Bytes;
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
@@ -110,7 +109,7 @@ fn reward_tokens() {
 }
 #[no_mangle]
 fn claim_sig() {
-    let ret: Bytes = Token::default().claim_sig();
+    let ret: String = Token::default().claim_sig();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
@@ -355,7 +354,7 @@ fn claim_rewards() {
 #[no_mangle]
 fn set_rewards() {
     let reward_contract: Key = runtime::get_named_arg("reward_contract");
-    let claim_sig: Bytes = runtime::get_named_arg("claim_sig");
+    let claim_sig: String = runtime::get_named_arg("claim_sig");
     let reward_tokens: Vec<String> = runtime::get_named_arg("reward_tokens");
 
     Token::default().set_rewards(reward_contract, claim_sig, reward_tokens);
@@ -553,7 +552,7 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "claim_sig",
         vec![],
-        Bytes::cl_type(),
+        String::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -771,7 +770,7 @@ fn get_entry_points() -> EntryPoints {
         "set_rewards",
         vec![
             Parameter::new("reward_contract", Key::cl_type()),
-            Parameter::new("claim_sig", Bytes::cl_type()),
+            Parameter::new("claim_sig", String::cl_type()),
             Parameter::new("reward_tokens", CLType::List(Box::new(String::cl_type()))),
         ],
         <()>::cl_type(),
