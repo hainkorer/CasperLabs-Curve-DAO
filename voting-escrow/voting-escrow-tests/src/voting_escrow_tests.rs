@@ -46,23 +46,22 @@ fn deploy() -> (
 #[test]
 fn test_deploy() {
     let (_, owner, instance, erc20_crv, _) = deploy();
-    let admin:Key=instance.key_value(ADMIN.to_string());
-    assert_eq!(admin,Key::from(owner));
-    let token_addr:Key=instance.key_value(TOKEN.to_string());
-    assert_eq!(token_addr,Key::Hash(erc20_crv.package_hash()));
-    let controller:Key=instance.key_value(CONTROLLER.to_string());
-    assert_eq!(controller,Key::from(owner));
-    let transfer_enable:bool=instance.key_value(TRANSFERS_ENABLED.to_string());
-    assert_eq!(transfer_enable,true);
-    let decimals:U256=instance.key_value(DECIMALS.to_string());
-    assert_eq!(decimals,9.into());
-    let name:String=instance.key_value(NAME.to_string());
-    assert_eq!(name,"Vote-escrowed CRV");
-    let symbol:String=instance.key_value(SYMBOL.to_string());
-    assert_eq!(symbol,"veCRV");
-    let version:String=instance.key_value(VERSION.to_string());
-    assert_eq!(version,"veCRV_1.0.0");
-    
+    let admin: Key = instance.key_value(ADMIN.to_string());
+    assert_eq!(admin, Key::from(owner));
+    let token_addr: Key = instance.key_value(TOKEN.to_string());
+    assert_eq!(token_addr, Key::Hash(erc20_crv.package_hash()));
+    let controller: Key = instance.key_value(CONTROLLER.to_string());
+    assert_eq!(controller, Key::from(owner));
+    let transfer_enable: bool = instance.key_value(TRANSFERS_ENABLED.to_string());
+    assert_eq!(transfer_enable, true);
+    let decimals: U256 = instance.key_value(DECIMALS.to_string());
+    assert_eq!(decimals, 9.into());
+    let name: String = instance.key_value(NAME.to_string());
+    assert_eq!(name, "Vote-escrowed CRV");
+    let symbol: String = instance.key_value(SYMBOL.to_string());
+    assert_eq!(symbol, "veCRV");
+    let version: String = instance.key_value(VERSION.to_string());
+    assert_eq!(version, "veCRV_1.0.0");
 }
 #[test]
 fn test_commit_transfer_ownership() {
@@ -175,7 +174,7 @@ fn test_locked_end() {
         time_now,
     );
     let _ret: U256 = env.query_account_named_key(owner, &[LOCKED_END.into()]);
-    assert_eq!(_ret/WEEK,unlock_time/WEEK, "Invalid default value");
+    assert_eq!(_ret / WEEK, unlock_time / WEEK, "Invalid default value");
 }
 
 #[test]
@@ -237,7 +236,7 @@ fn test_create_lock() {
     let (env, owner, instance, erc20_crv, time_now) = deploy();
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
-    let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365*4);
+    let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
@@ -261,7 +260,7 @@ fn test_create_lock() {
         time_now,
     );
     let balance_before_lock: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(balance_before_lock,0.into());
+    assert_eq!(balance_before_lock, 0.into());
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
@@ -277,8 +276,7 @@ fn test_create_lock() {
         time_now,
     );
     let balance_after_lock: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(balance_after_lock/TEN_E_NINE,881.into());
-   
+    assert_eq!(balance_after_lock / TEN_E_NINE, 881.into());
 }
 
 #[test]
@@ -434,7 +432,7 @@ fn test_balance_of() {
     let (env, owner, instance, erc20_crv, time_now) = deploy();
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
-    let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365*4);
+    let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
@@ -459,8 +457,7 @@ fn test_balance_of() {
         time_now,
     );
     let balance_after_lock: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(balance_after_lock/TEN_E_NINE,881.into());
-   
+    assert_eq!(balance_after_lock / TEN_E_NINE, 881.into());
 }
 
 #[test]
@@ -495,7 +492,11 @@ fn test_balance_of_at() {
         time_call_balance_at,
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF_AT.into()]);
-    assert_eq!(ret/TEN_E_NINE, 2392.into(), "Invalid default value balance of at"); 
+    assert_eq!(
+        ret / TEN_E_NINE,
+        2392.into(),
+        "Invalid default value balance of at"
+    );
 }
 
 #[test]
@@ -667,17 +668,3 @@ fn test_change_controller() {
     let ret: Key = instance.key_value(CONTROLLER.to_string());
     assert_eq!(ret, new_controller, "Controller not changed");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -32,8 +32,7 @@ pub extern "C" fn call() {
     let package_hash: Key = runtime::get_named_arg("package_hash");
 
     match entrypoint.as_str() {
-      
-        // Fee Distributor   
+        // Fee Distributor
         CLAIM => {
             let addr: Option<Key> = runtime::get_named_arg("addr");
             let ret: U256 = runtime::call_versioned_contract(

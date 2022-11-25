@@ -197,6 +197,7 @@ pub const IS_OWNER: &str = "is_owner";
 //Liqudity Guage v3 keys
 pub const MYVEC: &str = "myvec";
 pub const INTEGRATE_CHECKPOINT: &str = "integrate_checkpoint";
+pub const REWARD_SIGS: &str = "reward_sigs";
 
 //VESTING ESCROW
 pub const APPLY_TRANSFER_OWNERSHIP: &str = "apply_transfer_ownership";

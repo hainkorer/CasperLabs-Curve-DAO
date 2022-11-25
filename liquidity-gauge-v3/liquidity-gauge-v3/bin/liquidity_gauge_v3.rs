@@ -8,7 +8,7 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    bytesrepr::Bytes, runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash,
+    runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash,
     EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs,
     URef, U256,
 };
@@ -298,10 +298,9 @@ fn decrease_allowance() {
 #[no_mangle]
 fn set_rewards() {
     let reward_contract: Key = runtime::get_named_arg("reward_contract");
-    let claim_sig: Bytes = runtime::get_named_arg("claim_sig");
+    let sigs: String = runtime::get_named_arg("sigs");
     let reward_tokens: Vec<String> = runtime::get_named_arg("reward_tokens");
-
-    LiquidityGaugeV3::default().set_rewards(reward_contract, claim_sig, reward_tokens);
+    LiquidityGaugeV3::default().set_rewards(reward_contract, sigs, reward_tokens);
 }
 ///"""
 ///    @notice Set the killed status for this contract
@@ -670,7 +669,7 @@ fn get_entry_points() -> EntryPoints {
         "set_rewards",
         vec![
             Parameter::new("reward_contract", Key::cl_type()),
-            Parameter::new("claim_sig", Bytes::cl_type()),
+            Parameter::new("sigs", String::cl_type()),
             Parameter::new("reward_tokens", CLType::List(Box::new(String::cl_type()))),
         ],
         <()>::cl_type(),

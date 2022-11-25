@@ -20,7 +20,6 @@ impl VESTINGESCROWInstance {
         VESTINGESCROWInstance(vesting_escrow)
     }
 
-    
     pub fn erc20(
         env: &TestEnv,
         sender: AccountHash,
@@ -69,7 +68,7 @@ impl VESTINGESCROWInstance {
             VESTINGESCROWInstance::now(),
         )
     }
-    
+
     pub fn commit_transfer_ownership<T: Into<Key>>(
         &self,
         sender: AccountHash,

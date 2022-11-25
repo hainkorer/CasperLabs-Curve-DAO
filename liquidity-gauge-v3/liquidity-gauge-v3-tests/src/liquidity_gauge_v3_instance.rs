@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, time::SystemTime};
 
 use blake2::{
     digest::{Update, VariableOutput},
@@ -10,6 +10,7 @@ use casper_types::{
     bytesrepr::{FromBytes, ToBytes},
     runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
+use casperlabs_contract_utils::key_to_str;
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub type TokenId = U256;
@@ -40,34 +41,38 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "minter"=>minter,
                 "admin" => admin,
             },
-            100000,
+            LIQUIDITYGUAGEV3INSTANCEInstance::now(),
         )
     }
-    pub fn commit_transfer_ownership(&self, sender: AccountHash, addr: Key) {
+    pub fn commit_transfer_ownership(&self, sender: AccountHash, addr: Key, time_now: u64) {
         self.0.call_contract(
             sender,
             "commit_transfer_ownership",
             runtime_args! {
                 "addr" => addr,
             },
-            0,
+            time_now,
         );
     }
-    pub fn accept_transfer_ownership(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "accept_transfer_ownership", runtime_args! {}, 0);
+    pub fn accept_transfer_ownership(&self, sender: AccountHash, time_now: u64) {
+        self.0.call_contract(
+            sender,
+            "accept_transfer_ownership",
+            runtime_args! {},
+            time_now,
+        );
     }
-    pub fn set_killed(&self, sender: AccountHash, is_killed: bool) {
+    pub fn set_killed(&self, sender: AccountHash, is_killed: bool, time_now: u64) {
         self.0.call_contract(
             sender,
             "set_killed",
             runtime_args! {
                 "is_killed"=>is_killed,
             },
-            0,
+            time_now,
         );
     }
-    pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256) {
+    pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256, time_now: u64) {
         self.0.call_contract(
             sender,
             "approve",
@@ -76,10 +81,16 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "amount" => amount
 
             },
-            0,
+            time_now,
         );
     }
-    pub fn increase_allowance(&self, sender: AccountHash, spender: Key, amount: U256) {
+    pub fn increase_allowance(
+        &self,
+        sender: AccountHash,
+        spender: Key,
+        amount: U256,
+        time_now: u64,
+    ) {
         self.0.call_contract(
             sender,
             "increase_allowance",
@@ -88,10 +99,16 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "amount" => amount,
 
             },
-            0,
+            time_now,
         );
     }
-    pub fn decrease_allowance(&self, sender: AccountHash, spender: Key, amount: U256) {
+    pub fn decrease_allowance(
+        &self,
+        sender: AccountHash,
+        spender: Key,
+        amount: U256,
+        time_now: u64,
+    ) {
         self.0.call_contract(
             sender,
             "decrease_allowance",
@@ -100,16 +117,16 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "amount" => amount
 
             },
-            0,
+            time_now,
         );
     }
-    pub fn decimals(&self, sender: AccountHash) {
+    pub fn decimals(&self, sender: AccountHash, time_now: u64) {
         self.0
-            .call_contract(sender, "decimals", runtime_args! {}, 0);
+            .call_contract(sender, "decimals", runtime_args! {}, time_now);
     }
-    pub fn integrate_checkpoint(&self, sender: AccountHash) {
+    pub fn integrate_checkpoint(&self, sender: AccountHash, time_now: u64) {
         self.0
-            .call_contract(sender, "integrate_checkpoint", runtime_args! {}, 0);
+            .call_contract(sender, "integrate_checkpoint", runtime_args! {}, time_now);
     }
     pub fn deposit(
         &self,
@@ -117,6 +134,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
         value: U256,
         addr: Option<Key>,
         claim_rewards: Option<bool>,
+        time_now: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -126,10 +144,16 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "addr" => addr,
                 "claim_rewards" => claim_rewards,
             },
-            0,
+            time_now,
         );
     }
-    pub fn withdraw(&self, sender: AccountHash, value: U256, claim_rewards: Option<bool>) {
+    pub fn withdraw(
+        &self,
+        sender: AccountHash,
+        value: U256,
+        claim_rewards: Option<bool>,
+        time_now: u64,
+    ) {
         self.0.call_contract(
             sender,
             "withdraw",
@@ -137,10 +161,10 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "value" => value,
                 "claim_rewards" => claim_rewards,
             },
-            0,
+            time_now,
         );
     }
-    pub fn transfer(&self, sender: AccountHash, recipient: Key, amount: U256) {
+    pub fn transfer(&self, sender: AccountHash, recipient: Key, amount: U256, time_now: u64) {
         self.0.call_contract(
             sender,
             "transfer",
@@ -148,10 +172,17 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "recipient" => recipient,
                 "amount" => amount
             },
-            0,
+            time_now,
         );
     }
-    pub fn transfer_from(&self, sender: AccountHash, owner: Key, recipient: Key, amount: U256) {
+    pub fn transfer_from(
+        &self,
+        sender: AccountHash,
+        owner: Key,
+        recipient: Key,
+        amount: U256,
+        time_now: u64,
+    ) {
         self.0.call_contract(
             sender,
             "transfer_from",
@@ -161,10 +192,10 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "amount" => amount
 
             },
-            0,
+            time_now,
         );
     }
-    pub fn set_rewards_receiver(&self, sender: AccountHash, receiver: Key) {
+    pub fn set_rewards_receiver(&self, sender: AccountHash, receiver: Key, time_now: u64) {
         self.0.call_contract(
             sender,
             "set_rewards_receiver",
@@ -172,21 +203,16 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "receiver" => receiver
 
             },
-            0,
+            time_now,
         );
     }
-    pub fn set_rewards(&self, sender: AccountHash, receiver: Key) {
-        self.0.call_contract(
-            sender,
-            "set_rewards_receiver",
-            runtime_args! {
-                "receiver" => receiver
-
-            },
-            0,
-        );
-    }
-    pub fn claim_rewards(&self, sender: AccountHash, addr: Option<Key>, receiver: Option<Key>) {
+    pub fn claim_rewards(
+        &self,
+        sender: AccountHash,
+        addr: Option<Key>,
+        receiver: Option<Key>,
+        time_now: u64,
+    ) {
         self.0.call_contract(
             sender,
             "claim_rewards",
@@ -194,9 +220,30 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "addr" => addr,
                 "receiver" => receiver,
             },
-            0,
+            time_now,
         );
     }
+    pub fn set_rewards(
+        &self,
+        sender: AccountHash,
+        reward_contract: Key,
+        sigs: String,
+        reward_tokens: Vec<String>,
+        time_now: u64,
+    ) {
+        self.0.call_contract(
+            sender,
+            "set_rewards",
+            runtime_args! {
+                "reward_contract" => reward_contract,
+                "sigs" => sigs,
+                "reward_tokens" => reward_tokens,
+
+            },
+            time_now,
+        );
+    }
+
     //var
     pub fn future_admin(&self) -> Key {
         self.0.query_named_key(String::from("future_admin"))
@@ -215,6 +262,26 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
                 "allowances",
                 LIQUIDITYGUAGEV3INSTANCEInstance::keys_to_str(&owner, &spender),
             )
+            .unwrap_or_default()
+    }
+    pub fn name(&self) -> String {
+        self.0.query_named_key(String::from("name"))
+    }
+    pub fn symbol(&self) -> String {
+        self.0.query_named_key(String::from("symbol"))
+    }
+    pub fn future_epoch_time(&self) -> U256 {
+        self.0.query_named_key(String::from("future_epoch_time"))
+    }
+    pub fn inflation_rate(&self) -> U256 {
+        self.0.query_named_key(String::from("inflation_rate"))
+    }
+    pub fn total_supply(&self) -> U256 {
+        self.0.query_named_key(String::from("total_supply"))
+    }
+    pub fn balance_of<T: Into<Key>>(&self, account: T) -> U256 {
+        self.0
+            .query_dictionary("balance_of", key_to_str(&account.into()))
             .unwrap_or_default()
     }
 
@@ -241,5 +308,11 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     // Get stored key values
     pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
         self.0.query_named_key(key)
+    }
+    pub fn now() -> u64 {
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
     }
 }

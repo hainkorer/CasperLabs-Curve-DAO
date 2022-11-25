@@ -1,8 +1,5 @@
-
 use crate::fee_distributor_instance::FEEDISTRIBUTORInstance;
-use casper_types::{
-    account::AccountHash, runtime_args, Key, RuntimeArgs, U256,
-};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 pub const TEN_E_NINE: u128 = 1000000000;
@@ -98,7 +95,7 @@ fn deploy() -> (
         Key::Account(owner),
         Key::Account(owner),
     );
-    
+
     (env, owner, instance, erc20, time_now)
 }
 
@@ -167,7 +164,7 @@ fn test_claim() {
 
 #[test]
 fn test_claim_many() {
-    let (env, owner, instance, _,time_now) = deploy();
+    let (env, owner, instance, _, time_now) = deploy();
     let receivers: Vec<String> = vec![
         env.next_user().to_formatted_string(),
         env.next_user().to_formatted_string(),
