@@ -420,12 +420,12 @@ pub fn set_decimals(decimals: u8) {
 //         self.dict.set_by_keys((key1, key2), value);
 //     }
 // }
-pub fn claim_sig() -> Bytes {
-    get_key(CLAIM_SIG).unwrap_or_revert()
+pub fn reward_sigs() -> Bytes {
+    get_key(REWARD_SIGS).unwrap_or_revert()
 }
 
-pub fn set_claim_sig(claim_sig: Bytes) {
-    set_key(CLAIM_SIG, claim_sig);
+pub fn set_reward_sigs(reward_sigs: Bytes) {
+    set_key(REWARD_SIGS, reward_sigs);
 }
 pub fn myvec() -> Vec<Key> {
     get_key(MYVEC).unwrap_or_revert()
