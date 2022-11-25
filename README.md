@@ -726,8 +726,6 @@ You can run this commands to build individual smart contracts.
   make build-curve-rewards
 ```
 
-## Note: High processing power and memory is required to run test cases.
-
 ## Test individual Smart Contract
 
 You can run this commands to build individual smart contracts.
@@ -754,6 +752,12 @@ You can run this commands to build individual smart contracts.
   make test-liquidity-gauge-v3
 ```
 
+# Note: High processing power and memory is required to run liquidity gauge v3 test cases.
+
+## Test Liquidity Gauge V3 Smart Contract
+```
+  make test-liquidity-gauge-v3
+```
 ## Run All Smart Contracts
 
 Run this command to build & test all smart contract.
@@ -975,7 +979,7 @@ Following are the RewardOnlyGauge's entry point methods.
   | Parameter Name  | Type          |
   | --------------- | ------------- |
   | reward_contract | Key           |
-  | claim_sig       | Bytes         |
+  | claim_sig       | String         |
   | reward_tokens   | Vec`<String>` |
 
   This method **returns** nothing.
@@ -1055,14 +1059,14 @@ Following are the RewardOnlyGauge's entry point methods.
   This method **returns** `U256`.
 
 - ### claim_sig <a id="RewardOnlyGauge-claim-sig"></a>
-  Returns the Bytes.
+  Returns the String.
 
   Following is the table of parameters.
 
   | Parameter Name | Type |
   | -------------- | ---- |
 
-  This method **returns** `Bytes`.
+  This method **returns** `String`.
 
 - ### rewards_receiver <a id="RewardOnlyGauge-rewards-receiver"></a>
   Returns the address of receiver.
@@ -3551,7 +3555,7 @@ Following are the LiquidityGaugeV3's entry point methods.
   | Parameter Name  | Type          |
   | --------------- | ------------- |
   | reward_contract | Key           |
-  | claim_sig       | Bytes         |
+  | claim_sig       | String        |
   | reward_tokens   | Vec`<String>` |
 
   This method **returns** nothing.
@@ -5000,7 +5004,7 @@ This method **returns** nothing.
   | --------------- | ---------- |
   | gauge           | Key        |
   | reward_contract | Key        |
-  | sigs            | Bytes      |
+  | sigs            | String     |
   | reward_tokens   | Vec`<Key>` |
 
   This method **returns** nothing.
