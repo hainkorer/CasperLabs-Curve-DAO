@@ -1,7 +1,5 @@
 use crate::liquidity_gauge_v3_instance::LIQUIDITYGUAGEV3INSTANCEInstance;
-use casper_types::{
-    account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256,
-};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 
@@ -187,176 +185,190 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, u64) {
     );
     (env, owner, liquidity_gauge_v3_instance, time_now)
 }
+mod t1 {
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_deploy() {
+        let (_, _, contract, _) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        assert_eq!(contract.name(), "Curve.fi LPtokGauge Deposit".to_string());
+        assert_eq!(contract.symbol(), "LPtok-gauge".to_string());
+        assert_eq!(contract.inflation_rate(), 0.into());
+        //assert_eq!(contract.future_epoch_time(),1668015069872_i64.into());
+    }
+    #[test]
+    fn test_commit_transfer_ownership() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let addr = Key::from(env.next_user());
+        contract.commit_transfer_ownership(owner, addr, time_now);
+        assert_eq!(contract.future_admin(), addr);
+    }
+    #[test]
+    fn test_accept_transfer_ownership() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let addr = env.next_user();
+        contract.commit_transfer_ownership(owner, Key::from(addr), time_now);
+        assert_eq!(contract.future_admin(), Key::from(addr));
+        assert_eq!(contract.admin(), owner.into());
+        contract.accept_transfer_ownership(addr, time_now);
+        assert_eq!(contract.admin(), addr.into());
+    }
+    #[test]
+    fn test_set_killed() {
+        let (_, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let is_killed: bool = true;
+        contract.set_killed(owner, is_killed, time_now);
+        assert_eq!(contract.is_killed(), is_killed);
+    }
+}
+mod t2 {
 
-#[test]
-fn test_deploy() {
-    let (_, _, contract,_) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    assert_eq!(contract.name(), "Curve.fi LPtokGauge Deposit".to_string());
-    assert_eq!(contract.symbol(), "LPtok-gauge".to_string());
-    assert_eq!(contract.inflation_rate(), 0.into());
-    //assert_eq!(contract.future_epoch_time(),1668015069872_i64.into());
-}
-#[test]
-fn test_commit_transfer_ownership() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let addr = Key::from(env.next_user());
-    contract.commit_transfer_ownership(owner, addr,time_now);
-    assert_eq!(contract.future_admin(), addr);
-}
-#[test]
-fn test_accept_transfer_ownership() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let addr = env.next_user();
-    contract.commit_transfer_ownership(owner, Key::from(addr),time_now);
-    assert_eq!(contract.future_admin(), Key::from(addr));
-    assert_eq!(contract.admin(), owner.into());
-    contract.accept_transfer_ownership(addr,time_now);
-    assert_eq!(contract.admin(), addr.into());
-}
-#[test]
-fn test_set_killed() {
-    let (_, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let is_killed: bool = true;
-    contract.set_killed(owner, is_killed,time_now);
-    assert_eq!(contract.is_killed(), is_killed);
-}
-#[test]
-fn test_increase_allowance() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let spender = env.next_user();
-    assert_eq!(contract.allowance(owner, spender), 0.into());
-    let amount: U256 = 50000000.into();
-    contract.increase_allowance(owner, Key::from(spender), amount,time_now);
-    assert_eq!(contract.allowance(owner, spender), amount);
-}
-#[test]
-fn test_decrease_allowance() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let spender = env.next_user();
-    let approve_amount: U256 = 500000.into();
-    contract.approve(owner, Key::from(spender), approve_amount,time_now);
-    assert_eq!(contract.allowance(owner, spender), approve_amount);
-    let amount: U256 = 100000.into();
-    contract.decrease_allowance(owner, Key::from(spender), amount,time_now);
-    assert_eq!(contract.allowance(owner, spender), 400000.into());
-}
-#[test]
-fn test_approve() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let spender = env.next_user();
-    let approve_amount: U256 = 500000.into();
-    contract.approve(owner, Key::from(spender), approve_amount,time_now);
-    assert_eq!(contract.allowance(owner, spender), approve_amount);
-}
-#[test]
-fn test_decimals() {
-    let (env, owner, contract,time_now) = deploy();
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_increase_allowance() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let spender = env.next_user();
+        assert_eq!(contract.allowance(owner, spender), 0.into());
+        let amount: U256 = 50000000.into();
+        contract.increase_allowance(owner, Key::from(spender), amount, time_now);
+        assert_eq!(contract.allowance(owner, spender), amount);
+    }
+    #[test]
+    fn test_decrease_allowance() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let spender = env.next_user();
+        let approve_amount: U256 = 500000.into();
+        contract.approve(owner, Key::from(spender), approve_amount, time_now);
+        assert_eq!(contract.allowance(owner, spender), approve_amount);
+        let amount: U256 = 100000.into();
+        contract.decrease_allowance(owner, Key::from(spender), amount, time_now);
+        assert_eq!(contract.allowance(owner, spender), 400000.into());
+    }
+    #[test]
+    fn test_approve() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let spender = env.next_user();
+        let approve_amount: U256 = 500000.into();
+        contract.approve(owner, Key::from(spender), approve_amount, time_now);
+        assert_eq!(contract.allowance(owner, spender), approve_amount);
+    }
+    #[test]
+    fn test_decimals() {
+        let (env, owner, contract, time_now) = deploy();
 
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(U8_DECIMALS),
-            "package_hash" => Key::Hash(contract.package_hash())
-        },
-        time_now,
-    );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(U8_DECIMALS),
+                "package_hash" => Key::Hash(contract.package_hash())
+            },
+            time_now,
+        );
 
-    let ret: u8 = env.query_account_named_key(owner, &[DECIMALS.into()]);
-    assert_eq!(ret, 9);
+        let ret: u8 = env.query_account_named_key(owner, &[DECIMALS.into()]);
+        assert_eq!(ret, 9);
+    }
 }
-#[test]
-fn test_integrate_checkpoint() {
-    let (env, owner, contract, time_now) = deploy();
+mod t3 {
 
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(INTEGRATE_CHECKPOINT),
-            "package_hash" => Key::Hash(contract.package_hash())
-        },
-        time_now,
-    );
-    let _ret: U256 = env.query_account_named_key(owner, &[INTEGRATE_CHECKPOINT.into()]);
-    //assert_eq!(_ret, 100000.into()); //depend on time
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_integrate_checkpoint() {
+        let (env, owner, contract, time_now) = deploy();
+
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(INTEGRATE_CHECKPOINT),
+                "package_hash" => Key::Hash(contract.package_hash())
+            },
+            time_now,
+        );
+        let _ret: U256 = env.query_account_named_key(owner, &[INTEGRATE_CHECKPOINT.into()]);
+        //assert_eq!(_ret, 100000.into()); //depend on time
+    }
+    #[test]
+    fn test_reward_contract() {
+        let (env, owner, contract, time_now) = deploy();
+
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(REWARD_CONTRACT),
+                "package_hash" => Key::Hash(contract.package_hash())
+            },
+            time_now,
+        );
+
+        let ret: Key = env.query_account_named_key(owner, &[REWARD_CONTRACT.into()]);
+        assert_eq!(
+            ret,
+            Key::from_formatted_str(
+                "hash-0000000000000000000000000000000000000000000000000000000000000000",
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn test_last_claim() {
+        let (env, owner, contract, time_now) = deploy();
+
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(LAST_CLAIM),
+                "package_hash" => Key::Hash(contract.package_hash())
+            },
+            time_now,
+        );
+
+        let ret: U256 = env.query_account_named_key(owner, &[LAST_CLAIM.into()]);
+        assert_eq!(ret, 0.into());
+    }
+    #[test]
+    fn test_claimed_reward() {
+        let (env, owner, contract, time_now) = deploy();
+        let addr = env.next_user();
+        let token = env.next_user();
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(CLAIMED_REWARD),
+                "package_hash" => Key::Hash(contract.package_hash()),
+                "addr"=>Key::from(addr),
+                "token"=>Key::from(token)
+            },
+            time_now,
+        );
+        let ret: U256 = env.query_account_named_key(owner, &[CLAIMED_REWARD.into()]);
+        assert_eq!(ret, 0.into());
+    }
 }
-#[test]
-fn test_reward_contract() {
-    let (env, owner, contract,time_now) = deploy();
+// mod t6 {
 
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
- TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(REWARD_CONTRACT),
-            "package_hash" => Key::Hash(contract.package_hash())
-        },
-        time_now,
-    );
-
-    let ret: Key = env.query_account_named_key(owner, &[REWARD_CONTRACT.into()]);
-    assert_eq!(
-        ret,
-        Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000",
-        )
-        .unwrap()
-    );
-}
-#[test]
-fn test_last_claim() {
-    let (env, owner, contract,time_now) = deploy();
-
-    TestContract::new(
-        &env,
-       TEST_SESSION_CODE_WASM,
-TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(LAST_CLAIM),
-            "package_hash" => Key::Hash(contract.package_hash())
-        },
-        time_now,
-    );
-
-    let ret: U256 = env.query_account_named_key(owner, &[LAST_CLAIM.into()]);
-    assert_eq!(ret, 0.into());
-}
-#[test]
-fn test_claimed_reward() {
-    let (env, owner, contract,time_now) = deploy();
-    let addr = env.next_user();
-    let token = env.next_user();
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(CLAIMED_REWARD),
-            "package_hash" => Key::Hash(contract.package_hash()),
-            "addr"=>Key::from(addr),
-            "token"=>Key::from(token)
-        },
-        time_now,
-    );
-    let ret: U256 = env.query_account_named_key(owner, &[CLAIMED_REWARD.into()]);
-    assert_eq!(ret, 0.into());
-}
+//     use crate::liquidity_gauge_v3_tests::*;
 // #[test]
 // fn test_deposit() {
 //     let (_, owner, contract,time_now) = deploy();
@@ -368,6 +380,9 @@ TEST_SESSION_CODE_NAME,
 //     .unwrap();
 //     contract.deposit(owner, value, Some(addr), Some(false),time_now);
 // }
+//}
+// mod t7{
+//     use crate::liquidity_gauge_v3_tests::*;
 // //#[test]
 // fn test_withdraw() {
 //     let (_, owner, contract,time_now) = deploy();
@@ -380,6 +395,9 @@ TEST_SESSION_CODE_NAME,
 //     contract.deposit(owner, value, Some(addr), Some(false),time_now);
 //     contract.withdraw(owner, value, Some(false),time_now);
 // }
+// }
+// mod t8{
+//     use crate::liquidity_gauge_v3_tests::*;
 // #[test]
 // fn test_transfer() {
 //     let (env, owner, contract,time_now) = deploy();
@@ -410,6 +428,9 @@ TEST_SESSION_CODE_NAME,
 //         Err(e) => panic!("Transfer Failed ERROR:{}", e),
 //     }
 // }
+//}
+// mod t9{
+//     use crate::liquidity_gauge_v3_tests::*;
 // #[test]
 // fn test_transfer_from() {
 //     let (env, owner, contract,time_now) = deploy();
@@ -442,6 +463,9 @@ TEST_SESSION_CODE_NAME,
 //         Err(e) => panic!("Transfer From Failed ERROR:{}", e),
 //     }
 // }
+//}
+// mod t10{
+//     use crate::liquidity_gauge_v3_tests::*;
 // #[test]
 // fn test_claimable_tokens() {
 //     let (env, owner, contract,time_now) = deploy();
@@ -462,50 +486,57 @@ TEST_SESSION_CODE_NAME,
 //     let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_TOKENS.into()]);
 //     assert_eq!(ret, 0.into());
 // }
-#[test]
-fn test_claimable_reward_write() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let addr = env.next_user();
-    let token = env.next_user();
-    TestContract::new(
-        &env,
-        "liquidity_gauge_v3_session_code.wasm",
-        "SessionCode",
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(CLAIMABLE_REWARD_WRITE),
-            "package_hash" => Key::Hash(contract.package_hash()),
-            "addr"=>Key::from(addr),
-            "token"=>Key::from(token)
-        },
-        time_now,
-    );
-    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD_WRITE.into()]);
-    assert_eq!(ret, 0.into());
+//}
+mod t4 {
+
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_claimable_reward_write() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let addr = env.next_user();
+        let token = env.next_user();
+        TestContract::new(
+            &env,
+            "liquidity_gauge_v3_session_code.wasm",
+            "SessionCode",
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(CLAIMABLE_REWARD_WRITE),
+                "package_hash" => Key::Hash(contract.package_hash()),
+                "addr"=>Key::from(addr),
+                "token"=>Key::from(token)
+            },
+            time_now,
+        );
+        let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD_WRITE.into()]);
+        assert_eq!(ret, 0.into());
+    }
+    #[test]
+    fn test_claimable_reward() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let addr = env.next_user();
+        let token = env.next_user();
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(CLAIMABLE_V3_REWARD),
+                "package_hash" => Key::Hash(contract.package_hash()),
+                "addr"=>Key::from(addr),
+                "token"=>Key::from(token)
+            },
+            time_now,
+        );
+        let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
+        assert_eq!(ret, 0.into());
+    }
 }
-#[test]
-fn test_claimable_reward() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let addr = env.next_user();
-    let token = env.next_user();
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(CLAIMABLE_V3_REWARD),
-            "package_hash" => Key::Hash(contract.package_hash()),
-            "addr"=>Key::from(addr),
-            "token"=>Key::from(token)
-        },
-        time_now,
-    );
-    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
-    assert_eq!(ret, 0.into());
-}
+// mod t11{
+//     use crate::liquidity_gauge_v3_tests::*;
 // #[test]
 // fn test_user_checkpoint() {
 //     let (env, owner, contract,time_now) = deploy();
@@ -525,39 +556,44 @@ fn test_claimable_reward() {
 // let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
 // assert!(ret);
 // }
-#[test]
-fn test_set_rewards_receiver() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let receiver: Key = Key::from(env.next_user());
-    contract.set_rewards_receiver(owner, receiver,time_now);
-}
-#[test]
-fn test_claim_rewards() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let addr: Key = Key::from(env.next_user());
-    let receiver: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000",
-    )
-    .unwrap();
-    contract.claim_rewards(owner, Some(addr), Some(receiver),time_now)
-}
+// }
+mod t5 {
 
-#[test]
-fn test_set_rewards() {
-    let (env, owner, contract,time_now) = deploy();
-    let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-    let lp_token1: TestContract = deploy_erc20_crv(&env, owner);
-    let lp_token2: TestContract = deploy_erc20_crv(&env, owner);
-    let sigs: String = "get_reward".to_string();
-    let reward_tokens: Vec<String> = vec![
-        Key::Hash(lp_token1.package_hash()).to_formatted_string(),
-        Key::Hash(lp_token2.package_hash()).to_formatted_string(),
-    ];
-    let reciever: Key = Key::from_formatted_str(
-        "hash-0000000000000000000000000000000000000000000000000000000000000000",
-    )
-    .unwrap();
-    contract.set_rewards(owner, reciever,sigs, reward_tokens,time_now);
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_set_rewards_receiver() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let receiver: Key = Key::from(env.next_user());
+        contract.set_rewards_receiver(owner, receiver, time_now);
+    }
+    #[test]
+    fn test_claim_rewards() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let addr: Key = Key::from(env.next_user());
+        let receiver: Key = Key::from_formatted_str(
+            "hash-0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .unwrap();
+        contract.claim_rewards(owner, Some(addr), Some(receiver), time_now)
+    }
+
+    #[test]
+    fn test_set_rewards() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let lp_token1: TestContract = deploy_erc20_crv(&env, owner);
+        let lp_token2: TestContract = deploy_erc20_crv(&env, owner);
+        let sigs: String = "get_reward".to_string();
+        let reward_tokens: Vec<String> = vec![
+            Key::Hash(lp_token1.package_hash()).to_formatted_string(),
+            Key::Hash(lp_token2.package_hash()).to_formatted_string(),
+        ];
+        let reciever: Key = Key::from_formatted_str(
+            "hash-0000000000000000000000000000000000000000000000000000000000000000",
+        )
+        .unwrap();
+        contract.set_rewards(owner, reciever, sigs, reward_tokens, time_now);
+    }
 }
