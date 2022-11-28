@@ -5,7 +5,7 @@ use common::keys::*;
 use voting_escrow_crate::data::WEEK;
 pub const TEN_E_NINE: u128 = 1000000000;
 // CRV
-fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
+fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash,time_now:u64) -> TestContract {
     TestContract::new(
         env,
         "erc20_crv.wasm",
@@ -16,7 +16,7 @@ fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
             "symbol" => "ERC20CRV",
             "decimals" => 9_u8,
         },
-        now(),
+        time_now,
     )
 }
 fn deploy() -> (
@@ -29,7 +29,7 @@ fn deploy() -> (
     let env = TestEnv::new();
     let owner = env.next_user();
     let time_now: u64 = now();
-    let erc20_crv = deploy_erc20_crv(&env, owner);
+    let erc20_crv = deploy_erc20_crv(&env, owner,time_now);
     let instance = VOTINGESCROWInstance::new_deploy(
         &env,
         "Vote-escrowed CRV",
@@ -276,7 +276,7 @@ fn test_create_lock() {
         time_now,
     );
     let balance_after_lock: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(balance_after_lock / TEN_E_NINE, 881.into());
+    assert!(balance_after_lock / TEN_E_NINE<= 882.into() && balance_after_lock / TEN_E_NINE>= 879.into());
 }
 
 #[test]
@@ -457,7 +457,7 @@ fn test_balance_of() {
         time_now,
     );
     let balance_after_lock: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(balance_after_lock / TEN_E_NINE, 881.into());
+    assert!(balance_after_lock / TEN_E_NINE<=882.into() && balance_after_lock / TEN_E_NINE>=879.into());
 }
 
 #[test]
@@ -492,11 +492,11 @@ fn test_balance_of_at() {
         time_call_balance_at,
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF_AT.into()]);
-    assert_eq!(
-        ret / TEN_E_NINE,
-        2392.into(),
+    assert!(
+        ret / TEN_E_NINE>=2385.into() && ret / TEN_E_NINE<=2395.into(),
         "Invalid default value balance of at"
     );
+    
 }
 
 #[test]
@@ -548,7 +548,7 @@ fn test_total_supply() {
         time_now,
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
-    assert_eq!(ret / TEN_E_NINE, 881.into(), "Invalid default total supply");
+    assert!(ret / TEN_E_NINE<=882.into() && ret / TEN_E_NINE>=879.into());
     instance.create_lock(user, amount, unlock_time, time_now);
     TestContract::new(
         &env,
@@ -563,11 +563,7 @@ fn test_total_supply() {
         time_now,
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
-    assert_eq!(
-        ret / TEN_E_NINE,
-        1763.into(),
-        "Invalid default total supply"
-    );
+    assert!(ret / TEN_E_NINE<=1770.into() && ret / TEN_E_NINE>=1755.into(),"Invalid default total supply");
     //Total supply will be 0 after lock time expired
     TestContract::new(
         &env,
@@ -634,11 +630,7 @@ fn test_total_supply_at() {
         time_now,
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY_AT.into()]);
-    assert_eq!(
-        ret / TEN_E_NINE,
-        881.into(),
-        "Invalid default total supply at"
-    );
+    assert!(ret / TEN_E_NINE<=882.into() && ret / TEN_E_NINE>=879.into());
     instance.create_lock(user, amount, unlock_time, time_now);
     TestContract::new(
         &env,
@@ -653,11 +645,7 @@ fn test_total_supply_at() {
         time_now,
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY_AT.into()]);
-    assert_eq!(
-        ret / TEN_E_NINE,
-        1763.into(),
-        "Invalid default total supply at"
-    );
+    assert!(ret / TEN_E_NINE<=1770.into() && ret / TEN_E_NINE>=1755.into(),"Invalid default total supply at");
 }
 
 #[test]

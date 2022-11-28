@@ -18,6 +18,7 @@ pub struct Point {
     pub bias: (bool, U128),
     pub slope: (bool, U128), // - dweight / dt
     pub ts: U256,
+    pub blk: U256,
 }
 
 pub const TIME_CURSOR_OF: &str = "time_cursor_of";
