@@ -1,4 +1,4 @@
-use casper_types::{account::AccountHash, bytesrepr::Bytes, runtime_args, Key, RuntimeArgs, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 
 use crate::reward_only_gauge_instance::REWARDONLYGAUGEInstance;
@@ -174,7 +174,6 @@ mod ownership_and_set_reward_receiver_test_cases {
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(reward_only_gauge.future_admin(), user.into());
     }
-
     #[test]
     fn test_accept_transfer_ownership() {
         let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
