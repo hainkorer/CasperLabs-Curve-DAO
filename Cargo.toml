@@ -20,7 +20,7 @@ members = [
   "erc20-crv/erc20_crv",
   "erc20-crv/erc20_crv_tests",
   "erc20-crv/session_code",
-  # FEE DISTRIVUTOR
+  # FEE DISTRIBUTOR
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",
   "fee-distributor/fee-distributor-tests",

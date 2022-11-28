@@ -5,6 +5,7 @@ target
 # More information here https://doc.rust-lang.org/cargo/guide/cargo-toml-vs-cargo-lock.html
 Cargo.lock
 .vscode
+keys
 
 curve-token-v3/curve-token-v3-tests/wasm/*.wasm
 erc20/erc20-tests/wasm/*.wasm

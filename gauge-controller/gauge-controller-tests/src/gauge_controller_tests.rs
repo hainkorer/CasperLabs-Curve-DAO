@@ -519,8 +519,6 @@ fn test_gauge_controller_add_gauge_multiple_time_by_user() {
     );
     let ret: Key = env.query_account_named_key(_owner, &[GAUGES.into()]);
     assert_eq!(ret, liquidity_gauge, "Invalid result");
-    //    let ret:Key = gauge_controller.gauges(U256::from(0));
-    // assert_eq!(ret, liquidity_gauge, "Invalid result");
 }
 
 #[test]
