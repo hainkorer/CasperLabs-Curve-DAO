@@ -7,7 +7,7 @@ use blake2::{
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{
     account::AccountHash,
-    bytesrepr::{Bytes, ToBytes},
+    bytesrepr::{ToBytes},
     runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U256,
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
@@ -239,7 +239,7 @@ impl REWARDONLYGAUGEInstance {
         sender: AccountHash,
         time_now: u64,
         _reward_contract: T,
-        _claim_sig: Bytes,
+        _claim_sig: String,
         _reward_tokens: Vec<String>,
     ) {
         self.0.call_contract(
@@ -372,7 +372,7 @@ impl REWARDONLYGAUGEInstance {
     pub fn total_supply(&self) -> U256 {
         self.0.query_named_key(String::from("total_supply"))
     }
-    pub fn claim_sig(&self) -> Bytes {
+    pub fn claim_sig(&self) -> String {
         self.0.query_named_key(String::from("claim_sig"))
     }
 
