@@ -62,7 +62,7 @@ build-contract-reward-only-gauge:
 	cargo build --release -p test-session-code -p erc20 -p erc20_crv -p curve-rewards -p reward-only-gauge -p reward-only-gauge-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/reward-only-gauge.wasm 2>/dev/null | true
 build-contract-vesting-escrow:
-	cargo build --release -p test-session-code -p vesting-escrow-session-code -p vesting-escrow-session-code-js-client -p erc20 -p vesting-escrow --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p vesting-escrow-session-code  -p erc20 -p vesting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow.wasm 2>/dev/null | true
 build-contract-vesting-escrow-factory:
 	cargo build --release -p vesting-escrow-simple -p erc20 -p vesting-escrow-factory -p vesting-escrow-factory-session-code --target wasm32-unknown-unknown
@@ -91,21 +91,49 @@ test-only-erc20:
 test-only-erc20-crv:
 	cargo test -p erc20_crv_tests
 test-only-fee-distributor:
-	cargo test -p fee-distributor-tests -- --test-threads=8
+	cargo test -p fee-distributor-tests 
 test-only-gauge-controller:
-	cargo test -p gauge-controller-tests -- --test-threads=1
+	cargo test -p gauge-controller-tests ownership_and_deploy_test_cases -- --test-threads=1
+	cargo test -p gauge-controller-tests checkpoint_function_test_cases -- --test-threads=1
+	cargo test -p gauge-controller-tests vote_function_test_cases -- --test-threads=1
+	cargo test -p gauge-controller-tests gauge_types_and_add_type_functions_test_cases -- --test-threads=1
+	cargo test -p gauge-controller-tests get_gauge_and_sum_per_type_weight_test_cases  -- --test-threads=1
+	cargo test -p gauge-controller-tests add_gauge_function_test_cases  -- --test-threads=1
+	cargo test -p gauge-controller-tests panic_test_cases_1  -- --test-threads=1
+	cargo test -p gauge-controller-tests panic_test_cases_2  -- --test-threads=1
+	cargo test -p gauge-controller-tests change_gauge_test_cases  -- --test-threads=1
+	cargo test -p gauge-controller-tests gauge_relative_weight_test_cases  -- --test-threads=1
+	cargo test -p gauge-controller-tests get_type_and_total_weight_test_cases  -- --test-threads=1
 test-only-gauge-proxy:
 	cargo test -p gauge-proxy-tests
 test-only-liquidity-gauge-reward:
-	cargo test -p liquidity-gauge-reward-tests -- --test-threads=3
+	cargo test -p liquidity-gauge-reward-tests deploy_checkpoints_and_claimable_tokens_and_reward_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-reward-tests deposit_withdraw_kill_me_and_approve_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-reward-tests ownership_and_toggle_external_rewards_claim_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-reward-tests panic_test_cases -- --test-threads=1
 test-only-liquidity-gauge-reward-wrapper:
-	cargo test -p liquidity-gauge-reward-wrapper-tests
+	cargo test -p liquidity-gauge-reward-wrapper-tests panic_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-reward-wrapper-tests allowance_and_approve_functions_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-reward-wrapper-tests ownership_and_kill_functions_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-reward-wrapper-tests deposit_withdraw_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-reward-wrapper-tests transfer_and_transfer_from_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-reward-wrapper-tests checkpoint_deploy_and_claim_test_cases -- --test-threads=1
 test-only-liquidity-gauge-wrapper:
-	cargo test -p liquidity-gauge-wrapper-tests
+	cargo test -p liquidity-gauge-wrapper-tests panic_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-wrapper-tests allowance_and_approve_functions_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-wrapper-tests ownership_and_kill_functions_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-wrapper-tests deposit_withdraw_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-wrapper-tests transfer_and_transfer_from_test_cases -- --test-threads=1
+	cargo test -p liquidity-gauge-wrapper-tests checkpoint_deploy_and_claim_test_cases -- --test-threads=1
 test-only-minter:
 	cargo test -p minter-tests
 test-only-reward-only-gauge:
-	cargo test -p reward-only-gauge-tests -- --test-threads=3
+	cargo test -p reward-only-gauge-tests deploy_and_reward_contract_test_cases -- --test-threads=1
+	cargo test -p reward-only-gauge-tests ownership_and_set_reward_receiver_test_cases -- --test-threads=1
+	cargo test -p reward-only-gauge-tests approve_and_allowances_test_cases -- --test-threads=1
+	cargo test -p reward-only-gauge-tests test_cases_related_to_rewards -- --test-threads=1
+	cargo test -p reward-only-gauge-tests deposit_and_withdraw_test_cases -- --test-threads=1
+	cargo test -p reward-only-gauge-tests transfer_and_transfer_from_test_cases -- --test-threads=1
 test-only-vesting-escrow:
 	cargo test -p vesting-escrow-tests
 test-only-vesting-escrow-factory:
