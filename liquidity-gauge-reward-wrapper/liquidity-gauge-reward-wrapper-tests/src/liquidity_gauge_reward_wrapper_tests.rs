@@ -290,545 +290,564 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, u64) {
     )
 }
 
-#[test]
-fn test_deploy() {
-    let (_, _, _, _) = deploy();
+mod checkpoint_deploy_and_claim_test_cases {
+    use crate::liquidity_gauge_reward_wrapper_tests::*;
+    #[test]
+    fn test_deploy() {
+        let (_, _, _, _) = deploy();
+    }
+    #[test]
+    fn test_user_checkpoint() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let addr: Key = Key::Account(owner);
+        TestContract::new(
+            &env,
+            "liquidity-gauge-reward-wrapper-session-code.wasm",
+            SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(USER_CHECKPOINT),
+                "package_hash" => package_hash,
+                "addr" => addr,
+            },
+            block_time,
+        );
+        let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
+        assert!(ret, "{} {}", true, "Invalid result");
+    }
+    #[test]
+    fn test_claimable_tokens() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.deposit(
+            owner,
+            U256::from(TEN_E_NINE * 1000),
+            None,
+            block_time,
+        );
+        let addr: Key = Key::Account(owner);
+        TestContract::new(
+            &env,
+            "liquidity-gauge-reward-wrapper-session-code.wasm",
+            SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(CLAIMABLE_TOKENS),
+                "package_hash" => package_hash,
+                "addr" => addr,
+            },
+            block_time,
+        );
+    }
+    #[test]
+    fn test_claimable_reward() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        let addr: Key = Key::Account(owner);
+        liquidity_gauge_reward_wrapper_instance.deposit(
+            owner,
+            U256::from(TEN_E_NINE * 1000),
+            None,
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(CLAIMABLE_REWARD),
+                "package_hash" => package_hash,
+                "addr" => addr,
+            },
+            block_time,
+        );
+        let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
+        assert_eq!(ret, 0.into(), "Invalid result");
+    }
+    #[test]
+    fn test_claim_tokens() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.deposit(
+            owner,
+            U256::from(TEN_E_NINE * 1000),
+            None,
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.claim_tokens(owner, None, block_time);
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(BALANCE_OF),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+        assert_eq!(ret, U256::from(TEN_E_NINE * 1000), "Invalid result");
+    }
 }
-#[test]
-fn test_user_checkpoint() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let addr: Key = Key::Account(owner);
-    TestContract::new(
-        &env,
-        "liquidity-gauge-reward-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(USER_CHECKPOINT),
-            "package_hash" => package_hash,
-            "addr" => addr,
-        },
-        block_time,
-    );
-    let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
-    assert!(ret, "{} {}", true, "Invalid result");
+mod deposit_withdraw_test_cases {
+    use crate::liquidity_gauge_reward_wrapper_tests::*;
+    #[test]
+    fn test_set_approve_deposit() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let addr: Key = Key::Account(owner);
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.set_approve_deposit(owner, addr, true, block_time);
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(APPROVED_TO_DEPOSIT),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner) ,
+                "spender" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let ret: bool = env.query_account_named_key(owner, &[APPROVED_TO_DEPOSIT.into()]);
+        assert!(ret, "{} {}", true, "Invalid result");
+    }
+    #[test]
+    fn test_deposit() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.deposit(
+            owner,
+            U256::from(TEN_E_NINE * 1000),
+            None,
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(BALANCE_OF),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+        assert_eq!(ret, U256::from(TEN_E_NINE * 1000), "Invalid result");
+    }
+    #[test]
+    fn test_withdraw() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let addr: Key = Key::Account(owner);
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.deposit(
+            owner,
+            U256::from(TEN_E_NINE * 1000),
+            None,
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.withdraw(
+            owner,
+            U256::from(TEN_E_NINE * 10),
+            addr,
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(BALANCE_OF),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let v: u128 = 990000000000_u128;
+        let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+        assert_eq!(ret, v.into(), "Invalid result");
+    }
 }
-#[test]
-fn test_claimable_tokens() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.deposit(
-        owner,
-        U256::from(TEN_E_NINE * 1000),
-        None,
-        block_time,
-    );
-    let addr: Key = Key::Account(owner);
-    TestContract::new(
-        &env,
-        "liquidity-gauge-reward-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(CLAIMABLE_TOKENS),
-            "package_hash" => package_hash,
-            "addr" => addr,
-        },
-        block_time,
-    );
+mod transfer_and_transfer_from_test_cases {
+    use crate::liquidity_gauge_reward_wrapper_tests::*;
+    #[test]
+    fn test_transfer() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let recipient: Key = env.next_user().into();
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.deposit(
+            owner,
+            U256::from(TEN_E_NINE * 1000),
+            None,
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.transfer(
+            owner,
+            recipient,
+            U256::from(TEN_E_NINE * 10),
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(BALANCE_OF),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let v: u128 = 990000000000_u128;
+        let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
+        assert_eq!(ret, v.into(), "Invalid result");
+    }
+    #[test]
+    fn test_transfer_from() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let recipient: Key = env.next_user().into();
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.deposit(
+            owner,
+            U256::from(TEN_E_NINE * 1000),
+            None,
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.approve(
+            owner,
+            Key::Account(owner),
+            U256::from(TEN_E_NINE * 100),
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.transfer_from(
+            owner,
+            Key::Account(owner),
+            recipient,
+            U256::from(TEN_E_NINE * 10),
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(ALLOWANCE),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner),
+                "spender" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let v: u128 = 90000000000_u128;
+        let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
+        assert_eq!(ret, v.into(), "Invalid result");
+    }
 }
-#[test]
-fn test_claimable_reward() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    let addr: Key = Key::Account(owner);
-    liquidity_gauge_reward_wrapper_instance.deposit(
-        owner,
-        U256::from(TEN_E_NINE * 1000),
-        None,
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(CLAIMABLE_REWARD),
-            "package_hash" => package_hash,
-            "addr" => addr,
-        },
-        block_time,
-    );
-    let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_REWARD.into()]);
-    assert_eq!(ret, 0.into(), "Invalid result");
-}
-#[test]
-fn test_claim_tokens() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.deposit(
-        owner,
-        U256::from(TEN_E_NINE * 1000),
-        None,
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.claim_tokens(owner, None, block_time);
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(ret, U256::from(TEN_E_NINE * 1000), "Invalid result");
-}
-#[test]
-fn test_set_approve_deposit() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let addr: Key = Key::Account(owner);
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.set_approve_deposit(owner, addr, true, block_time);
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(APPROVED_TO_DEPOSIT),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner) ,
-            "spender" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let ret: bool = env.query_account_named_key(owner, &[APPROVED_TO_DEPOSIT.into()]);
-    assert!(ret, "{} {}", true, "Invalid result");
-}
-#[test]
-fn test_deposit() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.deposit(
-        owner,
-        U256::from(TEN_E_NINE * 1000),
-        None,
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(ret, U256::from(TEN_E_NINE * 1000), "Invalid result");
-}
-#[test]
-fn test_withdraw() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let addr: Key = Key::Account(owner);
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.deposit(
-        owner,
-        U256::from(TEN_E_NINE * 1000),
-        None,
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.withdraw(
-        owner,
-        U256::from(TEN_E_NINE * 10),
-        addr,
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let v: u128 = 990000000000_u128;
-    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(ret, v.into(), "Invalid result");
-}
-#[test]
-fn test_allowance() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let user_1: Key = env.next_user().into();
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.deposit(
-        owner,
-        U256::from(TEN_E_NINE * 1000),
-        None,
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.approve(
-        owner,
-        user_1,
-        U256::from(TEN_E_NINE * 100),
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(ALLOWANCE),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner),
-            "spender" => user_1
-        },
-        block_time,
-    );
-    let v: u128 = 100000000000_u128;
-    let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret, v.into(), "Invalid result");
-}
-#[test]
-fn test_transfer() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let recipient: Key = env.next_user().into();
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.deposit(
-        owner,
-        U256::from(TEN_E_NINE * 1000),
-        None,
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.transfer(
-        owner,
-        recipient,
-        U256::from(TEN_E_NINE * 10),
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let v: u128 = 990000000000_u128;
-    let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-    assert_eq!(ret, v.into(), "Invalid result");
-}
-#[test]
-fn test_transfer_from() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let recipient: Key = env.next_user().into();
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.deposit(
-        owner,
-        U256::from(TEN_E_NINE * 1000),
-        None,
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.approve(
-        owner,
-        Key::Account(owner),
-        U256::from(TEN_E_NINE * 100),
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.transfer_from(
-        owner,
-        Key::Account(owner),
-        recipient,
-        U256::from(TEN_E_NINE * 10),
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(ALLOWANCE),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner),
-            "spender" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let v: u128 = 90000000000_u128;
-    let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret, v.into(), "Invalid result");
-}
-#[test]
-fn test_approve() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.approve(
-        owner,
-        Key::Account(owner),
-        U256::from(TEN_E_NINE * 100),
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(ALLOWANCE),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner),
-            "spender" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let v: u128 = 100000000000_u128;
-    let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret, v.into(), "Invalid result");
-}
-#[test]
-fn test_increase_allowance() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.approve(
-        owner,
-        Key::Account(owner),
-        U256::from(TEN_E_NINE * 100),
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.increase_allowance(
-        owner,
-        Key::Account(owner),
-        U256::from(TEN_E_NINE * 10),
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(ALLOWANCE),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner),
-            "spender" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let v: u128 = 110000000000_u128;
-    let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret, v.into(), "Invalid result");
-}
-#[test]
-fn test_decrease_allowance() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.approve(
-        owner,
-        Key::Account(owner),
-        U256::from(TEN_E_NINE * 100),
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.decrease_allowance(
-        owner,
-        Key::Account(owner),
-        U256::from(TEN_E_NINE * 10),
-        block_time,
-    );
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(ALLOWANCE),
-            "package_hash" => package_hash,
-            "owner" => Key::Account(owner),
-            "spender" => Key::Account(owner)
-        },
-        block_time,
-    );
-    let v: u128 = 90000000000_u128;
-    let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret, v.into(), "Invalid result");
-}
-#[test]
-fn test_kill_me() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.approve(
-        owner,
-        Key::Account(owner),
-        U256::from(TEN_E_NINE * 100),
-        block_time,
-    );
-    liquidity_gauge_reward_wrapper_instance.kill_me(owner, block_time);
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(IS_KILLED),
-            "package_hash" => package_hash,
-        },
-        block_time,
-    );
-    let ret: bool = env.query_account_named_key(owner, &[IS_KILLED.into()]);
-    assert!(ret, "{} {}", true, "Invalid result");
-}
-#[test]
-fn test_commit_transfer_ownership() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    let addr: Key = Key::Account(owner);
-    liquidity_gauge_reward_wrapper_instance.commit_transfer_ownership(owner, addr, block_time);
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(FUTURE_ADMIN),
-            "package_hash" => package_hash,
-        },
-        block_time,
-    );
-    let ret: Key = env.query_account_named_key(owner, &[FUTURE_ADMIN.into()]);
-    assert_eq!(ret, addr, "Invalid result");
+mod ownership_and_kill_functions_test_cases {
+    use crate::liquidity_gauge_reward_wrapper_tests::*;
+    #[test]
+    fn test_kill_me() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.approve(
+            owner,
+            Key::Account(owner),
+            U256::from(TEN_E_NINE * 100),
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.kill_me(owner, block_time);
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(IS_KILLED),
+                "package_hash" => package_hash,
+            },
+            block_time,
+        );
+        let ret: bool = env.query_account_named_key(owner, &[IS_KILLED.into()]);
+        assert!(ret, "{} {}", true, "Invalid result");
+    }
+    #[test]
+    fn test_commit_transfer_ownership() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        let addr: Key = Key::Account(owner);
+        liquidity_gauge_reward_wrapper_instance.commit_transfer_ownership(owner, addr, block_time);
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(FUTURE_ADMIN),
+                "package_hash" => package_hash,
+            },
+            block_time,
+        );
+        let ret: Key = env.query_account_named_key(owner, &[FUTURE_ADMIN.into()]);
+        assert_eq!(ret, addr, "Invalid result");
+    }
+
+    #[test]
+    fn test_apply_transfer_ownership() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let addr: Key = Key::Account(owner);
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.commit_transfer_ownership(owner, addr, block_time);
+        liquidity_gauge_reward_wrapper_instance.apply_transfer_ownership(owner, block_time);
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(ADMIN),
+                "package_hash" => package_hash,
+            },
+            block_time,
+        );
+        let ret: Key = env.query_account_named_key(owner, &[ADMIN.into()]);
+        assert_eq!(ret, addr, "Invalid result");
+    }
 }
 
-#[test]
-fn test_apply_transfer_ownership() {
-    let (env, owner, instance, block_time) = deploy();
-    let package_hash = Key::Hash(instance.package_hash());
-    let addr: Key = Key::Account(owner);
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.commit_transfer_ownership(owner, addr, block_time);
-    liquidity_gauge_reward_wrapper_instance.apply_transfer_ownership(owner, block_time);
-    TestContract::new(
-        &env,
-        TEST_SESSION_CODE_WASM,
-        TEST_SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(ADMIN),
-            "package_hash" => package_hash,
-        },
-        block_time,
-    );
-    let ret: Key = env.query_account_named_key(owner, &[ADMIN.into()]);
-    assert_eq!(ret, addr, "Invalid result");
+mod allowance_and_approve_functions_test_cases {
+    use crate::liquidity_gauge_reward_wrapper_tests::*;
+    #[test]
+    fn test_approve() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.approve(
+            owner,
+            Key::Account(owner),
+            U256::from(TEN_E_NINE * 100),
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(ALLOWANCE),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner),
+                "spender" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let v: u128 = 100000000000_u128;
+        let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
+        assert_eq!(ret, v.into(), "Invalid result");
+    }
+    #[test]
+    fn test_allowance() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let user_1: Key = env.next_user().into();
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.deposit(
+            owner,
+            U256::from(TEN_E_NINE * 1000),
+            None,
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.approve(
+            owner,
+            user_1,
+            U256::from(TEN_E_NINE * 100),
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(ALLOWANCE),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner),
+                "spender" => user_1
+            },
+            block_time,
+        );
+        let v: u128 = 100000000000_u128;
+        let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
+        assert_eq!(ret, v.into(), "Invalid result");
+    }
+    #[test]
+    fn test_increase_allowance() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.approve(
+            owner,
+            Key::Account(owner),
+            U256::from(TEN_E_NINE * 100),
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.increase_allowance(
+            owner,
+            Key::Account(owner),
+            U256::from(TEN_E_NINE * 10),
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(ALLOWANCE),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner),
+                "spender" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let v: u128 = 110000000000_u128;
+        let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
+        assert_eq!(ret, v.into(), "Invalid result");
+    }
+    #[test]
+    fn test_decrease_allowance() {
+        let (env, owner, instance, block_time) = deploy();
+        let package_hash = Key::Hash(instance.package_hash());
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.approve(
+            owner,
+            Key::Account(owner),
+            U256::from(TEN_E_NINE * 100),
+            block_time,
+        );
+        liquidity_gauge_reward_wrapper_instance.decrease_allowance(
+            owner,
+            Key::Account(owner),
+            U256::from(TEN_E_NINE * 10),
+            block_time,
+        );
+        TestContract::new(
+            &env,
+            TEST_SESSION_CODE_WASM,
+            TEST_SESSION_CODE_NAME,
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(ALLOWANCE),
+                "package_hash" => package_hash,
+                "owner" => Key::Account(owner),
+                "spender" => Key::Account(owner)
+            },
+            block_time,
+        );
+        let v: u128 = 90000000000_u128;
+        let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
+        assert_eq!(ret, v.into(), "Invalid result");
+    }
 }
-#[should_panic]
-#[test]
-fn test_apply_transfer_ownership_panic() {
-    let (_, owner, instance, block_time) = deploy();
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.apply_transfer_ownership(owner, block_time);
-}
-#[should_panic]
-#[test]
-fn test_decrease_allowance_panic() {
-    let (_, owner, instance, block_time) = deploy();
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.decrease_allowance(
-        owner,
-        Key::Account(owner),
-        U256::from(TEN_E_NINE * 10),
-        block_time,
-    );
-}
-#[should_panic]
-#[test]
-fn test_transfer_from_panic() {
-    let (env, owner, instance, block_time) = deploy();
-    let recipient: Key = env.next_user().into();
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.transfer_from(
-        owner,
-        Key::Account(owner),
-        recipient,
-        100000000.into(),
-        block_time,
-    );
-}
-#[should_panic]
-#[test]
-fn test_transfer_panic() {
-    let (env, owner, instance, block_time) = deploy();
-    let recipient: Key = env.next_user().into();
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.transfer(
-        owner,
-        recipient,
-        U256::from(TEN_E_NINE * 10),
-        block_time,
-    );
-}
-#[should_panic]
-#[test]
-fn test_withdraw_panic() {
-    let (_, owner, instance, block_time) = deploy();
-    let addr: Key = Key::Account(owner);
-    let liquidity_gauge_reward_wrapper_instance =
-        LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
-    liquidity_gauge_reward_wrapper_instance.withdraw(
-        owner,
-        U256::from(TEN_E_NINE * 10),
-        addr,
-        block_time,
-    );
+mod panic_test_cases {
+    use crate::liquidity_gauge_reward_wrapper_tests::*;
+    #[should_panic]
+    #[test]
+    fn test_apply_transfer_ownership_panic() {
+        let (_, owner, instance, block_time) = deploy();
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.apply_transfer_ownership(owner, block_time);
+    }
+    #[should_panic]
+    #[test]
+    fn test_decrease_allowance_panic() {
+        let (_, owner, instance, block_time) = deploy();
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.decrease_allowance(
+            owner,
+            Key::Account(owner),
+            U256::from(TEN_E_NINE * 10),
+            block_time,
+        );
+    }
+    #[should_panic]
+    #[test]
+    fn test_transfer_from_panic() {
+        let (env, owner, instance, block_time) = deploy();
+        let recipient: Key = env.next_user().into();
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.transfer_from(
+            owner,
+            Key::Account(owner),
+            recipient,
+            100000000.into(),
+            block_time,
+        );
+    }
+    #[should_panic]
+    #[test]
+    fn test_transfer_panic() {
+        let (env, owner, instance, block_time) = deploy();
+        let recipient: Key = env.next_user().into();
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.transfer(
+            owner,
+            recipient,
+            U256::from(TEN_E_NINE * 10),
+            block_time,
+        );
+    }
+    #[should_panic]
+    #[test]
+    fn test_withdraw_panic() {
+        let (_, owner, instance, block_time) = deploy();
+        let addr: Key = Key::Account(owner);
+        let liquidity_gauge_reward_wrapper_instance =
+            LIQUIDITYGAUGEREWARDWRAPPERInstance::contract_instance(instance);
+        liquidity_gauge_reward_wrapper_instance.withdraw(
+            owner,
+            U256::from(TEN_E_NINE * 10),
+            addr,
+            block_time,
+        );
+    }
 }
