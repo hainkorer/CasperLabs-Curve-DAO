@@ -18,6 +18,7 @@ impl FEEDISTRIBUTORInstance {
         token: Key,
         admin: Key,
         emergency_return: Key,
+        time_now:u64
     ) -> FEEDISTRIBUTORInstance {
         FEEDISTRIBUTORInstance(TestContract::new(
             env,
@@ -31,7 +32,7 @@ impl FEEDISTRIBUTORInstance {
                 "admin" => admin,
                 "emergency_return" => emergency_return,
             },
-            FEEDISTRIBUTORInstance::now(),
+            time_now,
         ))
     }
 
