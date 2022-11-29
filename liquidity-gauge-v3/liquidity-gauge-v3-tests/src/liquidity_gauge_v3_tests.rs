@@ -374,11 +374,7 @@ mod t6 {
         let (_, owner, contract, time_now) = deploy();
         let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
         let value: U256 = U256::from(1000 * TEN_E_NINE);
-        let addr: Key = Key::from_formatted_str(
-            "hash-0000000000000000000000010000000000000000000000000000000000020000",
-        )
-        .unwrap();
-        contract.deposit(owner, value, Some(addr), Some(false), time_now);
+        contract.deposit(owner, value, None, None, time_now);
     }
 }
 mod t7 {
@@ -388,12 +384,8 @@ mod t7 {
         let (_, owner, contract, time_now) = deploy();
         let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
         let value: U256 = 1000.into();
-        let addr: Key = Key::from_formatted_str(
-            "hash-0000000000000000000000010000000000000000000000000000000000020000",
-        )
-        .unwrap();
-        contract.deposit(owner, value, Some(addr), Some(false), time_now);
-        contract.withdraw(owner, value, Some(false), time_now);
+        contract.deposit(owner, value, None, None, time_now);
+        contract.withdraw(owner, value, None, time_now);
     }
 }
 mod t8 {
@@ -403,18 +395,9 @@ mod t8 {
         let (env, owner, contract, time_now) = deploy();
         let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
         let value: U256 = 1000000.into();
-        let recipient: Key = Key::from_formatted_str(
-            "hash-0000000000000000000000010000000000000000000000000000000000020000",
-        )
-        .unwrap();
         let amount: U256 = 100000.into();
-        contract.deposit(
-            owner,
-            value,
-            Some(Key::Account(owner)),
-            Some(false),
-            time_now,
-        );
+        let recipient = env.next_user();
+        contract.deposit(owner, value, None, None, time_now);
         TestContract::new(
             &env,
             "liquidity_gauge_v3_session_code.wasm",
@@ -423,8 +406,8 @@ mod t8 {
             runtime_args! {
                 "entrypoint" => String::from(TRANSFER),
                 "package_hash" => Key::Hash(contract.package_hash()),
-                "recipient"=>recipient,
-                "amount"=>amount
+                "recipient" => Key::Account(recipient),
+                "amount" => amount
             },
             time_now,
         );
@@ -441,13 +424,10 @@ mod t9 {
     fn test_transfer_from() {
         let (env, owner, contract, time_now) = deploy();
         let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-        let recipient: Key = Key::from_formatted_str(
-            "hash-0000000000000000000000010000000000000000000000000000000000020000",
-        )
-        .unwrap();
         let spender = env.next_user();
         let amount: U256 = 100000.into();
-        contract.deposit(owner, amount, Some(Key::from(owner)), Some(false), time_now);
+        let recipient = env.next_user();
+        contract.deposit(owner, amount, None, None, time_now);
         contract.approve(owner, Key::from(spender), amount, time_now);
         TestContract::new(
             &env,
@@ -457,9 +437,9 @@ mod t9 {
             runtime_args! {
                 "entrypoint" => String::from(TRANSFER_FROM),
                 "package_hash" => Key::Hash(contract.package_hash()),
-                "owner"=>Key::from(owner),
-                "recipient"=>recipient,
-                "amount"=>amount
+                "owner" => Key::from(owner),
+                "recipient" => Key::from(recipient),
+                "amount" => amount
             },
             time_now,
         );
@@ -575,14 +555,9 @@ mod t5 {
     }
     #[test]
     fn test_claim_rewards() {
-        let (env, owner, contract, time_now) = deploy();
+        let (_env, owner, contract, time_now) = deploy();
         let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-        let addr: Key = Key::from(env.next_user());
-        let receiver: Key = Key::from_formatted_str(
-            "hash-0000000000000000000000000000000000000000000000000000000000000000",
-        )
-        .unwrap();
-        contract.claim_rewards(owner, Some(addr), Some(receiver), time_now)
+        contract.claim_rewards(owner, None, None, time_now)
     }
 
     #[test]

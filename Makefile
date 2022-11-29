@@ -149,13 +149,13 @@ test-only-liquidity-gauge-v3:
 	cargo test -p liquidity-gauge-v3-tests t3
 	cargo test -p liquidity-gauge-v3-tests t4
 	cargo test -p liquidity-gauge-v3-tests t5
-	# intensive memory test cases below
 	cargo test -p liquidity-gauge-v3-tests t6
 	cargo test -p liquidity-gauge-v3-tests t7
-	cargo test -p liquidity-gauge-v3-tests t8
-	cargo test -p liquidity-gauge-v3-tests t9
 	cargo test -p liquidity-gauge-v3-tests t10
 	cargo test -p liquidity-gauge-v3-tests t11
+	# Intense memory test cases below (Require 32gb + RAM)
+	# cargo test -p liquidity-gauge-v3-tests t8
+	# cargo test -p liquidity-gauge-v3-tests t9
 test-only-i-reward-distribution-recipient:
 	cargo test -p i-reward-distribution-recipient-tests
 test-only-ownable:
