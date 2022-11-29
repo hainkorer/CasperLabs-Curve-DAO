@@ -9,11 +9,11 @@ use casperlabs_contract_utils::{get_key, set_key};
 use common::{keys::*, utils::*};
 pub const YEAR: U256 = U256([31536000000, 0, 0, 0]);
 pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);
-pub const INITIAL_RATE: U256 = U256([8714335457889396, 0, 0, 0]);
+pub const INITIAL_RATE: U256 = U256([8714335, 0, 0, 0]);  //leading to 43% premine
 pub const RATE_REDUCTION_TIME: U256 = YEAR;
-pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115002721024, 0, 0, 0]);
+pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115, 0, 0, 0]);  //2 ** (1/4) * 1e9
 
-pub const RATE_DENOMINATOR: U256 = U256([10000000000000000000, 0, 0, 0]); //10^18
+pub const RATE_DENOMINATOR: U256 = U256([1000000000, 0, 0, 0]); //10^9
 pub const INFLATION_DELAY: U256 = U256([86400000, 0, 0, 0]);
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {

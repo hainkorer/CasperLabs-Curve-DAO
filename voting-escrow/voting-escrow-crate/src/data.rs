@@ -14,7 +14,7 @@ pub const INCREASE_LOCK_AMOUNT: i128 = 2;
 pub const INCREASE_UNLOCK_TIME: i128 = 3;
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
 pub const MAXTIME: U256 = U256([126144000000, 0, 0, 0]); // 4 years
-pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
+pub const MULTIPLIER: U256 = U256([1000000000, 0, 0, 0]);
 
 // We cannot really do block numbers per se b/c slope is per time, not per block
 // and per block could be fairly bad b/c Ethereum changes blocktimes.

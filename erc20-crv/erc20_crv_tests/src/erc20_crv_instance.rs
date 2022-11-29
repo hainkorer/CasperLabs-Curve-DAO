@@ -4,7 +4,6 @@ use casper_types::{
 use std::time::SystemTime;
 
 use casperlabs_test_env::{TestContract, TestEnv};
-const MILLI_SECONDS_IN_DAY: u64 = 86_400_000;
 pub struct ERC20CRVInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
 impl ERC20CRVInstance {
@@ -15,6 +14,7 @@ impl ERC20CRVInstance {
         name: String,
         symbol: String,
         decimals: u8,
+        time_now:u64
     ) -> ERC20CRVInstance {
         ERC20CRVInstance(TestContract::new(
             env,
@@ -26,7 +26,7 @@ impl ERC20CRVInstance {
                 "symbol" => symbol,
                 "decimals" => decimals,
             },
-            ERC20CRVInstance::now(),
+            time_now,
         ))
     }
     pub fn set_minter(&self, sender: AccountHash, minter: Key) {
@@ -59,21 +59,21 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn update_mining_parameters(&self, sender: AccountHash) {
+    pub fn update_mining_parameters(&self, sender: AccountHash,time_now:u64) {
         self.0.call_contract(
             sender,
             "update_mining_parameters",
             runtime_args! {},
-            ERC20CRVInstance::now() + MILLI_SECONDS_IN_DAY,
+            time_now,
         );
     }
 
-    pub fn start_epoch_time_write(&self, sender: AccountHash) {
+    pub fn start_epoch_time_write(&self, sender: AccountHash,time_now:u64) {
         self.0.call_contract(
             sender,
             "start_epoch_time_write",
             runtime_args! {},
-            ERC20CRVInstance::now(),
+            time_now,
         );
     }
     pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256) {

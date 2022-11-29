@@ -15,6 +15,7 @@ casperlabs-contract-utils = "0.1.0"
 hex = "0.4.3"
 blake2 = "0.9.1"
 common = { path = "../../common" }
+erc20_crv = { path = "../erc20_crv" }
 [features]
 default = ["casper-contract/std", "casper-types/std", "casper-contract/test-support"]
 
