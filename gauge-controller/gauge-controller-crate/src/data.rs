@@ -10,7 +10,7 @@ use common::{keys::*, utils::*};
 
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
 pub const WEIGHT_VOTE_DELAY: U256 = U256([86400000, 0, 0, 0]);
-pub const MULTIPLIER: U256 = U256([1000000000000000000, 0, 0, 0]);
+pub const MULTIPLIER: U256 = U256([1000000000, 0, 0, 0]);
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Point {

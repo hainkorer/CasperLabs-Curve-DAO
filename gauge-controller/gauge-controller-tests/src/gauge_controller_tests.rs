@@ -148,7 +148,7 @@ mod ownership_and_deploy_test_cases {
     use crate::gauge_controller_tests::*;
     #[test]
     fn test_deploy() {
-        let (env, gauge_controller, owner, token, voting_escrow, _blocktime, _, _) = deploy();
+        let (env, gauge_controller, owner, token, voting_escrow, blocktime, _, _) = deploy();
         let _user = env.next_user();
         assert_eq!(gauge_controller.token(), Key::Hash(token.package_hash()));
         assert_eq!(
@@ -156,8 +156,8 @@ mod ownership_and_deploy_test_cases {
             Key::Hash(voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
-        //This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(1668038400000 as u128));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
     }
 
     #[test]
@@ -170,8 +170,8 @@ mod ownership_and_deploy_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        //This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(1668038400000 as u128));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         gauge_controller.commit_transfer_ownership(_owner, _user, blocktime);
         assert_eq!(gauge_controller.future_admin(), Key::from(_user));
     }
@@ -186,8 +186,8 @@ mod ownership_and_deploy_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        //This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(1668038400000 as u128));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         gauge_controller.commit_transfer_ownership(_owner, _user, blocktime);
         assert_eq!(gauge_controller.future_admin(), Key::from(_user));
         gauge_controller.apply_transfer_ownership(_owner, blocktime);
@@ -206,8 +206,8 @@ mod checkpoint_function_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        //This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         gauge_controller.checkpoint(_owner, blocktime);
     }
     #[test]
@@ -220,8 +220,8 @@ mod checkpoint_function_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        //This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         gauge_controller.checkpoint(_user, blocktime);
     }
     #[test]
@@ -234,8 +234,8 @@ mod checkpoint_function_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         gauge_controller.checkpoint_gauge(_owner, _user, blocktime);
     }
     #[test]
@@ -248,8 +248,8 @@ mod checkpoint_function_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         gauge_controller.checkpoint_gauge(_user, _user, blocktime);
     }
 
@@ -263,8 +263,8 @@ mod checkpoint_function_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let type_id: (bool, U128) = (false, 1.into());
         let weight: U256 = 2.into();
         gauge_controller.change_type_weight(_owner, type_id, weight, blocktime);
@@ -337,23 +337,23 @@ mod vote_functions_and_effect_with_period_test_cases {
             Key::Hash(voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
-        gauge_controller.add_type(owner, name, Some(1.into()), blocktime);
+        gauge_controller.add_type(owner, name, Some(10.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
         gauge_controller.add_gauge(
             owner,
             liquidity_gauge,
             gauge_type,
-            Some(1.into()),
+            Some(1000.into()),
             blocktime,
         );
         gauge_controller.add_gauge(
             owner,
             liquidity_gauge_1,
             gauge_type,
-            Some(1.into()),
+            Some(1000.into()),
             blocktime,
         );
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
@@ -373,9 +373,8 @@ mod vote_functions_and_effect_with_period_test_cases {
             },
             blocktime + week,
         );
-        let _ret: U256 = env.query_account_named_key(owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
-        //This line is commented because it may vary due to blocktime
-        // assert_eq!(ret,5000.into());
+        let ret: U256 = env.query_account_named_key(owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
+        assert_eq!(ret,500000000.into());
     }
     #[test]
     fn test_gauge_controller_vote_for_gauge_weights() {
@@ -421,8 +420,8 @@ mod vote_functions_and_effect_with_period_test_cases {
             Key::Hash(voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -484,8 +483,8 @@ mod vote_functions_and_effect_with_period_test_cases {
             Key::Hash(voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -514,8 +513,8 @@ mod gauge_types_and_add_type_functions_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let val = gauge_controller.n_gauge_types();
@@ -533,8 +532,8 @@ mod gauge_types_and_add_type_functions_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -567,8 +566,8 @@ mod gauge_types_and_add_type_functions_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -609,8 +608,8 @@ mod gauge_types_and_add_type_functions_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -672,8 +671,8 @@ mod gauge_types_and_add_type_functions_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -729,8 +728,8 @@ mod change_gauge_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -765,8 +764,8 @@ mod change_gauge_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -828,10 +827,10 @@ mod gauge_relative_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
-        gauge_controller.add_type(_owner, name, None, blocktime);
+        gauge_controller.add_type(_owner, name, Some(100.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
         gauge_controller.add_gauge(
             _owner,
@@ -841,7 +840,7 @@ mod gauge_relative_weight_test_cases {
             blocktime,
         );
         let name: String = "type2".to_string();
-        gauge_controller.add_type(_owner, name, None, blocktime);
+        gauge_controller.add_type(_owner, name, Some(100.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 1.into());
         gauge_controller.add_gauge(
             _owner,
@@ -850,7 +849,7 @@ mod gauge_relative_weight_test_cases {
             Some(1000000.into()),
             blocktime,
         );
-
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
         TestContract::new(
             &env,
             TEST_SESSION_CODE_WASM,
@@ -862,11 +861,11 @@ mod gauge_relative_weight_test_cases {
                 "addr"=>Key::from(liquidity_gauge_1),
                 "time" => None::<U256>
             },
-            blocktime,
+            blocktime+week,
         );
 
         let ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
-        assert_eq!(ret, 0.into());
+        assert_eq!(ret, 500000000.into());
     }
 
     #[test]
@@ -889,10 +888,10 @@ mod gauge_relative_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
-        gauge_controller.add_type(_owner, name, None, blocktime);
+        gauge_controller.add_type(_owner, name, Some(100.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
         gauge_controller.add_gauge(
             _owner,
@@ -902,7 +901,7 @@ mod gauge_relative_weight_test_cases {
             blocktime,
         );
         let name: String = "type2".to_string();
-        gauge_controller.add_type(_owner, name, None, blocktime);
+        gauge_controller.add_type(_owner, name, Some(100.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 1.into());
         gauge_controller.add_gauge(
             _owner,
@@ -911,7 +910,7 @@ mod gauge_relative_weight_test_cases {
             Some(1000000.into()),
             blocktime,
         );
-
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
         TestContract::new(
             &env,
             TEST_SESSION_CODE_WASM,
@@ -923,11 +922,11 @@ mod gauge_relative_weight_test_cases {
                 "addr"=>Key::from(liquidity_gauge_1),
                 "time" => None::<U256>
             },
-            blocktime,
+            blocktime+week
         );
 
         let ret: U256 = env.query_account_named_key(_user, &[GAUGE_RELATIVE_WEIGHT.into()]);
-        assert_eq!(ret, 0.into());
+        assert_eq!(ret, 500000000.into());
     }
 
     #[test]
@@ -950,8 +949,8 @@ mod gauge_relative_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
 
         TestContract::new(
             &env,
@@ -964,7 +963,7 @@ mod gauge_relative_weight_test_cases {
                 "addr"=>Key::from(liquidity_gauge),
                 "time" => None::<U256>
             },
-            blocktime,
+            blocktime+VOTING_ESCROW_WEEK.as_u64(),
         );
 
         let ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
@@ -990,8 +989,8 @@ mod gauge_relative_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, Some(100.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1026,7 +1025,6 @@ mod gauge_relative_weight_test_cases {
             },
             blocktime,
         );
-        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
         TestContract::new(
             &env,
             TEST_SESSION_CODE_WASM,
@@ -1040,9 +1038,8 @@ mod gauge_relative_weight_test_cases {
             },
             blocktime + week,
         );
-        let _ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
-        //This line is commented because it may vary due to blocktime
-        // assert_eq!(ret, 500000.into());
+        let ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
+        assert_eq!(ret, 500000000.into());
     }
 
     #[test]
@@ -1065,10 +1062,10 @@ mod gauge_relative_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
-        gauge_controller.add_type(_owner, name, None, blocktime);
+        gauge_controller.add_type(_owner, name, Some(1000000000.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
         gauge_controller.add_gauge(
             _owner,
@@ -1078,7 +1075,7 @@ mod gauge_relative_weight_test_cases {
             blocktime,
         );
         let name: String = "type2".to_string();
-        gauge_controller.add_type(_owner, name, None, blocktime);
+        gauge_controller.add_type(_owner, name, Some(1000000000.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 1.into());
         gauge_controller.add_gauge(
             _owner,
@@ -1099,11 +1096,11 @@ mod gauge_relative_weight_test_cases {
                 "addr"=>Key::from(liquidity_gauge_1),
                 "time" => None::<U256>
             },
-            blocktime,
+            blocktime+VOTING_ESCROW_WEEK.as_u64(),
         );
 
         let ret: U256 = env.query_account_named_key(_user, &[GAUGE_RELATIVE_WEIGHT_WRITE.into()]);
-        assert_eq!(ret, 0.into());
+        assert_eq!(ret, 500000000.into());
     }
 }
 mod get_type_and_total_weight_test_cases {
@@ -1128,8 +1125,8 @@ mod get_type_and_total_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1191,8 +1188,8 @@ mod get_type_and_total_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1252,8 +1249,8 @@ mod get_type_and_total_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1316,8 +1313,8 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1379,8 +1376,8 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1457,8 +1454,8 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1519,8 +1516,8 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1581,8 +1578,8 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1655,8 +1652,8 @@ mod add_gauge_function_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1686,8 +1683,8 @@ mod add_gauge_function_test_cases {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1728,8 +1725,8 @@ mod panic_test_cases_1 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1757,8 +1754,8 @@ mod panic_test_cases_1 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1782,8 +1779,6 @@ mod panic_test_cases_1 {
         );
         let ret: Key = env.query_account_named_key(_owner, &[GAUGES.into()]);
         assert_eq!(ret, liquidity_gauge, "Invalid result");
-        //    let ret:Key = gauge_controller.gauges(U256::from(0));
-        // assert_eq!(ret, liquidity_gauge, "Invalid result");
     }
     #[test]
     #[should_panic]
@@ -1798,8 +1793,8 @@ mod panic_test_cases_1 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let weight: U256 = 2.into();
@@ -1849,8 +1844,8 @@ mod panic_test_cases_1 {
             Key::Hash(voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1879,8 +1874,8 @@ mod panic_test_cases_1 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         TestContract::new(
             &env,
             TEST_SESSION_CODE_WASM,
@@ -1909,8 +1904,8 @@ mod panic_test_cases_1 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        //This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(1668038400000 as u128));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         gauge_controller.commit_transfer_ownership(_owner, _user, blocktime);
         assert_eq!(gauge_controller.future_admin(), Key::from(_user));
         gauge_controller.apply_transfer_ownership(_user, blocktime);
@@ -1946,8 +1941,8 @@ mod panic_test_cases_2 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        //This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(1668038400000 as u128));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         gauge_controller.commit_transfer_ownership(_user, _user, blocktime);
         assert_eq!(gauge_controller.future_admin(), Key::from(_user));
     }
@@ -1955,7 +1950,7 @@ mod panic_test_cases_2 {
     #[test]
     #[should_panic]
     fn test_deploy_with_address_zero() {
-        let (env, gauge_controller, _owner, _token, _voting_escrow, _blocktime) = deploy_fail();
+        let (env, gauge_controller, _owner, _token, _voting_escrow, blocktime) = deploy_fail();
         let _user = env.next_user();
         assert_eq!(gauge_controller.token(), Key::Hash(_token.package_hash()));
         assert_eq!(
@@ -1963,8 +1958,8 @@ mod panic_test_cases_2 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        //This line is commented because it may vary due to blocktime
-        //assert_eq!(gauge_controller.time_total(), U256::from(1668038400000 as u128));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
     }
     #[test]
     #[should_panic]
@@ -1979,8 +1974,8 @@ mod panic_test_cases_2 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -2002,8 +1997,8 @@ mod panic_test_cases_2 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let weight: U256 = 2.into();
         gauge_controller.change_gauge_weight(_owner, liquidity_gauge, weight, blocktime);
     }
@@ -2018,8 +2013,8 @@ mod panic_test_cases_2 {
             Key::Hash(_voting_escrow.package_hash())
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
-        // This line is commented because it may vary due to blocktime
-        // assert_eq!(gauge_controller.time_total(), U256::from(0));
+        let week: u64 = VOTING_ESCROW_WEEK.as_u64();
+        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
         let type_id: (bool, U128) = (false, 1.into());
         let weight: U256 = 2.into();
         gauge_controller.change_type_weight(_user, type_id, weight, blocktime);
