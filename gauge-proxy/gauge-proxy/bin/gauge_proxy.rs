@@ -1,15 +1,14 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{collections::BTreeSet, format, vec, vec::Vec};
+use alloc::{collections::BTreeSet, format, string::String, vec, vec::Vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    bytesrepr::Bytes, runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash,
-    EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs,
-    URef,
+    runtime_args, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use gauge_proxy_crate::{self, data, GAUGEPROXY};
@@ -111,7 +110,7 @@ fn set_killed() {
 fn set_rewards() {
     let gauge: Key = runtime::get_named_arg("gauge");
     let reward_contract: Key = runtime::get_named_arg("reward_contract");
-    let sigs: Bytes = runtime::get_named_arg("sigs");
+    let sigs: String = runtime::get_named_arg("sigs");
     let reward_tokens: Vec<Key> = runtime::get_named_arg("reward_tokens");
     GaugeProxy::default().set_rewards(gauge, reward_contract, sigs, reward_tokens);
 }
@@ -201,7 +200,7 @@ fn get_entry_points() -> EntryPoints {
         vec![
             Parameter::new("gauge", Key::cl_type()),
             Parameter::new("reward_contract", Key::cl_type()),
-            Parameter::new("sigs", Bytes::cl_type()),
+            Parameter::new("sigs", String::cl_type()),
             Parameter::new("reward_tokens", Vec::<Key>::cl_type()),
         ],
         <()>::cl_type(),

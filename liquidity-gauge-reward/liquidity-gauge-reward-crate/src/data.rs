@@ -5,15 +5,11 @@ use casper_types::{
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
+
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
 pub const BOOST_WARMUP: U256 = U256([1209600000, 0, 0, 0]);
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
-
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
 
 // caller -> recipient -> can deposit?
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
@@ -91,8 +87,8 @@ impl WorkingBalances {
     }
 }
 
-// The goal is to be able to calculate ∫(rate * balance / totalSupply dt) from 0 till checkpoint
-// All values are kept in units of being multiplied by 1e9
+/// The goal is to be able to calculate ∫(rate * balance / totalSupply dt) from 0 till checkpoint
+/// All values are kept in units of being multiplied by 1e9
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct PeriodTimestamp {
     dict: Dict,
@@ -125,8 +121,8 @@ impl PeriodTimestamp {
     }
 }
 
-// 1e9 * ∫(rate(t) / totalSupply(t) dt) from 0 till checkpoint
-// bump epoch when rate() changes
+/// 1e9 * ∫(rate(t) / totalSupply(t) dt) from 0 till checkpoint
+/// bump epoch when rate() changes
 
 #[derive(CLTyped, ToBytes, FromBytes)]
 pub struct IntegrateInvSupply {
@@ -160,7 +156,7 @@ impl IntegrateInvSupply {
     }
 }
 
-// 1e9 * ∫(rate(t) / totalSupply(t) dt) from (last_action) till checkpoint
+/// 1e9 * ∫(rate(t) / totalSupply(t) dt) from (last_action) till checkpoint
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct IntegrateInvSupplyOf {
     dict: Dict,
@@ -211,8 +207,8 @@ impl IntegrateCheckpointOf {
     }
 }
 
-// ∫(balance * rate(t) / totalSupply(t) dt) from 0 till checkpoint
-// Units: rate * t = already number of coins per address to issue
+/// ∫(balance * rate(t) / totalSupply(t) dt) from 0 till checkpoint
+/// Units: rate * t = already number of coins per address to issue
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct IntegrateFraction {
     dict: Dict,

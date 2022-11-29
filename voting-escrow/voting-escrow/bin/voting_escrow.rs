@@ -8,11 +8,10 @@ use casper_contract::{
 };
 use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
-    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U128,
-    U256,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use voting_escrow_crate::{self, data, VOTINGESCROW};
+use voting_escrow_crate::{self, data, utils::*, VOTINGESCROW};
 
 #[derive(Default)]
 struct VotingEscrow(OnChainContractStorage);
@@ -88,15 +87,8 @@ fn apply_transfer_ownership() {
 #[no_mangle]
 fn get_last_user_slope() {
     let addr: Key = runtime::get_named_arg("addr");
-    let ret: U128 = VotingEscrow::default().get_last_user_slope(addr);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn get_last_user_slope_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U128 = VotingEscrow::default().get_last_user_slope(addr);
-    data::js_ret(ret);
+    let ret: i128 = VotingEscrow::default().get_last_user_slope(addr);
+    runtime::ret(CLValue::from_t(i128_to_tuple(ret)).unwrap_or_revert());
 }
 
 /// @notice Get the timestamp for checkpoint `_idx` for `_addr`
@@ -111,14 +103,6 @@ fn user_point_history_ts() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-#[no_mangle]
-fn user_point_history_ts_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let idx: U256 = runtime::get_named_arg("idx");
-    let ret: U256 = VotingEscrow::default().user_point_history_ts(addr, idx);
-    data::js_ret(ret);
-}
-
 /// @notice Get timestamp when `_addr`'s lock finishes
 /// @param _addr User wallet
 /// @return Epoch time of the lock end
@@ -127,13 +111,6 @@ fn locked_end() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = VotingEscrow::default().locked_end(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn locked_end_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = VotingEscrow::default().locked_end(addr);
-    data::js_ret(ret);
 }
 
 /// @notice Record global data to checkpoint
@@ -199,14 +176,6 @@ fn balance_of() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-#[no_mangle]
-fn balance_of_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let t: Option<U256> = runtime::get_named_arg("t");
-    let ret: U256 = VotingEscrow::default().balance_of(addr, t);
-    data::js_ret(ret);
-}
-
 /// @notice Measure voting power of `addr` at block height `_block`
 /// @dev Adheres to MiniMe `balanceOfAt` interface: https://github.com/Giveth/minime
 /// @param addr User's wallet address
@@ -220,14 +189,6 @@ fn balance_of_at() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-#[no_mangle]
-fn balance_of_at_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let block: U256 = runtime::get_named_arg("block");
-    let ret: U256 = VotingEscrow::default().balance_of_at(addr, block);
-    data::js_ret(ret);
-}
-
 /// @notice Calculate total voting power
 /// @dev Adheres to the ERC20 `totalSupply` interface for Aragon compatibility
 /// @return Total voting power
@@ -238,13 +199,6 @@ fn total_supply() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-#[no_mangle]
-fn total_supply_js_client() {
-    let t: Option<U256> = runtime::get_named_arg("t");
-    let ret: U256 = VotingEscrow::default().total_supply(t);
-    data::js_ret(ret);
-}
-
 /// @notice Calculate total voting power at some point in the past
 /// @param _block Block to calculate the total voting power at
 /// @return Total voting power at `_block`
@@ -253,13 +207,6 @@ fn total_supply_at() {
     let block: U256 = runtime::get_named_arg("block");
     let ret: U256 = VotingEscrow::default().total_supply_at(block);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn total_supply_at_js_client() {
-    let block: U256 = runtime::get_named_arg("block");
-    let ret: U256 = VotingEscrow::default().total_supply_at(block);
-    data::js_ret(ret);
 }
 
 /// Dummy methods for compatibility with Aragon
@@ -318,7 +265,10 @@ fn user_point_epoch() {
 #[no_mangle]
 fn slope_changes() {
     let time: U256 = runtime::get_named_arg("time");
-    runtime::ret(CLValue::from_t(data::SlopeChanges::instance().get(&time)).unwrap_or_revert())
+    runtime::ret(
+        CLValue::from_t(i128_to_tuple(data::SlopeChanges::instance().get(&time)))
+            .unwrap_or_revert(),
+    )
 }
 
 #[no_mangle]
@@ -394,14 +344,7 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "get_last_user_slope",
         vec![Parameter::new("addr", Key::cl_type())],
-        U128::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "get_last_user_slope_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
+        CLType::Tuple2([Box::new(CLType::Bool), Box::new(CLType::U128)]),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -416,26 +359,9 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "user_point_history_ts_js_client",
-        vec![
-            Parameter::new("addr", Key::cl_type()),
-            Parameter::new("idx", U256::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "locked_end",
         vec![Parameter::new("addr", Key::cl_type())],
         U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "locked_end_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -498,32 +424,12 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "balance_of_js_client",
-        vec![
-            Parameter::new("addr", Key::cl_type()),
-            Parameter::new("t", CLType::Option(Box::new(CLType::U256))),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "balance_of_at",
         vec![
             Parameter::new("addr", Key::cl_type()),
             Parameter::new("block", U256::cl_type()),
         ],
         U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "balance_of_at_js_client",
-        vec![
-            Parameter::new("addr", Key::cl_type()),
-            Parameter::new("block", U256::cl_type()),
-        ],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -535,23 +441,9 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "total_supply_js_client",
-        vec![Parameter::new("t", CLType::Option(Box::new(CLType::U256)))],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "total_supply_at",
         vec![Parameter::new("block", U256::cl_type())],
         U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "total_supply_at_js_client",
-        vec![Parameter::new("block", U256::cl_type())],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -618,7 +510,7 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "slope_changes",
         vec![Parameter::new("time", U256::cl_type())],
-        U128::cl_type(),
+        CLType::Tuple2([Box::new(CLType::Bool), Box::new(CLType::U128)]),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

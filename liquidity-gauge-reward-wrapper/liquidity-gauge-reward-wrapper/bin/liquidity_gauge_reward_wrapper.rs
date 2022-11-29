@@ -13,7 +13,7 @@ use casper_types::{
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use liquidity_gauge_reward_wrapper_crate::{
     self,
-    data::{self, *},
+    data::{self},
     LIQUIDITYGAUGEREWARDWRAPPER,
 };
 
@@ -72,23 +72,10 @@ fn user_checkpoint() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn user_checkpoint_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: bool = LiquidityGaugeRewardWrapper::default().user_checkpoint(addr);
-    js_ret(ret);
-}
-#[no_mangle]
 fn claimable_tokens() {
     let addr: Key = runtime::get_named_arg("addr");
     let ret: U256 = LiquidityGaugeRewardWrapper::default().claimable_tokens(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn claimable_tokens_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeRewardWrapper::default().claimable_tokens(addr);
-    js_ret(ret);
 }
 
 #[no_mangle]
@@ -98,12 +85,6 @@ fn claimable_reward() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-#[no_mangle]
-fn claimable_reward_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = LiquidityGaugeRewardWrapper::default().claimable_reward(addr);
-    js_ret(ret);
-}
 #[no_mangle]
 fn claim_tokens() {
     let addr: Option<Key> = runtime::get_named_arg("addr");
@@ -303,13 +284,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "user_checkpoint_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "claimable_tokens",
         vec![Parameter::new("addr", Key::cl_type())],
         U256::cl_type(),
@@ -317,23 +291,9 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "claimable_tokens_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "claimable_reward",
         vec![Parameter::new("addr", Key::cl_type())],
         U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claimable_reward_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -613,11 +573,12 @@ fn call() {
         // add a first version to this package
         let (contract_hash, _): (ContractHash, _) =
             storage::add_contract_version(package_hash, get_entry_points(), Default::default());
-
+        //Variables
         let name: String = runtime::get_named_arg("name");
         let symbol: String = runtime::get_named_arg("symbol");
         let gauge: Key = runtime::get_named_arg("gauge");
         let admin: Key = runtime::get_named_arg("admin");
+        // Call the constructor entry point
         let constructor_args = runtime_args! {
             "name" => name,
             "symbol" => symbol,

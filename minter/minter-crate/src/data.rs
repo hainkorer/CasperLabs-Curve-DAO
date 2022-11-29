@@ -3,18 +3,6 @@ use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
 use common::keys::*;
 
-//Zero Address
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-pub fn account_zero_address() -> Key {
-    Key::from_formatted_str(
-        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
-    )
-    .unwrap()
-}
-
 pub struct Minted {
     dict: Dict,
 }

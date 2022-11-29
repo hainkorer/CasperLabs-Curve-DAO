@@ -33,43 +33,6 @@ pub extern "C" fn call() {
 
     match entrypoint.as_str() {
         // Liquidity gauge v3
-        DECIMALS => {
-            let ret: u8 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                DECIMALS,
-                runtime_args! {},
-            );
-            store(DECIMALS, ret);
-        }
-        INTEGRATE_CHECKPOINT => {
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                INTEGRATE_CHECKPOINT,
-                runtime_args! {},
-            );
-            store(INTEGRATE_CHECKPOINT, ret);
-        }
-        REWARD_CONTRACT => {
-            let ret: Key = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                REWARD_CONTRACT,
-                runtime_args! {},
-            );
-            store(REWARD_CONTRACT, ret);
-        }
-        LAST_CLAIM => {
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                LAST_CLAIM,
-                runtime_args! {},
-            );
-            store(LAST_CLAIM, ret);
-        }
-
         TRANSFER => {
             let recipient: Key = runtime::get_named_arg("recipient");
             let amount: U256 = runtime::get_named_arg("amount");
@@ -112,20 +75,6 @@ pub extern "C" fn call() {
             );
             store(CLAIMABLE_TOKENS, ret);
         }
-        CLAIMABLE_REWARD => {
-            let addr: Key = runtime::get_named_arg("addr");
-            let token: Key = runtime::get_named_arg("token");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                CLAIMABLE_REWARD,
-                runtime_args! {
-                    "addr"=>addr,
-                    "token"=>token,
-                },
-            );
-            store(CLAIMABLE_REWARD, ret);
-        }
         CLAIMABLE_REWARD_WRITE => {
             let addr: Key = runtime::get_named_arg("addr");
             let token: Key = runtime::get_named_arg("token");
@@ -140,20 +89,6 @@ pub extern "C" fn call() {
             );
             store(CLAIMABLE_REWARD_WRITE, ret);
         }
-        CLAIMED_REWARD => {
-            let addr: Key = runtime::get_named_arg("addr");
-            let token: Key = runtime::get_named_arg("token");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                CLAIMED_REWARD,
-                runtime_args! {
-                    "addr"=>addr,
-                    "token"=>token,
-                },
-            );
-            store(CLAIMED_REWARD, ret);
-        }
         USER_CHECKPOINT => {
             let addr: Key = runtime::get_named_arg("addr");
             let ret: bool = runtime::call_versioned_contract(
@@ -165,6 +100,34 @@ pub extern "C" fn call() {
                 },
             );
             store(USER_CHECKPOINT, ret);
+        }
+        INCREASE_ALLOWANCE => {
+            let spender: Key = runtime::get_named_arg("spender");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                INCREASE_ALLOWANCE,
+                runtime_args! {
+                    "spender"=>spender,
+                    "amount"=>amount
+                },
+            );
+            store(INCREASE_ALLOWANCE, ret);
+        }
+        DECREASE_ALLOWANCE => {
+            let spender: Key = runtime::get_named_arg("spender");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                DECREASE_ALLOWANCE,
+                runtime_args! {
+                    "spender"=>spender,
+                    "amount"=>amount
+                },
+            );
+            store(DECREASE_ALLOWANCE, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };

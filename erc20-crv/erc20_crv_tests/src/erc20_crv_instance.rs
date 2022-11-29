@@ -1,10 +1,10 @@
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
-use casperlabs_test_env::{TestContract, TestEnv};
+use std::time::SystemTime;
 
+use casperlabs_test_env::{TestContract, TestEnv};
 pub struct ERC20CRVInstance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl ERC20CRVInstance {
     pub fn new_deploy(
@@ -14,6 +14,7 @@ impl ERC20CRVInstance {
         name: String,
         symbol: String,
         decimals: u8,
+        time_now: u64,
     ) -> ERC20CRVInstance {
         ERC20CRVInstance(TestContract::new(
             env,
@@ -25,7 +26,7 @@ impl ERC20CRVInstance {
                 "symbol" => symbol,
                 "decimals" => decimals,
             },
-            100000000,
+            time_now,
         ))
     }
     pub fn set_minter(&self, sender: AccountHash, minter: Key) {
@@ -58,103 +59,55 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn update_mining_parameters(&self, sender: AccountHash) {
+    pub fn update_mining_parameters(&self, sender: AccountHash, time_now: u64) {
         self.0.call_contract(
             sender,
             "update_mining_parameters",
             runtime_args! {},
-            1000000000,
+            time_now,
         );
     }
 
-    pub fn start_epoch_time_write(&self, sender: AccountHash) {
+    pub fn start_epoch_time_write(&self, sender: AccountHash, time_now: u64) {
+        self.0
+            .call_contract(sender, "start_epoch_time_write", runtime_args! {}, time_now);
+    }
+    pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256) {
         self.0.call_contract(
             sender,
-            "start_epoch_time_write",
-            runtime_args! {},
-            1000000000,
+            "approve",
+            runtime_args! {
+                "spender"=>spender,
+                "amount"=>amount
+
+            },
+            0,
         );
     }
-    pub fn start_epoch_time_write_js_client(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "start_epoch_time_write_js_client",
-            runtime_args! {},
-            1000000000,
-        );
-    }
-    pub fn future_epoch_time_write(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "future_epoch_time_write",
-            runtime_args! {},
-            1000000000,
-        );
-    }
-    pub fn future_epoch_time_write_js_client(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "future_epoch_time_write_js_client",
-            runtime_args! {},
-            1000000000,
-        );
-    }
+
     pub fn available_supply(&self, sender: AccountHash) {
         self.0
-            .call_contract(sender, "available_supply", runtime_args! {}, 1000000000);
+            .call_contract(sender, "available_supply", runtime_args! {}, 1000000000000);
     }
-    pub fn available_supply_js_client(&self, sender: AccountHash) {
-        self.0.call_contract(
-            sender,
-            "available_supply_js_client",
-            runtime_args! {},
-            1000000000,
-        );
+    pub fn get_init_supply(&self) -> U256 {
+        self.0.query_named_key(String::from("init_supply"))
     }
-    pub fn mintable_in_timeframe(&self, sender: AccountHash, start: U256, end: U256) {
-        self.0.call_contract(
-            sender,
-            "mintable_in_timeframe",
-            runtime_args! {
-                "start"=>start,
-                "end"=>end
-            },
-            0,
-        );
+    pub fn get_admin(&self) -> Key {
+        self.0.query_named_key(String::from("admin"))
     }
-    pub fn mintable_in_timeframe_js_client(&self, sender: AccountHash, start: U256, end: U256) {
-        self.0.call_contract(
-            sender,
-            "mintable_in_timeframe_js_client",
-            runtime_args! {
-                "start"=>start,
-                "end"=>end
-            },
-            0,
-        );
+    pub fn get_start_epoch_time(&self) -> U256 {
+        self.0.query_named_key(String::from("start_epoch_time"))
     }
-    pub fn mint(&self, sender: AccountHash, to: Key, amount: U256) {
-        self.0.call_contract(
-            sender,
-            "mint",
-            runtime_args! {
-                "to"=>to,
-                "amount"=>amount
-            },
-            1000000000,
-        );
+    pub fn get_rate(&self) -> U256 {
+        self.0.query_named_key(String::from("rate"))
     }
-    pub fn mint_js_client(&self, sender: AccountHash, to: Key, amount: U256) {
-        self.0.call_contract(
-            sender,
-            "mint_js_client",
-            runtime_args! {
-                "to"=>to,
-                "amount"=>amount
-            },
-            1000000000,
-        );
+    pub fn get_start_epoch_supply(&self) -> U256 {
+        self.0.query_named_key(String::from("start_epoch_supply"))
     }
+    // pub fn get_mining_epoch(&self) -> U128 {
+    //     self.0.query_named_key(String::from("mining_epoch"))
+    // }
+
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
     }
@@ -162,5 +115,12 @@ impl ERC20CRVInstance {
     // Get stored key values
     pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
         self.0.query_named_key(key)
+    }
+
+    pub fn now() -> u64 {
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
     }
 }

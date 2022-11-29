@@ -50,15 +50,7 @@ pub extern "C" fn call() {
             );
             store(START_EPOCH_TIME_WRITE, ret);
         }
-        AVAILABLE_SUPPLY => {
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                AVAILABLE_SUPPLY,
-                runtime_args! {},
-            );
-            store(AVAILABLE_SUPPLY, ret);
-        }
+
         MINT => {
             let to: Key = runtime::get_named_arg("to");
             let amount: U256 = runtime::get_named_arg("amount");
@@ -73,21 +65,64 @@ pub extern "C" fn call() {
             );
             store(MINT, ret);
         }
-        MINTABLE_IN_TIMEFRAME => {
-            let start: U256 = runtime::get_named_arg("start");
-            let end: U256 = runtime::get_named_arg("end");
-            let ret: U256 = runtime::call_versioned_contract(
+        INCREASE_ALLOWANCE => {
+            let spender: Key = runtime::get_named_arg("spender");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
-                MINTABLE_IN_TIMEFRAME,
+                INCREASE_ALLOWANCE,
                 runtime_args! {
-                    "start"=>start,
-                    "end"=>end
+                    "spender"=>spender,
+                    "amount"=>amount
                 },
             );
-            store(MINTABLE_IN_TIMEFRAME, ret);
+            store(INCREASE_ALLOWANCE, ret);
         }
-
+        DECREASE_ALLOWANCE => {
+            let spender: Key = runtime::get_named_arg("spender");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                DECREASE_ALLOWANCE,
+                runtime_args! {
+                    "spender"=>spender,
+                    "amount"=>amount
+                },
+            );
+            store(DECREASE_ALLOWANCE, ret);
+        }
+        TRANSFER => {
+            let recipient: Key = runtime::get_named_arg("recipient");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                TRANSFER,
+                runtime_args! {
+                    "recipient"=>recipient,
+                    "amount"=>amount
+                },
+            );
+            store(TRANSFER, ret);
+        }
+        TRANSFER_FROM => {
+            let owner: Key = runtime::get_named_arg("owner");
+            let recipient: Key = runtime::get_named_arg("recipient");
+            let amount: U256 = runtime::get_named_arg("amount");
+            let ret: Result<(), u32> = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                TRANSFER_FROM,
+                runtime_args! {
+                    "owner"=>owner,
+                    "recipient"=>recipient,
+                    "amount"=>amount
+                },
+            );
+            store(TRANSFER_FROM, ret);
+        }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

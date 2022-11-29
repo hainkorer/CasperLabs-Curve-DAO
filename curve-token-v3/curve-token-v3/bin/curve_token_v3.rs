@@ -68,8 +68,7 @@ fn transfer_from() {
 fn approve() {
     let spender: Key = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = CurveTokenV3::default().approve(spender, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    CurveTokenV3::default().approve(spender, amount);
 }
 #[no_mangle]
 fn increase_allowance() {

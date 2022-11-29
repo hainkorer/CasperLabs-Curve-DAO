@@ -1,11 +1,7 @@
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
 pub struct Balances {
     dict: Dict,
 }

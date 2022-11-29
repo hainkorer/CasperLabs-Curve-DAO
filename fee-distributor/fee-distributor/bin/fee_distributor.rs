@@ -1,7 +1,7 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, vec, vec::Vec};
+use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec, vec::Vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -81,44 +81,26 @@ fn ve_for_at() {
 }
 
 #[no_mangle]
-fn ve_for_at_js_client() {
-    let user: Key = runtime::get_named_arg("user");
-    let timestamp: U256 = runtime::get_named_arg("timestamp");
-    let ret: U256 = FeeDistributor::default().ve_for_at(user, timestamp);
-    js_ret(ret);
-}
-
-#[no_mangle]
 fn checkpoint_total_supply() {
     FeeDistributor::default().checkpoint_total_supply();
 }
 
 #[no_mangle]
 fn claim() {
-    let addr: Key = runtime::get_named_arg("addr");
+    let addr: Option<Key> = runtime::get_named_arg("addr");
     let ret: U256 = FeeDistributor::default().claim(addr);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn claim_js_client() {
-    let addr: Key = runtime::get_named_arg("addr");
-    let ret: U256 = FeeDistributor::default().claim(addr);
-    js_ret(ret);
 }
 
 #[no_mangle]
 fn claim_many() {
-    let receivers: Vec<Key> = runtime::get_named_arg("receivers");
+    let _receivers: Vec<String> = runtime::get_named_arg("receivers");
+    let mut receivers: Vec<Key> = Vec::new();
+    for receiver in &_receivers {
+        receivers.push(Key::from_formatted_str(receiver).unwrap());
+    }
     let ret: bool = FeeDistributor::default().claim_many(receivers);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn claim_many_js_client() {
-    let receivers: Vec<Key> = runtime::get_named_arg("receivers");
-    let ret: bool = FeeDistributor::default().claim_many(receivers);
-    js_ret(ret);
 }
 
 #[no_mangle]
@@ -126,13 +108,6 @@ fn burn() {
     let coin: Key = runtime::get_named_arg("coin");
     let ret: bool = FeeDistributor::default().burn(coin);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn burn_js_client() {
-    let coin: Key = runtime::get_named_arg("coin");
-    let ret: bool = FeeDistributor::default().burn(coin);
-    js_ret(ret);
 }
 
 #[no_mangle]
@@ -161,13 +136,6 @@ fn recover_balance() {
     let coin: Key = runtime::get_named_arg("coin");
     let ret: bool = FeeDistributor::default().recover_balance(coin);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn recover_balance_js_client() {
-    let coin: Key = runtime::get_named_arg("coin");
-    let ret: bool = FeeDistributor::default().recover_balance(coin);
-    js_ret(ret);
 }
 
 // Variables
@@ -291,16 +259,6 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "ve_for_at_js_client",
-        vec![
-            Parameter::new("user", Key::cl_type()),
-            Parameter::new("timestamp", U256::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "checkpoint_total_supply",
         vec![],
         <()>::cl_type(),
@@ -309,38 +267,26 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "claim",
-        vec![Parameter::new("addr", Key::cl_type())],
+        vec![Parameter::new(
+            "addr",
+            CLType::Option(Box::new(CLType::Key)),
+        )],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claim_js_client",
-        vec![Parameter::new("addr", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
+
     entry_points.add_entry_point(EntryPoint::new(
         "claim_many",
         vec![Parameter::new(
             "receivers",
-            CLType::List(Box::new(Key::cl_type())),
+            CLType::List(Box::new(String::cl_type())),
         )],
         bool::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "claim_many_js_client",
-        vec![Parameter::new(
-            "receivers",
-            CLType::List(Box::new(Key::cl_type())),
-        )],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
+
     entry_points.add_entry_point(EntryPoint::new(
         "burn",
         vec![Parameter::new("coin", Key::cl_type())],
@@ -348,13 +294,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "burn_js_client",
-        vec![Parameter::new("coin", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
+
     entry_points.add_entry_point(EntryPoint::new(
         "commit_admin",
         vec![Parameter::new("addr", Key::cl_type())],
@@ -390,13 +330,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "recover_balance_js_client",
-        vec![Parameter::new("coin", Key::cl_type())],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
+
     // Variables
     entry_points.add_entry_point(EntryPoint::new(
         "start_time",

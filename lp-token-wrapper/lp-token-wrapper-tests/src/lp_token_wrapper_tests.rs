@@ -16,7 +16,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
             "decimals" => 9_u8,
             "initial_supply" => U256::from(TEN_E_NINE * 10000000000000)
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     )
 }
 fn deploy() -> (TestEnv, AccountHash, TestContract) {
@@ -37,13 +37,13 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
         owner,
         "mint",
         runtime_args! {"to" => to , "amount" => amount},
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     erc20.call_contract(
         owner,
         "approve",
         runtime_args! {"spender" => to , "amount" => amount},
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     (env, owner, lp_token_wrapper_instance)
 }
@@ -61,14 +61,14 @@ fn total_supply() {
     lp_token_wrapper_instance.stake(owner, amount);
     TestContract::new(
         &env,
-        "lp-token-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY),
             "package_hash" => package_hash,
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[TOTAL_SUPPLY.into()]);
     assert_eq!(ret, amount, "Invalid result");
@@ -82,15 +82,15 @@ fn balance_of() {
     lp_token_wrapper_instance.stake(owner, amount);
     TestContract::new(
         &env,
-        "lp-token-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, amount, "Invalid result");
@@ -104,15 +104,15 @@ fn stake() {
     lp_token_wrapper_instance.stake(owner, amount);
     TestContract::new(
         &env,
-        "lp-token-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, amount, "Invalid result");
@@ -128,15 +128,15 @@ fn withdraw() {
     lp_token_wrapper_instance.withdraw(owner, withdraw_amount);
     TestContract::new(
         &env,
-        "lp-token-wrapper-session-code.wasm",
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => package_hash,
             "owner" => Key::Account(owner)
         },
-        0,
+        LPTOKENWRAPPERInstance::now(),
     );
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, withdraw_amount, "Invalid result");

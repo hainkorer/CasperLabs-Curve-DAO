@@ -8,7 +8,8 @@ use casper_types::{
     runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
+
 pub enum MINTEREvent {
     Minted {
         recipient: Key,
@@ -54,12 +55,13 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let controller_package_hash = ContractPackageHash::new(controller_hash_add_array);
-        let ret: U128 = runtime::call_versioned_contract(
+        let ret: (bool, U128) = runtime::call_versioned_contract(
             controller_package_hash,
             None,
             "gauge_types",
             runtime_args! {"addr" => gauge_addr},
         );
+        let ret: i128 = tuple_to_i128(ret);
 
         if ret < 0.into() {
             //dev: gauge is not added
@@ -124,7 +126,7 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
         }
         data::set_lock(1);
         for item in &gauge_addrs {
-            if *item == data::zero_address() || *item == data::account_zero_address() {
+            if *item == zero_address() || *item == account_zero_address() {
                 break;
             }
             self._mint_for(*item, self.get_caller())

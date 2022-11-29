@@ -8,13 +8,11 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    bytesrepr::Bytes, runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash,
-    EntryPoint, EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs,
-    URef, U128, U256,
+    runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
+    EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use liquidity_gauge_v3_crate::{self, data, LIQUIDITYTGAUGEV3};
+use liquidity_gauge_v3_crate::{self, data, utils::*, LIQUIDITYTGAUGEV3};
 
 #[derive(Default)]
 struct LiquidityGaugeV3(OnChainContractStorage);
@@ -51,7 +49,7 @@ fn constructor() {
 /// """
 /// @notice Get the number of decimals for this token
 /// @dev Implemented as a view method to reduce gas costs
-/// @return uint256 decimal places
+/// @return u8 decimal places
 /// """
 #[no_mangle]
 fn decimals() {
@@ -299,10 +297,9 @@ fn decrease_allowance() {
 #[no_mangle]
 fn set_rewards() {
     let reward_contract: Key = runtime::get_named_arg("reward_contract");
-    let claim_sig: Bytes = runtime::get_named_arg("claim_sig");
+    let sigs: String = runtime::get_named_arg("sigs");
     let reward_tokens: Vec<String> = runtime::get_named_arg("reward_tokens");
-
-    LiquidityGaugeV3::default().set_rewards(reward_contract, claim_sig, reward_tokens);
+    LiquidityGaugeV3::default().set_rewards(reward_contract, sigs, reward_tokens);
 }
 ///"""
 ///    @notice Set the killed status for this contract
@@ -397,7 +394,7 @@ fn working_supply() {
 }
 #[no_mangle]
 fn period() {
-    runtime::ret(CLValue::from_t(data::get_period()).unwrap_or_revert());
+    runtime::ret(CLValue::from_t(i128_to_tuple(data::get_period())).unwrap_or_revert());
 }
 #[no_mangle]
 fn period_timestamp() {
@@ -671,10 +668,10 @@ fn get_entry_points() -> EntryPoints {
         "set_rewards",
         vec![
             Parameter::new("reward_contract", Key::cl_type()),
-            Parameter::new("claim_sig", Bytes::cl_type()),
+            Parameter::new("sigs", String::cl_type()),
             Parameter::new("reward_tokens", CLType::List(Box::new(String::cl_type()))),
         ],
-        U256::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -798,27 +795,27 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "period",
         vec![],
-        U128::cl_type(),
+        CLType::Tuple2([Box::new(CLType::Bool), Box::new(CLType::U128)]),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "period_timestamp",
-        vec![Parameter::new("owner", Key::cl_type())],
+        vec![Parameter::new("owner", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "integrate_inv_supply",
-        vec![Parameter::new("owner", Key::cl_type())],
+        vec![Parameter::new("owner", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "integrate_inv_supply_of",
-        vec![Parameter::new("owner", Key::cl_type())],
+        vec![Parameter::new("owner", U256::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -846,7 +843,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "reward_tokens",
-        vec![Parameter::new("owner", Key::cl_type())],
+        vec![Parameter::new("owner", U256::cl_type())],
         Key::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -901,62 +898,85 @@ fn get_entry_points() -> EntryPoints {
 
 #[no_mangle]
 fn call() {
-    let lp_addr: Key = runtime::get_named_arg("lp_addr");
-    let minter: Key = runtime::get_named_arg("minter");
-    let admin: Key = runtime::get_named_arg("admin");
+    // Store contract in the account's named keys. Contract name must be same for all new versions of the contracts
+    let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
+    // If this is the first deployment
+    if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
+        // Build new package with initial a first version of the contract.
+        let (package_hash, access_token) = storage::create_contract_package_at_hash();
+        let (contract_hash, _) =
+            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+        let lp_addr: Key = runtime::get_named_arg("lp_addr");
+        let minter: Key = runtime::get_named_arg("minter");
+        let admin: Key = runtime::get_named_arg("admin");
+        // Add the constructor group to the package hash with a single URef.
+        let constructor_access: URef =
+            storage::create_contract_user_group(package_hash, "constructor", 1, Default::default())
+                .unwrap_or_revert()
+                .pop()
+                .unwrap_or_revert();
 
-    // Build new package with initial a first version of the contract.
-    let (package_hash, access_token) = storage::create_contract_package_at_hash();
-    let (contract_hash, _) =
-        storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+        // Call the constructor entry point
+        let _: () = runtime::call_versioned_contract(
+            package_hash,
+            None,
+            "constructor",
+            runtime_args! {
+                "lp_addr" => lp_addr,
+                "minter" => minter,
+                "admin" => admin,
+                "contract_hash" => contract_hash,
+                "package_hash" => package_hash,
+            },
+        );
 
-    // Add the constructor group to the package hash with a single URef.
-    let constructor_access: URef =
-        storage::create_contract_user_group(package_hash, "constructor", 1, Default::default())
-            .unwrap_or_revert()
-            .pop()
+        // Remove all URefs from the constructor group, so no one can call it for the second time.
+        let mut urefs = BTreeSet::new();
+        urefs.insert(constructor_access);
+        storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
             .unwrap_or_revert();
 
-    // Call the constructor entry point
-    let _: () = runtime::call_versioned_contract(
-        package_hash,
-        None,
-        "constructor",
-        runtime_args! {
-            "lp_addr" => lp_addr,
-            "minter" => minter,
-            "admin" => admin,
-            "contract_hash" => contract_hash,
-            "package_hash" => package_hash,
-        },
-    );
+        // Store contract in the account's named keys.
+        runtime::put_key(
+            &format!("{}_package_hash", contract_name),
+            package_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_package_hash_wrapped", contract_name),
+            storage::new_uref(package_hash).into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash", contract_name),
+            contract_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash_wrapped", contract_name),
+            storage::new_uref(contract_hash).into(),
+        );
+        runtime::put_key(
+            &format!("{}_package_access_token", contract_name),
+            access_token.into(),
+        );
+    } else {
+        // get the package
+        let package_hash: ContractPackageHash =
+            runtime::get_key(&format!("{}_package_hash", contract_name))
+                .unwrap_or_revert()
+                .into_hash()
+                .unwrap()
+                .into();
+        // create new version and install it
+        let (contract_hash, _): (ContractHash, _) =
+            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
 
-    // Remove all URefs from the constructor group, so no one can call it for the second time.
-    let mut urefs = BTreeSet::new();
-    urefs.insert(constructor_access);
-    storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
-        .unwrap_or_revert();
-
-    // Store contract in the account's named keys.
-    let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
-    runtime::put_key(
-        &format!("{}_package_hash", contract_name),
-        package_hash.into(),
-    );
-    runtime::put_key(
-        &format!("{}_package_hash_wrapped", contract_name),
-        storage::new_uref(package_hash).into(),
-    );
-    runtime::put_key(
-        &format!("{}_contract_hash", contract_name),
-        contract_hash.into(),
-    );
-    runtime::put_key(
-        &format!("{}_contract_hash_wrapped", contract_name),
-        storage::new_uref(contract_hash).into(),
-    );
-    runtime::put_key(
-        &format!("{}_package_access_token", contract_name),
-        access_token.into(),
-    );
+        // update contract hash
+        runtime::put_key(
+            &format!("{}_contract_hash", contract_name),
+            contract_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash_wrapped", contract_name),
+            storage::new_uref(contract_hash).into(),
+        );
+    }
 }

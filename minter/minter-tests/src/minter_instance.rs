@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use blake2::{
     digest::{Update, VariableOutput},
     VarBlake2b,
@@ -9,41 +7,17 @@ use casper_types::{
     RuntimeArgs, U128, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use std::collections::BTreeMap;
+use std::time::SystemTime;
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct MINTERInstance(TestContract);
-// //#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl MINTERInstance {
     pub fn instance(minter: TestContract) -> MINTERInstance {
         MINTERInstance(minter)
-    }
-
-    pub fn proxy(env: &TestEnv, minter: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "minter-proxy-token.wasm",
-            "proxy_test",
-            sender,
-            runtime_args! {
-                "minter" => minter
-            },
-            0,
-        )
-    }
-    pub fn proxy2(env: &TestEnv, minter: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "minter-proxy-token.wasm",
-            "proxy_test2",
-            sender,
-            runtime_args! {
-                "minter" => minter
-            },
-            0,
-        )
     }
     pub fn deploy_gauge_controller(
         env: &TestEnv,
@@ -51,6 +25,7 @@ impl MINTERInstance {
         sender: AccountHash,
         token: Key,
         voting_escrow: Key,
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -61,7 +36,7 @@ impl MINTERInstance {
                 "voting_escrow" => voting_escrow,
                 "token" => token,
             },
-            0,
+            block_time,
         )
     }
     pub fn deploy_voting_escrow(
@@ -72,6 +47,7 @@ impl MINTERInstance {
         name: String,
         symbol: String,
         version: String,
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -84,7 +60,7 @@ impl MINTERInstance {
                 "symbol" => symbol,
                 "version" => version,
             },
-            0,
+            block_time,
         )
     }
     pub fn deploy_erc20(
@@ -94,6 +70,7 @@ impl MINTERInstance {
         symbol: &str,
         decimals: u8,
         supply: U256,
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -106,32 +83,29 @@ impl MINTERInstance {
                 "symbol" => symbol,
                 "decimals" => decimals
             },
-            0,
+            block_time,
         )
     }
-    pub fn deploy_liquidity_gauge_reward(
+    pub fn deploy_liquidity_gauge(
         env: &TestEnv,
         contract_name: &str,
         sender: AccountHash,
         lp_addr: Key,
         minter: Key,
-        reward_contract: Key,
-        rewarded_token: Key,
         admin: Key,
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
-            "liquidity-gauge-reward.wasm",
+            "liquidity-gauge-v3.wasm",
             contract_name,
             sender,
             runtime_args! {
                 "lp_addr" => lp_addr,
                 "minter" => minter,
-                "reward_contract" => reward_contract,
-                "rewarded_token" => rewarded_token,
                 "admin" => admin,
             },
-            0,
+            block_time,
         )
     }
     pub fn new_deploy(
@@ -140,6 +114,7 @@ impl MINTERInstance {
         sender: AccountHash,
         token: Key,
         controller: Key,
+        block_time: u64,
     ) -> TestContract {
         TestContract::new(
             env,
@@ -150,10 +125,10 @@ impl MINTERInstance {
                 "controller" => controller,
                 "token" => token,
             },
-            0,
+            block_time,
         )
     }
-    pub fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
+    pub fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash, block_time: u64) -> TestContract {
         TestContract::new(
             env,
             "erc20_crv.wasm",
@@ -163,9 +138,8 @@ impl MINTERInstance {
                 "name" => "CRV",
                 "symbol" => "ERC20CRV",
                 "decimals" => 9_u8,
-                "supply" => U256::from(0)
             },
-            200000000000,
+            block_time,
         )
     }
     pub fn constructor(
@@ -175,6 +149,7 @@ impl MINTERInstance {
         token: Key,
         controller: Key,
         reward_count: U256,
+        block_time: u64,
     ) {
         self.0.call_contract(
             sender,
@@ -185,31 +160,37 @@ impl MINTERInstance {
                 "token" => token,
                 "reward_count" => reward_count
             },
-            0,
+            block_time,
         );
     }
 
-    pub fn mint<T: Into<Key>>(&self, sender: AccountHash, gauge_addr: T) {
+    pub fn mint<T: Into<Key>>(&self, sender: AccountHash, gauge_addr: T, block_time: u64) {
         self.0.call_contract(
             sender,
             "mint",
             runtime_args! {
                 "gauge_addr" => gauge_addr.into(),
             },
-            0,
+            block_time,
         );
     }
-    pub fn mint_many(&self, sender: AccountHash, gauge_addrs: Vec<String>) {
+    pub fn mint_many(&self, sender: AccountHash, gauge_addrs: Vec<String>, block_time: u64) {
         self.0.call_contract(
             sender,
             "mint_many",
             runtime_args! {
                 "gauge_addrs" => gauge_addrs,
             },
-            0,
+            block_time,
         );
     }
-    pub fn mint_for<T: Into<Key>>(&self, sender: AccountHash, gauge_addr: T, _for: T) {
+    pub fn mint_for<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        gauge_addr: T,
+        _for: T,
+        block_time: u64,
+    ) {
         self.0.call_contract(
             sender,
             "mint_for",
@@ -217,17 +198,22 @@ impl MINTERInstance {
                 "gauge_addr" => gauge_addr.into(),
                 "for" => _for.into(),
             },
-            0,
+            block_time,
         );
     }
-    pub fn toggle_approve_mint<T: Into<Key>>(&self, sender: AccountHash, minting_user: T) {
+    pub fn toggle_approve_mint<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        minting_user: T,
+        block_time: u64,
+    ) {
         self.0.call_contract(
             sender,
             "toggle_approve_mint",
             runtime_args! {
                 "minting_user" => minting_user.into(),
             },
-            0,
+            block_time,
         );
     }
 
@@ -262,6 +248,12 @@ impl MINTERInstance {
     pub fn contract_hash(&self) -> Key {
         self.0.query_named_key(String::from("self_contract_hash"))
     }
+    pub fn now() -> u64 {
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
+    }
 }
 
 pub fn key_to_str(key: &Key) -> String {
@@ -276,8 +268,9 @@ pub fn add_gauge<T: Into<Key>>(
     gauge_controller: &TestContract,
     sender: AccountHash,
     addr: T,
-    gauge_type: U128,
+    gauge_type: (bool, U128),
     weight: Option<U256>,
+    block_time: u64,
 ) {
     gauge_controller.call_contract(
         sender,
@@ -287,10 +280,9 @@ pub fn add_gauge<T: Into<Key>>(
             "gauge_type" => gauge_type,
             "weight"=>weight
         },
-        0,
+        block_time,
     );
 }
-
 pub fn keys_to_str(key_a: &Key, key_b: &Key) -> String {
     let mut hasher = VarBlake2b::new(32).unwrap();
     hasher.update(key_a.to_bytes().unwrap());

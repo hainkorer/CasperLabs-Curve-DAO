@@ -26,4 +26,3 @@ lp-token-wrapper/lp-token-wrapper-tests/wasm/*.wasm
 ownable/ownable-tests/wasm/*.wasm
 i-reward-distribution-recipient/i-reward-distribution-recipient-tests/wasm/*.wasm
 liquidity-gauge-v3/liquidity-gauge-v3-tests/wasm/*.wasm
-

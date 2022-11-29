@@ -1,12 +1,15 @@
 // Common Keys
 pub const SESSION_CODE_WASM: &str = "session-code.wasm";
 pub const SESSION_CODE_NAME: &str = "session_code";
+pub const TEST_SESSION_CODE_WASM: &str = "test-session-code.wasm";
+pub const TEST_SESSION_CODE_NAME: &str = "test_session_code";
 pub const SELF_CONTRACT_HASH: &str = "self_contract_hash";
 pub const SELF_CONTRACT_PACKAGE_HASH: &str = "self_contract_package_hash";
 pub const VESTING_ESCROW_SIMPLE_CONTRACT_HASH: &str = "vesting_escrow_simple_contract_hash";
 pub const VESTING_ESCROW_SIMPLE_CONTRACT_PACKAGE_HASH: &str =
     "vesting_escrow_simple_contract_package_hash";
 pub const EVENT_TYPE: &str = "event_type";
+pub const GAUGES: &str = "gauges";
 pub const RESULT: &str = "result";
 pub const ADMIN: &str = "admin";
 pub const FUTURE_ADMIN: &str = "future_admin";
@@ -54,9 +57,6 @@ pub const START_EPOCH_TIME_WRITE: &str = "start_epoch_time_write";
 pub const AVAILABLE_SUPPLY: &str = "available_supply";
 pub const MINT: &str = "mint";
 pub const MINTABLE_IN_TIMEFRAME: &str = "mintable_in_timeframe";
-// ERC-20
-pub const DOMAIN_SEPARATOR: &str = "domain_separator";
-pub const PERMIT_TYPE_HASH: &str = "permit_type_hash";
 // ERC-20 CRV
 pub const MINING_EPOCH: &str = "mining_epoch";
 pub const IS_UPDATED: &str = "is_updated";
@@ -114,6 +114,7 @@ pub const CURVE_TOKEN_V3_ALLOWANCES_DICT: &str = "allowances";
 pub const CURVE_TOKEN_V3_TOTAL_SUPPLY: &str = "total_supply";
 pub const CURVE_TOKEN_V3_CURVE: &str = "curve";
 pub const CURVE_TOKEN_V3_MINTER: &str = "minter";
+pub const BURN_FROM: &str = "burn_from";
 // Gauge Controller
 pub const GAUGE_TYPE_NAMES_DICT: &str = "gauge_type_names";
 pub const GAUGE_TYPES_DICT: &str = "gauge_types_";
@@ -165,6 +166,8 @@ pub const CLAIMABLE_REWARDS: &str = "claimable_rewards";
 pub const USER_CHECKPOINT: &str = "user_checkpoint";
 pub const CLAIMABLE_TOKENS: &str = "claimable_tokens";
 pub const CLAIMABLE_REWARD: &str = "claimable_reward";
+pub const CLAIMABLE_V3_REWARD: &str = "claimable_reward_v3";
+pub const U8_DECIMALS: &str = "decimals_u8";
 pub const ALLOWANCE: &str = "allowance";
 // Gauge Controller Wasm Keys
 pub const GAUGE_TYPES: &str = "gauge_types";
@@ -190,9 +193,11 @@ pub const REWARDS_DICT: &str = "rewards";
 pub const LAST_TIME_REWARD_APPLICABLE: &str = "last_time_reward_applicable";
 pub const REWARD_PER_TOKEN: &str = "reward_per_token";
 pub const EARNED: &str = "earned";
+pub const IS_OWNER: &str = "is_owner";
 //Liqudity Guage v3 keys
 pub const MYVEC: &str = "myvec";
 pub const INTEGRATE_CHECKPOINT: &str = "integrate_checkpoint";
+pub const REWARD_SIGS: &str = "reward_sigs";
 
 //VESTING ESCROW
 pub const APPLY_TRANSFER_OWNERSHIP: &str = "apply_transfer_ownership";
@@ -206,8 +211,6 @@ pub const TRANSFER: &str = "transfer";
 pub const TRANSFER_FROM: &str = "transfer_from";
 pub const INCREASE_ALLOWANCE: &str = "increase_allowance";
 pub const DECREASE_ALLOWANCE: &str = "decrease_allowance";
-// pub const REWARD_CONTRACT: &str = "reward_contract";
 pub const LAST_CLAIM: &str = "last_claim";
 pub const CLAIMED_REWARD: &str = "claimed_reward";
-// pub const CLAIMABLE_REWARD: &str = "claimable_reward";
 pub const CLAIMABLE_REWARD_WRITE: &str = "claimable_reward_write";

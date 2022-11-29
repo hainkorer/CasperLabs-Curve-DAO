@@ -4,7 +4,7 @@ use casper_contract::{
 };
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 use core::convert::TryInto;
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
@@ -146,11 +146,6 @@ pub fn set_future_admin(future_admin: Key) {
 pub fn get_future_admin() -> Key {
     get_key(FUTURE_ADMIN).unwrap_or_revert()
 }
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-
 pub fn set_hash(contract_hash: ContractHash) {
     set_key(SELF_CONTRACT_HASH, contract_hash);
 }
