@@ -10,7 +10,7 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash, blocktime: u64) -> TestContr
         "erc20",
         sender,
         runtime_args! {
-            "initial_supply" => U256::from(1000000000000 as u128),
+            "initial_supply" => U256::from(1000000000000_u128),
             "name" => "Token",
             "symbol" => "ERC20",
             "decimals" => 9_u8
@@ -298,7 +298,7 @@ mod deposit_withdraw_kill_me_and_approve_test_cases {
     #[test]
     fn test_deposit() {
         let (env, owner, instance, erc20, blocktime) = deploy();
-        let value: U256 = U256::from(10000000000 as u128);
+        let value: U256 = U256::from(10000000000_u128);
         let package_hash = instance.package_hash();
         erc20.call_contract(
             owner,
@@ -331,7 +331,7 @@ mod deposit_withdraw_kill_me_and_approve_test_cases {
             blocktime,
         );
         let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-        assert_eq!(ret, U256::from(1010000000000 as u128), "Invalid result");
+        assert_eq!(ret, U256::from(1010000000000_u128), "Invalid result");
         instance.deposit(owner, None, value, blocktime);
         TestContract::new(
             &env,
@@ -346,14 +346,14 @@ mod deposit_withdraw_kill_me_and_approve_test_cases {
             blocktime,
         );
         let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-        assert_eq!(ret, U256::from(10000000000 as u128), "Invalid result");
+        assert_eq!(ret, U256::from(10000000000_u128), "Invalid result");
     }
 
     #[test]
     fn test_withdraw() {
         let (env, owner, instance, erc20, blocktime) = deploy();
         let claim_rewards: bool = true;
-        let value: U256 = U256::from(10000000000 as u128);
+        let value: U256 = U256::from(10000000000_u128);
         erc20.call_contract(
             owner,
             "mint",
@@ -386,7 +386,7 @@ mod deposit_withdraw_kill_me_and_approve_test_cases {
             blocktime,
         );
         let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-        assert_eq!(ret, U256::from(10000000000 as u128), "Invalid result");
+        assert_eq!(ret, U256::from(10000000000_u128), "Invalid result");
         instance.withdraw(owner, claim_rewards, value, blocktime);
         TestContract::new(
             &env,
@@ -401,7 +401,7 @@ mod deposit_withdraw_kill_me_and_approve_test_cases {
             blocktime,
         );
         let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
-        assert_eq!(ret, U256::from(0 as u128), "Invalid result");
+        assert_eq!(ret, U256::from(0_u128), "Invalid result");
     }
 
     #[test]
@@ -485,7 +485,7 @@ mod ownership_and_toggle_external_rewards_claim_test_cases {
         let val: bool = true;
         instance.toggle_external_rewards_claim(owner, val, blocktime);
         let ret: bool = instance.key_value("is_claiming_rewards".to_string());
-        assert_eq!(ret, true, "Invalid result");
+        assert!(ret, "Invalid result");
     }
 }
 mod panic_test_cases {
@@ -514,7 +514,7 @@ mod panic_test_cases {
     #[test]
     fn test_withdraw_panic() {
         let (env, owner, instance, _, blocktime) = deploy();
-        let value: U256 = U256::from(10000000000 as u128);
+        let value: U256 = U256::from(10000000000_u128);
         instance.withdraw(owner, true, value, blocktime);
         TestContract::new(
             &env,

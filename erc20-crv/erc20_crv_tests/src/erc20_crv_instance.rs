@@ -14,7 +14,7 @@ impl ERC20CRVInstance {
         name: String,
         symbol: String,
         decimals: u8,
-        time_now:u64
+        time_now: u64,
     ) -> ERC20CRVInstance {
         ERC20CRVInstance(TestContract::new(
             env,
@@ -59,7 +59,7 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn update_mining_parameters(&self, sender: AccountHash,time_now:u64) {
+    pub fn update_mining_parameters(&self, sender: AccountHash, time_now: u64) {
         self.0.call_contract(
             sender,
             "update_mining_parameters",
@@ -68,13 +68,9 @@ impl ERC20CRVInstance {
         );
     }
 
-    pub fn start_epoch_time_write(&self, sender: AccountHash,time_now:u64) {
-        self.0.call_contract(
-            sender,
-            "start_epoch_time_write",
-            runtime_args! {},
-            time_now,
-        );
+    pub fn start_epoch_time_write(&self, sender: AccountHash, time_now: u64) {
+        self.0
+            .call_contract(sender, "start_epoch_time_write", runtime_args! {}, time_now);
     }
     pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256) {
         self.0.call_contract(

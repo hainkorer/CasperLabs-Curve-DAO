@@ -610,7 +610,7 @@ fn test_vesting_escrow_vested_supply() {
         user_4.to_formatted_string(),
     ];
     let _amounts: Vec<U256> = vec![
-        U256::from(1 * TEN_E_NINE),
+        U256::from(TEN_E_NINE),
         U256::from(2 * TEN_E_NINE),
         U256::from(3 * TEN_E_NINE),
         U256::from(4 * TEN_E_NINE),
@@ -626,7 +626,7 @@ fn test_vesting_escrow_vested_supply() {
     );
     assert_eq!(
         vesting_escrow_instance.initial_locked(user_1),
-        U256::from(1 * TEN_E_NINE)
+        U256::from(TEN_E_NINE)
     );
     assert_eq!(
         vesting_escrow_instance.initial_locked(user_2),

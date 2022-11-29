@@ -318,9 +318,9 @@ pub fn set_package_hash(package_hash: ContractPackageHash) {
 
 pub fn convert(a: U256, b: U256) -> i128 {
     if a > b {
-        i128::from_str_radix((a - b).to_string().as_str(), 10).unwrap()
+        (a - b).to_string().as_str().parse::<i128>().unwrap()
     } else {
-        i128::from_str_radix((b - a).to_string().as_str(), 10).unwrap() * -1
+        -(b - a).to_string().as_str().parse::<i128>().unwrap()
     }
 }
 
