@@ -366,127 +366,133 @@ mod t3 {
         assert_eq!(ret, 0.into());
     }
 }
-// mod t6 {
+mod t6 {
 
-//     use crate::liquidity_gauge_v3_tests::*;
-// #[test]
-// fn test_deposit() {
-//     let (_, owner, contract,time_now) = deploy();
-//     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-//     let value: U256 = U256::from(1000 * TEN_E_NINE);
-//     let addr: Key = Key::from_formatted_str(
-//         "hash-0000000000000000000000010000000000000000000000000000000000020000",
-//     )
-//     .unwrap();
-//     contract.deposit(owner, value, Some(addr), Some(false),time_now);
-// }
-//}
-// mod t7{
-//     use crate::liquidity_gauge_v3_tests::*;
-// //#[test]
-// fn test_withdraw() {
-//     let (_, owner, contract,time_now) = deploy();
-//     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-//     let value: U256 = 1000.into();
-//     let addr: Key = Key::from_formatted_str(
-//         "hash-0000000000000000000000010000000000000000000000000000000000020000",
-//     )
-//     .unwrap();
-//     contract.deposit(owner, value, Some(addr), Some(false),time_now);
-//     contract.withdraw(owner, value, Some(false),time_now);
-// }
-// }
-// mod t8{
-//     use crate::liquidity_gauge_v3_tests::*;
-// #[test]
-// fn test_transfer() {
-//     let (env, owner, contract,time_now) = deploy();
-//     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-//     let value: U256 = 1000000.into();
-//     let recipient: Key = Key::from_formatted_str(
-//         "hash-0000000000000000000000010000000000000000000000000000000000020000",
-//     )
-//     .unwrap();
-//     let amount: U256 = 100000.into();
-//     contract.deposit(owner, value, Some(Key::Account(owner)), Some(false),time_now);
-//     TestContract::new(
-//         &env,
-//         "liquidity_gauge_v3_session_code.wasm",
-//         "SessionCode",
-//         owner,
-//         runtime_args! {
-//             "entrypoint" => String::from(TRANSFER),
-//             "package_hash" => Key::Hash(contract.package_hash()),
-//             "recipient"=>recipient,
-//             "amount"=>amount
-//         },
-//         time_now,
-//     );
-//     let ret: Result<(), u32> = env.query_account_named_key(owner, &[TRANSFER.into()]);
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => panic!("Transfer Failed ERROR:{}", e),
-//     }
-// }
-//}
-// mod t9{
-//     use crate::liquidity_gauge_v3_tests::*;
-// #[test]
-// fn test_transfer_from() {
-//     let (env, owner, contract,time_now) = deploy();
-//     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-//     let recipient: Key = Key::from_formatted_str(
-//         "hash-0000000000000000000000010000000000000000000000000000000000020000",
-//     )
-//     .unwrap();
-//     let spender = env.next_user();
-//     let amount: U256 = 100000.into();
-//     contract.deposit(owner, amount, Some(Key::from(owner)), Some(false),time_now);
-//     contract.approve(owner, Key::from(spender), amount,time_now);
-//     TestContract::new(
-//         &env,
-//         "liquidity_gauge_v3_session_code.wasm",
-//         "SessionCode",
-//         spender,
-//         runtime_args! {
-//             "entrypoint" => String::from(TRANSFER_FROM),
-//             "package_hash" => Key::Hash(contract.package_hash()),
-//             "owner"=>Key::from(owner),
-//             "recipient"=>recipient,
-//             "amount"=>amount
-//         },
-//         time_now,
-//     );
-//     let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
-//     match ret {
-//         Ok(()) => {}
-//         Err(e) => panic!("Transfer From Failed ERROR:{}", e),
-//     }
-// }
-//}
-// mod t10{
-//     use crate::liquidity_gauge_v3_tests::*;
-// #[test]
-// fn test_claimable_tokens() {
-//     let (env, owner, contract,time_now) = deploy();
-//     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-//     let addr = env.next_user();
-//     TestContract::new(
-//         &env,
-//         "liquidity_gauge_v3_session_code.wasm",
-//         "SessionCode",
-//         owner,
-//         runtime_args! {
-//             "entrypoint" => String::from(CLAIMABLE_TOKENS),
-//             "package_hash" => Key::Hash(contract.package_hash()),
-//             "addr"=>Key::from(addr)
-//         },
-//         time_now,
-//     );
-//     let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_TOKENS.into()]);
-//     assert_eq!(ret, 0.into());
-// }
-//}
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_deposit() {
+        let (_, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let value: U256 = U256::from(1000 * TEN_E_NINE);
+        let addr: Key = Key::from_formatted_str(
+            "hash-0000000000000000000000010000000000000000000000000000000000020000",
+        )
+        .unwrap();
+        contract.deposit(owner, value, Some(addr), Some(false), time_now);
+    }
+}
+mod t7 {
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_withdraw() {
+        let (_, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let value: U256 = 1000.into();
+        let addr: Key = Key::from_formatted_str(
+            "hash-0000000000000000000000010000000000000000000000000000000000020000",
+        )
+        .unwrap();
+        contract.deposit(owner, value, Some(addr), Some(false), time_now);
+        contract.withdraw(owner, value, Some(false), time_now);
+    }
+}
+mod t8 {
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_transfer() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let value: U256 = 1000000.into();
+        let recipient: Key = Key::from_formatted_str(
+            "hash-0000000000000000000000010000000000000000000000000000000000020000",
+        )
+        .unwrap();
+        let amount: U256 = 100000.into();
+        contract.deposit(
+            owner,
+            value,
+            Some(Key::Account(owner)),
+            Some(false),
+            time_now,
+        );
+        TestContract::new(
+            &env,
+            "liquidity_gauge_v3_session_code.wasm",
+            "SessionCode",
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(TRANSFER),
+                "package_hash" => Key::Hash(contract.package_hash()),
+                "recipient"=>recipient,
+                "amount"=>amount
+            },
+            time_now,
+        );
+        let ret: Result<(), u32> = env.query_account_named_key(owner, &[TRANSFER.into()]);
+        match ret {
+            Ok(()) => {}
+            Err(e) => panic!("Transfer Failed ERROR:{}", e),
+        }
+    }
+}
+mod t9 {
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_transfer_from() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let recipient: Key = Key::from_formatted_str(
+            "hash-0000000000000000000000010000000000000000000000000000000000020000",
+        )
+        .unwrap();
+        let spender = env.next_user();
+        let amount: U256 = 100000.into();
+        contract.deposit(owner, amount, Some(Key::from(owner)), Some(false), time_now);
+        contract.approve(owner, Key::from(spender), amount, time_now);
+        TestContract::new(
+            &env,
+            "liquidity_gauge_v3_session_code.wasm",
+            "SessionCode",
+            spender,
+            runtime_args! {
+                "entrypoint" => String::from(TRANSFER_FROM),
+                "package_hash" => Key::Hash(contract.package_hash()),
+                "owner"=>Key::from(owner),
+                "recipient"=>recipient,
+                "amount"=>amount
+            },
+            time_now,
+        );
+        let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
+        match ret {
+            Ok(()) => {}
+            Err(e) => panic!("Transfer From Failed ERROR:{}", e),
+        }
+    }
+}
+mod t10 {
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_claimable_tokens() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let addr = env.next_user();
+        TestContract::new(
+            &env,
+            "liquidity_gauge_v3_session_code.wasm",
+            "SessionCode",
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(CLAIMABLE_TOKENS),
+                "package_hash" => Key::Hash(contract.package_hash()),
+                "addr"=>Key::from(addr)
+            },
+            time_now,
+        );
+        let ret: U256 = env.query_account_named_key(owner, &[CLAIMABLE_TOKENS.into()]);
+        assert_eq!(ret, 0.into());
+    }
+}
 mod t4 {
 
     use crate::liquidity_gauge_v3_tests::*;
@@ -535,28 +541,28 @@ mod t4 {
         assert_eq!(ret, 0.into());
     }
 }
-// mod t11{
-//     use crate::liquidity_gauge_v3_tests::*;
-// #[test]
-// fn test_user_checkpoint() {
-//     let (env, owner, contract,time_now) = deploy();
-//     let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-//     TestContract::new(
-//         &env,
-//         "liquidity_gauge_v3_session_code.wasm",
-//         "SessionCode",
-//         owner,
-//         runtime_args! {
-//             "entrypoint" => String::from(USER_CHECKPOINT),
-//             "package_hash" => Key::Hash(contract.package_hash()),
-//             "addr"=>Key::from(owner),
-//         },
-//         time_now,
-//     );
-// let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
-// assert!(ret);
-// }
-// }
+mod t11 {
+    use crate::liquidity_gauge_v3_tests::*;
+    #[test]
+    fn test_user_checkpoint() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        TestContract::new(
+            &env,
+            "liquidity_gauge_v3_session_code.wasm",
+            "SessionCode",
+            owner,
+            runtime_args! {
+                "entrypoint" => String::from(USER_CHECKPOINT),
+                "package_hash" => Key::Hash(contract.package_hash()),
+                "addr"=>Key::from(owner),
+            },
+            time_now,
+        );
+        let ret: bool = env.query_account_named_key(owner, &[USER_CHECKPOINT.into()]);
+        assert!(ret);
+    }
+}
 mod t5 {
 
     use crate::liquidity_gauge_v3_tests::*;

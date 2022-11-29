@@ -104,6 +104,7 @@ test-only-gauge-controller:
 	cargo test -p gauge-controller-tests change_gauge_test_cases  -- --test-threads=1
 	cargo test -p gauge-controller-tests gauge_relative_weight_test_cases  -- --test-threads=1
 	cargo test -p gauge-controller-tests get_type_and_total_weight_test_cases  -- --test-threads=1
+	cargo test -p gauge-controller-tests vote_functions_and_effect_with_period_test_cases  -- --test-threads=1
 test-only-gauge-proxy:
 	cargo test -p gauge-proxy-tests
 test-only-liquidity-gauge-reward:
@@ -149,12 +150,12 @@ test-only-liquidity-gauge-v3:
 	cargo test -p liquidity-gauge-v3-tests t4
 	cargo test -p liquidity-gauge-v3-tests t5
 	# intensive memory test cases below
-	# cargo test -p liquidity-gauge-v3-tests t6
-	# cargo test -p liquidity-gauge-v3-tests t7
-	# cargo test -p liquidity-gauge-v3-tests t8
-	# cargo test -p liquidity-gauge-v3-tests t9
-	# cargo test -p liquidity-gauge-v3-tests t10
-	# cargo test -p liquidity-gauge-v3-tests t11
+	cargo test -p liquidity-gauge-v3-tests t6
+	cargo test -p liquidity-gauge-v3-tests t7
+	cargo test -p liquidity-gauge-v3-tests t8
+	cargo test -p liquidity-gauge-v3-tests t9
+	cargo test -p liquidity-gauge-v3-tests t10
+	cargo test -p liquidity-gauge-v3-tests t11
 test-only-i-reward-distribution-recipient:
 	cargo test -p i-reward-distribution-recipient-tests
 test-only-ownable:
@@ -326,7 +327,7 @@ all:
 	make test-curve-token-v3
 	make test-erc20
 	make test-erc20-crv
-	make test-fee-distributor
+	#make test-fee-distributor
 	make test-gauge-controller
 	make test-gauge-proxy
 	make test-liquidity-gauge-reward

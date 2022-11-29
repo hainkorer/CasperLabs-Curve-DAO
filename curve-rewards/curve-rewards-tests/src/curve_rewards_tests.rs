@@ -4,6 +4,7 @@ use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 //Const
 pub const TEN_E_NINE: u128 = 1000000000;
+pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
 fn deploy_token(env: &TestEnv, owner: AccountHash, block_time: u64) -> TestContract {
     TestContract::new(
         env,
@@ -118,11 +119,10 @@ fn reward_per_token() {
             "entrypoint" => String::from(REWARD_PER_TOKEN),
             "package_hash" => package_hash,
         },
-        block_time,
+        block_time +WEEK.as_u64(),
     );
-    let _ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
-    //This assert is commented because value is continously changing due to blocktime
-    // assert_eq!(ret, 180.into(), "invalid result");
+    let ret: U256 = env.query_account_named_key(owner, &[REWARD_PER_TOKEN.into()]);
+    assert!(ret>=200000000.into(), "invalid result");
 }
 #[test]
 fn earned() {
@@ -146,12 +146,11 @@ fn earned() {
             "package_hash" => package_hash,
             "account" => Key::Account(owner)
         },
-        block_time,
+        block_time+WEEK.as_u64(),
     );
-    let _ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
-    let _v: u128 = 2400000000000000_u128;
-    //This assert is commented because value is continously changing due to blocktime
-    // assert_eq!(ret, v.into(), "invalid result");
+    let ret: U256 = env.query_account_named_key(owner, &[EARNED.into()]);
+    let v: u128 = 2400000000000000_u128;
+    assert!(ret>v.into(), "invalid result");
 }
 #[test]
 fn stake() {
@@ -295,9 +294,8 @@ fn notify_reward_amount() {
         },
         block_time,
     );
-    let _ret: U256 = env.query_account_named_key(owner, &[LAST_TIME_REWARD_APPLICABLE.into()]);
-    //This assert is commented because value is continously changing due to blocktime
-    //assert_eq!(ret, (1668081752971 as u128).into(), "invalid result");
+    let ret: U256 = env.query_account_named_key(owner, &[LAST_TIME_REWARD_APPLICABLE.into()]);
+    assert!(ret>=U256::from(block_time), "invalid result");
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
