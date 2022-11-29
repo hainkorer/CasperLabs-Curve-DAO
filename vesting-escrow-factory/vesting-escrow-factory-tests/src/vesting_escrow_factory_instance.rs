@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, time::SystemTime};
 
 use blake2::{
     digest::{Update, VariableOutput},
@@ -14,37 +14,12 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub struct VESTINGESCROWFACTORYInstance(TestContract);
-//#[clippy::must_use]
 #[allow(clippy::too_many_arguments)]
 impl VESTINGESCROWFACTORYInstance {
     pub fn instance(vesting_escrow_factory: TestContract) -> VESTINGESCROWFACTORYInstance {
         VESTINGESCROWFACTORYInstance(vesting_escrow_factory)
     }
 
-    pub fn proxy(env: &TestEnv, vesting_escrow_factory: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "vesting-escrow-factory-proxy-token.wasm",
-            "proxy_test",
-            sender,
-            runtime_args! {
-                "vesting_escrow_factory" => vesting_escrow_factory
-            },
-            0,
-        )
-    }
-    pub fn proxy2(env: &TestEnv, vesting_escrow_factory: Key, sender: AccountHash) -> TestContract {
-        TestContract::new(
-            env,
-            "vesting-escrow-factory-proxy-token.wasm",
-            "proxy_test2",
-            sender,
-            runtime_args! {
-                "vesting_escrow_factory" => vesting_escrow_factory
-            },
-            0,
-        )
-    }
     pub fn erc20(
         env: &TestEnv,
         sender: AccountHash,
@@ -64,7 +39,7 @@ impl VESTINGESCROWFACTORYInstance {
                 "symbol" => symbol,
                 "decimals" => decimals
             },
-            0,
+            VESTINGESCROWFACTORYInstance::now(),
         )
     }
 
@@ -84,42 +59,32 @@ impl VESTINGESCROWFACTORYInstance {
                 "target"=>_target,
                 "admin"=>_admin,
             },
-            0,
+            VESTINGESCROWFACTORYInstance::now(),
         )
     }
 
-    pub fn constructor(
-        &self,
-        sender: AccountHash,
-        _target: Key,
-        _admin: Key,
-        // _vesting_escrow_simple_contract: Key,
-    ) {
+    pub fn apply_transfer_ownership(&self, sender: AccountHash, time_now: u64) {
         self.0.call_contract(
             sender,
-            "constructor",
-            runtime_args! {
-                "target"=>_target,
-                "admin"=>_admin,
-                // "vesting_escrow_simple_contract"=>_vesting_escrow_simple_contract,
-            },
-            0,
+            "apply_transfer_ownership",
+            runtime_args! {},
+            time_now,
         );
     }
 
-    pub fn apply_transfer_ownership(&self, sender: AccountHash) {
-        self.0
-            .call_contract(sender, "apply_transfer_ownership", runtime_args! {}, 0);
-    }
-
-    pub fn commit_transfer_ownership<T: Into<Key>>(&self, sender: AccountHash, addr: T) {
+    pub fn commit_transfer_ownership<T: Into<Key>>(
+        &self,
+        sender: AccountHash,
+        time_now: u64,
+        addr: T,
+    ) {
         self.0.call_contract(
             sender,
             "commit_transfer_ownership",
             runtime_args! {
                 "addr" => addr.into(),
             },
-            0,
+            time_now,
         );
     }
 
@@ -144,7 +109,7 @@ impl VESTINGESCROWFACTORYInstance {
                 "vesting_duration" => vesting_duration,
                 "vesting_start" => vesting_start,
             },
-            0,
+            VESTINGESCROWFACTORYInstance::now(),
         );
     }
 
@@ -174,6 +139,12 @@ impl VESTINGESCROWFACTORYInstance {
     pub fn vesting_escrow_simple_contract_hash(&self) -> Key {
         self.0
             .query_named_key(String::from("vesting_escrow_simple_contract_hash"))
+    }
+    pub fn now() -> u64 {
+        SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_millis() as u64
     }
 }
 

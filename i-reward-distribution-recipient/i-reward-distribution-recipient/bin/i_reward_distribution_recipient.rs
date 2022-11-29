@@ -12,7 +12,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use casperlabs_i_reward_distribution_recipient::{data::*, IREWARDDISTRIBUTIONRECIPIENT};
+use casperlabs_i_reward_distribution_recipient::IREWARDDISTRIBUTIONRECIPIENT;
 use casperlabs_ownable::OWNABLE;
 
 #[derive(Default)]
@@ -50,16 +50,6 @@ fn is_owner() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn owner_js_client() {
-    let ret: Key = OWNABLE::owner(&IRewardDistributionRecipient::default());
-    js_ret(ret)
-}
-#[no_mangle]
-fn is_owner_js_client() {
-    let ret: bool = OWNABLE::is_owner(&IRewardDistributionRecipient::default());
-    js_ret(ret)
-}
-#[no_mangle]
 fn renounce_ownership() {
     OWNABLE::renounce_ownership(&mut IRewardDistributionRecipient::default());
 }
@@ -89,7 +79,7 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "set_reward_distribution",
         vec![Parameter::new("reward_distribution", Key::cl_type())],
-        Key::cl_type(),
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -102,20 +92,6 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "is_owner",
-        vec![],
-        bool::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "owner_js_client",
-        vec![],
-        Key::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "is_owner_js_client",
         vec![],
         bool::cl_type(),
         EntryPointAccess::Public,

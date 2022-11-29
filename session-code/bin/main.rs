@@ -35,7 +35,7 @@ pub extern "C" fn call() {
         // Voting Escrow
         GET_LAST_USER_SLOPE => {
             let addr: Key = runtime::get_named_arg("addr");
-            let ret: U128 = runtime::call_versioned_contract(
+            let ret: (bool, U128) = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 GET_LAST_USER_SLOPE,
@@ -124,22 +124,8 @@ pub extern "C" fn call() {
             store(TOTAL_SUPPLY_AT, ret);
         }
         // Fee Distributor
-        VE_FOR_AT => {
-            let user: Key = runtime::get_named_arg("user");
-            let timestamp: U256 = runtime::get_named_arg("timestamp");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                VE_FOR_AT,
-                runtime_args! {
-                    "user" => user,
-                    "timestamp" => timestamp
-                },
-            );
-            store(VE_FOR_AT, ret);
-        }
         CLAIM => {
-            let addr: Key = runtime::get_named_arg("addr");
+            let addr: Option<Key> = runtime::get_named_arg("addr");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
@@ -151,7 +137,7 @@ pub extern "C" fn call() {
             store(CLAIM, ret);
         }
         CLAIM_MANY => {
-            let receivers: Vec<Key> = runtime::get_named_arg("receivers");
+            let receivers: Vec<String> = runtime::get_named_arg("receivers");
             let ret: bool = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
@@ -185,6 +171,16 @@ pub extern "C" fn call() {
                 },
             );
             store(RECOVER_BALANCE, ret);
+        }
+        //IRewardDistributionRecipient
+        IS_OWNER => {
+            let ret: bool = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                IS_OWNER,
+                runtime_args! {},
+            );
+            store(IS_OWNER, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };

@@ -4,8 +4,12 @@ members = [
   "common",
   # SESSION CODE
   "session-code",
+  # Test Session Code
+  "test-session-code",
   # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
+  "curve-token-v3/curve-token-v3-crate",
+  "curve-token-v3/curve-token-v3-session-code",
   "curve-token-v3/curve-token-v3-tests",
   # ERC20
   "erc20/erc20",
@@ -16,14 +20,13 @@ members = [
   "erc20-crv/erc20_crv",
   "erc20-crv/erc20_crv_tests",
   "erc20-crv/session_code",
-  # FEE DISTRIVUTOR
+  # FEE DISTRIBUTOR
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",
   "fee-distributor/fee-distributor-tests",
   # GAUGE CONTROLLER
   "gauge-controller/gauge-controller",
   "gauge-controller/gauge-controller-crate",
-  "gauge-controller/gauge-controller-proxy",
   "gauge-controller/gauge-controller-tests",
   "gauge-controller/session-code",
   # GAUGE PROXY
@@ -34,6 +37,7 @@ members = [
   "liquidity-gauge-reward/liquidity-gauge-reward",
   "liquidity-gauge-reward/liquidity-gauge-reward-crate",
   "liquidity-gauge-reward/liquidity-gauge-reward-tests",
+  "liquidity-gauge-reward/liquidity-gauge-reward-session-code",
   # LIQUIDITY GAUGE REWARD WRAPPER
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-crate",
@@ -47,7 +51,6 @@ members = [
   # MINTER
   "minter/minter",
   "minter/minter-crate",
-  "minter/minter-proxy",
   "minter/minter-tests",
   # REWARD ONLY GAUGE
   "reward-only-gauge/reward-only-gauge",
@@ -62,14 +65,11 @@ members = [
   # VESTING ESCROW FACTORY
   "vesting-escrow-factory/vesting-escrow-factory",
   "vesting-escrow-factory/vesting-escrow-factory-crate",
-  "vesting-escrow-factory/vesting-escrow-factory-proxy",
   "vesting-escrow-factory/vesting-escrow-factory-tests",
+  "vesting-escrow-factory/session-code",
   # VESTING ESCROW SIMPLE
   "vesting-escrow-simple/vesting-escrow-simple-crate",
   "vesting-escrow-simple/vesting-escrow-simple",
-  "vesting-escrow-simple/vesting-escrow-simple-proxy",
-  "vesting-escrow-simple/vesting-escrow-simple-tests",
-  "vesting-escrow-simple/vesting-escrow-simple-proxy",
 
   # ERC20
   "erc20/erc20",
@@ -81,11 +81,6 @@ members = [
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-crate",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-tests",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-session-code",
-  # CURVE TOKEN V3
-  "curve-token-v3/curve-token-v3",
-  "curve-token-v3/curve-token-v3-crate",
-  "curve-token-v3/curve-token-v3-proxy",
-  "curve-token-v3/curve-token-v3-tests",
   # LIQUIDITY GAUGE WRAPPER
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper",
   "liquidity-gauge-wrapper/liquidity-gauge-wrapper-crate",
@@ -99,7 +94,6 @@ members = [
   "ownable/ownable",
   "ownable/ownable-crate",
   "ownable/ownable-tests",
-  "ownable/test-contract",
   # IREWARDDISTRIBUTIONRECIPIENT
   "i-reward-distribution-recipient/i-reward-distribution-recipient",
   "i-reward-distribution-recipient/i-reward-distribution-recipient-crate",
@@ -108,12 +102,10 @@ members = [
   "lp-token-wrapper/lp-token-wrapper",
   "lp-token-wrapper/lp-token-wrapper-crate",
   "lp-token-wrapper/lp-token-wrapper-tests",
-  "lp-token-wrapper/lp-token-wrapper-session-code",
   # Curve Rewards
   "curve-rewards/curve-rewards",
   "curve-rewards/curve-rewards-crate",
   "curve-rewards/curve-rewards-tests",
-  "curve-rewards/curve-rewards-session-code",
   #LIQUIDITY GAUGE V3
   "liquidity-gauge-v3/liquidity-gauge-v3",
   "liquidity-gauge-v3/liquidity-gauge-v3-crate",
@@ -125,3 +117,6 @@ members = [
 [profile.release]
 codegen-units = 1
 lto = true
+
+[patch.crates-io]
+renvm-sig = { git = 'https://github.com/Scytalelabs-official/CasperLabs-renvm-sig.git', branch = 'main' }

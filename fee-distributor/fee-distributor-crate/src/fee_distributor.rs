@@ -9,10 +9,11 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
+
 #[allow(clippy::too_many_arguments)]
 pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     /// @notice Contract constructor
@@ -266,18 +267,20 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             },
         );
         U256::max(
-            (pt.bias
-                .checked_sub(pt.slope)
-                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError6)
-                .checked_mul(
-                    timestamp
-                        .checked_sub(pt.ts.as_u128().into())
-                        .unwrap_or_revert_with(Error::FeeDistributorSubtractionError7)
-                        .as_u128()
-                        .into(),
+            (tuple_to_i128(pt.bias)
+                .checked_sub(
+                    tuple_to_i128(pt.slope)
+                        .checked_mul(
+                            timestamp
+                                .checked_sub(pt.ts)
+                                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError7)
+                                .to_string()
+                                .parse()
+                                .unwrap(),
+                        )
+                        .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError5),
                 )
-                .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError5))
-            .as_u128()
+                .unwrap_or_revert_with(Error::FeeDistributorSubtractionError6))
             .into(),
             0.into(),
         )
@@ -310,27 +313,31 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         "epoch" => epoch
                     },
                 );
-                let mut dt: U128 = 0.into();
+                let mut dt: i128 = 0.into();
                 if t > pt.ts {
                     // If the point is at 0 epoch, it can actually be earlier than the first deposit
                     // Then make dt 0
                     dt = t
                         .checked_sub(pt.ts)
                         .unwrap_or_revert_with(Error::FeeDistributorSubtractionError8)
-                        .as_u128()
-                        .into();
-                }
+                        .to_string()
+                        .parse()
+                        .unwrap();
+               }
                 VeSupply::instance().set(
                     &t,
-                    U128::max(
-                        pt.bias
-                            .checked_sub(pt.slope)
-                            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError9)
-                            .checked_mul(dt)
-                            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError10),
+                    i128::max(
+                        tuple_to_i128(pt.bias)
+                            .checked_sub(
+                                tuple_to_i128(pt.slope)
+                                    .checked_mul(dt)
+                                    .unwrap_or_revert_with(
+                                        Error::FeeDistributorMultiplicationError12,
+                                    ),
+                            )
+                            .unwrap_or_revert_with(Error::FeeDistributorSubtractionError9),
                         0.into(),
                     )
-                    .as_u128()
                     .into(),
                 );
             }
@@ -431,19 +438,19 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             } else {
                 // Calc
                 // + i * 2 is for rounding errors
-                let dt: U128 = week_cursor
+                let dt: i128 = week_cursor
                     .checked_sub(old_user_point.ts)
                     .unwrap_or_revert_with(Error::FeeDistributorSubtractionError12)
-                    .as_u128()
-                    .into();
+                    .to_string()
+                    .parse()
+                    .unwrap();
                 let balance_of: U256 = U256::max(
-                    old_user_point
-                        .bias
-                        .checked_sub(dt)
+                    tuple_to_i128(old_user_point.bias)
+                        .checked_sub(
+                            dt.checked_mul(tuple_to_i128(old_user_point.slope))
+                                .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError8),
+                        )
                         .unwrap_or_revert_with(Error::FeeDistributorSubtractionError13)
-                        .checked_mul(old_user_point.slope)
-                        .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError8)
-                        .as_u128()
                         .into(),
                     0.into(),
                 );
@@ -497,11 +504,16 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     ///     less than `max_epoch`, the account may claim again.
     /// @param _addr Address to claim fees for
     /// @return uint256 Amount of fees claimed in the call
-    fn claim(&self, addr: Key /*self.get_caller()*/) -> U256 {
+    fn claim(&self, addr: Option<Key> /*self.get_caller()*/) -> U256 {
         if get_lock() {
             runtime::revert(ApiError::from(Error::FeeDistributorIsLocked1));
         }
         set_lock(true);
+        let _addr: Key = if let Some(..) = addr {
+            addr.unwrap()
+        } else {
+            self.get_caller()
+        };
         if get_is_killed() {
             runtime::revert(ApiError::from(Error::FeeDistributorKilled1));
         }
@@ -523,7 +535,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             .unwrap_or_revert_with(Error::FeeDistributorDivisionError10)
             .checked_mul(WEEK)
             .unwrap_or_revert_with(Error::FeeDistributorMultiplicationError10);
-        let amount: U256 = self._claim(addr, get_voting_escrow(), last_token_time);
+        let amount: U256 = self._claim(_addr, get_voting_escrow(), last_token_time);
         if amount != 0.into() {
             let token: Key = get_token();
             let ret: Result<(), u32> = runtime::call_versioned_contract(
@@ -546,7 +558,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         }
         set_lock(false);
         amount
-    }
+     }
 
     /// @notice Make multiple fee claims in a single call
     /// @dev Used to claim for many accounts at once, or to make

@@ -45,7 +45,6 @@ fn test_deploy() {
     let user = env.next_user();
     assert_eq!(token.name(), NAME);
     assert_eq!(token.symbol(), SYMBOL);
-    // assert_eq!(token.meta(), meta::contract_meta());
     assert_eq!(
         token.total_supply(),
         (INIT_TOTAL_SUPPLY + INIT_TOTAL_SUPPLY).into()

@@ -9,9 +9,7 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{
-    bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U256,
-};
+use casper_types::{bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef};
 use common::keys::*;
 
 // Key is the same a destination
@@ -53,60 +51,7 @@ pub extern "C" fn call() {
             );
             store(COMMIT_TRANSFER_OWNERSHIP, ret);
         }
-        VESTED_SUPPLY => {
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                VESTED_SUPPLY,
-                runtime_args! {},
-            );
-            store(VESTED_SUPPLY, ret);
-        }
-        LOCKED_SUPPLY => {
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                LOCKED_SUPPLY,
-                runtime_args! {},
-            );
-            store(LOCKED_SUPPLY, ret);
-        }
-        VESTED_OF => {
-            let recipient: Key = runtime::get_named_arg("recipient");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                VESTED_OF,
-                runtime_args! {
-                    "recipient"=>recipient,
-                },
-            );
-            store(VESTED_OF, ret);
-        }
-        BALANCE_OF => {
-            let recipient: Key = runtime::get_named_arg("recipient");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                BALANCE_OF,
-                runtime_args! {
-                    "recipient"=>recipient,
-                },
-            );
-            store(BALANCE_OF, ret);
-        }
-        LOCKED_OF => {
-            let recipient: Key = runtime::get_named_arg("recipient");
-            let ret: U256 = runtime::call_versioned_contract(
-                package_hash.into_hash().unwrap_or_revert().into(),
-                None,
-                LOCKED_OF,
-                runtime_args! {
-                    "recipient"=>recipient,
-                },
-            );
-            store(LOCKED_OF, ret);
-        }
+
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

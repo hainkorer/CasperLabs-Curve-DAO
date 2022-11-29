@@ -1,17 +1,16 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, account_zero_address, zero_address, Allowances, Balances, ClaimData, ClaimDataStruct,
-    RewardBalances, RewardData, RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver,
-    CLAIM_FREQUENCY, MAX_REWARDS,
+    self, Allowances, Balances, ClaimData, ClaimDataStruct, RewardBalances, RewardData,
+    RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver, CLAIM_FREQUENCY, MAX_REWARDS,
 };
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::bytesrepr::Bytes;
+
 use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use common::errors::*;
+use common::{errors::*, utils::*};
 
 pub enum REWARDONLYGAUGEEvent {
     Withdraw {
@@ -69,11 +68,10 @@ impl REWARDONLYGAUGEEvent {
 }
 
 pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
-    /// """
     /// @notice Contract constructor
     /// @param _admin Admin who can kill the gauge
     /// @param _lp_token Liquidity Pool contract address
-    /// """
+
     fn init(
         &mut self,
         _admin: Key,
@@ -264,7 +262,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
     fn reward_data(&mut self) -> RewardData {
         data::reward_data()
     }
-    fn claim_sig(&mut self) -> Bytes {
+    fn claim_sig(&mut self) -> String {
         data::claim_sig()
     }
 
@@ -463,7 +461,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
     fn set_rewards(
         &mut self,
         _reward_contract: Key,
-        _claim_sig: Bytes,
+        _claim_sig: String,
         _reward_tokens: Vec<String>,
     ) {
         let lock = data::get_lock();
@@ -545,9 +543,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         data::future_admin()
     }
 
-    /// """
     /// @notice Claim pending rewards and checkpoint rewards for a user
-    /// """
 
     fn _checkpoint_rewards(
         &mut self,
@@ -585,7 +581,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> {
         }
         let mut receiver = _receiver;
         if _claim && receiver == account_zero_address() && receiver == zero_address() {
-            // # if receiver is not explicitly declared, check for default receiver
+            // if receiver is not explicitly declared, check for default receiver
             receiver = self.rewards_receiver(_user);
             if receiver == account_zero_address() || receiver == zero_address() {
                 receiver = _user;

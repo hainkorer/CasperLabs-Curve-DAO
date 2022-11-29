@@ -2,21 +2,15 @@ use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::bytesrepr::Bytes;
-use casper_types::{ContractHash, ContractPackageHash, Key, U128, U256};
+use casper_types::{ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
 pub const CLAIM_FREQUENCY: U256 = U256([3600000, 0, 0, 0]);
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
-
-#[allow(non_snake_case)]
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
 pub struct RewardData {
@@ -426,12 +420,12 @@ pub fn set_decimals(decimals: u8) {
 //         self.dict.set_by_keys((key1, key2), value);
 //     }
 // }
-pub fn claim_sig() -> Bytes {
-    get_key(CLAIM_SIG).unwrap_or_revert()
+pub fn reward_sigs() -> Bytes {
+    get_key(REWARD_SIGS).unwrap_or_revert()
 }
 
-pub fn set_claim_sig(claim_sig: Bytes) {
-    set_key(CLAIM_SIG, claim_sig);
+pub fn set_reward_sigs(reward_sigs: Bytes) {
+    set_key(REWARD_SIGS, reward_sigs);
 }
 pub fn myvec() -> Vec<Key> {
     get_key(MYVEC).unwrap_or_revert()
@@ -528,12 +522,12 @@ pub fn get_working_supply() -> U256 {
     get_key(WORKING_SUPPLY).unwrap_or_default()
 }
 
-pub fn set_period(period: U128) {
-    set_key(PERIOD, period);
+pub fn set_period(period: i128) {
+    set_key(PERIOD, i128_to_tuple(period));
 }
 
-pub fn get_period() -> U128 {
-    get_key(PERIOD).unwrap_or_default()
+pub fn get_period() -> i128 {
+    tuple_to_i128(get_key(PERIOD).unwrap_or_default())
 }
 
 pub fn set_inflation_rate(inflation_rate: U256) {

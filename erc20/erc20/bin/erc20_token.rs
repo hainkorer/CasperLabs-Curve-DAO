@@ -34,8 +34,6 @@ impl Token {
         symbol: String,
         decimals: u8,
         initial_supply: U256,
-        domain_separator: String,
-        permit_type_hash: String,
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
@@ -45,8 +43,6 @@ impl Token {
             symbol,
             decimals,
             initial_supply,
-            domain_separator,
-            permit_type_hash,
             Key::from(contract_hash),
             package_hash,
         );
@@ -60,8 +56,6 @@ fn constructor() {
     let symbol = runtime::get_named_arg::<String>("symbol");
     let decimals: u8 = runtime::get_named_arg("decimals");
     let initial_supply: U256 = runtime::get_named_arg("initial_supply");
-    let domain_separator: String = runtime::get_named_arg("domain_separator");
-    let permit_type_hash: String = runtime::get_named_arg("permit_type_hash");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
 
@@ -70,8 +64,6 @@ fn constructor() {
         symbol,
         decimals,
         initial_supply,
-        domain_separator,
-        permit_type_hash,
         contract_hash,
         package_hash,
     );
@@ -125,35 +117,6 @@ fn transfer_from() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
-/// This function is to get meta transaction signer and verify if it is equal
-/// to the signer public key or not then call approve.
-///
-/// # Parameters
-///
-/// * `public_key` - A string slice that holds the public key of the meta transaction signer,  Subscriber have to get it from running cryptoxide project externally.
-///
-/// * `signature` - A string slice that holds the signature of the meta transaction,  Subscriber have to get it from running cryptoxide project externally.
-///
-/// * `owner` - A Key that holds the account address of the owner
-///
-/// * `spender` - A Key that holds the account address of the spender
-///  
-/// * `value` - A U256 that holds the value
-///  
-/// * `deadeline` - A u64 that holds the deadline limit
-///
-
-#[no_mangle]
-fn permit() {
-    let public_key: String = runtime::get_named_arg("public");
-    let signature: String = runtime::get_named_arg("signature");
-    let owner: Key = runtime::get_named_arg("owner");
-    let spender: Key = runtime::get_named_arg("spender");
-    let value: U256 = runtime::get_named_arg("value");
-    let deadline: u64 = runtime::get_named_arg("deadline");
-    Token::default().permit(public_key, signature, owner, spender, value, deadline);
-}
-
 /// This function is to approve tokens against the address that user provided
 ///
 /// # Parameters
@@ -188,7 +151,6 @@ fn approve() {
 /// * `to` - A Key that holds the account address of the user
 ///
 /// * `amount` - A U256 that holds the amount for mint
-///
 
 #[no_mangle]
 fn mint() {
@@ -204,7 +166,6 @@ fn mint() {
 /// * `from` - A Key that holds the account address of the user
 ///
 /// * `amount` - A U256 that holds the amount for burn
-///
 
 #[no_mangle]
 fn burn() {
@@ -218,7 +179,6 @@ fn burn() {
 /// # Parameters
 ///
 /// * `owner` - A Key that holds the account address of the user against which user wants to get balance
-///
 
 #[no_mangle]
 fn balance_of() {
@@ -232,7 +192,6 @@ fn balance_of() {
 /// # Parameters
 ///
 /// * `owner` - A Key that holds the account address of the user against which user wants to get nonce
-///
 
 #[no_mangle]
 fn nonce() {
@@ -242,7 +201,6 @@ fn nonce() {
 }
 
 /// This function is to return the Name of contract
-///
 
 #[no_mangle]
 fn name() {
@@ -251,7 +209,6 @@ fn name() {
 }
 
 /// This function is to return the Symbol of contract
-///
 
 #[no_mangle]
 fn symbol() {
@@ -260,7 +217,6 @@ fn symbol() {
 }
 
 /// This function is to return the Decimals of contract
-///
 
 #[no_mangle]
 fn decimals() {
@@ -275,7 +231,6 @@ fn decimals() {
 /// * `owner` - A Key that holds the account address of the user
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
 
 #[no_mangle]
 fn allowance() {
@@ -286,7 +241,6 @@ fn allowance() {
 }
 
 /// This function is to return the Total Supply of the contract
-///
 
 #[no_mangle]
 fn total_supply() {
@@ -301,7 +255,6 @@ fn total_supply() {
 /// * `amount` - Number of tokens to increment approval of tokens by for spender
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
 #[no_mangle]
 fn increase_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -318,7 +271,6 @@ fn increase_allowance() {
 /// * `amount` - Number of tokens to increment approval of tokens by for spender
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
 #[no_mangle]
 fn increase_allowance_js_client() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -334,7 +286,6 @@ fn increase_allowance_js_client() {
 /// * `amount` - Number of tokens to decrement approval of tokens by for spender
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
 #[no_mangle]
 fn decrease_allowance() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -351,7 +302,7 @@ fn decrease_allowance() {
 /// * `amount` - Number of tokens to decrement approval of tokens by for spender
 ///
 /// * `spender` - A Key that holds the account address of the user
-///
+
 #[no_mangle]
 fn decrease_allowance_js_client() {
     let spender: Key = runtime::get_named_arg("spender");
@@ -361,7 +312,6 @@ fn decrease_allowance_js_client() {
 }
 
 /// This function is to fetch a Contract Package Hash
-///
 
 #[no_mangle]
 fn package_hash() {
@@ -387,17 +337,12 @@ fn call() {
         let decimals: u8 = runtime::get_named_arg("decimals");
         let initial_supply: U256 = runtime::get_named_arg("initial_supply");
 
-        let (domain_separator, permit_type_hash) =
-            Token::default().get_permit_type_and_domain_separator(&name, contract_hash);
-
         // Prepare constructor args
         let constructor_args = runtime_args! {
             "name" => name,
             "symbol" => symbol,
              "decimals" => decimals,
              "initial_supply" => initial_supply,
-             "domain_separator" => domain_separator,
-             "permit_type_hash" => permit_type_hash,
              "contract_hash" => contract_hash,
              "package_hash"=> package_hash
 
@@ -475,8 +420,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("symbol", String::cl_type()),
             Parameter::new("decimals", u8::cl_type()),
             Parameter::new("initial_supply", U256::cl_type()),
-            Parameter::new("domain_separator", String::cl_type()),
-            Parameter::new("permit_type_hash", String::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
         ],
@@ -509,20 +452,6 @@ fn get_entry_points() -> EntryPoints {
             ok: Box::new(CLType::Unit),
             err: Box::new(CLType::U32),
         },
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "permit",
-        vec![
-            Parameter::new("public", String::cl_type()),
-            Parameter::new("signature", String::cl_type()),
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("spender", Key::cl_type()),
-            Parameter::new("value", U256::cl_type()),
-            Parameter::new("deadline", u64::cl_type()),
-        ],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));

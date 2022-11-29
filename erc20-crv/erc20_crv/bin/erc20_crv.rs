@@ -1,6 +1,7 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
+
 use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec};
 use casper_contract::{
     contract_api::{runtime, storage},
@@ -10,7 +11,7 @@ use casper_types::{
     runtime_args, CLType, CLTyped, CLValue, ContractHash, ContractPackageHash, EntryPoint,
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
-use casperlabs_contract_utils::{set_key, ContractContext, OnChainContractStorage};
+use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use casperlabs_erc20::{self, data as erc20_data, ERC20};
 use erc20_crv::{self, data, ERC20CRV};
 
@@ -74,19 +75,9 @@ fn start_epoch_time_write() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn start_epoch_time_write_js_client() {
-    let ret = Erc20Crv::default().start_epoch_time_write();
-    set_key("result", ret);
-}
-#[no_mangle]
 fn future_epoch_time_write() {
     let ret = Erc20Crv::default().future_epoch_time_write();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn future_epoch_time_write_js_client() {
-    let ret = Erc20Crv::default().future_epoch_time_write();
-    set_key("result", ret);
 }
 #[no_mangle]
 fn available_supply() {
@@ -94,23 +85,11 @@ fn available_supply() {
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
-fn available_supply_js_client() {
-    let ret = Erc20Crv::default().available_supply();
-    set_key("result", ret);
-}
-#[no_mangle]
 fn mintable_in_timeframe() {
     let start: U256 = runtime::get_named_arg("start");
     let end: U256 = runtime::get_named_arg("end");
     let ret = Erc20Crv::default().mintable_in_timeframe(start, end);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn mintable_in_timeframe_js_client() {
-    let start: U256 = runtime::get_named_arg("start");
-    let end: U256 = runtime::get_named_arg("end");
-    let ret = Erc20Crv::default().mintable_in_timeframe(start, end);
-    set_key("result", ret);
 }
 
 #[no_mangle]
@@ -123,13 +102,6 @@ fn mint() {
     let amount: U256 = runtime::get_named_arg("amount");
     let ret = Erc20Crv::default().mint(to, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-#[no_mangle]
-fn mint_js_client() {
-    let to: Key = runtime::get_named_arg("to");
-    let amount: U256 = runtime::get_named_arg("amount");
-    let ret = Erc20Crv::default().mint(to, amount);
-    set_key("result", ret);
 }
 #[no_mangle]
 fn transfer_from() {
@@ -152,6 +124,33 @@ fn transfer() {
     let ret = ERC20::transfer(&mut Erc20Crv::default(), recipient, amount);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
+#[no_mangle]
+fn total_supply() {
+    let ret: U256 = ERC20::total_supply(&mut Erc20Crv::default());
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn increase_allowance() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = ERC20::increase_allowance(&mut Erc20Crv::default(), spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn decrease_allowance() {
+    let spender: Key = runtime::get_named_arg("spender");
+    let amount: U256 = runtime::get_named_arg("amount");
+    let ret = ERC20::decrease_allowance(&mut Erc20Crv::default(), spender, amount);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+#[no_mangle]
+fn allowance() {
+    let owner: Key = runtime::get_named_arg("owner");
+    let spender: Key = runtime::get_named_arg("spender");
+    let ret: U256 = ERC20::allowance(&mut Erc20Crv::default(), owner, spender);
+    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+}
+
 //[no_mangle] of public variables
 #[no_mangle]
 fn name() {
@@ -244,40 +243,13 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "start_epoch_time_write_js_client",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "future_epoch_time_write",
-        vec![],
-        U256::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "future_epoch_time_write_js_client",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
         "available_supply",
         vec![],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "available_supply_js_client",
-        vec![],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
+
     entry_points.add_entry_point(EntryPoint::new(
         "mintable_in_timeframe",
         vec![
@@ -288,16 +260,7 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "mintable_in_timeframe_js_client",
-        vec![
-            Parameter::new("start", U256::cl_type()),
-            Parameter::new("end", U256::cl_type()),
-        ],
-        <()>::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
+
     entry_points.add_entry_point(EntryPoint::new(
         "mint",
         vec![
@@ -305,16 +268,6 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("value", U256::cl_type()),
         ],
         bool::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "mint_js_client",
-        vec![
-            Parameter::new("to", Key::cl_type()),
-            Parameter::new("value", U256::cl_type()),
-        ],
-        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -337,10 +290,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("spender", Key::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        <()>::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -355,6 +305,49 @@ fn get_entry_points() -> EntryPoints {
             ok: Box::new(CLType::Unit),
             err: Box::new(CLType::U32),
         },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "total_supply",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "increase_allowance",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "decrease_allowance",
+        vec![
+            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("amount", U256::cl_type()),
+        ],
+        CLType::Result {
+            ok: Box::new(CLType::Unit),
+            err: Box::new(CLType::U32),
+        },
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "allowance",
+        vec![
+            Parameter::new("owner", Key::cl_type()),
+            Parameter::new("spender", Key::cl_type()),
+        ],
+        U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -418,63 +411,94 @@ fn get_entry_points() -> EntryPoints {
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "future_epoch_time_write",
+        vec![],
+        U256::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
     entry_points
 }
 
 #[no_mangle]
 fn call() {
-    // Build new package with initial a first version of the contract.
-    let (package_hash, access_token) = storage::create_contract_package_at_hash();
-    let (contract_hash, _) =
-        storage::add_contract_version(package_hash, get_entry_points(), Default::default());
-    let name: String = runtime::get_named_arg("name");
-    let symbol: String = runtime::get_named_arg("symbol");
-    let decimals: u8 = runtime::get_named_arg("decimals");
-    let constructor_args = runtime_args! {
-            "name" => name,
-            "symbol" => symbol,
-            "decimals" => decimals,
-            "contract_hash" => contract_hash,
-            "package_hash"=> package_hash
-    };
+    // Contract name must be same for all new versions of the contracts
+    let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
+    if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
+        // Build new package with initial a first version of the contract.
+        let (package_hash, access_token) = storage::create_contract_package_at_hash();
+        let (contract_hash, _) =
+            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+        let name: String = runtime::get_named_arg("name");
+        let symbol: String = runtime::get_named_arg("symbol");
+        let decimals: u8 = runtime::get_named_arg("decimals");
+        let constructor_args = runtime_args! {
+                "name" => name,
+                "symbol" => symbol,
+                "decimals" => decimals,
+                "contract_hash" => contract_hash,
+                "package_hash"=> package_hash
+        };
 
-    // Add the constructor group to the package hash with a single URef.
-    let constructor_access: URef =
-        storage::create_contract_user_group(package_hash, "constructor", 1, Default::default())
-            .unwrap_or_revert()
-            .pop()
+        // Add the constructor group to the package hash with a single URef.
+        let constructor_access: URef =
+            storage::create_contract_user_group(package_hash, "constructor", 1, Default::default())
+                .unwrap_or_revert()
+                .pop()
+                .unwrap_or_revert();
+
+        // Call the constructor entry point
+        let _: () =
+            runtime::call_versioned_contract(package_hash, None, "constructor", constructor_args);
+
+        // Remove all URefs from the constructor group, so no one can call it for the second time.
+        let mut urefs = BTreeSet::new();
+        urefs.insert(constructor_access);
+        storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
             .unwrap_or_revert();
 
-    // Call the constructor entry point
-    let _: () =
-        runtime::call_versioned_contract(package_hash, None, "constructor", constructor_args);
+        // Store contract in the account's named keys.
+        runtime::put_key(
+            &format!("{}_package_hash", contract_name),
+            package_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_package_hash_wrapped", contract_name),
+            storage::new_uref(package_hash).into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash", contract_name),
+            contract_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash_wrapped", contract_name),
+            storage::new_uref(contract_hash).into(),
+        );
+        runtime::put_key(
+            &format!("{}_package_access_token", contract_name),
+            access_token.into(),
+        );
+    } else {
+        // this is a contract upgrade
+        let package_hash: ContractPackageHash =
+            runtime::get_key(&format!("{}_package_hash", contract_name))
+                .unwrap_or_revert()
+                .into_hash()
+                .unwrap()
+                .into();
 
-    // Remove all URefs from the constructor group, so no one can call it for the second time.
-    let mut urefs = BTreeSet::new();
-    urefs.insert(constructor_access);
-    storage::remove_contract_user_group_urefs(package_hash, "constructor", urefs)
-        .unwrap_or_revert();
+        let (contract_hash, _): (ContractHash, _) =
+            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
 
-    // Store contract in the account's named keys.
-    let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
-    runtime::put_key(
-        &format!("{}_package_hash", contract_name),
-        package_hash.into(),
-    );
-    runtime::put_key(
-        &format!("{}_package_hash_wrapped", contract_name),
-        storage::new_uref(package_hash).into(),
-    );
-    runtime::put_key(
-        &format!("{}_contract_hash", contract_name),
-        contract_hash.into(),
-    );
-    runtime::put_key(
-        &format!("{}_contract_hash_wrapped", contract_name),
-        storage::new_uref(contract_hash).into(),
-    );
-    runtime::put_key(
-        &format!("{}_package_access_token", contract_name),
-        access_token.into(),
-    );
+        // update contract hash
+        runtime::put_key(
+            &format!("{}_contract_hash", contract_name),
+            contract_hash.into(),
+        );
+        runtime::put_key(
+            &format!("{}_contract_hash_wrapped", contract_name),
+            storage::new_uref(contract_hash).into(),
+        );
+    }
 }

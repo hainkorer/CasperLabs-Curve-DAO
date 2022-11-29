@@ -2,7 +2,9 @@ use crate::fee_distributor_instance::FEEDISTRIBUTORInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
-
+pub const TEN_E_NINE: u128 = 1000000000;
+pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
+const MILLI_SECONDS_IN_DAY: u64 = 86_400_000;
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
         env,
@@ -18,97 +20,134 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
         0,
     )
 }
+// CRV
+fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash,time_now:u64) -> TestContract {
+    TestContract::new(
+        env,
+        "erc20_crv.wasm",
+        "erc20-crv",
+        sender,
+        runtime_args! {
+            "name" => "CRV",
+            "symbol" => "ERC20CRV",
+            "decimals" => 9_u8
+        },
+        time_now,
+    )
+}
 
-fn deploy_voting_escrow(env: &TestEnv, sender: AccountHash, erc20: &TestContract) -> TestContract {
+fn deploy_voting_escrow(
+    env: &TestEnv,
+    sender: AccountHash,
+    erc20_crv: &TestContract,
+    time_now:u64
+) -> TestContract {
     TestContract::new(
         env,
         "voting-escrow.wasm",
         "Voting Escrow",
         sender,
         runtime_args! {
-            "token_addr" => Key::Hash(erc20.package_hash()),
+            "token_addr" => Key::Hash(erc20_crv.package_hash()),
             "name" => String::from("VotingEscrow"),
             "symbol" => String::from("VE"),
             "version" => String::from("1"),
         },
-        0,
+        time_now,
     )
 }
 
-fn deploy() -> (TestEnv, AccountHash, FEEDISTRIBUTORInstance, TestContract) {
+fn deploy() -> (
+    TestEnv,
+    AccountHash,
+    FEEDISTRIBUTORInstance,
+    TestContract,
+    u64,
+) {
     let env = TestEnv::new();
     let owner = env.next_user();
-
+    let time_now: u64 = FEEDISTRIBUTORInstance::now();
+    let unlock_time = U256::from(time_now.checked_add(MILLI_SECONDS_IN_DAY * 720).unwrap());
     let erc20 = deploy_erc20(&env, owner);
-    let voting_escrow = deploy_voting_escrow(&env, owner, &erc20);
-
+    let erc20_crv = deploy_erc20_crv(&env, owner,time_now);
+    let voting_escrow = deploy_voting_escrow(&env, owner, &erc20_crv,time_now);
+    erc20_crv.call_contract(
+        owner,
+        "approve",
+        runtime_args! {"spender" => Key::Hash(voting_escrow.package_hash()) , "amount" => U256::from(2500*TEN_E_NINE)},
+        time_now,
+    );
+    voting_escrow.call_contract(
+        owner,
+        "create_lock",
+        runtime_args! {
+        "value" => U256::from(2500*TEN_E_NINE),
+        "unlock_time" => unlock_time
+        },
+        time_now,
+    );
     let instance = FEEDISTRIBUTORInstance::new_deploy(
         &env,
         "Fee Distributor",
         owner,
         Key::Hash(voting_escrow.package_hash()),
-        0.into(),
+        U256::from(time_now),
         Key::Hash(erc20.package_hash()),
         Key::Account(owner),
         Key::Account(owner),
+        time_now
     );
 
-    (env, owner, instance, erc20)
+    (env, owner, instance, erc20, time_now)
 }
 
 #[test]
 fn test_deploy() {
-    let (_, _, _, _) = deploy();
+    let (_env, owner, instance, _, time_now) = deploy();
+    let time_now_u256: U256 = U256::from(time_now);
+    assert_eq!(instance.admin(), Key::from(owner));
+    let t: U256 = (time_now_u256 / WEEK) * WEEK;
+    assert_eq!(instance.start_time(), t);
+    assert_eq!(instance.last_token_time(), t);
 }
 
 #[test]
 fn test_checkpoint_token() {
-    let (_, owner, instance, _) = deploy();
-    instance.checkpoint_token(owner);
+    let (_, owner, instance, _, time_now) = deploy();
+    instance.checkpoint_token(owner, time_now);
 }
 
 #[test]
 fn test_ve_for_at() {
-    let (env, owner, instance, _) = deploy();
-    let user: Key = Key::Account(env.next_user());
-    let timestamp: U256 = 123.into();
+    let (env, owner, instance, _, time_now) = deploy();
+    let time_now_u256: U256 = U256::from(time_now);
+    let timestamp: U256 = time_now_u256;
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(VE_FOR_AT),
             "package_hash" => Key::Hash(instance.package_hash()),
-            "user" => user,
+            "user" => Key::from(owner),
             "timestamp" => timestamp
         },
-        0,
+        time_now,
     );
-    let ret: U256 = env.query_account_named_key(owner, &[VE_FOR_AT.into()]);
-    assert_eq!(ret, 0.into(), "Invalid default ve value");
-}
-
-#[test]
-fn test_ve_for_at_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let user: Key = Key::Account(env.next_user());
-    let timestamp: U256 = 123.into();
-    instance.ve_for_at_js_client(owner, user, timestamp);
-    let ret: U256 = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into(), "Invalid default ve value");
+    let _ret: U256 = env.query_account_named_key(owner, &[VE_FOR_AT.into()]);
+    assert!(_ret/TEN_E_NINE<=1181.into() && _ret/TEN_E_NINE>=1171.into(), "Invalid default ve value"); //depends on time
 }
 
 #[test]
 fn test_checkpoint_total_supply() {
-    let (_, owner, instance, _) = deploy();
-    instance.checkpoint_total_supply(owner);
+    let (_, owner, instance, _, time_now) = deploy();
+    instance.checkpoint_total_supply(owner, time_now);
 }
 
 #[test]
 fn test_claim() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
+    let (env, owner, instance, _, time_now) = deploy();
     TestContract::new(
         &env,
         SESSION_CODE_WASM,
@@ -117,30 +156,21 @@ fn test_claim() {
         runtime_args! {
             "entrypoint" => String::from(CLAIM),
             "package_hash" => Key::Hash(instance.package_hash()),
-            "addr" => addr
+            "addr" => None::<Key>
         },
-        0,
+        time_now,
     );
     let ret: U256 = env.query_account_named_key(owner, &[CLAIM.into()]);
     assert_eq!(ret, 0.into(), "Invalid default claim value");
 }
 
 #[test]
-fn test_claim_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let addr: Key = Key::Account(env.next_user());
-    instance.claim_js_client(owner, addr);
-    let ret: U256 = instance.key_value(RESULT.to_string());
-    assert_eq!(ret, 0.into(), "Invalid default claim value");
-}
-
-#[test]
 fn test_claim_many() {
-    let (env, owner, instance, _) = deploy();
-    let receivers: Vec<Key> = vec![
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
+    let (env, owner, instance, _, time_now) = deploy();
+    let receivers: Vec<String> = vec![
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
+        env.next_user().to_formatted_string(),
     ];
     TestContract::new(
         &env,
@@ -152,28 +182,15 @@ fn test_claim_many() {
             "package_hash" => Key::Hash(instance.package_hash()),
             "receivers" => receivers
         },
-        0,
+        time_now,
     );
     let ret: bool = env.query_account_named_key(owner, &[CLAIM_MANY.into()]);
     assert!(ret, "Claim should come true");
 }
 
 #[test]
-fn test_claim_many_js_client() {
-    let (env, owner, instance, _) = deploy();
-    let receivers: Vec<Key> = vec![
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
-        Key::Account(env.next_user()),
-    ];
-    instance.claim_many_js_client(owner, receivers);
-    let ret: bool = instance.key_value(RESULT.to_string());
-    assert!(ret, "Claim should come true");
-}
-
-#[test]
 fn test_burn() {
-    let (env, owner, instance, erc20) = deploy();
+    let (env, owner, instance, erc20, time_now) = deploy();
     let coin: Key = Key::Hash(erc20.package_hash());
     TestContract::new(
         &env,
@@ -185,47 +202,40 @@ fn test_burn() {
             "package_hash" => Key::Hash(instance.package_hash()),
             "coin" => coin
         },
-        0,
+        time_now,
     );
     let ret: bool = env.query_account_named_key(owner, &[BURN.into()]);
     assert!(ret, "Claim should come true");
 }
 
 #[test]
-fn test_burn_js_client() {
-    let (_, owner, instance, erc20) = deploy();
-    let coin: Key = Key::Hash(erc20.package_hash());
-    instance.burn_js_client(owner, coin);
-    let ret: bool = instance.key_value(RESULT.to_string());
-    assert!(ret, "Burn should come true");
-}
-
-#[test]
 fn test_commit_admin() {
-    let (env, owner, instance, _) = deploy();
+    let (env, owner, instance, _, time_now) = deploy();
     let addr: Key = Key::Account(env.next_user());
-    instance.commit_admin(owner, addr);
+    instance.commit_admin(owner, time_now, addr);
+    assert_eq!(instance.future_admin(), addr);
 }
 
 #[test]
 fn test_apply_admin() {
-    let (env, owner, instance, _) = deploy();
+    let (env, owner, instance, _, time_now) = deploy();
     let addr: Key = Key::Account(env.next_user());
-    instance.commit_admin(owner, addr);
-    instance.apply_admin(owner);
+    instance.commit_admin(owner, time_now, addr);
+    instance.apply_admin(owner, time_now);
+    assert_eq!(instance.admin(), addr);
 }
 
 #[test]
 fn test_toggle_allow_checkpoint_token() {
-    let (_, owner, instance, _) = deploy();
-    instance.toggle_allow_checkpoint_token(owner);
+    let (_, owner, instance, _, time_now) = deploy();
+    instance.toggle_allow_checkpoint_token(owner, time_now);
     let can_checkpoint_token: bool = instance.key_value("can_checkpoint_token".into());
     assert!(can_checkpoint_token, "Cannot checkpoint");
 }
 
 #[test]
 fn test_kill_me() {
-    let (_, owner, instance, erc20) = deploy();
+    let (_, owner, instance, erc20, time_now) = deploy();
     erc20.call_contract(
         owner,
         "mint",
@@ -233,16 +243,16 @@ fn test_kill_me() {
             "to" => Key::Hash(instance.package_hash()),
             "amount" => U256::from(10000)
         },
-        0,
+        time_now,
     );
-    instance.kill_me(owner);
+    instance.kill_me(owner, time_now);
     let is_killed: bool = instance.key_value("is_killed".into());
     assert!(is_killed, "Contract not killed");
 }
 
 #[test]
 fn test_recover_balance() {
-    let (env, owner, instance, erc20) = deploy();
+    let (env, owner, instance, erc20, time_now) = deploy();
     let coin: Key = Key::Hash(erc20.package_hash());
     erc20.call_contract(
         owner,
@@ -251,7 +261,7 @@ fn test_recover_balance() {
             "to" => Key::Hash(instance.package_hash()),
             "amount" => U256::from(10000)
         },
-        0,
+        time_now,
     );
     TestContract::new(
         &env,
@@ -263,26 +273,8 @@ fn test_recover_balance() {
             "package_hash" => Key::Hash(instance.package_hash()),
             "coin" => coin
         },
-        0,
+        time_now,
     );
     let ret: bool = env.query_account_named_key(owner, &[RECOVER_BALANCE.into()]);
-    assert!(ret, "Balance recovered should be true");
-}
-
-#[test]
-fn test_recover_balance_js_client() {
-    let (_, owner, instance, erc20) = deploy();
-    let coin: Key = Key::Hash(erc20.package_hash());
-    erc20.call_contract(
-        owner,
-        "mint",
-        runtime_args! {
-            "to" => Key::Hash(instance.package_hash()),
-            "amount" => U256::from(10000)
-        },
-        0,
-    );
-    instance.recover_balance_js_client(owner, coin);
-    let ret: bool = instance.key_value(RESULT.to_string());
     assert!(ret, "Balance recovered should be true");
 }

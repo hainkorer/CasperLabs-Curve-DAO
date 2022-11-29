@@ -5,25 +5,20 @@ use casper_types::{
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::keys::*;
+use common::{keys::*, utils::*};
 
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
 pub const TOKEN_CHECKPOINT_DEADLINE: U256 = U256([86400000, 0, 0, 0]);
 
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-
-// We cannot really do block numbers per se b/c slope is per time, not per block
-// and per block could be fairly bad b/c Ethereum changes blocktimes.
-// What we can do is to extrapolate ***At functions
+/// We cannot really do block numbers per se b/c slope is per time, not per block
+/// and per block could be fairly bad b/c Ethereum changes blocktimes.
+/// What we can do is to extrapolate ***At functions
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct Point {
-    pub bias: U128,
-    pub slope: U128, // - dweight / dt
+    pub bias: (bool, U128),
+    pub slope: (bool, U128), // - dweight / dt
     pub ts: U256,
-    pub blk: U256, // block
+    pub blk: U256,
 }
 
 pub const TIME_CURSOR_OF: &str = "time_cursor_of";

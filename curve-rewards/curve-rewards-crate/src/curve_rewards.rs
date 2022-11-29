@@ -12,7 +12,7 @@ use casperlabs_i_reward_distribution_recipient::{
     self, data as reward_distribution, IREWARDDISTRIBUTIONRECIPIENT,
 };
 use casperlabs_lp_token_wrapper::{self, data as lp_data, LPTOKENWRAPPER};
-use common::errors::*;
+use common::{errors::*, utils::*};
 
 pub trait CURVEREWARDS<Storage: ContractStorage>:
     ContractContext<Storage> + LPTOKENWRAPPER<Storage> + IREWARDDISTRIBUTIONRECIPIENT<Storage>

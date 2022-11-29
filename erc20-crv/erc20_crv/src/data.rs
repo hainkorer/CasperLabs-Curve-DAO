@@ -6,16 +6,15 @@ use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U128, 
 use core::convert::TryInto;
 
 use casperlabs_contract_utils::{get_key, set_key};
-use common::keys::*;
-
-pub const YEAR: U256 = U256([31536000, 0, 0, 0]);
+use common::{keys::*, utils::*};
+pub const YEAR: U256 = U256([31536000000, 0, 0, 0]);
 pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);
-pub const INITIAL_RATE: U256 = U256([604800, 0, 0, 0]);
+pub const INITIAL_RATE: U256 = U256([8714335, 0, 0, 0]);  //leading to 43% premine
 pub const RATE_REDUCTION_TIME: U256 = YEAR;
-pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115002721024, 0, 0, 0]);
+pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115, 0, 0, 0]);  //2 ** (1/4) * 1e9
 
-pub const RATE_DENOMINATOR: U256 = U256([10000000000000000000, 0, 0, 0]); //10^18
-pub const INFLATION_DELAY: U256 = U256([86400, 0, 0, 0]);
+pub const RATE_DENOMINATOR: U256 = U256([1000000000, 0, 0, 0]); //10^9
+pub const INFLATION_DELAY: U256 = U256([86400000, 0, 0, 0]);
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {
@@ -78,10 +77,6 @@ pub fn get_is_updated() -> bool {
 }
 pub fn set_is_updated(is_updated: bool) {
     set_key(IS_UPDATED, is_updated);
-}
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
 }
 pub fn set_hash(contract_hash: Key) {
     set_key(SELF_CONTRACT_HASH, contract_hash);

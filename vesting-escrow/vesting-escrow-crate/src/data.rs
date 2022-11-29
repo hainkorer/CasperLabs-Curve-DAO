@@ -107,18 +107,6 @@ pub fn get_lock() -> u64 {
     get_key(LOCK).unwrap_or_revert()
 }
 
-pub fn zero_address() -> Key {
-    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
-        .unwrap()
-}
-
-pub fn account_zero_address() -> Key {
-    Key::from_formatted_str(
-        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
-    )
-    .unwrap()
-}
-
 pub fn admin() -> Key {
     get_key(ADMIN).unwrap_or_revert()
 }
