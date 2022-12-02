@@ -785,7 +785,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 400000000000 \
+    --payment-amount 240000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="admin:Key='key'" \
     --session-arg="lp_token:Key='liquidity pool contract address'" \
@@ -1174,7 +1174,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 500000000000 \
+    --payment-amount 280000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="token:key='Erc20 Crv Contract Address'" \
     --session-arg="voting_escrow:key='voting_escrow Contract Address'" \
@@ -1584,7 +1584,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 250000000000 \
+    --payment-amount 150000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="token:key='Token Address'" \
     --session-arg="controller:key='Controller Contract Address'" \
@@ -1989,7 +1989,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 10000000000 \
+    --payment-amount 110000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="uni:Key='Address of ERC20 Contract Package Hash'" \
     --session-arg="contract_name:string='contract_name'"
@@ -2063,7 +2063,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 190000000000 \
+    --payment-amount 100000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="contract_name:string='contract_name'"
 ```
@@ -2123,7 +2123,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 350000000000 \
+    --payment-amount 230000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="name:String='Token full name'" \
     --session-arg="symbol:String='Token symbol'" \
@@ -2463,7 +2463,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 360000000000 \
+    --payment-amount 250000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="name:String='Token full name'" \
     --session-arg="symbol:String='Token symbol'" \
@@ -2856,7 +2856,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 450000000000 \
+    --payment-amount 260000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="lp_addr:Key='Liquidity Pool contract address'" \
     --session-arg="minter:Key='Minter contract address'" \
@@ -3315,7 +3315,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 460000000000 \
+    --payment-amount 320000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="lp_addr:Key='Liquidity Pool contract address'" \
     --session-arg="minter:Key='Minter contract address'" \
@@ -3887,7 +3887,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 200000000000 \
+    --payment-amount 160000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="name:String='name of contract'" \
     --session-arg="symbol:String='symbol of contract'" \
@@ -4398,7 +4398,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 200000000000 \
+    --payment-amount 160000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="name:string='token-name'" \
     --session-arg="symbol:string='token-symbol'" \
@@ -4621,7 +4621,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 390000000000 \
+    --payment-amount 220000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="voting_escrow:Key='VotingEscrow contract address'" \
     --session-arg="start_time:U256='Epoch time for fee distribution to start'" \
@@ -4927,7 +4927,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 190000000000 \
+    --payment-amount 130000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="ownership_admin:Key='ownership_admin address'" \
     --session-arg="emergency_admin:Key='emergency_admin address'" \
@@ -5060,7 +5060,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 100000000000 \
+    --payment-amount 110000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="contract_name:string='contract_name'"
 ```
@@ -5430,7 +5430,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 350000000000 \
+    --payment-amount 160000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="contract_name:string='contract_name'"
 ```
@@ -5676,7 +5676,7 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 440000000000 \
+    --payment-amount 230000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
     --session-arg="target:Key='`VestingEscrowSimple` contract address'" \
     --session-arg="admin:Key='admin address'" \
@@ -5991,9 +5991,9 @@ sudo casper-client put-deploy \
     --node-address http://$NODE_ADDRESS:7777/ \
     --secret-key path_to_secret_key.pem \
     --session-path path_to_wasm_file \
-    --payment-amount 450000000000 \
+    --payment-amount 250000000000 \
     --session-arg="public_key:public_key='Public Key In Hex'" \
-    --session-arg="token_addr:Key='``ERC20CRV` token address'" \
+    --session-arg="token_addr:Key='ERC20CRV token address'" \
     --session-arg="name:String='Token name'" \
     --session-arg="symbol:String='Token symbol'" \
     --session-arg="version:String='Contract version'" \
