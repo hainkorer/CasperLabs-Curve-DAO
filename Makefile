@@ -1,5 +1,7 @@
 wasm_src_path = ./target/wasm32-unknown-unknown/release/
 
+deploy_wasms = ./script/wasm
+
 curve_token_v3_des_wasm = ./curve-token-v3/curve-token-v3-tests/wasm
 erc20_des_wasm = ./erc20/erc20-tests/wasm
 erc20_crv_des_wasm = ./erc20-crv/erc20_crv_tests/wasm
@@ -366,6 +368,34 @@ clean:
 	rm -rf ${lp_token_wrapper_des_wasm}*.wasm
 	rm -rf ${curve_rewards_des_wasm}*.wasm
 	rm -rf ${liquidity_gauge_v3_des_wasm}*.wasm
+
+build-copy-wasms:
+	make build-contract-curve-token-v3
+	make build-liquidity-gauge-reward-wrapper-session-code
+	make build-i-reward-distribution-recipient
+	make build-liquidity-gauge-wrapper-session-code
+	make build-contract-erc20
+	make build-contract-erc20-crv
+	make build-contract-fee-distributor
+	make build-contract-gauge-controller
+	make build-contract-gauge-proxy
+	make build-contract-liquidity-gauge-reward
+	make build-contract-liquidity-gauge-reward-wrapper
+	make build-contract-liquidity-gauge-wrapper
+	make build-contract-minter
+	make build-contract-reward-only-gauge
+	make build-contract-vesting-escrow
+	make build-contract-vesting-escrow-factory
+	make build-contract-liquidity-gauge-v3
+	make build-contract-vesting-escrow-simple
+	make build-contract-voting-escrow
+	make build-contract-ownable
+	make build-lp-token-wrapper
+	make build-curve-rewards
+	cp ${wasm_src_path}*.wasm ${deploy_wasms}
+
+deploy:
+	make build-copy-wasms && cd script && npm ci && npm run deployContracts
 
 lint: clippy
 	cargo fmt --all
