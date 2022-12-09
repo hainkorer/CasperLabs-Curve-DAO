@@ -15,6 +15,7 @@ pub const ADMIN: &str = "admin";
 pub const FUTURE_ADMIN: &str = "future_admin";
 pub const LOCK: &str = "lock";
 pub const BALANCE_OF: &str = "balance_of";
+pub const BALANCE_OF_CRV: &str = "balance_of_crv";
 pub const TOTAL_SUPPLY: &str = "total_supply";
 pub const INIT_SUPPLY: &str = "init_supply";
 pub const MINTER: &str = "minter";
@@ -58,6 +59,7 @@ pub const AVAILABLE_SUPPLY: &str = "available_supply";
 pub const MINT: &str = "mint";
 pub const MINTABLE_IN_TIMEFRAME: &str = "mintable_in_timeframe";
 // ERC-20 CRV
+pub const ALLOWANCE_CRV: &str = "allowance_crv";
 pub const MINING_EPOCH: &str = "mining_epoch";
 pub const IS_UPDATED: &str = "is_updated";
 pub const START_EPOCH_TIME: &str = "start_epoch_time";

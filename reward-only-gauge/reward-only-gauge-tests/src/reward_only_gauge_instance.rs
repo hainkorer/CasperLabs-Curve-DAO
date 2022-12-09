@@ -6,9 +6,8 @@ use blake2::{
 };
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{
-    account::AccountHash,
-    bytesrepr::{ToBytes},
-    runtime_args, CLTyped, ContractPackageHash, Key, RuntimeArgs, U256,
+    account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
+    RuntimeArgs, U256,
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_test_env::{TestContract, TestEnv};

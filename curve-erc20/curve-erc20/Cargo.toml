@@ -1,0 +1,18 @@
+[package]
+name = "curve-erc20"
+version = "0.1.0"
+authors = ["Muhammad Adrees <muhammad.adrees@scytalelabs.com>"]
+edition = "2018"
+
+[dependencies]
+casper-contract = "1.4.4"
+casper-types = "1.5.0"
+casperlabs-contract-utils = "0.2.1"
+curve-erc20-crate = { path = "../curve-erc20-crate" }
+
+[[bin]]
+name = "curve-erc20"
+path = "bin/curve_erc20.rs"
+bench = false
+doctest = false
+test = false

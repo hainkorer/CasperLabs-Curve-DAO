@@ -1,6 +1,8 @@
+
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
+use curve_erc20_crate::Address;
 use std::time::SystemTime;
 
 use casperlabs_test_env::{TestContract, TestEnv};
@@ -76,7 +78,7 @@ impl ERC20CRVInstance {
             time_now,
         );
     }
-    pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256) {
+    pub fn approve(&self, sender: AccountHash, spender: Address, amount: U256) {
         self.0.call_contract(
             sender,
             "approve",
@@ -86,6 +88,67 @@ impl ERC20CRVInstance {
 
             },
             0,
+        );
+    }
+    pub fn increase_allowance(&self, sender: AccountHash, spender: Address, amount: U256) {
+        self.0.call_contract(
+            sender,
+            "increase_allowance",
+            runtime_args! {
+                "spender"=>spender,
+                "amount"=>amount
+
+            },
+            0,
+        );
+    }
+    pub fn decrease_allowance(&self, sender: AccountHash, spender: Address, amount: U256) {
+        self.0.call_contract(
+            sender,
+            "decrease_allowance",
+            runtime_args! {
+                "spender"=>spender,
+                "amount"=>amount
+
+            },
+            0,
+        );
+    }
+    pub fn transfer(&self, sender: AccountHash, recipient: Address, amount: U256) {
+        self.0.call_contract(
+            sender,
+            "transfer",
+            runtime_args! {
+                "recipient"=>recipient,
+                "amount"=>amount
+
+            },
+            0,
+        );
+    }
+    pub fn transfer_from(&self, sender: AccountHash,owner: Address, recipient: Address, amount: U256) {
+        self.0.call_contract(
+            sender,
+            "transfer_from",
+            runtime_args! {
+                "owner"=>owner,
+                "recipient"=>recipient,
+                "amount"=>amount
+
+            },
+            0,
+        );
+    }
+    pub fn mint(&self, sender: AccountHash, to: Address, amount: U256,time_now:u64) {
+        self.0.call_contract(
+            sender,
+            "mint",
+            runtime_args! {
+                "to"=>to,
+                "amount"=>amount
+
+            },
+            time_now,
         );
     }
 
@@ -98,6 +161,9 @@ impl ERC20CRVInstance {
     }
     pub fn get_admin(&self) -> Key {
         self.0.query_named_key(String::from("admin"))
+    }
+    pub fn get_minter(&self) -> Key {
+        self.0.query_named_key(String::from("minter"))
     }
     pub fn get_start_epoch_time(&self) -> U256 {
         self.0.query_named_key(String::from("start_epoch_time"))

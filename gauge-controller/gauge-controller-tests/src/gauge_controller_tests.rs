@@ -157,7 +157,10 @@ mod ownership_and_deploy_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
     }
 
     #[test]
@@ -171,7 +174,10 @@ mod ownership_and_deploy_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         gauge_controller.commit_transfer_ownership(_owner, _user, blocktime);
         assert_eq!(gauge_controller.future_admin(), Key::from(_user));
     }
@@ -187,7 +193,10 @@ mod ownership_and_deploy_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         gauge_controller.commit_transfer_ownership(_owner, _user, blocktime);
         assert_eq!(gauge_controller.future_admin(), Key::from(_user));
         gauge_controller.apply_transfer_ownership(_owner, blocktime);
@@ -207,7 +216,10 @@ mod checkpoint_function_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         gauge_controller.checkpoint(_owner, blocktime);
     }
     #[test]
@@ -221,7 +233,10 @@ mod checkpoint_function_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         gauge_controller.checkpoint(_user, blocktime);
     }
     #[test]
@@ -235,7 +250,10 @@ mod checkpoint_function_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         gauge_controller.checkpoint_gauge(_owner, _user, blocktime);
     }
     #[test]
@@ -249,7 +267,10 @@ mod checkpoint_function_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         gauge_controller.checkpoint_gauge(_user, _user, blocktime);
     }
 
@@ -264,7 +285,10 @@ mod checkpoint_function_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let type_id: (bool, U128) = (false, 1.into());
         let weight: U256 = 2.into();
         gauge_controller.change_type_weight(_owner, type_id, weight, blocktime);
@@ -298,7 +322,7 @@ mod vote_functions_and_effect_with_period_test_cases {
             liquidity_gauge,
             liquidity_gauge_1,
         ) = deploy();
-        let value: U256 = (10000000000 as u128).into();
+        let value: U256 = 10000000000_u128.into();
         let unlock_time: U256 = VOTING_ESCROW_WEEK
             + VOTING_ESCROW_WEEK
             + VOTING_ESCROW_WEEK
@@ -338,7 +362,10 @@ mod vote_functions_and_effect_with_period_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(owner, name, Some(10.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -374,14 +401,14 @@ mod vote_functions_and_effect_with_period_test_cases {
             blocktime + week,
         );
         let ret: U256 = env.query_account_named_key(owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
-        assert_eq!(ret,500000000.into());
+        assert_eq!(ret, 500000000.into());
     }
     #[test]
     fn test_gauge_controller_vote_for_gauge_weights() {
         let (_env, gauge_controller, owner, token, voting_escrow, blocktime, liquidity_gauge, _) =
             deploy();
 
-        let value: U256 = (10000000000 as u128).into();
+        let value: U256 = 10000000000_u128.into();
         let unlock_time: U256 = VOTING_ESCROW_WEEK
             + VOTING_ESCROW_WEEK
             + VOTING_ESCROW_WEEK
@@ -421,7 +448,10 @@ mod vote_functions_and_effect_with_period_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -444,7 +474,7 @@ mod vote_functions_and_effect_with_period_test_cases {
             liquidity_gauge,
             liquidity_gauge_1,
         ) = deploy();
-        let value: U256 = (10000000000 as u128).into();
+        let value: U256 = 10000000000_u128.into();
         let unlock_time: U256 = VOTING_ESCROW_WEEK
             + VOTING_ESCROW_WEEK
             + VOTING_ESCROW_WEEK
@@ -484,7 +514,10 @@ mod vote_functions_and_effect_with_period_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -514,7 +547,10 @@ mod gauge_types_and_add_type_functions_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let val = gauge_controller.n_gauge_types();
@@ -533,7 +569,10 @@ mod gauge_types_and_add_type_functions_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -546,7 +585,7 @@ mod gauge_types_and_add_type_functions_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_TYPES),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge)
+                "addr" => liquidity_gauge
             },
             blocktime,
         );
@@ -567,7 +606,10 @@ mod gauge_types_and_add_type_functions_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -580,7 +622,7 @@ mod gauge_types_and_add_type_functions_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_TYPES),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge)
+                "addr" => liquidity_gauge
             },
             blocktime,
         );
@@ -609,7 +651,10 @@ mod gauge_types_and_add_type_functions_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -626,7 +671,7 @@ mod gauge_types_and_add_type_functions_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_TYPES),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge)
+                "addr" => liquidity_gauge
             },
             blocktime,
         );
@@ -642,7 +687,7 @@ mod gauge_types_and_add_type_functions_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_TYPES),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge_1)
+                "addr" => liquidity_gauge_1
             },
             blocktime,
         );
@@ -672,7 +717,10 @@ mod gauge_types_and_add_type_functions_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -689,7 +737,7 @@ mod gauge_types_and_add_type_functions_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_TYPES),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge)
+                "addr" => liquidity_gauge
             },
             blocktime,
         );
@@ -705,7 +753,7 @@ mod gauge_types_and_add_type_functions_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_TYPES),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge_1)
+                "addr" => liquidity_gauge_1
             },
             blocktime,
         );
@@ -729,7 +777,10 @@ mod change_gauge_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -765,7 +816,10 @@ mod change_gauge_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -828,7 +882,10 @@ mod gauge_relative_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, Some(100.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -858,10 +915,10 @@ mod gauge_relative_weight_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge_1),
+                "addr" => liquidity_gauge_1,
                 "time" => None::<U256>
             },
-            blocktime+week,
+            blocktime + week,
         );
 
         let ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
@@ -889,7 +946,10 @@ mod gauge_relative_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, Some(100.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -919,10 +979,10 @@ mod gauge_relative_weight_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge_1),
+                "addr" => liquidity_gauge_1,
                 "time" => None::<U256>
             },
-            blocktime+week
+            blocktime + week,
         );
 
         let ret: U256 = env.query_account_named_key(_user, &[GAUGE_RELATIVE_WEIGHT.into()]);
@@ -950,7 +1010,10 @@ mod gauge_relative_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
 
         TestContract::new(
             &env,
@@ -960,10 +1023,10 @@ mod gauge_relative_weight_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge),
+                "addr" => liquidity_gauge,
                 "time" => None::<U256>
             },
-            blocktime+VOTING_ESCROW_WEEK.as_u64(),
+            blocktime + VOTING_ESCROW_WEEK.as_u64(),
         );
 
         let ret: U256 = env.query_account_named_key(_owner, &[GAUGE_RELATIVE_WEIGHT.into()]);
@@ -990,7 +1053,10 @@ mod gauge_relative_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, Some(100.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1020,7 +1086,7 @@ mod gauge_relative_weight_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT_WRITE),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge),
+                "addr" => liquidity_gauge,
                 "time" => None::<U256>
             },
             blocktime,
@@ -1033,7 +1099,7 @@ mod gauge_relative_weight_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge),
+                "addr" => liquidity_gauge,
                 "time" => None::<U256>
             },
             blocktime + week,
@@ -1063,7 +1129,10 @@ mod gauge_relative_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, Some(1000000000.into()), blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1093,10 +1162,10 @@ mod gauge_relative_weight_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_RELATIVE_WEIGHT_WRITE),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge_1),
+                "addr" => liquidity_gauge_1,
                 "time" => None::<U256>
             },
-            blocktime+VOTING_ESCROW_WEEK.as_u64(),
+            blocktime + VOTING_ESCROW_WEEK.as_u64(),
         );
 
         let ret: U256 = env.query_account_named_key(_user, &[GAUGE_RELATIVE_WEIGHT_WRITE.into()]);
@@ -1126,7 +1195,10 @@ mod get_type_and_total_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1189,7 +1261,10 @@ mod get_type_and_total_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1250,7 +1325,10 @@ mod get_type_and_total_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1314,7 +1392,10 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1377,7 +1458,10 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1425,7 +1509,7 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
             runtime_args! {
                 "entrypoint" => String::from(GET_GAUGE_WEIGHT),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge)
+                "addr" => liquidity_gauge
             },
             blocktime,
         );
@@ -1455,7 +1539,10 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1517,7 +1604,10 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1579,7 +1669,10 @@ mod get_gauge_and_sum_per_type_weight_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1653,7 +1746,10 @@ mod add_gauge_function_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1684,7 +1780,10 @@ mod add_gauge_function_test_cases {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1726,7 +1825,10 @@ mod panic_test_cases_1 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1755,7 +1857,10 @@ mod panic_test_cases_1 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1794,7 +1899,10 @@ mod panic_test_cases_1 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let weight: U256 = 2.into();
@@ -1845,7 +1953,10 @@ mod panic_test_cases_1 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1875,7 +1986,10 @@ mod panic_test_cases_1 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         TestContract::new(
             &env,
             TEST_SESSION_CODE_WASM,
@@ -1884,7 +1998,7 @@ mod panic_test_cases_1 {
             runtime_args! {
                 "entrypoint" => String::from(GAUGE_TYPES),
                 "package_hash" => Key::from(gauge_controller.contract_package_hash()),
-                "addr"=>Key::from(liquidity_gauge)
+                "addr" => liquidity_gauge
             },
             blocktime,
         );
@@ -1905,7 +2019,10 @@ mod panic_test_cases_1 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         gauge_controller.commit_transfer_ownership(_owner, _user, blocktime);
         assert_eq!(gauge_controller.future_admin(), Key::from(_user));
         gauge_controller.apply_transfer_ownership(_user, blocktime);
@@ -1942,7 +2059,10 @@ mod panic_test_cases_2 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         gauge_controller.commit_transfer_ownership(_user, _user, blocktime);
         assert_eq!(gauge_controller.future_admin(), Key::from(_user));
     }
@@ -1959,7 +2079,10 @@ mod panic_test_cases_2 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
     }
     #[test]
     #[should_panic]
@@ -1975,7 +2098,10 @@ mod panic_test_cases_2 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let name: String = "type".to_string();
         gauge_controller.add_type(_owner, name, None, blocktime);
         let gauge_type: (bool, U128) = (false, 0.into());
@@ -1998,7 +2124,10 @@ mod panic_test_cases_2 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let weight: U256 = 2.into();
         gauge_controller.change_gauge_weight(_owner, liquidity_gauge, weight, blocktime);
     }
@@ -2014,7 +2143,10 @@ mod panic_test_cases_2 {
         );
         assert_eq!(gauge_controller.admin(), Key::from(_owner));
         let week: u64 = VOTING_ESCROW_WEEK.as_u64();
-        assert_eq!(gauge_controller.time_total(), U256::from(blocktime/week*week));
+        assert_eq!(
+            gauge_controller.time_total(),
+            U256::from(blocktime / week * week)
+        );
         let type_id: (bool, U128) = (false, 1.into());
         let weight: U256 = 2.into();
         gauge_controller.change_type_weight(_user, type_id, weight, blocktime);

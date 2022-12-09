@@ -410,7 +410,7 @@ fn test_minter_mint_with_deposit() {
         Some(weight),
         block_time,
     );
-    let mint_value: U256 = (10000000000 as u128).into();
+    let mint_value: U256 = (10000000000_u128).into();
     lp_token.call_contract(
         owner,
         "mint",
@@ -420,7 +420,7 @@ fn test_minter_mint_with_deposit() {
         },
         block_time,
     );
-    let approve_value: U256 = (1000000000 as u128).into();
+    let approve_value: U256 = (1000000000_u128).into();
     lp_token.call_contract(
         owner,
         "approve",

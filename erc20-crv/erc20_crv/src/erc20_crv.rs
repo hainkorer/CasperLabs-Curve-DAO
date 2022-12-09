@@ -9,22 +9,19 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{ApiError, ContractPackageHash, Key, URef, U256};
+use casper_types::{ApiError, ContractPackageHash, Key, URef, U256, ContractHash};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use casperlabs_erc20::{self, data as erc20_data, ERC20};
+use curve_casper_erc20_crate::{ Error as Erc20Error};
+use curve_erc20_crate::{self,  CURVEERC20, Address};
 use common::{errors::*, utils::*};
 
 pub enum Erc20CrvEvent {
     Transfer {
-        from: Key,
-        to: Key,
+        from: Address,
+        to: Address,
         value: U256,
     },
-    Approval {
-        owner: Key,
-        spender: Key,
-        value: U256,
-    },
+    
     UpdateMiningParameters {
         time: U256,
         rate: U256,
@@ -46,11 +43,6 @@ impl Erc20CrvEvent {
                 to: _,
                 value: _,
             } => "transfer",
-            Erc20CrvEvent::Approval {
-                owner: _,
-                spender: _,
-                value: _,
-            } => "approval",
             Erc20CrvEvent::UpdateMiningParameters {
                 time: _,
                 rate: _,
@@ -62,38 +54,28 @@ impl Erc20CrvEvent {
         .to_string()
     }
 }
-pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<Storage> {
+pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + CURVEERC20<Storage> {
     fn init(
         &mut self,
-        name: String,
-        symbol: String,
-        decimals: u8,
-        contract_hash: Key,
+        contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
         let base: i32 = 10;
-        data::set_init_supply(data::INITIAL_SUPPLY * (base.pow(u32::from(decimals))));
+        data::set_init_supply(data::INITIAL_SUPPLY * (base.pow(u32::from(CURVEERC20::decimals(self)))));
         data::set_is_updated(false);
         data::set_admin(self.get_caller());
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
 
-        ERC20::init(
+        CURVEERC20::init(
             self,
-            name,
-            symbol,
-            decimals,
-            U256::from(0),
-            "".to_string(),
-            "".to_string(),
             data::get_hash(),
             data::get_package_hash(),
         );
-        erc20_data::Balances::instance().set(&self.get_caller(), data::get_init_supply());
-        erc20_data::set_total_supply(data::get_init_supply());
+        CURVEERC20::mint(self, Address::from(self.get_caller()), data::get_init_supply()).unwrap_or_revert();
         self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
-            from: zero_address(),
-            to: self.get_caller(),
+            from: Address::from(zero_address()),
+            to: Address::from(self.get_caller()),
             value: data::get_init_supply(),
         });
         let blocktime_u64: u64 = runtime::get_blocktime().into();
@@ -330,14 +312,13 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
     }
     ///@notice Mint `amount` tokens and assign them to `to`
     ///@dev Emits a Transfer event originating from 0x00
-    ///@param _to The account that will receive the created tokens
+    ///@param to The account that will receive the created tokens
     ///@param amount The amount that will be created
-    ///@return bool success
-    fn mint(&self, to: Key, amount: U256) -> bool {
-        if self.get_caller() != data::get_minter() {
+    fn mint(&self, to: Address, amount: U256)-> Result<(), Error>{
+        if Address::from(self.get_caller()) != Address::from(data::get_minter()) {
             runtime::revert(ApiError::from(Error::Erc20CRVMinterOnly));
         }
-        if to == zero_address() {
+        if to == Address::from(zero_address()) {
             runtime::revert(ApiError::from(Error::Erc20CRVZeroAddress));
         }
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -348,44 +329,51 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
         {
             self._update_mining_parameters();
         }
-        let total_supply: U256 = erc20_data::total_supply()
+        let total_supply: U256 =  CURVEERC20::total_supply(self)
             .checked_add(amount)
             .unwrap_or_revert_with(Error::Erc20CRVOverFlow18);
         if total_supply > self.available_supply() {
             runtime::revert(ApiError::from(Error::Erc20CRVExceedsAllowableMint));
         }
-        erc20_data::set_total_supply(total_supply);
-        let existing_balance: U256 = erc20_data::Balances::instance().get(&to);
-        erc20_data::Balances::instance().set(
-            &to,
-            existing_balance
-                .checked_add(amount)
-                .unwrap_or_revert_with(Error::Erc20CRVOverFlow19),
-        );
+        CURVEERC20::mint(self, Address::from(to), amount).unwrap_or_revert();
+       
         self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
-            from: zero_address(),
+            from: Address::from(zero_address()),
             to,
             value: amount,
         });
-
-        true
+        Ok(())
     }
     ///@notice Change the token name and symbol to `name` and `symbol`
     ///@dev Only callable by the admin account
     ///@param name New token name
     ///@param symbol New token symbol
     fn set_name(&self, name: String, symbol: String) {
-        if data::get_minter() != self.get_caller() {
+        if data::get_minter() !=self.get_caller() {
             runtime::revert(ApiError::from(Error::Erc20CRVOnlyMinterAllowed1));
         }
-        erc20_data::set_name(name);
-        erc20_data::set_symbol(symbol);
+        CURVEERC20::set_name(self,name);
+        CURVEERC20::set_symbol(self,symbol);
     }
     ///@notice Burn `value` tokens belonging to `msg.sender`
     ///@dev Emits a Transfer event with a destination of 0x00
     ///@param value The amount that will be burned
-    fn burn_caller(&mut self, value: U256) {
-        ERC20::burn(self, self.get_caller(), value);
+    fn burn(&self, value: U256)->Result<(), Error> {
+        CURVEERC20::burn(self, Address::from(self.get_caller()), value).unwrap_or_revert();
+        self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
+            from: Address::from(self.get_caller()),
+            to:Address::from(zero_address()),
+            value: value,
+        });
+        Ok(())
+    }
+    fn named_keys_erc20crv(
+        &self,
+        name: String,
+        symbol: String,
+        decimals: u8
+    ) -> Result<BTreeMap<String, Key>, Erc20Error> {
+        CURVEERC20::named_keys(self, name, symbol, decimals, 0.into())
     }
     fn erc20_crv_emit(&self, erc20_crv_event: &Erc20CrvEvent) {
         let mut events = Vec::new();
@@ -397,19 +385,6 @@ pub trait ERC20CRV<Storage: ContractStorage>: ContractContext<Storage> + ERC20<S
                 event.insert("event_type", erc20_crv_event.type_name());
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
-                event.insert("value", value.to_string());
-                events.push(event);
-            }
-            Erc20CrvEvent::Approval {
-                owner,
-                spender,
-                value,
-            } => {
-                let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
-                event.insert("event_type", erc20_crv_event.type_name());
-                event.insert("owner", owner.to_string());
-                event.insert("spender", spender.to_string());
                 event.insert("value", value.to_string());
                 events.push(event);
             }
