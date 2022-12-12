@@ -1,4 +1,3 @@
-
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
@@ -16,7 +15,7 @@ impl ERC20CRVInstance {
         name: String,
         symbol: String,
         decimals: u8,
-        time_now:u64
+        time_now: u64,
     ) -> ERC20CRVInstance {
         ERC20CRVInstance(TestContract::new(
             env,
@@ -61,7 +60,7 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn update_mining_parameters(&self, sender: AccountHash,time_now:u64) {
+    pub fn update_mining_parameters(&self, sender: AccountHash, time_now: u64) {
         self.0.call_contract(
             sender,
             "update_mining_parameters",
@@ -70,13 +69,9 @@ impl ERC20CRVInstance {
         );
     }
 
-    pub fn start_epoch_time_write(&self, sender: AccountHash,time_now:u64) {
-        self.0.call_contract(
-            sender,
-            "start_epoch_time_write",
-            runtime_args! {},
-            time_now,
-        );
+    pub fn start_epoch_time_write(&self, sender: AccountHash, time_now: u64) {
+        self.0
+            .call_contract(sender, "start_epoch_time_write", runtime_args! {}, time_now);
     }
     pub fn approve(&self, sender: AccountHash, spender: Address, amount: U256) {
         self.0.call_contract(
@@ -126,7 +121,13 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn transfer_from(&self, sender: AccountHash,owner: Address, recipient: Address, amount: U256) {
+    pub fn transfer_from(
+        &self,
+        sender: AccountHash,
+        owner: Address,
+        recipient: Address,
+        amount: U256,
+    ) {
         self.0.call_contract(
             sender,
             "transfer_from",
@@ -139,7 +140,7 @@ impl ERC20CRVInstance {
             0,
         );
     }
-    pub fn mint(&self, sender: AccountHash, to: Address, amount: U256,time_now:u64) {
+    pub fn mint(&self, sender: AccountHash, to: Address, amount: U256, time_now: u64) {
         self.0.call_contract(
             sender,
             "mint",

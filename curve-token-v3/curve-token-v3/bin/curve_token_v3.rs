@@ -2,7 +2,7 @@
 #![no_std]
 
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec};
+use alloc::{collections::BTreeSet, format, string::String, vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -12,7 +12,8 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use curve_token_v3_crate::{data, CURVETOKENV3};
+use curve_erc20_crate::{self, Address, CURVEERC20};
+use curve_token_v3_crate::{self, data, CURVETOKENV3};
 
 #[derive(Default)]
 struct CurveTokenV3(OnChainContractStorage);
@@ -22,81 +23,71 @@ impl ContractContext<OnChainContractStorage> for CurveTokenV3 {
     }
 }
 
+impl CURVEERC20<OnChainContractStorage> for CurveTokenV3 {}
 impl CURVETOKENV3<OnChainContractStorage> for CurveTokenV3 {}
 
 impl CurveTokenV3 {
-    fn constructor(
-        &mut self,
-        name: String,
-        symbol: String,
-        contract_hash: ContractHash,
-        package_hash: ContractPackageHash,
-    ) {
-        CURVETOKENV3::init(self, name, symbol, Key::from(contract_hash), package_hash);
+    fn constructor(&mut self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
+        CURVETOKENV3::init(self, contract_hash, package_hash);
     }
 }
 
 #[no_mangle]
 fn constructor() {
-    let name: String = runtime::get_named_arg("name");
-    let symbol: String = runtime::get_named_arg("symbol");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    CurveTokenV3::default().constructor(name, symbol, contract_hash, package_hash);
+    CurveTokenV3::default().constructor(contract_hash, package_hash);
 }
 #[no_mangle]
 fn decimals() {
-    let ret = CurveTokenV3::default().decimals();
+    let ret = CURVETOKENV3::decimals(&CurveTokenV3::default());
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn transfer() {
-    let recipient: Key = runtime::get_named_arg("recipient");
+    let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = CurveTokenV3::default().transfer(recipient, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    CURVETOKENV3::transfer(&CurveTokenV3::default(), recipient, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn transfer_from() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let recipient: Key = runtime::get_named_arg("recipient");
+    let owner: Address = runtime::get_named_arg("owner");
+    let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = CurveTokenV3::default().transfer_from(owner, recipient, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    CURVETOKENV3::transfer_from(&CurveTokenV3::default(), owner, recipient, amount)
+        .unwrap_or_revert();
 }
 #[no_mangle]
 fn approve() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    CurveTokenV3::default().approve(spender, amount);
+    CURVETOKENV3::approve(&CurveTokenV3::default(), spender, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn increase_allowance() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = CurveTokenV3::default().increase_allowance(spender, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    CURVEERC20::increase_allowance(&CurveTokenV3::default(), spender, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn decrease_allowance() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = CurveTokenV3::default().decrease_allowance(spender, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    CURVETOKENV3::decrease_allowance(&CurveTokenV3::default(), spender, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn mint() {
-    let to: Key = runtime::get_named_arg("to");
+    let to: Address = runtime::get_named_arg("to");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = CurveTokenV3::default().mint(to, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    CURVETOKENV3::mint(&CurveTokenV3::default(), to, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn burn_from() {
-    let from: Key = runtime::get_named_arg("from");
+    let from: Address = runtime::get_named_arg("from");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = CurveTokenV3::default().burn_from(from, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    CurveTokenV3::default()
+        .burn_from(from, amount)
+        .unwrap_or_revert();
 }
 #[no_mangle]
 fn set_minter() {
@@ -107,33 +98,47 @@ fn set_minter() {
 fn set_name() {
     let name: String = runtime::get_named_arg("name");
     let symbol: String = runtime::get_named_arg("symbol");
-    CurveTokenV3::default().set_name(name, symbol);
+    CURVETOKENV3::set_name(&CurveTokenV3::default(), name, symbol);
 }
 //[no_mangle] of public variables
 #[no_mangle]
 fn name() {
-    runtime::ret(CLValue::from_t(data::get_name()).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::name(&mut CurveTokenV3::default())).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn symbol() {
-    runtime::ret(CLValue::from_t(data::get_symbol()).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::symbol(&mut CurveTokenV3::default())).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn balance_of() {
-    let owner: Key = runtime::get_named_arg("owner");
-    runtime::ret(CLValue::from_t(data::Balances::instance().get(&owner)).unwrap_or_revert());
+    let owner: Address = runtime::get_named_arg("owner");
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::balance_of(&mut CurveTokenV3::default(), owner))
+            .unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn allowance() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let spender: Key = runtime::get_named_arg("spender");
+    let owner: Address = runtime::get_named_arg("owner");
+    let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
-        CLValue::from_t(data::Allowances::instance().get(&owner, &spender)).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::allowance(
+            &mut CurveTokenV3::default(),
+            owner,
+            spender,
+        ))
+        .unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn total_supply() {
-    runtime::ret(CLValue::from_t(data::get_total_supply()).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::total_supply(&mut CurveTokenV3::default())).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn minter() {
@@ -145,8 +150,6 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "constructor",
         vec![
-            Parameter::new("name", String::cl_type()),
-            Parameter::new("symbol", String::cl_type()),
             Parameter::new("contract_hash", ContractHash::cl_type()),
             Parameter::new("package_hash", ContractPackageHash::cl_type()),
         ],
@@ -164,73 +167,61 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "transfer",
         vec![
-            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("recipient", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "transfer_from",
         vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("owner", Address::cl_type()),
+            Parameter::new("recipient", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "approve",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "increase_allowance",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "decrease_allowance",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "mint",
         vec![
-            Parameter::new("to", Key::cl_type()),
+            Parameter::new("to", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -240,7 +231,7 @@ fn get_entry_points() -> EntryPoints {
             Parameter::new("from", Key::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        bool::cl_type(),
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -293,18 +284,18 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("owner", Key::cl_type())],
-        U256::cl_type(),
+        vec![Parameter::new("owner", Address::cl_type())],
+        CLType::U256,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "allowance",
         vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("owner", Address::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
         ],
-        U256::cl_type(),
+        CLType::U256,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -316,16 +307,20 @@ fn call() {
     let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
         // Build new package with initial a first version of the contract.
-        let (package_hash, access_token) = storage::create_contract_package_at_hash();
-        let (contract_hash, _) =
+        let (package_hash, _access_token) = storage::create_contract_package_at_hash();
+        let (_contract_hash, _) =
             storage::add_contract_version(package_hash, get_entry_points(), Default::default());
         let name: String = runtime::get_named_arg("name");
         let symbol: String = runtime::get_named_arg("symbol");
+        // Build new package with initial a first version of the contract.
+        let (package_hash, access_token) = storage::create_contract_package_at_hash();
+        let (contract_hash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            CURVETOKENV3::named_keys(&CurveTokenV3::default(), name, symbol).unwrap_or_revert(),
+        );
         // Prepare constructor args
         let constructor_args = runtime_args! {
-
-            "name" => name,
-            "symbol" => symbol,
             "contract_hash" => contract_hash,
             "package_hash"=> package_hash
         };

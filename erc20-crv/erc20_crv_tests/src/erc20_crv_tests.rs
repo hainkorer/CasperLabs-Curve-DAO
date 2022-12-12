@@ -6,10 +6,10 @@ use curve_erc20_crate::Address;
 use erc20_crv::data::*;
 pub const TEN_E_NINE: u128 = 1000000000;
 const MILLI_SECONDS_IN_DAY: u64 = 86_400_000;
-fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance,u64) {
+fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance, u64) {
     let env = TestEnv::new();
     let owner = env.next_user();
-    let time_now:u64=ERC20CRVInstance::now();
+    let time_now: u64 = ERC20CRVInstance::now();
     let instance = ERC20CRVInstance::new_deploy(
         &env,
         "ERC20CRV",
@@ -17,16 +17,16 @@ fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance,u64) {
         "ERC20CRV".to_string(),
         "erc20_crv".to_string(),
         9_u8,
-        time_now
+        time_now,
     );
-    (env, owner, instance,time_now)
+    (env, owner, instance, time_now)
 }
 
 #[test]
 fn test_deploy() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     assert_eq!(contract.get_init_supply(), 1303030303000000000_i64.into());
-    assert_eq!(contract.get_admin(),Key::Account(owner));
+    assert_eq!(contract.get_admin(), Key::Account(owner));
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -42,13 +42,13 @@ fn test_deploy() {
 
     let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
     assert_eq!(ret, 1303030303000000000_i64.into());
-    let start_epoch_time:U256=U256::from(time_now)+INFLATION_DELAY-RATE_REDUCTION_TIME;
-    assert_eq!(contract.get_start_epoch_time(),start_epoch_time);  
+    let start_epoch_time: U256 = U256::from(time_now) + INFLATION_DELAY - RATE_REDUCTION_TIME;
+    assert_eq!(contract.get_start_epoch_time(), start_epoch_time);
 }
 
 #[test]
 fn burn() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -79,27 +79,27 @@ fn burn() {
 }
 #[test]
 fn set_admin() {
-    let (env, owner, contract,_) = deploy();
-    let admin:Key = Key::Account(env.next_user());
+    let (env, owner, contract, _) = deploy();
+    let admin: Key = Key::Account(env.next_user());
     contract.set_admin(owner, admin);
-    assert_eq!(contract.get_admin(),admin);
+    assert_eq!(contract.get_admin(), admin);
 }
 #[test]
 fn test_set_minter() {
-    let (env, owner, contract,_) = deploy();
-    let minter:Key = Key::Account(env.next_user());
+    let (env, owner, contract, _) = deploy();
+    let minter: Key = Key::Account(env.next_user());
     contract.set_minter(owner, minter);
-    assert_eq!(contract.get_minter(),minter);
+    assert_eq!(contract.get_minter(), minter);
 }
 #[test]
 fn test_update_mining_parameters() {
-    let (_, owner, contract,time_now) = deploy();
-    contract.update_mining_parameters(owner,time_now+MILLI_SECONDS_IN_DAY);
+    let (_, owner, contract, time_now) = deploy();
+    contract.update_mining_parameters(owner, time_now + MILLI_SECONDS_IN_DAY);
     assert_eq!(contract.get_rate(), 8714335.into());
 }
 #[test]
 fn test_start_epoch_time_write() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -118,7 +118,7 @@ fn test_start_epoch_time_write() {
 
 #[test]
 fn test_future_epoch_time_write() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     TestContract::new(
         &env,
         "erc20-crv-session-code.wasm",
@@ -136,7 +136,7 @@ fn test_future_epoch_time_write() {
 }
 #[test]
 fn test_available_supply() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -149,14 +149,13 @@ fn test_available_supply() {
         time_now,
     );
     let available_supply = contract.get_start_epoch_supply()
-        + (U256::from(time_now) - contract.get_start_epoch_time())
-            * contract.get_rate();
+        + (U256::from(time_now) - contract.get_start_epoch_time()) * contract.get_rate();
     let ret: U256 = env.query_account_named_key(owner, &[AVAILABLE_SUPPLY.into()]);
     assert_eq!(ret, available_supply);
 }
 #[test]
 fn test_total_supply() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -173,8 +172,8 @@ fn test_total_supply() {
 }
 #[test]
 fn test_mintable_in_timeframe() {
-    let (env, owner, contract,time_now) = deploy();
-    contract.update_mining_parameters(owner,time_now+MILLI_SECONDS_IN_DAY);
+    let (env, owner, contract, time_now) = deploy();
+    contract.update_mining_parameters(owner, time_now + MILLI_SECONDS_IN_DAY);
     let start: U256 = U256::from(time_now);
     let end: U256 = U256::from(start + MILLI_SECONDS_IN_DAY);
     TestContract::new(
@@ -196,12 +195,17 @@ fn test_mintable_in_timeframe() {
 }
 #[test]
 fn test_mint() {
-    let (env, owner, contract,time_now) = deploy();
-    let to= env.next_user();
+    let (env, owner, contract, time_now) = deploy();
+    let to = env.next_user();
     let amount: U256 = U256::from(10 * TEN_E_NINE);
-    let minter:Key = Key::Account(owner);
+    let minter: Key = Key::Account(owner);
     contract.set_minter(owner, minter);
-    contract.mint(owner, Address::Account(to), amount,time_now + MILLI_SECONDS_IN_DAY+2000);
+    contract.mint(
+        owner,
+        Address::Account(to),
+        amount,
+        time_now + MILLI_SECONDS_IN_DAY + 2000,
+    );
     //checking balance
     TestContract::new(
         &env,
@@ -216,12 +220,11 @@ fn test_mint() {
         0,
     );
     let ret: U256 = env.query_account_named_key(to, &[BALANCE_OF.into()]);
-    assert_eq!(ret,U256::from(10 * TEN_E_NINE));
-    
+    assert_eq!(ret, U256::from(10 * TEN_E_NINE));
 }
 #[test]
 fn test_increase_allowance() {
-    let (env, owner, contract,_) = deploy();
+    let (env, owner, contract, _) = deploy();
     let spender: Address = Address::from(env.next_user());
     let amount: U256 = U256::from(100 * TEN_E_NINE);
     contract.increase_allowance(owner, spender, amount);
@@ -243,7 +246,7 @@ fn test_increase_allowance() {
 }
 #[test]
 fn test_decrease_allowance() {
-    let (env, owner, contract,_) = deploy();
+    let (env, owner, contract, _) = deploy();
     let spender: Address = Address::from(env.next_user());
     let amount: U256 = U256::from(100 * TEN_E_NINE);
     contract.approve(owner, spender, amount);
@@ -262,7 +265,7 @@ fn test_decrease_allowance() {
     );
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
     assert_eq!(ret, U256::from(100 * TEN_E_NINE));
-    let decrease_amount:U256= U256::from(80 * TEN_E_NINE);
+    let decrease_amount: U256 = U256::from(80 * TEN_E_NINE);
     contract.decrease_allowance(owner, spender, decrease_amount);
     TestContract::new(
         &env,
@@ -278,11 +281,11 @@ fn test_decrease_allowance() {
         0,
     );
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret, U256::from(20* TEN_E_NINE));
+    assert_eq!(ret, U256::from(20 * TEN_E_NINE));
 }
 #[test]
 fn test_transfer() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     let recipient: Address = Address::from(env.next_user());
     let amount: U256 = U256::from(100 * TEN_E_NINE);
     contract.transfer(owner, recipient, amount);
@@ -303,12 +306,12 @@ fn test_transfer() {
 }
 #[test]
 fn test_transfer_from() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     let spender: AccountHash = env.next_user();
     let recipient: Address = Address::from(env.next_user());
     let amount: U256 = U256::from(100 * TEN_E_NINE);
     contract.approve(owner, Address::Account(spender), amount);
-    contract.transfer_from(spender,Address::from(owner), recipient, amount);
+    contract.transfer_from(spender, Address::from(owner), recipient, amount);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -326,7 +329,7 @@ fn test_transfer_from() {
 }
 #[test]
 fn test_allowance() {
-    let (env, owner, contract,time_now) = deploy();
+    let (env, owner, contract, time_now) = deploy();
     let spender: AccountHash = env.next_user();
     let recipient: Address = Address::from(env.next_user());
     let amount: U256 = U256::from(100 * TEN_E_NINE);
@@ -346,7 +349,7 @@ fn test_allowance() {
     );
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
     assert_eq!(ret, U256::from(100 * TEN_E_NINE));
-    let transfer_amount:U256= U256::from(50 * TEN_E_NINE);
+    let transfer_amount: U256 = U256::from(50 * TEN_E_NINE);
     contract.transfer_from(spender, Address::from(owner), recipient, transfer_amount);
     TestContract::new(
         &env,

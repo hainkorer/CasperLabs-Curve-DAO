@@ -9,7 +9,6 @@ members = [
   # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
   "curve-token-v3/curve-token-v3-crate",
-  "curve-token-v3/curve-token-v3-session-code",
   "curve-token-v3/curve-token-v3-tests",
   "curve-casper-erc20-crate",
     # ERC20
