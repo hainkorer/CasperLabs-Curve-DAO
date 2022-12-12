@@ -12,7 +12,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use curve_erc20_crate::{self, CURVEERC20, Address};
+use curve_erc20_crate::{self, Address, CURVEERC20};
 use erc20_crv::{self, data, ERC20CRV};
 
 #[derive(Default)]
@@ -26,16 +26,8 @@ impl CURVEERC20<OnChainContractStorage> for Erc20Crv {}
 impl ERC20CRV<OnChainContractStorage> for Erc20Crv {}
 
 impl Erc20Crv {
-    fn constructor(
-        &mut self,
-        contract_hash: ContractHash,
-        package_hash: ContractPackageHash,
-    ) {
-        ERC20CRV::init(
-            self,
-            contract_hash,
-            package_hash,
-        );
+    fn constructor(&mut self, contract_hash: ContractHash, package_hash: ContractPackageHash) {
+        ERC20CRV::init(self, contract_hash, package_hash);
     }
 }
 
@@ -43,7 +35,7 @@ impl Erc20Crv {
 fn constructor() {
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-    Erc20Crv::default().constructor( contract_hash, package_hash);
+    Erc20Crv::default().constructor(contract_hash, package_hash);
 }
 #[no_mangle]
 fn set_minter() {
@@ -98,7 +90,8 @@ fn transfer_from() {
     let owner: Address = runtime::get_named_arg("owner");
     let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    CURVEERC20::transfer_from(&mut Erc20Crv::default(), owner, recipient, amount).unwrap_or_revert();
+    CURVEERC20::transfer_from(&mut Erc20Crv::default(), owner, recipient, amount)
+        .unwrap_or_revert();
 }
 #[no_mangle]
 fn approve() {
@@ -148,20 +141,28 @@ fn symbol() {
 }
 #[no_mangle]
 fn decimals() {
-    runtime::ret(CLValue::from_t(CURVEERC20::decimals(&mut Erc20Crv::default())).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::decimals(&mut Erc20Crv::default())).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
-    runtime::ret(CLValue::from_t(CURVEERC20::balance_of(&mut Erc20Crv::default(), owner)).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::balance_of(&mut Erc20Crv::default(), owner)).unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn allowances() {
     let owner: Address = runtime::get_named_arg("owner");
     let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::allowance(&mut Erc20Crv::default(), owner, spender))
-            .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::allowance(
+            &mut Erc20Crv::default(),
+            owner,
+            spender,
+        ))
+        .unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -408,15 +409,15 @@ fn call() {
         let symbol: String = runtime::get_named_arg("symbol");
         let decimals: u8 = runtime::get_named_arg("decimals");
 
-         // Build new package with initial a first version of the contract.
-         let (package_hash, access_token) = storage::create_contract_package_at_hash();
-         let (contract_hash, _) = storage::add_contract_version(
-             package_hash,
-             get_entry_points(),
-             Erc20Crv::default()
-                 .named_keys_erc20crv(name, symbol, decimals)
-                 .unwrap_or_revert(),
-         );
+        // Build new package with initial a first version of the contract.
+        let (package_hash, access_token) = storage::create_contract_package_at_hash();
+        let (contract_hash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            Erc20Crv::default()
+                .named_keys_erc20crv(name, symbol, decimals)
+                .unwrap_or_revert(),
+        );
 
         let constructor_args = runtime_args! {
                 "contract_hash" => contract_hash,

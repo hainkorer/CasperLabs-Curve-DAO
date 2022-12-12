@@ -50,7 +50,7 @@ pub extern "C" fn call() {
             );
             store(START_EPOCH_TIME_WRITE, ret);
         }
-        
+
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };
 }

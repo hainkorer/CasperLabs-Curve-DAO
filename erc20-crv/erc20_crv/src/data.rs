@@ -2,7 +2,9 @@ use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{bytesrepr::ToBytes, CLTyped, ContractPackageHash, Key, U128, U256, ContractHash};
+use casper_types::{
+    bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U128, U256,
+};
 
 use core::convert::TryInto;
 
@@ -10,9 +12,9 @@ use casperlabs_contract_utils::{get_key, set_key};
 use common::{keys::*, utils::*};
 pub const YEAR: U256 = U256([31536000000, 0, 0, 0]);
 pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);
-pub const INITIAL_RATE: U256 = U256([8714335, 0, 0, 0]);  //leading to 43% premine
+pub const INITIAL_RATE: U256 = U256([8714335, 0, 0, 0]); //leading to 43% premine
 pub const RATE_REDUCTION_TIME: U256 = YEAR;
-pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115, 0, 0, 0]);  //2 ** (1/4) * 1e9
+pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115, 0, 0, 0]); //2 ** (1/4) * 1e9
 
 pub const RATE_DENOMINATOR: U256 = U256([1000000000, 0, 0, 0]); //10^9
 pub const INFLATION_DELAY: U256 = U256([86400000, 0, 0, 0]);
