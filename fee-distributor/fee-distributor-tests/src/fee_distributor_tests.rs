@@ -21,7 +21,7 @@ fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     )
 }
 // CRV
-fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash,time_now:u64) -> TestContract {
+fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash, time_now: u64) -> TestContract {
     TestContract::new(
         env,
         "erc20_crv.wasm",
@@ -40,7 +40,7 @@ fn deploy_voting_escrow(
     env: &TestEnv,
     sender: AccountHash,
     erc20_crv: &TestContract,
-    time_now:u64
+    time_now: u64,
 ) -> TestContract {
     TestContract::new(
         env,
@@ -69,8 +69,8 @@ fn deploy() -> (
     let time_now: u64 = FEEDISTRIBUTORInstance::now();
     let unlock_time = U256::from(time_now.checked_add(MILLI_SECONDS_IN_DAY * 720).unwrap());
     let erc20 = deploy_erc20(&env, owner);
-    let erc20_crv = deploy_erc20_crv(&env, owner,time_now);
-    let voting_escrow = deploy_voting_escrow(&env, owner, &erc20_crv,time_now);
+    let erc20_crv = deploy_erc20_crv(&env, owner, time_now);
+    let voting_escrow = deploy_voting_escrow(&env, owner, &erc20_crv, time_now);
     erc20_crv.call_contract(
         owner,
         "approve",
@@ -95,7 +95,7 @@ fn deploy() -> (
         Key::Hash(erc20.package_hash()),
         Key::Account(owner),
         Key::Account(owner),
-        time_now
+        time_now,
     );
 
     (env, owner, instance, erc20, time_now)
@@ -136,7 +136,10 @@ fn test_ve_for_at() {
         time_now,
     );
     let _ret: U256 = env.query_account_named_key(owner, &[VE_FOR_AT.into()]);
-    assert!(_ret/TEN_E_NINE<=1181.into() && _ret/TEN_E_NINE>=1171.into(), "Invalid default ve value"); //depends on time
+    assert!(
+        _ret / TEN_E_NINE <= 1181.into() && _ret / TEN_E_NINE >= 1171.into(),
+        "Invalid default ve value"
+    ); //depends on time
 }
 
 #[test]

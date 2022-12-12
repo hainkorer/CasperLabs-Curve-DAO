@@ -323,7 +323,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                         .to_string()
                         .parse()
                         .unwrap();
-               }
+                }
                 VeSupply::instance().set(
                     &t,
                     i128::max(
@@ -558,7 +558,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         }
         set_lock(false);
         amount
-     }
+    }
 
     /// @notice Make multiple fee claims in a single call
     /// @dev Used to claim for many accounts at once, or to make

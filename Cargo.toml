@@ -11,11 +11,11 @@ members = [
   "curve-token-v3/curve-token-v3-crate",
   "curve-token-v3/curve-token-v3-session-code",
   "curve-token-v3/curve-token-v3-tests",
-  # ERC20
-  "erc20/erc20",
-  "erc20/erc20-crate",
-  "erc20/erc20-proxy",
-  "erc20/erc20-tests",
+  "curve-casper-erc20-crate",
+    # ERC20
+    "curve-erc20/curve-erc20",
+    "curve-erc20/curve-erc20-crate",
+    "curve-erc20/curve-erc20-tests",
   # ERC-20 CRV
   "erc20-crv/erc20_crv",
   "erc20-crv/erc20_crv_tests",
@@ -70,12 +70,6 @@ members = [
   # VESTING ESCROW SIMPLE
   "vesting-escrow-simple/vesting-escrow-simple-crate",
   "vesting-escrow-simple/vesting-escrow-simple",
-
-  # ERC20
-  "erc20/erc20",
-  "erc20/erc20-crate",
-  "erc20/erc20-proxy",
-  "erc20/erc20-tests",
   # LIQUIDITY GAUGE REWARD WRAPPER
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-crate",

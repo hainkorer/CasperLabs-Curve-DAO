@@ -13,6 +13,7 @@ use casper_types::{
     bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U128, U256,
 };
 use common::keys::*;
+use curve_erc20_crate::Address;
 
 // Key is the same a destination
 fn store<T: CLTyped + ToBytes>(key: &str, value: T) {
@@ -57,8 +58,34 @@ pub extern "C" fn call() {
             );
             store(ALLOWANCE, ret);
         }
+        ALLOWANCE_CRV => {
+            let owner: Address = runtime::get_named_arg("owner");
+            let spender: Key = runtime::get_named_arg("spender");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                ALLOWANCE,
+                runtime_args! {
+                    "owner" => owner,
+                    "spender" => spender,
+                },
+            );
+            store(ALLOWANCE, ret);
+        }
         BALANCE_OF => {
             let owner: Key = runtime::get_named_arg("owner");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                BALANCE_OF,
+                runtime_args! {
+                    "owner" => owner,
+                },
+            );
+            store(BALANCE_OF, ret);
+        }
+        BALANCE_OF_CRV => {
+            let owner: Address = runtime::get_named_arg("owner");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,

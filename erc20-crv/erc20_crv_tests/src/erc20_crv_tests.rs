@@ -2,6 +2,7 @@ use crate::erc20_crv_instance::ERC20CRVInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
+use curve_erc20_crate::Address;
 use erc20_crv::data::*;
 pub const TEN_E_NINE: u128 = 1000000000;
 const MILLI_SECONDS_IN_DAY: u64 = 86_400_000;
@@ -25,16 +26,16 @@ fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance,u64) {
 fn test_deploy() {
     let (env, owner, contract,time_now) = deploy();
     assert_eq!(contract.get_init_supply(), 1303030303000000000_i64.into());
-    assert_eq!(contract.get_admin(), Key::from(owner));
+    assert_eq!(contract.get_admin(),Key::Account(owner));
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
         TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(BALANCE_OF_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
-            "owner"=>Key::from(owner)
+            "owner"=>Address::from(owner)
         },
         time_now,
     );
@@ -79,14 +80,16 @@ fn burn() {
 #[test]
 fn set_admin() {
     let (env, owner, contract,_) = deploy();
-    let admin: Key = Key::from(env.next_user());
+    let admin:Key = Key::Account(env.next_user());
     contract.set_admin(owner, admin);
+    assert_eq!(contract.get_admin(),admin);
 }
 #[test]
 fn test_set_minter() {
     let (env, owner, contract,_) = deploy();
-    let minter = Key::from(env.next_user());
+    let minter:Key = Key::Account(env.next_user());
     contract.set_minter(owner, minter);
+    assert_eq!(contract.get_minter(),minter);
 }
 #[test]
 fn test_update_mining_parameters() {
@@ -194,83 +197,102 @@ fn test_mintable_in_timeframe() {
 #[test]
 fn test_mint() {
     let (env, owner, contract,time_now) = deploy();
-    let to: Key = Key::from(env.next_user());
+    let to= env.next_user();
     let amount: U256 = U256::from(10 * TEN_E_NINE);
-    let minter = Key::from(owner);
+    let minter:Key = Key::Account(owner);
     contract.set_minter(owner, minter);
+    contract.mint(owner, Address::Account(to), amount,time_now + MILLI_SECONDS_IN_DAY+2000);
+    //checking balance
     TestContract::new(
         &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
-        owner,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        to,
         runtime_args! {
-            "entrypoint" => String::from(MINT),
+            "entrypoint" => String::from(BALANCE_OF_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
-            "to"=>to,
-            "amount"=>amount
+            "owner"=>Address::Account(to)
         },
-        time_now + MILLI_SECONDS_IN_DAY+2000,
+        0,
     );
-
-    let ret: bool = env.query_account_named_key(owner, &[MINT.into()]);
-    assert!(ret);
+    let ret: U256 = env.query_account_named_key(to, &[BALANCE_OF.into()]);
+    assert_eq!(ret,U256::from(10 * TEN_E_NINE));
+    
 }
 #[test]
 fn test_increase_allowance() {
     let (env, owner, contract,_) = deploy();
-    let spender: Key = Key::from(env.next_user());
+    let spender: Address = Address::from(env.next_user());
     let amount: U256 = U256::from(100 * TEN_E_NINE);
-    TestContract::new(
-        &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(INCREASE_ALLOWANCE),
-            "package_hash" => Key::Hash(contract.package_hash()),
-            "spender"=>spender,
-            "amount"=>amount
-        },
-        0,
-    );
-
-    let ret: Result<(), u32> = env.query_account_named_key(owner, &[INCREASE_ALLOWANCE.into()]);
-    match ret {
-        Ok(()) => {}
-        Err(e) => panic!("Increase Allowance Failed ERROR:{}", e),
-    }
-}
-#[test]
-fn test_transfer() {
-    let (env, owner, contract,time_now) = deploy();
-    let recipient: Key = Key::from(env.next_user());
-    let amount: U256 = U256::from(100 * TEN_E_NINE);
-    TestContract::new(
-        &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(TRANSFER),
-            "package_hash" => Key::Hash(contract.package_hash()),
-            "recipient"=>recipient,
-            "amount"=>amount
-        },
-        0,
-    );
-
-    let ret: Result<(), u32> = env.query_account_named_key(owner, &[TRANSFER.into()]);
-    match ret {
-        Ok(()) => {}
-        Err(e) => panic!("Tranfer Failed ERROR:{}", e),
-    }
+    contract.increase_allowance(owner, spender, amount);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
         TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(ALLOWANCE_CRV),
+            "package_hash" => Key::Hash(contract.package_hash()),
+            "owner"=>Address::from(owner),
+            "spender"=>Address::from(spender)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
+    assert_eq!(ret, U256::from(100 * TEN_E_NINE));
+}
+#[test]
+fn test_decrease_allowance() {
+    let (env, owner, contract,_) = deploy();
+    let spender: Address = Address::from(env.next_user());
+    let amount: U256 = U256::from(100 * TEN_E_NINE);
+    contract.approve(owner, spender, amount);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(ALLOWANCE_CRV),
+            "package_hash" => Key::Hash(contract.package_hash()),
+            "owner"=>Address::from(owner),
+            "spender"=>Address::from(spender)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
+    assert_eq!(ret, U256::from(100 * TEN_E_NINE));
+    let decrease_amount:U256= U256::from(80 * TEN_E_NINE);
+    contract.decrease_allowance(owner, spender, decrease_amount);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(ALLOWANCE_CRV),
+            "package_hash" => Key::Hash(contract.package_hash()),
+            "owner"=>Address::from(owner),
+            "spender"=>Address::from(spender)
+        },
+        0,
+    );
+    let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
+    assert_eq!(ret, U256::from(20* TEN_E_NINE));
+}
+#[test]
+fn test_transfer() {
+    let (env, owner, contract,time_now) = deploy();
+    let recipient: Address = Address::from(env.next_user());
+    let amount: U256 = U256::from(100 * TEN_E_NINE);
+    contract.transfer(owner, recipient, amount);
+    TestContract::new(
+        &env,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
+        owner,
+        runtime_args! {
+            "entrypoint" => String::from(BALANCE_OF_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Key::from(owner)
         },
@@ -283,35 +305,17 @@ fn test_transfer() {
 fn test_transfer_from() {
     let (env, owner, contract,time_now) = deploy();
     let spender: AccountHash = env.next_user();
-    let recipient: Key = Key::from(env.next_user());
+    let recipient: Address = Address::from(env.next_user());
     let amount: U256 = U256::from(100 * TEN_E_NINE);
-    contract.approve(owner, Key::from(spender), amount);
-    TestContract::new(
-        &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
-        spender,
-        runtime_args! {
-            "entrypoint" => String::from(TRANSFER_FROM),
-            "package_hash" => Key::Hash(contract.package_hash()),
-            "owner"=>Key::from(owner),
-            "recipient"=>recipient,
-            "amount"=>amount
-        },
-        time_now,
-    );
-    let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
-    match ret {
-        Ok(()) => {}
-        Err(e) => panic!("Tranfer Failed ERROR:{}", e),
-    }
+    contract.approve(owner, Address::Account(spender), amount);
+    contract.transfer_from(spender,Address::from(owner), recipient, amount);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
         TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(BALANCE_OF_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Key::from(owner)
         },
@@ -324,50 +328,33 @@ fn test_transfer_from() {
 fn test_allowance() {
     let (env, owner, contract,time_now) = deploy();
     let spender: AccountHash = env.next_user();
-    let recipient: Key = Key::from(env.next_user());
+    let recipient: Address = Address::from(env.next_user());
     let amount: U256 = U256::from(100 * TEN_E_NINE);
-    contract.approve(owner, Key::from(spender), amount);
+    contract.approve(owner, Address::Account(spender), amount);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
         TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(ALLOWANCE),
+            "entrypoint" => String::from(ALLOWANCE_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
-            "owner"=>Key::from(owner),
-            "spender"=>Key::from(spender)
+            "owner"=>Address::from(owner),
+            "spender"=>Address::from(spender)
         },
         time_now,
     );
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
     assert_eq!(ret, U256::from(100 * TEN_E_NINE));
-    TestContract::new(
-        &env,
-        "erc20-crv-session-code.wasm",
-        "SessionCode",
-        spender,
-        runtime_args! {
-            "entrypoint" => String::from(TRANSFER_FROM),
-            "package_hash" => Key::Hash(contract.package_hash()),
-            "owner"=>Key::from(owner),
-            "recipient"=>recipient,
-            "amount"=>amount
-        },
-        time_now,
-    );
-    let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
-    match ret {
-        Ok(()) => {}
-        Err(e) => panic!("Tranfer Failed ERROR:{}", e),
-    }
+    let transfer_amount:U256= U256::from(50 * TEN_E_NINE);
+    contract.transfer_from(spender, Address::from(owner), recipient, transfer_amount);
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
         TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(ALLOWANCE),
+            "entrypoint" => String::from(ALLOWANCE_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Key::from(owner),
             "spender"=>Key::from(spender)
@@ -375,5 +362,5 @@ fn test_allowance() {
         time_now,
     );
     let ret: U256 = env.query_account_named_key(owner, &[ALLOWANCE.into()]);
-    assert_eq!(ret, U256::from(0));
+    assert_eq!(ret, U256::from(50 * TEN_E_NINE));
 }

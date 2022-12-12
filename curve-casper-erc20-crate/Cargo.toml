@@ -1,0 +1,13 @@
+[package]
+name = "curve-casper-erc20-crate"
+version = "0.1.0"
+authors = ["Muhammad Adrees <muhammad.adrees@scytalelabs.com>"]
+edition = "2018"
+
+[dependencies]
+casper-types = "1.5.0"
+casper-contract = "1.4.4"
+casperlabs-contract-utils = "0.2.1"
+hex = "0.4.3"
+base64 = "0.13.0"
+once_cell = "1.8.0"
