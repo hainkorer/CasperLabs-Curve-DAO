@@ -77,7 +77,7 @@ build-contract-vesting-escrow-simple:
 	cargo build --release -p erc20 -p vesting-escrow-simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true
 build-contract-voting-escrow:
-	cargo build --release -p session-code -p erc20 -p erc20_crv -p voting-escrow --target wasm32-unknown-unknown
+	cargo build --release -p session-code -p erc20_crv -p voting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-ownable:
 	cargo build --release -p test-session-code -p ownable --target wasm32-unknown-unknown
@@ -256,7 +256,6 @@ copy-wasm-file-vesting-escrow-factory:
 	cp ${wasm_src_path}/vesting-escrow-factory-session-code.wasm ${vesting_escrow_factory_des_wasm}
 copy-wasm-file-voting-escrow:
 	cp ${wasm_src_path}/session-code.wasm ${voting_escrow_des_wasm}
-	cp ${wasm_src_path}/erc20-token.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/*.wasm ${voting_escrow_des_wasm}
 copy-wasm-file-liquidity-gauge-v3:

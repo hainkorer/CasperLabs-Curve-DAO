@@ -18,6 +18,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
+use curve_erc20_crate::{self, Address};
 
 /// @notice Votes have a weight depending on time, so that users are committed to the future of (whatever they are voting for)
 /// @dev Vote weight decays linearly over time. Lock time cannot be more than `MAXTIME` (4 years).
@@ -408,19 +409,16 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         // _locked.end > block.timestamp (always)
         self._checkpoint(addr, old_locked, locked);
         if value != 0.into() {
-            let ret: Result<(), u32> = runtime::call_versioned_contract(
+            let _ret: () = runtime::call_versioned_contract(
                 get_token().into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer_from",
                 runtime_args! {
-                    "owner" => addr,
-                    "recipient" => Key::from(get_package_hash()),
+                    "owner" => Address::from(addr),
+                    "recipient" => Address::from(Key::from(get_package_hash())),
                     "amount" => value
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-            }
         }
         VOTINGESCROW::emit(
             self,
@@ -603,18 +601,16 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
         // _locked has only 0 end
         // Both can have >= 0 amount
         self._checkpoint(self.get_caller(), old_locked, locked);
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let _ret: () = runtime::call_versioned_contract(
             get_token().into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
             runtime_args! {
-                "recipient" => self.get_caller(),
+                "recipient" =>Address::from(self.get_caller()),
                 "amount" => value
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::from(ret.err().unwrap_or_revert()));
-        }
+
         VOTINGESCROW::emit(
             self,
             &VotingEscrowEvent::Withdraw {
