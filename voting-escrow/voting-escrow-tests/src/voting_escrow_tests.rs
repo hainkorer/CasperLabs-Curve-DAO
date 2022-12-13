@@ -2,6 +2,7 @@ use crate::voting_escrow_instance::{now, VOTINGESCROWInstance, MILLI_SECONDS_IN_
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
+use curve_erc20_crate::Address;
 use voting_escrow_crate::data::WEEK;
 pub const TEN_E_NINE: u128 = 1000000000;
 // CRV
@@ -87,11 +88,12 @@ fn test_get_last_user_slope() {
     let (env, owner, instance, erc20_crv, time_now) = deploy();
     let amount: U256 = U256::from(2500 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount
         },
         time_now,
@@ -119,11 +121,12 @@ fn test_user_point_history_ts() {
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
@@ -151,11 +154,12 @@ fn test_locked_end() {
     let (env, owner, instance, erc20_crv, time_now) = deploy();
     let amount: U256 = U256::from(2500 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount
         },
         time_now,
@@ -188,11 +192,12 @@ fn test_deposit_for() {
     let amount_approve: U256 = U256::from(400 * TEN_E_NINE);
     let amount: U256 = U256::from(200 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
@@ -237,11 +242,12 @@ fn test_create_lock() {
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
@@ -288,11 +294,12 @@ fn test_increase_amount() {
     let amount_approve: U256 = U256::from(400 * TEN_E_NINE);
     let amount: U256 = U256::from(200 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
@@ -337,11 +344,12 @@ fn test_increase_unlock_time() {
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
@@ -387,11 +395,12 @@ fn test_withdraw() {
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
@@ -436,11 +445,12 @@ fn test_balance_of() {
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
@@ -472,11 +482,12 @@ fn test_balance_of_at() {
 
     let amount: U256 = U256::from(2500 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount
         },
         time_now,
@@ -511,11 +522,12 @@ fn test_total_supply() {
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
@@ -595,11 +607,12 @@ fn test_total_supply_at() {
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
+    let spender: Address = Address::Contract(instance.package_hash().into());
     erc20_crv.call_contract(
         owner,
         "increase_allowance",
         runtime_args! {
-            "spender" => Key::Hash(instance.package_hash()),
+            "spender" => spender,
             "amount" => amount_approve
         },
         time_now,
