@@ -56,7 +56,7 @@ impl ERC20 {
         total_supply::read_total_supply_from(self.total_supply_uref())
     }
 
-    fn write_total_supply(&self, total_supply: U256) {
+    pub fn write_total_supply(&self, total_supply: U256) {
         total_supply::write_total_supply_to(self.total_supply_uref(), total_supply)
     }
 
@@ -68,7 +68,7 @@ impl ERC20 {
         balances::read_balance_from(self.balances_uref(), owner)
     }
 
-    fn write_balance(&mut self, owner: Address, amount: U256) {
+    pub fn write_balance(&mut self, owner: Address, amount: U256) {
         balances::write_balance_to(self.balances_uref(), owner, amount)
     }
 
@@ -82,7 +82,7 @@ impl ERC20 {
         allowances::read_allowance_from(self.allowances_uref(), owner, spender)
     }
 
-    fn write_allowance(&mut self, owner: Address, spender: Address, amount: U256) {
+    pub fn write_allowance(&mut self, owner: Address, spender: Address, amount: U256) {
         allowances::write_allowance_to(self.allowances_uref(), owner, spender, amount)
     }
 
