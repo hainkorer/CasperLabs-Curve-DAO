@@ -2,8 +2,6 @@
 members = [
   # COMMON
   "common",
-  # SESSION CODE
-  "session-code",
   # Test Session Code
   "test-session-code",
   # CURVE TOKEN V3
@@ -11,10 +9,10 @@ members = [
   "curve-token-v3/curve-token-v3-crate",
   "curve-token-v3/curve-token-v3-tests",
   "curve-casper-erc20-crate",
-    # ERC20
-    "curve-erc20/curve-erc20",
-    "curve-erc20/curve-erc20-crate",
-    "curve-erc20/curve-erc20-tests",
+  # ERC20
+  "curve-erc20/curve-erc20",
+  "curve-erc20/curve-erc20-crate",
+  "curve-erc20/curve-erc20-tests",
   # ERC-20 CRV
   "erc20-crv/erc20_crv",
   "erc20-crv/erc20_crv_tests",
@@ -23,6 +21,7 @@ members = [
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",
   "fee-distributor/fee-distributor-tests",
+  "fee-distributor/session-code",
   # GAUGE CONTROLLER
   "gauge-controller/gauge-controller",
   "gauge-controller/gauge-controller-crate",
@@ -104,7 +103,6 @@ members = [
   "liquidity-gauge-v3/liquidity-gauge-v3-crate",
   "liquidity-gauge-v3/liquidity-gauge-v3-tests",
   "liquidity-gauge-v3/liquidity-gauge-v3-session-code",
-
 ]
 
 [profile.release]

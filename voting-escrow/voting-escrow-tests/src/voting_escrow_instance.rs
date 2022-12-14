@@ -1,9 +1,15 @@
-use std::time::SystemTime;
-
+use blake2::{
+    digest::{Update, VariableOutput},
+    VarBlake2b,
+};
 use casper_types::{
-    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
+    account::AccountHash,
+    bytesrepr::{FromBytes, ToBytes},
+    runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use hex::encode;
+use std::time::SystemTime;
 
 pub const MILLI_SECONDS_IN_DAY: u64 = 86400000;
 
@@ -143,4 +149,27 @@ impl VOTINGESCROWInstance {
     pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
         self.0.query_named_key(key)
     }
+
+    pub fn contract(&self) -> &TestContract {
+        &self.0
+    }
+}
+
+pub fn key_to_str(key: &Key) -> String {
+    match key {
+        Key::Account(account) => account.to_string(),
+        Key::Hash(package) => encode(package),
+        _ => panic!("Unexpected key type"),
+    }
+}
+
+pub fn keys_to_str<T: CLTyped + ToBytes, U: CLTyped + ToBytes>(key_a: &T, key_b: &U) -> String {
+    let mut hasher = VarBlake2b::new(32).unwrap();
+    hasher.update(key_a.to_bytes().unwrap());
+    hasher.update(key_b.to_bytes().unwrap());
+
+    let mut ret = [0u8; 32];
+    hasher.finalize_variable(|hash| ret.clone_from_slice(hash));
+
+    encode(ret)
 }

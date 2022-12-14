@@ -33,7 +33,7 @@ fn test_deploy() {
         TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF_CRV),
+            "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Address::from(owner)
         },
@@ -213,7 +213,7 @@ fn test_mint() {
         TEST_SESSION_CODE_NAME,
         to,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF_CRV),
+            "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Address::Account(to)
         },
@@ -295,7 +295,7 @@ fn test_transfer() {
         TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF_CRV),
+            "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Key::from(owner)
         },
@@ -318,7 +318,7 @@ fn test_transfer_from() {
         TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF_CRV),
+            "entrypoint" => String::from(BALANCE_OF),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Key::from(owner)
         },
