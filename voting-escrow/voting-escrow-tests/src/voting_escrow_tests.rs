@@ -1,9 +1,11 @@
-use crate::voting_escrow_instance::{now, VOTINGESCROWInstance, MILLI_SECONDS_IN_DAY};
+use crate::voting_escrow_instance::{
+    key_to_str, keys_to_str, now, VOTINGESCROWInstance, MILLI_SECONDS_IN_DAY,
+};
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 use curve_erc20_crate::Address;
-use voting_escrow_crate::data::WEEK;
+use voting_escrow_crate::data::{LockedBalance, Point, LOCKED, USER_POINT_HISTORY, WEEK};
 pub const TEN_E_NINE: u128 = 1000000000;
 // CRV
 fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash, time_now: u64) -> TestContract {
@@ -44,6 +46,7 @@ fn deploy() -> (
 
     (env, owner, instance, erc20_crv, time_now)
 }
+
 #[test]
 fn test_deploy() {
     let (_, owner, instance, erc20_crv, _) = deploy();
@@ -72,7 +75,6 @@ fn test_commit_transfer_ownership() {
     let ret: Key = instance.key_value(FUTURE_ADMIN.to_string());
     assert_eq!(ret, addr, "Ownership not transferred");
 }
-
 #[test]
 fn test_apply_transfer_ownership() {
     let (env, owner, instance, _, time_now) = deploy();
@@ -101,8 +103,8 @@ fn test_get_last_user_slope() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(GET_LAST_USER_SLOPE),
@@ -117,7 +119,7 @@ fn test_get_last_user_slope() {
 
 #[test]
 fn test_user_point_history_ts() {
-    let (env, owner, instance, erc20_crv, time_now) = deploy();
+    let (_, owner, instance, erc20_crv, time_now) = deploy();
     let amount_approve: U256 = U256::from(1000 * TEN_E_NINE);
     let amount: U256 = U256::from(1000 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
@@ -132,26 +134,18 @@ fn test_user_point_history_ts() {
         time_now,
     );
     instance.create_lock(owner, amount, unlock_time, time_now);
-    let idx: U256 = 1.into();
-    TestContract::new(
-        &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(USER_POINT_HISTORY_TS),
-            "package_hash" => Key::Hash(instance.package_hash()),
-            "addr" => Key::from(owner),
-            "idx" => idx,
-        },
-        time_now,
-    );
-    let ret: U256 = env.query_account_named_key(owner, &[USER_POINT_HISTORY_TS.into()]);
-    assert_eq!(ret, U256::from(time_now), "Invalid default value");
+    let ret: Point = instance
+        .contract()
+        .query_dictionary(
+            USER_POINT_HISTORY,
+            keys_to_str(&Key::from(owner), &U256::from(1)),
+        )
+        .unwrap_or_default();
+    assert_eq!(ret.ts, U256::from(time_now), "Invalid default value");
 }
 #[test]
 fn test_locked_end() {
-    let (env, owner, instance, erc20_crv, time_now) = deploy();
+    let (_, owner, instance, erc20_crv, time_now) = deploy();
     let amount: U256 = U256::from(2500 * TEN_E_NINE);
     let unlock_time = U256::from(time_now + MILLI_SECONDS_IN_DAY * 365 * 4);
     let spender: Address = Address::Contract(instance.package_hash().into());
@@ -165,22 +159,12 @@ fn test_locked_end() {
         time_now,
     );
     instance.create_lock(owner, amount, unlock_time, time_now);
-    TestContract::new(
-        &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
-        owner,
-        runtime_args! {
-            "entrypoint" => String::from(LOCKED_END),
-            "package_hash" => Key::Hash(instance.package_hash()),
-            "addr" => Key::from(owner),
-        },
-        time_now,
-    );
-    let _ret: U256 = env.query_account_named_key(owner, &[LOCKED_END.into()]);
-    assert_eq!(_ret / WEEK, unlock_time / WEEK, "Invalid default value");
+    let ret: LockedBalance = instance
+        .contract()
+        .query_dictionary(LOCKED, key_to_str(&Key::from(owner)))
+        .unwrap_or_default();
+    assert_eq!(ret.end / WEEK, unlock_time / WEEK, "Invalid default value");
 }
-
 #[test]
 fn test_checkpoint() {
     let (_, owner, instance, _, time_now) = deploy();
@@ -205,11 +189,11 @@ fn test_deposit_for() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -221,11 +205,11 @@ fn test_deposit_for() {
     instance.deposit_for(addr, Key::from(owner), amount, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -254,11 +238,11 @@ fn test_create_lock() {
     );
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -270,11 +254,11 @@ fn test_create_lock() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -307,11 +291,11 @@ fn test_increase_amount() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -322,11 +306,11 @@ fn test_increase_amount() {
     instance.increase_amount(owner, amount, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -357,11 +341,11 @@ fn test_increase_unlock_time() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -374,11 +358,11 @@ fn test_increase_unlock_time() {
     instance.increase_unlock_time(owner, unlock_time_increase, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -408,11 +392,11 @@ fn test_withdraw() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -425,11 +409,11 @@ fn test_withdraw() {
     instance.withdraw(owner, after_unlock_time);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(after_unlock_time)
@@ -458,11 +442,11 @@ fn test_balance_of() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(BALANCE_OF),
+            "entrypoint" => String::from(VE_BALANCE_OF),
             "package_hash" => Key::Hash(instance.package_hash()),
             "addr" => Key::from(owner),
             "t" => U256::from(time_now)
@@ -497,8 +481,8 @@ fn test_balance_of_at() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(BALANCE_OF_AT),
@@ -554,11 +538,11 @@ fn test_total_supply() {
     instance.create_lock(owner, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(TOTAL_SUPPLY),
+            "entrypoint" => String::from(VE_TOTAL_SUPPLY),
             "package_hash" => Key::Hash(instance.package_hash()),
             "t" => U256::from(time_now),
         },
@@ -569,11 +553,11 @@ fn test_total_supply() {
     instance.create_lock(user, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(TOTAL_SUPPLY),
+            "entrypoint" => String::from(VE_TOTAL_SUPPLY),
             "package_hash" => Key::Hash(instance.package_hash()),
             "t" => U256::from(time_now),
         },
@@ -587,11 +571,11 @@ fn test_total_supply() {
     //Total supply will be 0 after lock time expired
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
-            "entrypoint" => String::from(TOTAL_SUPPLY),
+            "entrypoint" => String::from(VE_TOTAL_SUPPLY),
             "package_hash" => Key::Hash(instance.package_hash()),
             "t" => unlock_time,
         },
@@ -640,8 +624,8 @@ fn test_total_supply_at() {
     let current_block: U256 = U256::from(time_now / 45000);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY_AT),
@@ -655,8 +639,8 @@ fn test_total_supply_at() {
     instance.create_lock(user, amount, unlock_time, time_now);
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
-        SESSION_CODE_NAME,
+        TEST_SESSION_CODE_WASM,
+        TEST_SESSION_CODE_NAME,
         owner,
         runtime_args! {
             "entrypoint" => String::from(TOTAL_SUPPLY_AT),

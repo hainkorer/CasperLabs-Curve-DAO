@@ -84,17 +84,33 @@ pub extern "C" fn call() {
             );
             store(BALANCE_OF, ret);
         }
-        BALANCE_OF_CRV => {
-            let owner: Address = runtime::get_named_arg("owner");
+        VE_BALANCE_OF => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let t: U256 = runtime::get_named_arg("t");
             let ret: U256 = runtime::call_versioned_contract(
                 package_hash.into_hash().unwrap_or_revert().into(),
                 None,
                 BALANCE_OF,
                 runtime_args! {
-                    "owner" => owner,
+                    "addr" => addr,
+                    "t" => Some(t)
                 },
             );
             store(BALANCE_OF, ret);
+        }
+        BALANCE_OF_AT => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let block: U256 = runtime::get_named_arg("block");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                BALANCE_OF_AT,
+                runtime_args! {
+                    "addr" => addr,
+                    "block" => block
+                },
+            );
+            store(BALANCE_OF_AT, ret);
         }
         APPROVED_TO_DEPOSIT => {
             let owner: Key = runtime::get_named_arg("owner");
@@ -154,6 +170,30 @@ pub extern "C" fn call() {
                 runtime_args! {},
             );
             store(TOTAL_SUPPLY, ret);
+        }
+        VE_TOTAL_SUPPLY => {
+            let t: U256 = runtime::get_named_arg("t");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                TOTAL_SUPPLY,
+                runtime_args! {
+                    "t" => Some(t),
+                },
+            );
+            store(TOTAL_SUPPLY, ret);
+        }
+        TOTAL_SUPPLY_AT => {
+            let block: U256 = runtime::get_named_arg("block");
+            let ret: U256 = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                TOTAL_SUPPLY_AT,
+                runtime_args! {
+                    "block" => block,
+                },
+            );
+            store(TOTAL_SUPPLY_AT, ret);
         }
         LAST_TIME_REWARD_APPLICABLE => {
             let ret: U256 = runtime::call_versioned_contract(
@@ -419,6 +459,18 @@ pub extern "C" fn call() {
                 },
             );
             store(GAUGE_RELATIVE_WEIGHT, ret);
+        }
+        GET_LAST_USER_SLOPE => {
+            let addr: Key = runtime::get_named_arg("addr");
+            let ret: (bool, U128) = runtime::call_versioned_contract(
+                package_hash.into_hash().unwrap_or_revert().into(),
+                None,
+                GET_LAST_USER_SLOPE,
+                runtime_args! {
+                    "addr" => addr
+                },
+            );
+            store(GET_LAST_USER_SLOPE, ret);
         }
         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
     };

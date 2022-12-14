@@ -153,7 +153,7 @@ fn test_claim() {
     let (env, owner, instance, _, time_now) = deploy();
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
+        FD_SESSION_CODE_WASM,
         SESSION_CODE_NAME,
         owner,
         runtime_args! {
@@ -177,7 +177,7 @@ fn test_claim_many() {
     ];
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
+        FD_SESSION_CODE_WASM,
         SESSION_CODE_NAME,
         owner,
         runtime_args! {
@@ -197,7 +197,7 @@ fn test_burn() {
     let coin: Key = Key::Hash(erc20.package_hash());
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
+        FD_SESSION_CODE_WASM,
         SESSION_CODE_NAME,
         owner,
         runtime_args! {
@@ -268,7 +268,7 @@ fn test_recover_balance() {
     );
     TestContract::new(
         &env,
-        SESSION_CODE_WASM,
+        FD_SESSION_CODE_WASM,
         SESSION_CODE_NAME,
         owner,
         runtime_args! {
