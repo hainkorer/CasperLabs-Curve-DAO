@@ -84,7 +84,7 @@ build-contract-ownable:
 build-lp-token-wrapper:
 	cargo build --release  -p test-session-code -p lp-token-wrapper --target wasm32-unknown-unknown
 build-curve-rewards:
-	cargo build --release -p erc20 -p test-session-code -p curve-rewards --target wasm32-unknown-unknown
+	cargo build --release -p curve-erc20 -p test-session-code -p curve-rewards --target wasm32-unknown-unknown
 
 test-only-curve-token-v3:
 	cargo test -p curve-token-v3-tests
@@ -276,7 +276,7 @@ copy-wasm-file-lp-token-wrapper:
 	cp ${wasm_src_path}/lp-token-wrapper.wasm ${lp_token_wrapper_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${lp_token_wrapper_des_wasm}
 copy-wasm-file-curve-rewards:
-	cp ${wasm_src_path}/erc20-token.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/curve-erc20.wasm ${curve_rewards_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${curve_rewards_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${curve_rewards_des_wasm}
 

@@ -8,9 +8,9 @@ edition = "2018"
 [dependencies]
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
-casperlabs-contract-utils = "0.1.0"
-common = { path = "../../common"}
-casperlabs-i-reward-distribution-recipient = "0.1.0"
-casperlabs-lp-token-wrapper = "0.1.0"
+casperlabs-contract-utils = "0.2.1"
 hex = { version = "0.4.3", default-features = false }
 cryptoxide = "0.3.3"
+common = { path = "../../common"}
+casperlabs-i-reward-distribution-recipient = { path = "../../i-reward-distribution-recipient/i-reward-distribution-recipient-crate" }
+casperlabs-lp-token-wrapper = { path = "../../lp-token-wrapper/lp-token-wrapper-crate" }

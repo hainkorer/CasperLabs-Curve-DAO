@@ -8,10 +8,9 @@ use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use casperlabs_i_reward_distribution_recipient::{
-    self, data as reward_distribution, IREWARDDISTRIBUTIONRECIPIENT,
-};
-use casperlabs_lp_token_wrapper::{self, data as lp_data, LPTOKENWRAPPER};
+use casperlabs_i_reward_distribution_recipient::data::{get_package_hash, set_reward_distribution};
+use casperlabs_i_reward_distribution_recipient::{self, IREWARDDISTRIBUTIONRECIPIENT};
+use casperlabs_lp_token_wrapper::{self, Address, LPTOKENWRAPPER};
 use common::{errors::*, utils::*};
 
 pub trait CURVEREWARDS<Storage: ContractStorage>:
@@ -25,11 +24,9 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
         package_hash: ContractPackageHash,
     ) {
         IREWARDDISTRIBUTIONRECIPIENT::init(self, contract_hash, package_hash);
-        LPTOKENWRAPPER::init(self, token, contract_hash, package_hash);
-        reward_distribution::set_reward_distribution(self.get_caller());
+        LPTOKENWRAPPER::init(self, token);
+        set_reward_distribution(self.get_caller());
         set_snx(reward);
-        set_hash(contract_hash);
-        set_package_hash(package_hash);
         UserRewardPerTokenPaid::init();
         Rewards::init();
     }
@@ -38,7 +35,7 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
         U256::min(U256::from(blocktime), get_period_finish())
     }
     fn reward_per_token(&self) -> U256 {
-        if lp_data::get_total_supply() == 0.into() {
+        if self.total_supply() == 0.into() {
             return get_reward_per_token_stored();
         }
         get_reward_per_token_stored()
@@ -50,13 +47,13 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
                     .unwrap_or_revert_with(Error::CurveRewardsMultiplyError1)
                     .checked_mul(U256::from(TEN_E_NINE))
                     .unwrap_or_revert_with(Error::CurveRewardsMultiplyError2)
-                    .checked_div(lp_data::get_total_supply())
+                    .checked_div(self.total_supply())
                     .unwrap_or_revert_with(Error::CurveRewardsDivisionError1),
             )
             .unwrap_or_revert_with(Error::CurveRewardsAdditionError1)
     }
     fn earned(&self, account: Key) -> U256 {
-        LPTOKENWRAPPER::balance_of(self, account)
+        self.balance_of(Address::from(account))
             .checked_mul(
                 self.reward_per_token()
                     .checked_sub(UserRewardPerTokenPaid::instance().get(&account))
@@ -121,7 +118,7 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
         }
     }
     fn exit(&mut self) {
-        CURVEREWARDS::withdraw(self, LPTOKENWRAPPER::balance_of(self, self.get_caller()));
+        CURVEREWARDS::withdraw(self, self.balance_of(Address::from(self.get_caller())));
         self.get_reward();
     }
     fn notify_reward_amount(&mut self, reward: U256) {

@@ -397,22 +397,8 @@ version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-ownable 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "cryptoxide",
- "hex",
-]
-
-[[package]]
-name = "casperlabs-i-reward-distribution-recipient"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26c7ab3c7d0860f6fdea76d80e8203a2818878966076ad22e2608b8aec3d28b8"
-dependencies = [
- "casper-contract",
- "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-ownable 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "casperlabs-contract-utils 0.2.2",
+ "casperlabs-ownable",
  "cryptoxide",
  "hex",
 ]
@@ -423,22 +409,10 @@ version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
+ "casperlabs-contract-utils 0.2.2",
  "common",
  "cryptoxide",
- "hex",
-]
-
-[[package]]
-name = "casperlabs-lp-token-wrapper"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1652481bd6b6c33f5069b71d4a7b92bfc4b5839f05f01dc9349e48495f24408"
-dependencies = [
- "casper-contract",
- "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "cryptoxide",
+ "curve-erc20-crate",
  "hex",
 ]
 
@@ -448,20 +422,7 @@ version = "0.1.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "cryptoxide",
- "hex",
-]
-
-[[package]]
-name = "casperlabs-ownable"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43619cced4af1cec0ea3d0c9248a754117867e3068ecea2b348d21c6c220b90a"
-dependencies = [
- "casper-contract",
- "casper-types",
- "casperlabs-contract-utils 0.1.4",
+ "casperlabs-contract-utils 0.2.2",
  "cryptoxide",
  "hex",
 ]
@@ -653,10 +614,7 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-i-reward-distribution-recipient 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "casperlabs-lp-token-wrapper 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "casperlabs-ownable 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "casperlabs-contract-utils 0.2.2",
  "common",
  "cryptoxide",
  "curve-rewards-crate",
@@ -669,9 +627,9 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-i-reward-distribution-recipient 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "casperlabs-lp-token-wrapper 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "casperlabs-contract-utils 0.2.2",
+ "casperlabs-i-reward-distribution-recipient",
+ "casperlabs-lp-token-wrapper",
  "common",
  "cryptoxide",
  "hex",
@@ -1314,9 +1272,8 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-i-reward-distribution-recipient 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "casperlabs-ownable 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "casperlabs-contract-utils 0.2.2",
+ "casperlabs-i-reward-distribution-recipient",
  "cryptoxide",
  "hex",
  "renvm-sig",
@@ -1733,8 +1690,8 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-lp-token-wrapper 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "casperlabs-contract-utils 0.2.2",
+ "casperlabs-lp-token-wrapper",
  "cryptoxide",
  "hex",
  "renvm-sig",
@@ -1947,8 +1904,8 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-ownable 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "casperlabs-contract-utils 0.2.2",
+ "casperlabs-ownable",
  "cryptoxide",
  "hex",
  "renvm-sig",
@@ -2196,7 +2153,9 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
+ "casperlabs-contract-utils 0.2.2",
+ "curve-casper-erc20-crate",
+ "curve-erc20-crate",
  "reward-only-gauge-crate",
 ]
 
@@ -2207,9 +2166,11 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casper_types_derive",
- "casperlabs-contract-utils 0.1.4",
+ "casperlabs-contract-utils 0.2.2",
  "common",
  "cryptoxide",
+ "curve-casper-erc20-crate",
+ "curve-erc20-crate",
  "hex",
  "renvm-sig",
 ]
@@ -2227,14 +2188,16 @@ dependencies = [
 name = "reward-only-gauge-tests"
 version = "0.2.1"
 dependencies = [
+ "base64 0.13.1",
  "blake2",
  "casper-contract",
  "casper-engine-test-support",
  "casper-types",
  "casper_types_derive",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-test-env 0.1.2",
+ "casperlabs-contract-utils 0.2.2",
+ "casperlabs-test-env 0.3.0",
  "common",
+ "curve-erc20-crate",
  "hex",
 ]
 

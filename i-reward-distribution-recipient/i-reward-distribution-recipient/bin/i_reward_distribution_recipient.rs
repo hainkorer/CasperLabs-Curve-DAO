@@ -12,8 +12,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use casperlabs_i_reward_distribution_recipient::IREWARDDISTRIBUTIONRECIPIENT;
-use casperlabs_ownable::OWNABLE;
+use casperlabs_i_reward_distribution_recipient::{IREWARDDISTRIBUTIONRECIPIENT, OWNABLE};
 
 #[derive(Default)]
 struct IRewardDistributionRecipient(OnChainContractStorage);
