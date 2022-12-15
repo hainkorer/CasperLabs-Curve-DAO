@@ -365,6 +365,9 @@ clean:
 	rm -rf ${lp_token_wrapper_des_wasm}*.wasm
 	rm -rf ${curve_rewards_des_wasm}*.wasm
 	rm -rf ${liquidity_gauge_v3_des_wasm}*.wasm
+	rm -rf script/node_modules
+	rm -rf script/hashes.zip
+	rm -rf script/wasm/*.wasm
 
 build-copy-wasms:
 	make build-contract-curve-token-v3
