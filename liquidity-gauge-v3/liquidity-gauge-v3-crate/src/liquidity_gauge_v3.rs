@@ -1050,14 +1050,11 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
 
     fn emit(&self, liquidity_gauge_event: &LiquidityGaugeV3Event) {
         let mut events = Vec::new();
-        let tmp = data::get_package_hash().to_formatted_string();
-        let split: char = '-';
-        let tmp: Vec<&str> = tmp.split(split).collect();
-        let package_hash = tmp[1].to_string();
+        let package = get_package_hash();
         match liquidity_gauge_event {
             LiquidityGaugeV3Event::Deposit { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
@@ -1065,7 +1062,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             }
             LiquidityGaugeV3Event::Withdraw { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
@@ -1077,7 +1074,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                 value,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_event.type_name());
                 event.insert("owner", owner.to_string());
                 event.insert("spender", spender.to_string());
@@ -1086,7 +1083,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             }
             LiquidityGaugeV3Event::Transfer { from, to, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_event.type_name());
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
@@ -1101,7 +1098,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                 working_supply,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_event.type_name());
                 event.insert("user", user.to_string());
                 event.insert("original_balance", original_balance.to_string());
@@ -1112,14 +1109,14 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
             }
             LiquidityGaugeV3Event::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
             LiquidityGaugeV3Event::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
