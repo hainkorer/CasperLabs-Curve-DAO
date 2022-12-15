@@ -3,7 +3,7 @@ wasm_src_path = ./target/wasm32-unknown-unknown/release/
 deploy_wasms = ./script/wasm
 
 curve_token_v3_des_wasm = ./curve-token-v3/curve-token-v3-tests/wasm
-erc20_des_wasm = ./erc20/erc20-tests/wasm
+erc20_des_wasm = ./curve-erc20/curve-erc20-tests/wasm
 erc20_crv_des_wasm = ./erc20-crv/erc20_crv_tests/wasm
 fee_distributor_des_wasm = ./fee-distributor/fee-distributor-tests/wasm
 gauge_controller_des_wasm = ./gauge-controller/gauge-controller-tests/wasm
@@ -34,9 +34,9 @@ build-i-reward-distribution-recipient:
 	cargo build --release -p session-code -p i-reward-distribution-recipient --target wasm32-unknown-unknown
 build-liquidity-gauge-wrapper-session-code:
 	cargo build --release -p liquidity-gauge-wrapper-session-code --target wasm32-unknown-unknown	
-build-contract-erc20:
-	cargo build --release -p erc20-proxy -p erc20 --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/erc20-token.wasm 2>/dev/null | true
+build-contract-curve-erc20:
+	cargo build --release -p curve-erc20 --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/curve-erc20.wasm 2>/dev/null | true
 build-contract-erc20-crv:
 	cargo build --release -p test-session-code -p erc20-crv-session-code -p erc20_crv --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/erc20_crv.wasm 2>/dev/null | true
@@ -62,7 +62,7 @@ build-contract-minter:
 	cargo build --release -p erc20 -p erc20_crv -p erc20-crv-session-code -p liquidity-gauge-v3 -p liquidity-gauge-reward -p voting-escrow -p gauge-controller -p minter --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/minter-token.wasm 2>/dev/null | true
 build-contract-reward-only-gauge:
-	cargo build --release -p test-session-code -p erc20 -p erc20_crv -p curve-rewards -p reward-only-gauge -p reward-only-gauge-session-code --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p curve-erc20 -p erc20_crv -p curve-rewards -p reward-only-gauge -p reward-only-gauge-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/reward-only-gauge.wasm 2>/dev/null | true
 build-contract-vesting-escrow:
 	cargo build --release -p test-session-code -p vesting-escrow-session-code  -p erc20 -p vesting-escrow --target wasm32-unknown-unknown
@@ -88,8 +88,8 @@ build-curve-rewards:
 
 test-only-curve-token-v3:
 	cargo test -p curve-token-v3-tests
-test-only-erc20:
-	cargo test -p erc20-tests
+test-only-curve-erc20:
+	cargo test -p curve-erc20-tests
 test-only-erc20-crv:
 	cargo test -p erc20_crv_tests
 test-only-fee-distributor:
@@ -172,9 +172,8 @@ copy-wasm-file-curve-token-v3:
 	cp ${wasm_src_path}/test-session-code.wasm ${curve_token_v3_des_wasm}
 	cp ${wasm_src_path}/curve-erc20.wasm ${curve_token_v3_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${curve_token_v3_des_wasm}
-copy-wasm-file-erc20:
-	cp ${wasm_src_path}/erc20-proxy-token.wasm ${erc20_des_wasm}
-	cp ${wasm_src_path}/erc20-token.wasm ${erc20_des_wasm}
+copy-wasm-file-curve-erc20:
+	cp ${wasm_src_path}/curve-erc20.wasm ${erc20_des_wasm}
 copy-wasm-file-erc20-crv:
 	cp ${wasm_src_path}/erc20-crv-session-code.wasm ${erc20_crv_des_wasm}
 	cp ${wasm_src_path}/erc20_crv.wasm ${erc20_crv_des_wasm}
@@ -242,7 +241,7 @@ copy-wasm-file-reward-only-gauge:
 	cp ${wasm_src_path}/reward-only-gauge-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-session-code.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${reward_only_gauge_des_wasm}
-	cp ${wasm_src_path}/erc20-token.wasm ${reward_only_gauge_des_wasm}
+	cp ${wasm_src_path}/curve-erc20.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${reward_only_gauge_des_wasm}
 copy-wasm-file-vesting-escrow:
 	cp ${wasm_src_path}/erc20-token.wasm ${vesting_escrow_des_wasm}
@@ -301,8 +300,8 @@ test-vesting-escrow-simple:
 	make build-contract-vesting-escrow-simple && make copy-wasm-file-vesting-escrow-simple && make test-only-vesting-escrow-simple
 test-curve-token-v3: 
 	make build-contract-curve-token-v3 && make copy-wasm-file-curve-token-v3 && make test-only-curve-token-v3
-test-erc20:
-	make build-contract-erc20 && make copy-wasm-file-erc20 && make test-only-erc20
+test-curve-erc20:
+	make build-contract-curve-erc20 && make copy-wasm-file-curve-erc20 && make test-only-curve-erc20
 test-erc20-crv: 
 	make build-contract-erc20-crv && make copy-wasm-file-erc20-crv && make test-only-erc20-crv
 test-fee-distributor:
