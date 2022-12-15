@@ -3,7 +3,7 @@ use alloc::{
     vec::Vec,
 };
 use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
+use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256, ContractHash};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
 use common::{keys::*, utils::*};
@@ -21,53 +21,6 @@ pub struct RewardData {
 pub struct ClaimDataStruct {
     pub claimable_amount: U256,
     pub claimed_amount: U256,
-}
-pub struct Balances {
-    dict: Dict,
-}
-
-impl Balances {
-    pub fn instance() -> Balances {
-        Balances {
-            dict: Dict::instance(BALANCES_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(BALANCES_DICT)
-    }
-
-    pub fn get(&self, owner: &Key) -> U256 {
-        self.dict.get(&key_to_str(owner)).unwrap_or_default()
-    }
-
-    pub fn set(&self, owner: &Key, value: U256) {
-        self.dict.set(&key_to_str(owner), value);
-    }
-}
-
-pub struct Allowances {
-    dict: Dict,
-}
-
-impl Allowances {
-    pub fn instance() -> Allowances {
-        Allowances {
-            dict: Dict::instance(ALLOWANCES_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(ALLOWANCES_DICT)
-    }
-
-    pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
-        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
-    }
-
-    pub fn set(&self, owner: &Key, spender: &Key, value: U256) {
-        self.dict.set_by_keys((owner, spender), value);
-    }
 }
 
 pub struct RewardTokens {
@@ -243,14 +196,6 @@ pub fn get_lock() -> u64 {
     get_key(LOCK).unwrap_or_revert()
 }
 
-pub fn name() -> String {
-    get_key(NAME).unwrap_or_revert()
-}
-
-pub fn set_name(name: String) {
-    set_key(NAME, name);
-}
-
 pub fn claim_sig() -> String {
     get_key(CLAIM_SIG).unwrap_or_revert()
 }
@@ -259,29 +204,6 @@ pub fn set_claim_sig(claim_sig: String) {
     set_key(CLAIM_SIG, claim_sig);
 }
 
-pub fn symbol() -> String {
-    get_key(SYMBOL).unwrap_or_revert()
-}
-
-pub fn set_symbol(symbol: String) {
-    set_key(SYMBOL, symbol);
-}
-
-pub fn decimals() -> u8 {
-    get_key(DECIMALS).unwrap_or_revert()
-}
-
-pub fn set_decimals(decimals: u8) {
-    set_key(DECIMALS, decimals);
-}
-
-pub fn total_supply() -> U256 {
-    get_key(TOTAL_SUPPLY).unwrap_or_default()
-}
-
-pub fn set_total_supply(total_supply: U256) {
-    set_key(TOTAL_SUPPLY, total_supply);
-}
 pub fn reward_data() -> RewardData {
     let data = RewardData {
         address: zero_address(),
@@ -317,11 +239,11 @@ pub fn set_future_admin(future_admin: Key) {
     set_key(FUTURE_ADMIN, future_admin);
 }
 
-pub fn set_hash(contract_hash: Key) {
+pub fn set_hash(contract_hash: ContractHash) {
     set_key(SELF_CONTRACT_HASH, contract_hash);
 }
 
-pub fn get_hash() -> Key {
+pub fn get_hash() -> ContractHash {
     get_key(SELF_CONTRACT_HASH).unwrap_or_revert()
 }
 pub fn set_package_hash(package_hash: ContractPackageHash) {

@@ -4,6 +4,10 @@ use blake2::{
     digest::{Update, VariableOutput},
     VarBlake2b,
 };
+use common::keys::*;
+pub const ALLOWANCES: &str = "allowances";
+use hex::encode;
+use curve_erc20_crate::Address;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{
     account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
@@ -26,6 +30,22 @@ pub struct RewardData {
     pub address: Key,
     pub time_stamp: U256,
 }
+pub fn address_to_str(owner: &Address) -> String {
+    let preimage = owner.to_bytes().unwrap();
+    base64::encode(&preimage)
+}
+
+pub fn addresses_to_str(owner: Address, spender: Address) -> String {
+    let mut hasher = VarBlake2b::new(32).unwrap();
+    hasher.update(owner.to_bytes().unwrap());
+    hasher.update(spender.to_bytes().unwrap());
+
+    let mut ret = [0u8; 32];
+    hasher.finalize_variable(|hash| ret.clone_from_slice(hash));
+
+    encode(ret)
+}
+
 pub struct REWARDONLYGAUGEInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
 impl REWARDONLYGAUGEInstance {
@@ -107,18 +127,18 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn transfer<T: Into<Key>>(
+    pub fn transfer(
         &self,
         sender: AccountHash,
         time_now: u64,
-        recipient: T,
+        recipient: Address,
         amount: U256,
     ) {
         self.0.call_contract(
             sender,
             "transfer",
             runtime_args! {
-                "recipient" => recipient.into(),
+                "recipient" => recipient,
                 "amount" => amount
             },
             time_now,
@@ -129,8 +149,8 @@ impl REWARDONLYGAUGEInstance {
         &self,
         sender: AccountHash,
         _time_now: u64,
-        owner: Key,
-        recipient: Key,
+        owner: Address,
+        recipient: Address,
         amount: U256,
     ) {
         self.0.call_contract(
@@ -308,11 +328,14 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn balance_of<T: Into<Key>>(&self, account: T) -> U256 {
-        self.0
-            .query_dictionary("balances", key_to_str(&account.into()))
-            .unwrap_or_default()
+    pub fn balance_of(
+        &self,
+        owner: Address,
+    )->U256 {
+        self.0.query(BALANCES, address_to_str(&owner))
+        
     }
+    
     pub fn reward_balances<T: Into<Key>>(&self, account: T) -> U256 {
         self.0
             .query_dictionary("reward_balances", key_to_str(&account.into()))
@@ -333,14 +356,14 @@ impl REWARDONLYGAUGEInstance {
             .query_dictionary("reward_tokens", (&index).to_string())
             .unwrap()
     }
-
-    pub fn allowance<T: Into<Key>>(&self, owner: T, spender: T) -> U256 {
-        let owner: Key = owner.into();
-        let spender: Key = spender.into();
-        self.0
-            .query_dictionary("allowances", keys_to_str(&owner, &spender))
-            .unwrap_or_default()
+    pub fn allowance(&self,owner:Address,spender:Address) -> U256 {
+        let ret: U256 =self.0.query(
+            ALLOWANCES,
+            addresses_to_str(owner, spender),
+        );
+        ret
     }
+    
     pub fn reward_integral_for<T: Into<Key>>(&self, owner: T, spender: T) -> U256 {
         let owner: Key = owner.into();
         let spender: Key = spender.into();

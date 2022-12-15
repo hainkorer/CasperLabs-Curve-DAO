@@ -14,6 +14,18 @@ pub trait CURVEERC20<Storage: ContractStorage>: ContractContext<Storage> {
         data::set_package_hash(package_hash);
     }
 
+    fn set_balance(&self, owner: Address, amount: U256) {
+        CasperErc20::default().write_balance(owner, amount);
+    }
+
+    fn set_allowance(&self, owner: Address, spender: Address, amount: U256) {
+        CasperErc20::default().write_allowance(owner, spender, amount);
+    }
+
+    fn set_total_supply(&self, total_supply: U256) {
+        CasperErc20::default().write_total_supply(total_supply);
+    }
+    
     fn name(&self) -> String {
         CasperErc20::default().name()
     }

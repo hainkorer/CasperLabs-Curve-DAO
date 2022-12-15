@@ -16,6 +16,9 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
 use reward_only_gauge_crate::REWARDONLYGAUGE;
+use curve_erc20_crate::{self, Address, CURVEERC20};
+
+
 
 #[derive(Default)]
 struct Token(OnChainContractStorage);
@@ -25,7 +28,7 @@ impl ContractContext<OnChainContractStorage> for Token {
         &self.0
     }
 }
-
+impl CURVEERC20<OnChainContractStorage> for Token {}
 impl REWARDONLYGAUGE<OnChainContractStorage> for Token {}
 impl Token {
     fn constructor(
@@ -39,7 +42,7 @@ impl Token {
             self,
             admin,
             lp_token,
-            Key::from(contract_hash),
+            contract_hash,
             package_hash,
         );
     }
@@ -51,7 +54,6 @@ fn constructor() {
     let lp_token: Key = runtime::get_named_arg("lp_token");
     let contract_hash: ContractHash = runtime::get_named_arg("contract_hash");
     let package_hash: ContractPackageHash = runtime::get_named_arg("package_hash");
-
     Token::default().constructor(admin, lp_token, contract_hash, package_hash);
 }
 
@@ -79,9 +81,11 @@ fn future_admin() {
 
 #[no_mangle]
 fn balance_of() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let ret: U256 = Token::default().balance_of(owner);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let owner: Address = runtime::get_named_arg("owner");
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::balance_of(&mut Token::default(), owner))
+            .unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn reward_balances() {
@@ -114,10 +118,16 @@ fn claim_sig() {
 }
 #[no_mangle]
 fn allowance() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let spender: Key = runtime::get_named_arg("spender");
-    let ret: U256 = Token::default().allowance(owner, spender);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let owner: Address = runtime::get_named_arg("owner");
+    let spender: Address = runtime::get_named_arg("spender");
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::allowance(
+            &mut Token::default(),
+            owner,
+            spender,
+        ))
+        .unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn reward_integral_for() {
@@ -129,20 +139,22 @@ fn reward_integral_for() {
 
 #[no_mangle]
 fn total_supply() {
-    let ret: U256 = Token::default().total_supply();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
-}
-
-#[no_mangle]
-fn symbol() {
-    let ret: String = Token::default().symbol();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::total_supply(&mut Token::default())).unwrap_or_revert(),
+    );
 }
 
 #[no_mangle]
 fn name() {
-    let ret: String = Token::default().name();
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::name(&mut Token::default())).unwrap_or_revert(),
+    );
+}
+#[no_mangle]
+fn symbol() {
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::symbol(&mut Token::default())).unwrap_or_revert(),
+    );
 }
 
 /// @notice Get the number of decimals for this token
@@ -178,10 +190,9 @@ fn commit_transfer_ownership() {
 
 #[no_mangle]
 fn transfer() {
-    let recipient: Key = runtime::get_named_arg("recipient");
+    let recipient: Address= runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> = Token::default().transfer(recipient, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    REWARDONLYGAUGE::transfer(&mut Token::default(),recipient, amount).unwrap_or_revert();
 }
 
 /// @notice Transfer tokens from one address to another.
@@ -192,11 +203,10 @@ fn transfer() {
 
 #[no_mangle]
 fn transfer_from() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let recipient: Key = runtime::get_named_arg("recipient");
+    let owner: Address = runtime::get_named_arg("owner");
+    let recipient:Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> = Token::default().transfer_from(owner, recipient, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    REWARDONLYGAUGE::transfer_from(&mut Token::default(),owner, recipient, amount).unwrap_or_revert();
 }
 
 /// @notice Approve the passed address to transfer the specified amount of
@@ -212,9 +222,9 @@ fn transfer_from() {
 
 #[no_mangle]
 fn approve() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    Token::default().approve(spender, amount);
+    REWARDONLYGAUGE::approve(&Token::default(), spender, amount).unwrap_or_revert();
 }
 
 /// @notice Increase the allowance granted to `spender` by the caller
@@ -226,10 +236,9 @@ fn approve() {
 
 #[no_mangle]
 fn increase_allowance() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> = Token::default().increase_allowance(spender, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    REWARDONLYGAUGE::increase_allowance(&mut Token::default(), spender, amount).unwrap_or_revert();
 }
 
 /// @notice Decrease the allowance granted to `spender` by the caller
@@ -241,11 +250,9 @@ fn increase_allowance() {
 
 #[no_mangle]
 fn decrease_allowance() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-
-    let ret: Result<(), u32> = Token::default().decrease_allowance(spender, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    REWARDONLYGAUGE::decrease_allowance(&mut Token::default(), spender, amount).unwrap_or_revert();
 }
 
 /// @notice Address of the reward contract providing non-CRV incentives for this gauge
@@ -399,6 +406,13 @@ fn call() {
         // Read arguments for the constructor call.
         let admin: Key = runtime::get_named_arg("admin");
         let lp_token: Key = runtime::get_named_arg("lp_token");
+        // Build new package with initial a first version of the contract.
+        let (package_hash, access_token) = storage::create_contract_package_at_hash();
+        let (contract_hash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            REWARDONLYGAUGE::named_keys(&Token::default()).unwrap_or_revert(),
+        );
         // Prepare constructor args
         let constructor_args = runtime_args! {
             "admin" => admin,
@@ -516,7 +530,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("owner", Key::cl_type())],
+        vec![Parameter::new("owner", Address::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -560,8 +574,8 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "allowance",
         vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("owner", Address::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
         ],
         U256::cl_type(),
         EntryPointAccess::Public,
@@ -621,65 +635,53 @@ fn get_entry_points() -> EntryPoints {
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "decrease_allowance",
+        "increase_allowance",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
-        "increase_allowance",
+        "decrease_allowance",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "approve",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "transfer",
         vec![
-            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("recipient", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "transfer_from",
         vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("owner", Address::cl_type()),
+            Parameter::new("recipient", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
