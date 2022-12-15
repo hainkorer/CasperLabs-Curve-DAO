@@ -711,14 +711,11 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
 
     fn emit(&self, liquidity_gauge_reward_event: &LiquidityGaugeRewardEvent) {
         let mut events = Vec::new();
-        let tmp = get_package_hash().to_formatted_string();
-        let split: char = '-';
-        let tmp: Vec<&str> = tmp.split(split).collect();
-        let package_hash = tmp[1].to_string();
+        let package = get_package_hash();
         match liquidity_gauge_reward_event {
             LiquidityGaugeRewardEvent::Deposit { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
@@ -726,7 +723,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             }
             LiquidityGaugeRewardEvent::Withdraw { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
@@ -740,7 +737,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                 working_supply,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("user", user.to_string());
                 event.insert("original_balance", original_balance.to_string());
@@ -751,14 +748,14 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             }
             LiquidityGaugeRewardEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
             LiquidityGaugeRewardEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);

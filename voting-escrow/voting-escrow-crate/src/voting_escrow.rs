@@ -923,21 +923,18 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn emit(&self, voting_escrow_event: &VotingEscrowEvent) {
         let mut events = Vec::new();
-        let tmp = get_package_hash().to_formatted_string();
-        let split: char = '-';
-        let tmp: Vec<&str> = tmp.split(split).collect();
-        let package_hash = tmp[1].to_string();
+        let package = get_package_hash();
         match voting_escrow_event {
             VotingEscrowEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
             }
             VotingEscrowEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("admin", admin.to_string());
                 events.push(event);
@@ -950,7 +947,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 ts,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
@@ -965,7 +962,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 ts,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
@@ -977,7 +974,7 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 supply,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("prev_supply", prev_supply.to_string());
                 event.insert("supply", supply.to_string());
