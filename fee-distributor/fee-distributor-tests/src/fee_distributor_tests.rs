@@ -8,7 +8,7 @@ const MILLI_SECONDS_IN_DAY: u64 = 86_400_000;
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
         env,
-        "erc20-token.wasm",
+        "curve-erc20.wasm",
         "erc20",
         sender,
         runtime_args! {
