@@ -71,7 +71,7 @@ build-contract-vesting-escrow-factory:
 	cargo build --release -p vesting-escrow-simple -p erc20 -p vesting-escrow-factory -p vesting-escrow-factory-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-factory.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-v3:
-	cargo build --release -p test-session-code -p liquidity-gauge-v3-session-code -p liquidity-gauge-v3 -p erc20 -p minter -p voting-escrow -p gauge-controller -p erc20_crv  --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p liquidity-gauge-v3-session-code -p liquidity-gauge-v3 -p curve-erc20 -p minter -p voting-escrow -p gauge-controller -p erc20_crv  --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
 build-contract-vesting-escrow-simple:
 	cargo build --release -p erc20 -p vesting-escrow-simple --target wasm32-unknown-unknown
@@ -146,15 +146,16 @@ test-only-vesting-escrow-simple:
 test-only-voting-escrow:
 	cargo test -p voting-escrow-tests
 test-only-liquidity-gauge-v3:
-	cargo test -p liquidity-gauge-v3-tests t1
-	cargo test -p liquidity-gauge-v3-tests t2
-	cargo test -p liquidity-gauge-v3-tests t3
-	cargo test -p liquidity-gauge-v3-tests t4
-	cargo test -p liquidity-gauge-v3-tests t5
-	cargo test -p liquidity-gauge-v3-tests t6
-	cargo test -p liquidity-gauge-v3-tests t7
-	cargo test -p liquidity-gauge-v3-tests t10
-	cargo test -p liquidity-gauge-v3-tests t11
+	cargo test -p liquidity-gauge-v3-tests t1 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t2 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t3 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t4 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t5 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t6 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t7 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t10 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t11 -- --test-threads=1
+	cargo test -p liquidity-gauge-v3-tests t12 -- --test-threads=1
 	# Intense memory test cases below (Require 32gb + RAM)
 	# cargo test -p liquidity-gauge-v3-tests t8
 	# cargo test -p liquidity-gauge-v3-tests t9
@@ -259,7 +260,7 @@ copy-wasm-file-voting-escrow:
 	cp ${wasm_src_path}/*.wasm ${voting_escrow_des_wasm}
 copy-wasm-file-liquidity-gauge-v3:
 	cp ${root_directory}${wasm_src_path}liquidity-gauge-v3.wasm ${liquidity_gauge_v3_des_wasm}
-	cp ${root_directory}${wasm_src_path}erc20-token.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}curve-erc20.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}erc20_crv.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}gauge-controller-token.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}minter-token.wasm ${liquidity_gauge_v3_des_wasm}

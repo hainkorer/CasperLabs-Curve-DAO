@@ -10,12 +10,31 @@ use casper_types::{
     bytesrepr::{FromBytes, ToBytes},
     runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
-use casperlabs_contract_utils::key_to_str;
+
 use casperlabs_test_env::{TestContract, TestEnv};
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
+pub const ALLOWANCES: &str = "allowances";
+use hex::encode;
+use curve_erc20_crate::Address;
+
+pub fn address_to_str(owner: &Address) -> String {
+    let preimage = owner.to_bytes().unwrap();
+    base64::encode(&preimage)
+}
+
+pub fn addresses_to_str(owner: Address, spender: Address) -> String {
+    let mut hasher = VarBlake2b::new(32).unwrap();
+    hasher.update(owner.to_bytes().unwrap());
+    hasher.update(spender.to_bytes().unwrap());
+
+    let mut ret = [0u8; 32];
+    hasher.finalize_variable(|hash| ret.clone_from_slice(hash));
+
+    encode(ret)
+}
 pub struct LIQUIDITYGUAGEV3INSTANCEInstance(TestContract);
 
 impl LIQUIDITYGUAGEV3INSTANCEInstance {
@@ -72,7 +91,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
             time_now,
         );
     }
-    pub fn approve(&self, sender: AccountHash, spender: Key, amount: U256, time_now: u64) {
+    pub fn approve(&self, sender: AccountHash, spender: Address, amount: U256, time_now: u64) {
         self.0.call_contract(
             sender,
             "approve",
@@ -87,7 +106,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn increase_allowance(
         &self,
         sender: AccountHash,
-        spender: Key,
+        spender: Address,
         amount: U256,
         time_now: u64,
     ) {
@@ -105,7 +124,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn decrease_allowance(
         &self,
         sender: AccountHash,
-        spender: Key,
+        spender: Address,
         amount: U256,
         time_now: u64,
     ) {
@@ -164,7 +183,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
             time_now,
         );
     }
-    pub fn transfer(&self, sender: AccountHash, recipient: Key, amount: U256, time_now: u64) {
+    pub fn transfer(&self, sender: AccountHash, recipient: Address, amount: U256, time_now: u64) {
         self.0.call_contract(
             sender,
             "transfer",
@@ -178,8 +197,8 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn transfer_from(
         &self,
         sender: AccountHash,
-        owner: Key,
-        recipient: Key,
+        owner: Address,
+        recipient: Address,
         amount: U256,
         time_now: u64,
     ) {
@@ -254,15 +273,12 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn is_killed(&self) -> bool {
         self.0.query_named_key(String::from("is_killed"))
     }
-    pub fn allowance<T: Into<Key>>(&self, owner: T, spender: T) -> U256 {
-        let owner: Key = owner.into();
-        let spender: Key = spender.into();
-        self.0
-            .query_dictionary(
-                "allowances",
-                LIQUIDITYGUAGEV3INSTANCEInstance::keys_to_str(&owner, &spender),
-            )
-            .unwrap_or_default()
+    pub fn allowance(&self,owner:Address,spender:Address) -> U256 {
+        let ret: U256 =self.0.query(
+            ALLOWANCES,
+            addresses_to_str(owner, spender),
+        );
+        ret
     }
     pub fn name(&self) -> String {
         self.0.query_named_key(String::from("name"))
@@ -279,12 +295,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn total_supply(&self) -> U256 {
         self.0.query_named_key(String::from("total_supply"))
     }
-    pub fn balance_of<T: Into<Key>>(&self, account: T) -> U256 {
-        self.0
-            .query_dictionary("balance_of", key_to_str(&account.into()))
-            .unwrap_or_default()
-    }
-
+   
     pub fn key_to_str(key: &Key) -> String {
         match key {
             Key::Account(account) => account.to_string(),

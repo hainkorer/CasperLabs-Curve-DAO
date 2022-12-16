@@ -400,8 +400,8 @@ fn call() {
     // If this is the first deployment
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
         // Build new package with initial a first version of the contract.
-        let (package_hash, access_token) = storage::create_contract_package_at_hash();
-        let (contract_hash, _) =
+        let (package_hash, _access_token) = storage::create_contract_package_at_hash();
+        let (_contract_hash, _) =
             storage::add_contract_version(package_hash, get_entry_points(), Default::default());
         // Read arguments for the constructor call.
         let admin: Key = runtime::get_named_arg("admin");
