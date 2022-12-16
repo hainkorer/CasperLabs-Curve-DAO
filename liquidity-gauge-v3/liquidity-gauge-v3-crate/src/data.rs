@@ -1,4 +1,4 @@
-use alloc::string::{String, ToString};
+use alloc::string::{ToString};
 use alloc::vec::Vec;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::bytesrepr::Bytes;
@@ -113,55 +113,6 @@ impl RewardsReceiver {
 
     pub fn set(&self, owner: &Key, value: Key) {
         self.dict.set(&key_to_str(owner), value);
-    }
-}
-
-const BALANCE_OF: &str = "balance_of";
-pub struct BalanceOf {
-    dict: Dict,
-}
-
-impl BalanceOf {
-    pub fn instance() -> BalanceOf {
-        BalanceOf {
-            dict: Dict::instance(BALANCE_OF),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(BALANCE_OF)
-    }
-
-    pub fn get(&self, key: &Key) -> U256 {
-        self.dict.get_by_key(key).unwrap_or_default()
-    }
-
-    pub fn set(&self, key: &Key, value: U256) {
-        self.dict.set_by_key(key, value);
-    }
-}
-
-pub struct Allowance {
-    dict: Dict,
-}
-
-impl Allowance {
-    pub fn instance() -> Allowance {
-        Allowance {
-            dict: Dict::instance(ALLOWANCES_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(ALLOWANCES_DICT)
-    }
-
-    pub fn get(&self, key1: &Key, key2: &Key) -> U256 {
-        self.dict.get_by_keys((key1, key2)).unwrap_or_default()
-    }
-
-    pub fn set(&self, key1: &Key, key2: &Key, value: U256) {
-        self.dict.set_by_keys((key1, key2), value);
     }
 }
 
@@ -314,32 +265,6 @@ impl IntegrateFraction {
         self.dict.set_by_key(key, value);
     }
 }
-
-// const REWARDS_RECIEVER: &str = "rewards_receiver";
-// pub struct RewardsReciever {
-//     dict: Dict,
-// }
-
-// impl RewardsReciever {
-//     pub fn instance() -> RewardsReciever {
-//         RewardsReciever {
-//             dict: Dict::instance(REWARDS_RECIEVER),
-//         }
-//     }
-
-//     pub fn init() {
-//         Dict::init(REWARDS_RECIEVER)
-//     }
-
-//     pub fn get(&self, key: &Key) -> &Key {
-//         self.dict.get_by_key(key).unwrap_or_d
-//     }
-
-//     pub fn set(&self, key1: &Key, key2: &Key) {
-//         self.dict.set_by_key(key1, key2);
-//     }
-// }
-
 const REWARD_INTEGRAL: &str = "reward_integral";
 pub struct RewardIntegral {
     dict: Dict,
@@ -388,38 +313,6 @@ impl RewardIntegralFor {
         self.dict.set_by_keys((key1, key2), value);
     }
 }
-pub fn get_decimals() -> u8 {
-    get_key(DECIMALS).unwrap_or_revert()
-}
-
-pub fn set_decimals(decimals: u8) {
-    set_key(DECIMALS, decimals);
-}
-
-// const CLAIM_DATA: &str = "claim_data";
-// pub struct ClaimData {
-//     dict: Dict,
-// }
-
-// impl ClaimData {
-//     pub fn instance() -> ClaimData {
-//         ClaimData {
-//             dict: Dict::instance(CLAIM_DATA),
-//         }
-//     }
-
-//     pub fn init() {
-//         Dict::init(CLAIM_DATA)
-//     }
-
-//     pub fn get(&self, key1: &Key,key2: &Key) -> U256 {
-//         self.dict.get_by_keys((key1, key2)).unwrap_or_default()
-//     }
-
-//     pub fn set(&self, key1: &Key,key2: &Key ,value: U256) {
-//         self.dict.set_by_keys((key1, key2), value);
-//     }
-// }
 pub fn reward_sigs() -> Bytes {
     get_key(REWARD_SIGS).unwrap_or_revert()
 }
@@ -490,29 +383,6 @@ pub fn set_future_epoch_time(future_epoch_time: U256) {
 
 pub fn get_future_epoch_time() -> U256 {
     get_key(FUTURE_EPOCH_TIME).unwrap_or_default()
-}
-pub fn set_total_supply(total_supply: U256) {
-    set_key(TOTAL_SUPPLY, total_supply);
-}
-
-pub fn get_total_supply() -> U256 {
-    get_key(TOTAL_SUPPLY).unwrap_or_default()
-}
-
-pub fn get_name() -> String {
-    get_key(NAME).unwrap_or_revert()
-}
-
-pub fn set_name(name: String) {
-    set_key(NAME, name);
-}
-
-pub fn set_symbol(symbol: String) {
-    set_key(SYMBOL, symbol);
-}
-
-pub fn get_symbol() -> String {
-    get_key(SYMBOL).unwrap_or_revert()
 }
 pub fn set_working_supply(working_supply: U256) {
     set_key(WORKING_SUPPLY, working_supply);
