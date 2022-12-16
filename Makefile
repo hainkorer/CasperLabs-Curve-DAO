@@ -77,14 +77,14 @@ build-contract-vesting-escrow-simple:
 	cargo build --release -p erc20 -p vesting-escrow-simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true
 build-contract-voting-escrow:
-	cargo build --release -p session-code -p erc20_crv -p voting-escrow --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p erc20_crv -p voting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-ownable:
 	cargo build --release -p test-session-code -p ownable --target wasm32-unknown-unknown
 build-lp-token-wrapper:
 	cargo build --release  -p test-session-code -p lp-token-wrapper --target wasm32-unknown-unknown
 build-curve-rewards:
-	cargo build --release -p erc20 -p test-session-code -p curve-rewards --target wasm32-unknown-unknown
+	cargo build --release -p curve-erc20 -p test-session-code -p curve-rewards --target wasm32-unknown-unknown
 
 test-only-curve-token-v3:
 	cargo test -p curve-token-v3-tests
@@ -180,11 +180,11 @@ copy-wasm-file-erc20-crv:
 	cp ${wasm_src_path}/erc20_crv.wasm ${erc20_crv_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${erc20_crv_des_wasm}
 copy-wasm-file-fee-distributor:
-	cp ${wasm_src_path}/session-code.wasm ${fee_distributor_des_wasm}
-	cp ${wasm_src_path}/erc20-token.wasm ${fee_distributor_des_wasm}
+	cp ${wasm_src_path}/fee-distributor-session-code.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/fee-distributor.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/erc20_crv.wasm ${fee_distributor_des_wasm}
+	cp ${wasm_src_path}/curve-erc20.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${fee_distributor_des_wasm}
 copy-wasm-file-gauge-controller:
 	cp ${wasm_src_path}/erc20-token.wasm ${gauge_controller_des_wasm}
@@ -255,7 +255,7 @@ copy-wasm-file-vesting-escrow-factory:
 	cp ${wasm_src_path}/vesting-escrow-factory-token.wasm ${vesting_escrow_factory_des_wasm}
 	cp ${wasm_src_path}/vesting-escrow-factory-session-code.wasm ${vesting_escrow_factory_des_wasm}
 copy-wasm-file-voting-escrow:
-	cp ${wasm_src_path}/session-code.wasm ${voting_escrow_des_wasm}
+	cp ${wasm_src_path}/test-session-code.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${voting_escrow_des_wasm}
 	cp ${wasm_src_path}/*.wasm ${voting_escrow_des_wasm}
 copy-wasm-file-liquidity-gauge-v3:
@@ -278,7 +278,7 @@ copy-wasm-file-lp-token-wrapper:
 	cp ${wasm_src_path}/lp-token-wrapper.wasm ${lp_token_wrapper_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${lp_token_wrapper_des_wasm}
 copy-wasm-file-curve-rewards:
-	cp ${wasm_src_path}/erc20-token.wasm ${curve_rewards_des_wasm}
+	cp ${wasm_src_path}/curve-erc20.wasm ${curve_rewards_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${curve_rewards_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${curve_rewards_des_wasm}
 
@@ -366,6 +366,9 @@ clean:
 	rm -rf ${lp_token_wrapper_des_wasm}*.wasm
 	rm -rf ${curve_rewards_des_wasm}*.wasm
 	rm -rf ${liquidity_gauge_v3_des_wasm}*.wasm
+	rm -rf script/node_modules
+	rm -rf script/hashes.zip
+	rm -rf script/wasm/*.wasm
 
 build-copy-wasms:
 	make build-contract-curve-token-v3
