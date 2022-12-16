@@ -12,7 +12,8 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use casperlabs_lp_token_wrapper::{self, data::*, LPTOKENWRAPPER};
+use casperlabs_lp_token_wrapper::{self, data::*, Address, CURVEERC20, LPTOKENWRAPPER};
+
 #[derive(Default)]
 struct LpTokenWrapper(OnChainContractStorage);
 
@@ -22,6 +23,7 @@ impl ContractContext<OnChainContractStorage> for LpTokenWrapper {
     }
 }
 impl LPTOKENWRAPPER<OnChainContractStorage> for LpTokenWrapper {}
+impl CURVEERC20<OnChainContractStorage> for LpTokenWrapper {}
 
 impl LpTokenWrapper {
     fn constructor(
@@ -30,7 +32,8 @@ impl LpTokenWrapper {
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-        LpTokenWrapper::init(self, uni, contract_hash, package_hash);
+        CURVEERC20::init(self, contract_hash, package_hash);
+        LPTOKENWRAPPER::init(self, uni);
     }
 }
 
@@ -48,7 +51,7 @@ fn total_supply() {
 }
 #[no_mangle]
 fn balance_of() {
-    let owner: Key = runtime::get_named_arg("owner");
+    let owner: Address = runtime::get_named_arg("owner");
     let ret: U256 = LpTokenWrapper::default().balance_of(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
@@ -90,7 +93,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("owner", Key::cl_type())],
+        vec![Parameter::new("owner", Address::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -126,8 +129,13 @@ fn call() {
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
         // Build new package with initial a first version of the contract.
         let (package_hash, access_token) = storage::create_contract_package_at_hash();
-        let (contract_hash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+        let (contract_hash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            LpTokenWrapper::default()
+                .named_keys("Lp Token".into(), "LP".into(), 9, 0.into())
+                .unwrap_or_revert(),
+        );
         let uni: Key = runtime::get_named_arg("uni");
         // Prepare constructor args
         let constructor_args = runtime_args! {

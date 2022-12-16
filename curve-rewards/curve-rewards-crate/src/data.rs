@@ -1,4 +1,4 @@
-use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
+use casper_types::{Key, U256};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
 use common::{keys::*, utils::*};
 
@@ -68,10 +68,6 @@ pub fn get_period_finish() -> U256 {
     get_key(PERIOD_FINISH).unwrap_or_default()
 }
 
-pub fn set_hash(contract_hash: ContractHash) {
-    set_key(SELF_CONTRACT_HASH, contract_hash);
-}
-
 pub fn set_last_update_time(last_update_time: U256) {
     set_key(LAST_UPDATE_TIME, last_update_time);
 }
@@ -91,17 +87,4 @@ pub fn set_reward_per_token_stored(reward_per_token_stored: U256) {
 }
 pub fn get_reward_per_token_stored() -> U256 {
     get_key(REWARD_PER_TOKEN_STORED).unwrap_or_default()
-}
-
-pub fn get_hash() -> ContractHash {
-    get_key(SELF_CONTRACT_HASH).unwrap_or_default()
-}
-pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
-}
-pub fn get_package_hash() -> ContractPackageHash {
-    get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_default()
-}
-pub fn js_ret<T: CLTyped + ToBytes>(ret: T) {
-    set_key(RESULT, ret);
 }

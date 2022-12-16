@@ -12,7 +12,7 @@ description = "this package have basic functionalities for CasperLabs Curve Dao'
 [dependencies]
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
-casperlabs-contract-utils = "0.1.0"
-casperlabs-ownable = "0.1.0"
+casperlabs-contract-utils = "0.2.1"
 hex = { version = "0.4.3", default-features = false }
 cryptoxide = "0.3.3"
+casperlabs-ownable = { path = "../../ownable/ownable-crate" }

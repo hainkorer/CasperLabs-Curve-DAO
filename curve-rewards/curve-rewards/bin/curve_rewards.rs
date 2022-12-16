@@ -11,10 +11,11 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use casperlabs_i_reward_distribution_recipient::IREWARDDISTRIBUTIONRECIPIENT;
-use casperlabs_lp_token_wrapper::{data as LpToken, LPTOKENWRAPPER};
-use casperlabs_ownable::OWNABLE;
-use curve_rewards_crate::{data, CURVEREWARDS};
+use curve_rewards_crate::{
+    data, get_uni, Address, CURVEERC20, CURVEREWARDS, IREWARDDISTRIBUTIONRECIPIENT, LPTOKENWRAPPER,
+    OWNABLE,
+};
+
 #[derive(Default)]
 struct CurveRewards(OnChainContractStorage);
 
@@ -24,6 +25,7 @@ impl ContractContext<OnChainContractStorage> for CurveRewards {
     }
 }
 impl OWNABLE<OnChainContractStorage> for CurveRewards {}
+impl CURVEERC20<OnChainContractStorage> for CurveRewards {}
 impl LPTOKENWRAPPER<OnChainContractStorage> for CurveRewards {}
 impl IREWARDDISTRIBUTIONRECIPIENT<OnChainContractStorage> for CurveRewards {}
 impl CURVEREWARDS<OnChainContractStorage> for CurveRewards {}
@@ -50,13 +52,12 @@ fn constructor() {
 }
 #[no_mangle]
 fn total_supply() {
-    let ret: U256 = LPTOKENWRAPPER::total_supply(&CurveRewards::default());
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    runtime::ret(CLValue::from_t(CurveRewards::default().total_supply()).unwrap_or_revert());
 }
 #[no_mangle]
 fn balance_of() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let ret: U256 = LPTOKENWRAPPER::balance_of(&CurveRewards::default(), owner);
+    let owner: Address = runtime::get_named_arg("owner");
+    let ret: U256 = CurveRewards::default().balance_of(owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
@@ -138,7 +139,7 @@ fn transfer_ownership() {
 //Variables
 #[no_mangle]
 fn uni() {
-    runtime::ret(CLValue::from_t(LpToken::get_uni()).unwrap_or_revert());
+    runtime::ret(CLValue::from_t(get_uni()).unwrap_or_revert());
 }
 #[no_mangle]
 fn snx() {
@@ -256,7 +257,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("owner", Key::cl_type())],
+        vec![Parameter::new("owner", Address::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -384,8 +385,13 @@ fn call() {
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
         // Build new package with initial a first version of the contract.
         let (package_hash, access_token) = storage::create_contract_package_at_hash();
-        let (contract_hash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+        let (contract_hash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            CurveRewards::default()
+                .named_keys("Curve reward token".into(), "CRT".into(), 9, 0.into())
+                .unwrap_or_revert(),
+        );
         let token: Key = runtime::get_named_arg("token");
         let reward: Key = runtime::get_named_arg("reward");
         // Prepare constructor args
