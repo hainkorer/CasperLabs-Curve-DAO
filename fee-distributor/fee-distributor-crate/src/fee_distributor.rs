@@ -13,6 +13,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
+use curve_erc20_crate::{self, Address};
 
 #[allow(clippy::too_many_arguments)]
 pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
@@ -59,7 +60,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "balance_of",
             runtime_args! {
-                "owner" => Key::from(get_package_hash())
+                "owner" => Address::from(Key::from(get_package_hash()))
             },
         );
         let to_distribute: U256 = token_balance
@@ -538,18 +539,15 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         let amount: U256 = self._claim(_addr, get_voting_escrow(), last_token_time);
         if amount != 0.into() {
             let token: Key = get_token();
-            let ret: Result<(), u32> = runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 token.into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer",
                 runtime_args! {
-                    "recipient" => addr,
+                    "recipient" =>Address::from(_addr),
                     "amount" => amount
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-            }
             set_token_last_balance(
                 get_token_last_balance()
                     .checked_sub(amount)
@@ -601,18 +599,15 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             }
             let amount: U256 = self._claim(addr, voting_escrow, last_token_time);
             if amount != 0.into() {
-                let ret: Result<(), u32> = runtime::call_versioned_contract(
+                let () = runtime::call_versioned_contract(
                     token.into_hash().unwrap_or_revert().into(),
                     None,
                     "transfer",
                     runtime_args! {
-                        "recipient" => addr,
+                        "recipient" => Address::from(addr),
                         "amount" => amount
                     },
                 );
-                if ret.is_err() {
-                    runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-                }
                 total = total
                     .checked_add(amount)
                     .unwrap_or_revert_with(Error::FeeDistributorAdditionError17);
@@ -644,23 +639,20 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" => Address::from(self.get_caller())
             },
         );
         if amount != 0.into() {
-            let ret: Result<(), u32> = runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 coin.into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer_from",
                 runtime_args! {
-                    "owner" => self.get_caller(),
-                    "recipient" => Key::from(get_package_hash()),
+                    "owner" => Address::from(self.get_caller()),
+                    "recipient" => Address::from(Key::from(get_package_hash())),
                     "amount" => amount
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-            }
             if get_can_checkpoint_token()
                 && (U256::from(u64::from(get_blocktime()))
                     > get_last_token_time()
@@ -728,21 +720,18 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "balance_of",
             runtime_args! {
-                "owner" => Key::from(get_package_hash())
+                "owner" => Address::from(Key::from(get_package_hash()))
             },
         );
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
             runtime_args! {
-                "recipient" => get_emergency_return(),
+                "recipient" => Address::from(get_emergency_return()),
                 "amount" => balance
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-        }
     }
 
     /// @notice Recover ERC20 tokens from this contract
@@ -761,21 +750,18 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "balance_of",
             runtime_args! {
-                "owner" => Key::from(get_package_hash())
+                "owner" => Address::from(Key::from(get_package_hash()))
             },
         );
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             coin.into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
             runtime_args! {
-                "recipient" => get_emergency_return(),
+                "recipient" => Address::from(get_emergency_return()),
                 "amount" => amount
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-        }
         true
     }
 
