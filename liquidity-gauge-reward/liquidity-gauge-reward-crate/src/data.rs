@@ -38,31 +38,6 @@ impl ApprovedToDeposit {
 }
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
-pub struct BalanceOf {
-    dict: Dict,
-}
-
-impl BalanceOf {
-    pub fn instance() -> BalanceOf {
-        BalanceOf {
-            dict: Dict::instance(BALANCE_OF),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(BALANCE_OF)
-    }
-
-    pub fn get(&self, key: &Key) -> U256 {
-        self.dict.get_by_key(key).unwrap_or_default()
-    }
-
-    pub fn set(&self, key: &Key, value: U256) {
-        self.dict.set_by_key(key, value);
-    }
-}
-
-#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct WorkingBalances {
     dict: Dict,
 }
@@ -353,14 +328,6 @@ pub fn get_voting_escrow() -> Key {
 
 pub fn set_voting_escrow(voting_escrow: Key) {
     set_key(VOTING_ESCROW, voting_escrow);
-}
-
-pub fn get_total_supply() -> U256 {
-    get_key(TOTAL_SUPPLY).unwrap_or_default()
-}
-
-pub fn set_total_supply(total_supply: U256) {
-    set_key(TOTAL_SUPPLY, total_supply);
 }
 
 pub fn get_future_epoch_time() -> U256 {

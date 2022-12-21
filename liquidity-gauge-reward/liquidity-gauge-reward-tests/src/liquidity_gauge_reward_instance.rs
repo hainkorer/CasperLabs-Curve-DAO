@@ -1,12 +1,20 @@
 use casper_types::{
-    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
+    account::AccountHash, bytesrepr::{FromBytes, ToBytes}, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
 use std::time::SystemTime;
-
+use curve_erc20_crate::Address;
+use common::keys::*;
+pub fn address_to_str(owner: &Address) -> String {
+    let preimage = owner.to_bytes().unwrap();
+    base64::encode(&preimage)
+}
 pub struct LIQUIDITYGAUGEREWARDInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
 impl LIQUIDITYGAUGEREWARDInstance {
+    pub fn instance(liquidity_gauge_v3: TestContract) -> LIQUIDITYGAUGEREWARDInstance {
+        LIQUIDITYGAUGEREWARDInstance(liquidity_gauge_v3)
+    }
     pub fn new_deploy(
         env: &TestEnv,
         contract_name: &str,
@@ -170,6 +178,13 @@ impl LIQUIDITYGAUGEREWARDInstance {
             },
             blocktime,
         );
+    }
+    pub fn balance_of(
+        &self,
+        owner: Address,
+    )->U256 {
+        self.0.query(BALANCES, address_to_str(&owner))
+        
     }
 
     pub fn package_hash(&self) -> [u8; 32] {
