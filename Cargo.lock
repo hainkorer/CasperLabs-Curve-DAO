@@ -1469,7 +1469,9 @@ version = "0.2.0"
 dependencies = [
  "casper-contract",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
+ "casperlabs-contract-utils 0.2.2",
+ "curve-casper-erc20-crate",
+ "curve-erc20-crate",
  "liquidity-gauge-reward-crate",
 ]
 
@@ -1480,8 +1482,10 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casper_types_derive",
- "casperlabs-contract-utils 0.1.4",
+ "casperlabs-contract-utils 0.2.2",
  "common",
+ "curve-casper-erc20-crate",
+ "curve-erc20-crate",
  "hex",
  "renvm-sig",
 ]
@@ -1499,14 +1503,16 @@ dependencies = [
 name = "liquidity-gauge-reward-tests"
 version = "0.1.0"
 dependencies = [
+ "base64 0.13.1",
  "blake2",
  "casper-contract",
  "casper-engine-test-support",
  "casper-types",
- "casperlabs-contract-utils 0.1.4",
- "casperlabs-test-env 0.1.2",
+ "casper_types_derive",
+ "casperlabs-contract-utils 0.2.2",
+ "casperlabs-test-env 0.3.0",
  "common",
- "hex",
+ "curve-erc20-crate",
  "liquidity-gauge-reward-crate",
 ]
 
