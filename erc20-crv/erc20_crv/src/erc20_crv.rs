@@ -350,7 +350,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
     ///@param name New token name
     ///@param symbol New token symbol
     fn set_name(&self, name: String, symbol: String) {
-        if data::get_minter() != self.get_caller() {
+        if data::get_admin() != self.get_caller() {
             runtime::revert(ApiError::from(Error::Erc20CRVOnlyMinterAllowed1));
         }
         CURVEERC20::set_name(self, name);
