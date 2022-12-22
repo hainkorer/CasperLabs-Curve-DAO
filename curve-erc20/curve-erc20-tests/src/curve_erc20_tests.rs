@@ -1,7 +1,19 @@
 use crate::curve_erc20_instance::*;
-use casper_types::{account::AccountHash, runtime_args, RuntimeArgs, U256};
+use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{now, TestContract, TestEnv};
 use curve_casper_erc20_crate::Address;
+
+pub fn zero_address() -> Key {
+    Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
+        .unwrap()
+}
+
+pub fn account_zero_address() -> Key {
+    Key::from_formatted_str(
+        "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
+    )
+    .unwrap()
+}
 
 fn deploy() -> (TestEnv, AccountHash, TestContract) {
     let env = TestEnv::new();
@@ -24,7 +36,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
 
 #[test]
 fn test_deploy() {
-    let (_env,_owner, token) = deploy();
+    let (_env, _owner, token) = deploy();
     assert_eq!(NAME, token.query_named_key::<String>("name".into()));
     assert_eq!(SYMBOL, token.query_named_key::<String>("symbol".into()));
     assert_eq!(DECIMALS, token.query_named_key::<u8>("decimals".into()));
@@ -32,7 +44,91 @@ fn test_deploy() {
         INITIAL_SUPPLY,
         token.query_named_key::<U256>("total_supply".into())
     );
-  
+}
+
+#[test]
+#[should_panic]
+fn test_erc20_transfer_account_zero_address_check() {
+    let (env, owner, erc20) = deploy();
+    let to = env.next_user();
+    let amount: U256 = 123_000_000_000u64.into();
+    erc20.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Address::Account(to),
+            "amount" => amount
+        },
+        now(),
+    );
+    let ret: U256 = erc20.query(BALANCES, address_to_str(&Address::Account(to)));
+    assert_eq!(ret, amount);
+    let ret: U256 = erc20.query(BALANCES, address_to_str(&Address::Account(owner)));
+    assert_eq!(ret, 0.into());
+
+    let zero_address: Address = Address::Account(account_zero_address().into_account().unwrap());
+    erc20.call_contract(
+        to,
+        "transfer",
+        runtime_args! {
+            "recipient" => zero_address,
+            "amount" => amount,
+        },
+        now(),
+    );
+
+    let ret: U256 = erc20.query(BALANCES, address_to_str(&Address::Account(to)));
+    assert_eq!(ret, 0.into());
+    let ret: U256 = erc20.query(BALANCES, address_to_str(&Address::Account(owner)));
+    assert_eq!(ret, amount);
+}
+
+#[test]
+#[should_panic]
+fn test_erc20_approve_transfer_from_zero_address_check() {
+    let (env, owner, erc20) = deploy();
+    let to = env.next_user();
+    let tmp_user = env.next_user();
+    let amount: U256 = 123_000_000_000u64.into();
+    erc20.call_contract(
+        owner,
+        "mint",
+        runtime_args! {
+            "to" => Address::Account(to),
+            "amount" => amount
+        },
+        now(),
+    );
+    let ret: U256 = erc20.query(BALANCES, address_to_str(&Address::Account(to)));
+    assert_eq!(ret, amount);
+    let ret: U256 = erc20.query(BALANCES, address_to_str(&Address::Account(owner)));
+    assert_eq!(ret, 0.into());
+    erc20.call_contract(
+        to,
+        "approve",
+        runtime_args! {
+            "spender" => Address::Account(tmp_user),
+            "amount" => amount,
+        },
+        now(),
+    );
+
+    let zero_address: Address = Address::Contract(zero_address().into_hash().unwrap().into());
+    erc20.call_contract(
+        tmp_user,
+        "transfer_from",
+        runtime_args! {
+            "owner" => Address::Account(to),
+            "recipient" => zero_address,
+            "amount" => amount,
+        },
+        now(),
+    );
+
+    let ret: U256 = erc20.query(BALANCES, address_to_str(&Address::Account(to)));
+    assert_eq!(ret, 0.into());
+    let ret: U256 = erc20.query(BALANCES, address_to_str(&Address::Account(owner)));
+    assert_eq!(ret, amount);
 }
 
 #[test]

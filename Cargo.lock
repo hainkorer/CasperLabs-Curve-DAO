@@ -590,6 +590,7 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casperlabs-contract-utils 0.2.2",
+ "common",
  "curve-casper-erc20-crate",
 ]
 
