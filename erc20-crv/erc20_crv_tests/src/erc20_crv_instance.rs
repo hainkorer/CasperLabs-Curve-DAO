@@ -60,6 +60,16 @@ impl ERC20CRVInstance {
             0,
         );
     }
+    pub fn remove_admin(&self, sender: AccountHash, admin: Key) {
+        self.0.call_contract(
+            sender,
+            "remove_admin",
+            runtime_args! {
+                "admin"=>admin
+            },
+            0,
+        );
+    }
     pub fn update_mining_parameters(&self, sender: AccountHash, time_now: u64) {
         self.0.call_contract(
             sender,
@@ -181,6 +191,10 @@ impl ERC20CRVInstance {
 
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
+    }
+
+    pub fn contract(&self) -> &TestContract {
+        &self.0
     }
 
     // Get stored key values

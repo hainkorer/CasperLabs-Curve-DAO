@@ -61,6 +61,7 @@ pub const AVAILABLE_SUPPLY: &str = "available_supply";
 pub const MINT: &str = "mint";
 pub const MINTABLE_IN_TIMEFRAME: &str = "mintable_in_timeframe";
 // ERC-20 CRV
+pub const ADMIN_WHITELIST: &str = "admin_whitelist";
 pub const ALLOWANCE_CRV: &str = "allowance_crv";
 pub const MINING_EPOCH: &str = "mining_epoch";
 pub const IS_UPDATED: &str = "is_updated";
