@@ -1,7 +1,6 @@
 use crate::data::{
-    self, get_lp_token, get_package_hash, ClaimData, ClaimDataStruct,
-    PeriodTimestamp, RewardData, RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver,
-    CLAIM_FREQUENCY, MAX_REWARDS,
+    self, get_lp_token, get_package_hash, ClaimData, ClaimDataStruct, PeriodTimestamp, RewardData,
+    RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver, CLAIM_FREQUENCY, MAX_REWARDS,
 };
 use crate::{alloc::string::ToString, event::*};
 use alloc::vec::Vec;
@@ -19,7 +18,9 @@ use common::{errors::*, utils::*};
 use curve_casper_erc20_crate::Error as Erc20Error;
 use curve_erc20_crate::{self, Address, CURVEERC20};
 
-pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> +CURVEERC20<Storage> {
+pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
+    ContractContext<Storage> + CURVEERC20<Storage>
+{
     fn init(
         &mut self,
         lp_token: Key,
@@ -58,7 +59,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         name.push_str(post_name);
         self.set_name(name);
         self.set_symbol(symbol + "-gauge");
-       
+
         let crv_token: Key = runtime::call_versioned_contract(
             minter.into_hash().unwrap_or_revert().into(),
             None,
@@ -122,7 +123,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
     fn claim_data(&mut self, user: Key, claiming_address: Key) -> ClaimDataStruct {
         ClaimData::instance().get(&user, &claiming_address)
     }
-   
+
     //function implementaion of liquidity gauge v3
 
     fn integrate_checkpoint(&self) -> U256 {
@@ -282,7 +283,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
                     receiver = _user;
                 }
             }
-           let user_balance: U256 = self.balance_of(Address::from(_user));
+            let user_balance: U256 = self.balance_of(Address::from(_user));
             for (i, item) in reward_integrals
                 .iter()
                 .enumerate()
@@ -813,7 +814,12 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         data::set_lock(false);
         Ok(())
     }
-    fn transfer_from(&mut self, owner: Address, recipient: Address, amount: U256) -> Result<(), u32> {
+    fn transfer_from(
+        &mut self,
+        owner: Address,
+        recipient: Address,
+        amount: U256,
+    ) -> Result<(), u32> {
         let lock = data::get_lock();
         if lock {
             //Locked
@@ -821,40 +827,44 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>: ContractContext<Storage> 
         }
         data::set_lock(true);
         //let allowances = Allowance::instance();
-        let _allowance: U256 = self.allowance(Address::from(owner), Address::from(self.get_caller()));
+        let _allowance: U256 =
+            self.allowance(Address::from(owner), Address::from(self.get_caller()));
         if _allowance != U256::MAX {
             let _new_allowance: U256 = _allowance
                 .checked_sub(amount)
                 .ok_or(Error::LiquidityGaugeUnderFlow2)
                 .unwrap_or_revert();
-            self.set_allowance(Address::from(owner), Address::from(self.get_caller()), _new_allowance);
+            self.set_allowance(
+                Address::from(owner),
+                Address::from(self.get_caller()),
+                _new_allowance,
+            );
         }
         self._transfer(Key::from(owner), Key::from(recipient), amount);
         data::set_lock(false);
         Ok(())
     }
 
-    fn approve(&self, spender: Address, amount: U256) ->Result<(), Erc20Error>{
-        CURVEERC20::approve(self,spender, amount)
+    fn approve(&self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
+        CURVEERC20::approve(self, spender, amount)
     }
     fn increase_allowance(&self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
-        let res=CURVEERC20::increase_allowance(self, spender, amount);
+        let res = CURVEERC20::increase_allowance(self, spender, amount);
         self.emit(&LiquidityGaugeV3Event::Approval {
             owner: self.get_caller(),
-            spender:Key::from(spender),
+            spender: Key::from(spender),
             value: amount,
         });
         res
     }
     fn decrease_allowance(&self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
-        let res=CURVEERC20::decrease_allowance(self, spender, amount);
+        let res = CURVEERC20::decrease_allowance(self, spender, amount);
         self.emit(&LiquidityGaugeV3Event::Approval {
             owner: self.get_caller(),
-            spender:Key::from(spender),
+            spender: Key::from(spender),
             value: amount,
         });
         res
-       
     }
 
     fn set_rewards(&mut self, reward_contract: Key, sigs: String, reward_tokens: Vec<String>) {

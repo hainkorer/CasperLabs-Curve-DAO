@@ -80,12 +80,15 @@ mod deploy_and_reward_contract_test_cases {
     use crate::reward_only_gauge_tests::*;
     #[test]
     fn test_deploy() {
-        let (_env,  reward_only_gauge, lp_token, owner, _curve_rewards,_,) = deploy();
+        let (_env, reward_only_gauge, lp_token, owner, _curve_rewards, _) = deploy();
         assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)),0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -99,7 +102,10 @@ mod deploy_and_reward_contract_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -138,7 +144,10 @@ mod ownership_and_set_reward_receiver_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -156,7 +165,10 @@ mod ownership_and_set_reward_receiver_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -174,7 +186,10 @@ mod ownership_and_set_reward_receiver_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -188,7 +203,7 @@ mod ownership_and_set_reward_receiver_test_cases {
     }
 }
 mod approve_and_allowances_test_cases {
-    use crate::{reward_only_gauge_tests::*};
+    use crate::reward_only_gauge_tests::*;
     #[test]
     fn test_approve() {
         let (env, reward_only_gauge, lp_token, owner, _curve_rewards, time_now) = deploy();
@@ -197,7 +212,10 @@ mod approve_and_allowances_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -211,8 +229,10 @@ mod approve_and_allowances_test_cases {
             INIT_TOTAL_SUPPLY.into()
         );
         // assert_eq!(reward_only_gauge.balance_of(user), 0.into());
-       assert_eq!(reward_only_gauge.allowance(Address::Account(owner),Address::Account(user)), amount);
-
+        assert_eq!(
+            reward_only_gauge.allowance(Address::Account(owner), Address::Account(user)),
+            amount
+        );
     }
 
     #[test]
@@ -224,15 +244,21 @@ mod approve_and_allowances_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
             Key::Hash(lp_token.package_hash())
         );
         let amount: U256 = 100.into();
-         reward_only_gauge.increase_allowance(owner, time_now, Address::Account(user), amount);
-        assert_eq!(reward_only_gauge.allowance(Address::Account(owner),Address::Account(user)), amount);
+        reward_only_gauge.increase_allowance(owner, time_now, Address::Account(user), amount);
+        assert_eq!(
+            reward_only_gauge.allowance(Address::Account(owner), Address::Account(user)),
+            amount
+        );
     }
 
     #[test]
@@ -244,7 +270,10 @@ mod approve_and_allowances_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -254,7 +283,10 @@ mod approve_and_allowances_test_cases {
         reward_only_gauge.increase_allowance(owner, time_now, Address::Account(user), amount);
         let amount2: U256 = 10.into();
         reward_only_gauge.decrease_allowance(owner, time_now, Address::Account(user), amount2);
-        assert_eq!(reward_only_gauge.allowance(Address::Account(owner),Address::Account(user)), 90.into());
+        assert_eq!(
+            reward_only_gauge.allowance(Address::Account(owner), Address::Account(user)),
+            90.into()
+        );
     }
 }
 mod test_cases_related_to_rewards {
@@ -266,7 +298,10 @@ mod test_cases_related_to_rewards {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -298,7 +333,10 @@ mod test_cases_related_to_rewards {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -328,13 +366,16 @@ mod test_cases_related_to_rewards {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
             Key::Hash(lp_token.package_hash())
         );
-      
+
         let claim_sig: String = "get_reward".to_string();
         let lp_token1: TestContract =
             deploy_erc20(&env, owner, "Lp_token1", TOKEN_SYMBOL, DECIMALS);
@@ -420,7 +461,10 @@ mod test_cases_related_to_rewards {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -507,7 +551,6 @@ mod test_cases_related_to_rewards {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-
     }
 
     #[test]
@@ -632,7 +675,10 @@ mod test_cases_related_to_rewards {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -748,7 +794,10 @@ mod deposit_and_withdraw_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -781,7 +830,10 @@ mod deposit_and_withdraw_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 10.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 10.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            10.into()
+        );
     }
 
     #[test]
@@ -791,7 +843,10 @@ mod deposit_and_withdraw_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -825,13 +880,19 @@ mod deposit_and_withdraw_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 10.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 10.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            10.into()
+        );
         reward_only_gauge.withdraw(owner, time_now, deposit / 2, Some(false));
         assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 5.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 5.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            5.into()
+        );
         //assert_eq!(reward_only_gauge.balance_of(user), 0.into());
     }
 }
@@ -845,7 +906,10 @@ mod transfer_and_transfer_from_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -878,15 +942,24 @@ mod transfer_and_transfer_from_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 10.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 10.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            10.into()
+        );
         let amount: U256 = 5.into();
         reward_only_gauge.transfer(owner, time_now, Address::Account(user), amount);
         assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 10.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 5.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(user)), 5.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            5.into()
+        );
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(user)),
+            5.into()
+        );
     }
 
     #[test]
@@ -898,7 +971,10 @@ mod transfer_and_transfer_from_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 0.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 0.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            0.into()
+        );
         assert_eq!(reward_only_gauge.admin(), owner.into());
         assert_eq!(
             reward_only_gauge.lp_token(),
@@ -932,21 +1008,42 @@ mod transfer_and_transfer_from_test_cases {
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 10.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 10.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            10.into()
+        );
 
         let amount: U256 = 100.into();
         reward_only_gauge.increase_allowance(owner, time_now, Address::Account(user), amount);
-       assert_eq!(reward_only_gauge.allowance(Address::Account(owner), Address::Account(user)), 100.into());
+        assert_eq!(
+            reward_only_gauge.allowance(Address::Account(owner), Address::Account(user)),
+            100.into()
+        );
 
         let amount: U256 = 5.into();
-        reward_only_gauge.transfer_from(user, time_now, Address::Account(owner), Address::Account(user), amount);
-        
-        assert_eq!(reward_only_gauge.allowance(Address::Account(owner), Address::Account(user)), 95.into());
+        reward_only_gauge.transfer_from(
+            user,
+            time_now,
+            Address::Account(owner),
+            Address::Account(user),
+            amount,
+        );
+
+        assert_eq!(
+            reward_only_gauge.allowance(Address::Account(owner), Address::Account(user)),
+            95.into()
+        );
         assert_eq!(reward_only_gauge.name(), "Curve.fi ERC RewardGauge Deposit");
         assert_eq!(reward_only_gauge.symbol(), "ERC-gauge");
         assert_eq!(reward_only_gauge.decimals(), 9);
         assert_eq!(reward_only_gauge.total_supply(), 10.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(owner)), 5.into());
-        assert_eq!(reward_only_gauge.balance_of(Address::Account(user)), 5.into());
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(owner)),
+            5.into()
+        );
+        assert_eq!(
+            reward_only_gauge.balance_of(Address::Account(user)),
+            5.into()
+        );
     }
 }

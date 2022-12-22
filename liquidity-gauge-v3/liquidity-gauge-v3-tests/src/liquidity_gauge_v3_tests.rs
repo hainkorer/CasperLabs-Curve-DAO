@@ -216,7 +216,10 @@ mod t2 {
         let spender = env.next_user();
         let amount: U256 = 50000000.into();
         contract.increase_allowance(owner, Address::from(spender), amount, time_now);
-        assert_eq!(contract.allowance(Address::from(owner), Address::from(spender)), amount);
+        assert_eq!(
+            contract.allowance(Address::from(owner), Address::from(spender)),
+            amount
+        );
     }
     #[test]
     fn test_decrease_allowance() {
@@ -225,10 +228,16 @@ mod t2 {
         let spender = env.next_user();
         let approve_amount: U256 = 500000.into();
         contract.approve(owner, Address::from(spender), approve_amount, time_now);
-        assert_eq!(contract.allowance(Address::from(owner), Address::from(spender)), approve_amount);
+        assert_eq!(
+            contract.allowance(Address::from(owner), Address::from(spender)),
+            approve_amount
+        );
         let amount: U256 = 100000.into();
         contract.decrease_allowance(owner, Address::from(spender), amount, time_now);
-        assert_eq!(contract.allowance(Address::from(owner), Address::from(spender)), 400000.into());
+        assert_eq!(
+            contract.allowance(Address::from(owner), Address::from(spender)),
+            400000.into()
+        );
     }
     #[test]
     fn test_approve() {
@@ -237,7 +246,10 @@ mod t2 {
         let spender = env.next_user();
         let approve_amount: U256 = 500000.into();
         contract.approve(owner, Address::from(spender), approve_amount, time_now);
-        assert_eq!(contract.allowance(Address::from(owner), Address::from(spender)), approve_amount);
+        assert_eq!(
+            contract.allowance(Address::from(owner), Address::from(spender)),
+            approve_amount
+        );
     }
     #[test]
     fn test_decimals() {
@@ -393,8 +405,13 @@ mod t9 {
         let recipient = env.next_user();
         contract.deposit(owner, amount, None, None, time_now);
         contract.approve(owner, Address::from(spender), amount, time_now);
-        contract.transfer_from(owner, Address::from(owner), Address::from(recipient), amount, time_now);
-        
+        contract.transfer_from(
+            owner,
+            Address::from(owner),
+            Address::from(recipient),
+            amount,
+            time_now,
+        );
     }
 }
 mod t10 {
@@ -527,7 +544,7 @@ mod t5 {
 }
 mod t12 {
     use crate::liquidity_gauge_v3_tests::*;
-   
+
     #[test]
     fn test_accept_transfer_ownership() {
         let (env, owner, contract, time_now) = deploy();

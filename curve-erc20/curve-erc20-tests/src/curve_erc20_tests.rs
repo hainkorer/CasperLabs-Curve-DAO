@@ -24,7 +24,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract) {
 
 #[test]
 fn test_deploy() {
-    let (_env,_owner, token) = deploy();
+    let (_env, _owner, token) = deploy();
     assert_eq!(NAME, token.query_named_key::<String>("name".into()));
     assert_eq!(SYMBOL, token.query_named_key::<String>("symbol".into()));
     assert_eq!(DECIMALS, token.query_named_key::<u8>("decimals".into()));
@@ -32,7 +32,6 @@ fn test_deploy() {
         INITIAL_SUPPLY,
         token.query_named_key::<U256>("total_supply".into())
     );
-  
 }
 
 #[test]

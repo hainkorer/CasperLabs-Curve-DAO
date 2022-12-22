@@ -1,4 +1,4 @@
-use alloc::string::{ToString};
+use alloc::string::ToString;
 use alloc::vec::Vec;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::bytesrepr::Bytes;

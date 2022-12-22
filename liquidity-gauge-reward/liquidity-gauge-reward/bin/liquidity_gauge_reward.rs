@@ -1,7 +1,7 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, vec, string::ToString};
+use alloc::{boxed::Box, collections::BTreeSet, format, string::ToString, vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -12,8 +12,8 @@ use casper_types::{
     U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use liquidity_gauge_reward_crate::{self, data, LIQUIDITYGAUGEREWARD};
 use curve_erc20_crate::{self, Address, CURVEERC20};
+use liquidity_gauge_reward_crate::{self, data, LIQUIDITYGAUGEREWARD};
 #[derive(Default)]
 struct LiquidityGaugeReward(OnChainContractStorage);
 impl ContractContext<OnChainContractStorage> for LiquidityGaugeReward {
@@ -181,15 +181,21 @@ fn voting_escrow() {
 fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::balance_of(&mut LiquidityGaugeReward::default(), owner))
-            .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::balance_of(
+            &mut LiquidityGaugeReward::default(),
+            owner,
+        ))
+        .unwrap_or_revert(),
     );
 }
 
 #[no_mangle]
 fn total_supply() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::total_supply(&mut LiquidityGaugeReward::default())).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::total_supply(
+            &mut LiquidityGaugeReward::default(),
+        ))
+        .unwrap_or_revert(),
     );
 }
 
@@ -656,8 +662,13 @@ fn call() {
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
         // Build new package with initial a first version of the contract.
         let (package_hash, access_token) = storage::create_contract_package_at_hash();
-        let (contract_hash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), LiquidityGaugeReward::default().named_keys("".to_string(), "".to_string(), 9, 0.into()).unwrap_or_revert());
+        let (contract_hash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            LiquidityGaugeReward::default()
+                .named_keys("".to_string(), "".to_string(), 9, 0.into())
+                .unwrap_or_revert(),
+        );
 
         let lp_addr: Key = runtime::get_named_arg("lp_addr");
         let minter: Key = runtime::get_named_arg("minter");

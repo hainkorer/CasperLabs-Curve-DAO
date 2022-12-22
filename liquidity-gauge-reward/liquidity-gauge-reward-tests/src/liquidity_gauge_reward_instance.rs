@@ -1,10 +1,12 @@
 use casper_types::{
-    account::AccountHash, bytesrepr::{FromBytes, ToBytes}, runtime_args, CLTyped, Key, RuntimeArgs, U256,
+    account::AccountHash,
+    bytesrepr::{FromBytes, ToBytes},
+    runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
-use std::time::SystemTime;
-use curve_erc20_crate::Address;
 use common::keys::*;
+use curve_erc20_crate::Address;
+use std::time::SystemTime;
 pub fn address_to_str(owner: &Address) -> String {
     let preimage = owner.to_bytes().unwrap();
     base64::encode(&preimage)
@@ -179,12 +181,8 @@ impl LIQUIDITYGAUGEREWARDInstance {
             blocktime,
         );
     }
-    pub fn balance_of(
-        &self,
-        owner: Address,
-    )->U256 {
+    pub fn balance_of(&self, owner: Address) -> U256 {
         self.0.query(BALANCES, address_to_str(&owner))
-        
     }
 
     pub fn package_hash(&self) -> [u8; 32] {

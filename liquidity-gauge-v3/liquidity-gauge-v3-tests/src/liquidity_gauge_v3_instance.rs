@@ -17,8 +17,8 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub const ALLOWANCES: &str = "allowances";
-use hex::encode;
 use curve_erc20_crate::Address;
+use hex::encode;
 
 pub fn address_to_str(owner: &Address) -> String {
     let preimage = owner.to_bytes().unwrap();
@@ -273,11 +273,8 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn is_killed(&self) -> bool {
         self.0.query_named_key(String::from("is_killed"))
     }
-    pub fn allowance(&self,owner:Address,spender:Address) -> U256 {
-        let ret: U256 =self.0.query(
-            ALLOWANCES,
-            addresses_to_str(owner, spender),
-        );
+    pub fn allowance(&self, owner: Address, spender: Address) -> U256 {
+        let ret: U256 = self.0.query(ALLOWANCES, addresses_to_str(owner, spender));
         ret
     }
     pub fn name(&self) -> String {
@@ -295,7 +292,7 @@ impl LIQUIDITYGUAGEV3INSTANCEInstance {
     pub fn total_supply(&self) -> U256 {
         self.0.query_named_key(String::from("total_supply"))
     }
-   
+
     pub fn key_to_str(key: &Key) -> String {
         match key {
             Key::Account(account) => account.to_string(),
