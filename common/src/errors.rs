@@ -27,8 +27,8 @@ pub enum Error {
     ///ERC20 ERRORS
     /// 65,546 for (ERC20 CRV Invalid Minter)
     Erc20CRVInvalidMinter = 10001,
-    /// 65,546 for (ERC20 CRV Only Minter Allowed1)
-    Erc20CRVOnlyMinterAllowed1 = 10002,
+    /// 65,546 for (ERC20 CRV Only Admin Allowed1)
+    Erc20CRVOnlyAdminAllowed1 = 10002,
     /// 65,546 for (ERC20 CRV Only Minter Allowed2)
     Erc20CRVOnlyMinterAllowed2 = 10003,
     /// 65,546 for (ERC20 CRV Admin Only)
