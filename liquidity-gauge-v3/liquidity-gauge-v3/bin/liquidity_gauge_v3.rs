@@ -2,9 +2,14 @@
 #![no_std]
 extern crate alloc;
 
-
 use crate::vec::Vec;
-use alloc::{boxed::Box, collections::BTreeSet, format, string::{String, ToString}, vec};
+use alloc::{
+    boxed::Box,
+    collections::BTreeSet,
+    format,
+    string::{String, ToString},
+    vec,
+};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -14,8 +19,8 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use liquidity_gauge_v3_crate::{self, data, utils::*, LIQUIDITYTGAUGEV3};
 use curve_erc20_crate::{self, Address, CURVEERC20};
+use liquidity_gauge_v3_crate::{self, data, utils::*, LIQUIDITYTGAUGEV3};
 #[derive(Default)]
 struct LiquidityGaugeV3(OnChainContractStorage);
 
@@ -221,7 +226,8 @@ fn withdraw() {
 fn transfer() {
     let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    LIQUIDITYTGAUGEV3::transfer(&mut LiquidityGaugeV3::default(),recipient, amount).unwrap_or_revert();
+    LIQUIDITYTGAUGEV3::transfer(&mut LiquidityGaugeV3::default(), recipient, amount)
+        .unwrap_or_revert();
 }
 /// """
 /// @notice Transfer tokens from one address to another.
@@ -235,7 +241,8 @@ fn transfer_from() {
     let owner: Address = runtime::get_named_arg("owner");
     let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    LIQUIDITYTGAUGEV3::transfer_from(&mut LiquidityGaugeV3::default(),owner, recipient, amount).unwrap_or_revert();
+    LIQUIDITYTGAUGEV3::transfer_from(&mut LiquidityGaugeV3::default(), owner, recipient, amount)
+        .unwrap_or_revert();
 }
 
 /// @notice Approve the passed address to transfer the specified amount of
@@ -262,7 +269,8 @@ fn approve() {
 fn increase_allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    LIQUIDITYTGAUGEV3::increase_allowance(&LiquidityGaugeV3::default(),spender, amount).unwrap_or_revert();
+    LIQUIDITYTGAUGEV3::increase_allowance(&LiquidityGaugeV3::default(), spender, amount)
+        .unwrap_or_revert();
 }
 
 ///@notice Decrease the allowance granted to `spender` by the caller
@@ -275,7 +283,8 @@ fn increase_allowance() {
 fn decrease_allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    LIQUIDITYTGAUGEV3::decrease_allowance(&LiquidityGaugeV3::default(),spender, amount).unwrap_or_revert();
+    LIQUIDITYTGAUGEV3::decrease_allowance(&LiquidityGaugeV3::default(), spender, amount)
+        .unwrap_or_revert();
 }
 /// """
 /// @notice Set the active reward contract
@@ -367,14 +376,15 @@ fn total_supply() {
 }
 #[no_mangle]
 fn allowance() {
-    let owner: Address= runtime::get_named_arg("owner");
+    let owner: Address = runtime::get_named_arg("owner");
     let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
         CLValue::from_t(CURVEERC20::allowance(
             &mut LiquidityGaugeV3::default(),
             owner,
             spender,
-        )).unwrap_or_revert(),
+        ))
+        .unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -898,8 +908,13 @@ fn call() {
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
         // Build new package with initial a first version of the contract.
         let (package_hash, access_token) = storage::create_contract_package_at_hash();
-        let (contract_hash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), LiquidityGaugeV3::default().named_keys("".to_string(), "".to_string(), 9, 0.into()).unwrap_or_revert());
+        let (contract_hash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            LiquidityGaugeV3::default()
+                .named_keys("".to_string(), "".to_string(), 9, 0.into())
+                .unwrap_or_revert(),
+        );
         let lp_addr: Key = runtime::get_named_arg("lp_addr");
         let minter: Key = runtime::get_named_arg("minter");
         let admin: Key = runtime::get_named_arg("admin");

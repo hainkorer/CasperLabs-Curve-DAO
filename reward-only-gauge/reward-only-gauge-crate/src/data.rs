@@ -3,7 +3,7 @@ use alloc::{
     vec::Vec,
 };
 use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256, ContractHash};
+use casper_types::{system::CallStackElement, ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
 use common::{keys::*, utils::*};

@@ -6,8 +6,6 @@ use blake2::{
 };
 use common::keys::*;
 pub const ALLOWANCES: &str = "allowances";
-use hex::encode;
-use curve_erc20_crate::Address;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{
     account::AccountHash, bytesrepr::ToBytes, runtime_args, CLTyped, ContractPackageHash, Key,
@@ -15,6 +13,8 @@ use casper_types::{
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_test_env::{TestContract, TestEnv};
+use curve_erc20_crate::Address;
+use hex::encode;
 
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
@@ -127,13 +127,7 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn transfer(
-        &self,
-        sender: AccountHash,
-        time_now: u64,
-        recipient: Address,
-        amount: U256,
-    ) {
+    pub fn transfer(&self, sender: AccountHash, time_now: u64, recipient: Address, amount: U256) {
         self.0.call_contract(
             sender,
             "transfer",
@@ -328,14 +322,10 @@ impl REWARDONLYGAUGEInstance {
         );
     }
 
-    pub fn balance_of(
-        &self,
-        owner: Address,
-    )->U256 {
+    pub fn balance_of(&self, owner: Address) -> U256 {
         self.0.query(BALANCES, address_to_str(&owner))
-        
     }
-    
+
     pub fn reward_balances<T: Into<Key>>(&self, account: T) -> U256 {
         self.0
             .query_dictionary("reward_balances", key_to_str(&account.into()))
@@ -356,14 +346,11 @@ impl REWARDONLYGAUGEInstance {
             .query_dictionary("reward_tokens", (&index).to_string())
             .unwrap()
     }
-    pub fn allowance(&self,owner:Address,spender:Address) -> U256 {
-        let ret: U256 =self.0.query(
-            ALLOWANCES,
-            addresses_to_str(owner, spender),
-        );
+    pub fn allowance(&self, owner: Address, spender: Address) -> U256 {
+        let ret: U256 = self.0.query(ALLOWANCES, addresses_to_str(owner, spender));
         ret
     }
-    
+
     pub fn reward_integral_for<T: Into<Key>>(&self, owner: T, spender: T) -> U256 {
         let owner: Key = owner.into();
         let spender: Key = spender.into();

@@ -16,7 +16,9 @@ use common::{errors::*, utils::*};
 use curve_erc20_crate::{self, Address, CURVEERC20};
 
 #[allow(clippy::too_many_arguments)]
-pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storage>  + CURVEERC20<Storage>{
+pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
+    ContractContext<Storage> + CURVEERC20<Storage>
+{
     /// @notice Contract constructor
     /// @param lp_addr Liquidity Pool contract address
     /// @param _minter Minter contract address
@@ -105,8 +107,6 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         set_rewarded_token(rewarded_token);
         set_admin(admin);
         set_is_claiming_rewards(true);
-
-        
     }
 
     /// @notice Calculate limits which depend on the amount of CRV token per-user. Effectively it calculates working balances to apply amplification of CRV production by CRV
@@ -412,7 +412,11 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardUnauthorized));
         }
         self._checkpoint(addr, get_is_claiming_rewards());
-        self._update_liquidity_limit(addr, self.balance_of(Address::from(addr)), self.total_supply());
+        self._update_liquidity_limit(
+            addr,
+            self.balance_of(Address::from(addr)),
+            self.total_supply(),
+        );
         true
     }
 
@@ -497,7 +501,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                 "idx" => ret
             },
         );
-        let balance: U256 =self.balance_of(Address::from(addr));
+        let balance: U256 = self.balance_of(Address::from(addr));
         let ret: U256 = runtime::call_versioned_contract(
             get_voting_escrow().into_hash().unwrap_or_revert().into(),
             None,
@@ -520,7 +524,11 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardKickNotNeeded2));
         }
         self._checkpoint(addr, get_is_claiming_rewards());
-        self._update_liquidity_limit(addr, self.balance_of(Address::from(addr)), self.total_supply());
+        self._update_liquidity_limit(
+            addr,
+            self.balance_of(Address::from(addr)),
+            self.total_supply(),
+        );
     }
 
     /// @notice Set whether `addr` can deposit tokens for `self.get_caller()`
@@ -550,14 +558,15 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         }
         self._checkpoint(addr, true);
         if value != 0.into() {
-            let balance: U256 = self.balance_of(Address::from(addr))
+            let balance: U256 = self
+                .balance_of(Address::from(addr))
                 .checked_add(value)
                 .unwrap_or_revert();
             let supply: U256 = self.total_supply().checked_add(value).unwrap_or_revert();
             self.set_balance(Address::from(addr), balance);
             self.set_total_supply(supply);
             self._update_liquidity_limit(addr, balance, supply);
-            let ()= runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 get_lp_token().into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer_from",
@@ -567,7 +576,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                     "amount" => value
                 },
             );
-           
+
             let () = runtime::call_versioned_contract(
                 get_reward_contract().into_hash().unwrap_or_revert().into(),
                 None,
@@ -595,7 +604,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
         }
         set_lock(true);
         self._checkpoint(self.get_caller(), claim_rewards);
-        let balance: U256 =self.balance_of(Address::from(self.get_caller())) 
+        let balance: U256 = self
+            .balance_of(Address::from(self.get_caller()))
             .checked_sub(value)
             .unwrap_or_revert();
         let supply: U256 = self.total_supply().checked_sub(value).unwrap_or_revert();
@@ -611,7 +621,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                     "amount" => value
                 },
             );
-            let ()= runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 get_lp_token().into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer",
@@ -620,7 +630,6 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>: ContractContext<Storag
                     "amount" => value
                 },
             );
-            
         }
         LIQUIDITYGAUGEREWARD::emit(
             self,
