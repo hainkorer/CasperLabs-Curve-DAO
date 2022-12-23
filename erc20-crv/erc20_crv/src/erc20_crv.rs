@@ -302,6 +302,9 @@ pub trait ERC20CRV<Storage: ContractStorage>:
         if !AdminWhitelist::instance().get(&self.get_caller()) {
             runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
         }
+        if minter == zero_address() || minter == account_zero_address() {
+            runtime::revert(ApiError::from(Error::Erc20CRVZeroAddress1));
+        }
         data::set_minter(minter);
         self.erc20_crv_emit(&Erc20CrvEvent::SetMinter { minter });
     }
