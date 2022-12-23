@@ -7,7 +7,7 @@ pub const TEN_E_NINE: u128 = 1000000000;
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
         env,
-        "erc20-token.wasm",
+        "curve-erc20.wasm",
         "erc2020",
         owner,
         runtime_args! {

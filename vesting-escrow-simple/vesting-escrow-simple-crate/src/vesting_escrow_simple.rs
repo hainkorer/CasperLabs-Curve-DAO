@@ -97,7 +97,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         set_end_time(end_time);
         set_can_disable(can_disable);
 
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
             "transfer_from",
@@ -107,7 +107,6 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 "amount" => amount
             },
         );
-        ret.unwrap_or_revert();
         InitialLocked::instance().set(&recipient, amount);
         set_initial_locked_supply(amount);
         self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Fund { recipient, amount });
@@ -271,7 +270,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let updated_total_claimed = _total_claimed.checked_add(claimable).unwrap_or_revert();
         TotalClaimed::instance().set(&_addr, updated_total_claimed);
         let token: Key = get_token();
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
@@ -280,11 +279,6 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 "amount" => claimable,
             },
         );
-        match ret {
-            Ok(()) => {}
-            Err(e) => runtime::revert(ApiError::User(e as u16)),
-        }
-
         self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Claim {
             recipient: _addr,
             claimed: claimable,

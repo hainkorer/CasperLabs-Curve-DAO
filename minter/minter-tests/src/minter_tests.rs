@@ -12,7 +12,7 @@ const INIT_TOTAL_SUPPLY: u64 = 0;
 fn deploy_erc20(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
         env,
-        "erc20-token.wasm",
+        "curve-erc20.wasm",
         "erc20",
         sender,
         runtime_args! {

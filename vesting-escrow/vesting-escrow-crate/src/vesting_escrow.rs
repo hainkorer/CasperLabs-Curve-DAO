@@ -272,7 +272,7 @@ pub trait VESTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-        let _ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             token_package_hash,
             None,
             "transfer_from",
