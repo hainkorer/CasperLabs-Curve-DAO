@@ -663,7 +663,7 @@ mod allowance_and_approve_functions_test_cases {
                 "entrypoint" => String::from(ALLOWANCE),
                 "package_hash" => package_hash,
                 "owner" => Key::Account(owner),
-                "spender" => user_1
+                "spender" => Key::Account(user_1)
             },
             block_time,
         );

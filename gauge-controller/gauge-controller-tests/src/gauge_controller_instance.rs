@@ -52,7 +52,7 @@ impl GAUGECONLTROLLERInstance {
     ) -> TestContract {
         TestContract::new(
             env,
-            "erc20-token.wasm",
+            "curve-erc20.wasm",
             "proxy_test2",
             sender,
             runtime_args! {

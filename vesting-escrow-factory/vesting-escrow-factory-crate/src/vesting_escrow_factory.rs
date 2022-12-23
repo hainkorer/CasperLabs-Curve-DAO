@@ -82,13 +82,13 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             };
 
             let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-            let _ret: () = runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 token_package_hash,
                 None,
                 "approve",
                 runtime_args! {"spender" =>  Key::from(package_hash),"amount" => _amount},
             );
-            let _ret: bool = runtime::call_versioned_contract(
+            let _: bool = runtime::call_versioned_contract(
                 package_hash,
                 None,
                 "initialize",
