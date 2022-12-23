@@ -53,7 +53,7 @@ build-contract-liquidity-gauge-reward:
 	cargo build --release -p liquidity-gauge-reward-session-code -p test-session-code -p curve-rewards -p erc20_crv -p curve-erc20 -p voting-escrow -p gauge-controller  -p minter -p liquidity-gauge-reward --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward-wrapper:
-	cargo build --release -p erc20_crv -p erc20 -p test-session-code -p minter -p voting-escrow -p gauge-controller -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p curve-rewards --target wasm32-unknown-unknown
+	cargo build --release -p erc20_crv -p curve-erc20 -p test-session-code -p minter -p voting-escrow -p gauge-controller -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p curve-rewards --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward-wrapper.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-wrapper:
 	cargo build --release -p erc20_crv -p curve-erc20 -p test-session-code -p minter -p liquidity-gauge-v3 -p voting-escrow -p gauge-controller -p liquidity-gauge-wrapper-session-code -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
@@ -208,7 +208,7 @@ copy-wasm-file-liquidity-gauge-reward:
 	cp ${wasm_src_path}/curve-rewards.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${liquidity_gauge_reward_des_wasm}
 copy-wasm-file-liquidity-gauge-reward-wrapper:
-	cp ${wasm_src_path}/erc20-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/curve-erc20.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward-wrapper.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-reward-wrapper-session-code.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/minter-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}

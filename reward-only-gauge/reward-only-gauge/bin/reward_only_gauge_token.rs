@@ -15,10 +15,8 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use reward_only_gauge_crate::REWARDONLYGAUGE;
 use curve_erc20_crate::{self, Address, CURVEERC20};
-
-
+use reward_only_gauge_crate::REWARDONLYGAUGE;
 
 #[derive(Default)]
 struct Token(OnChainContractStorage);
@@ -38,13 +36,7 @@ impl Token {
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-        REWARDONLYGAUGE::init(
-            self,
-            admin,
-            lp_token,
-            contract_hash,
-            package_hash,
-        );
+        REWARDONLYGAUGE::init(self, admin, lp_token, contract_hash, package_hash);
     }
 }
 
@@ -83,8 +75,7 @@ fn future_admin() {
 fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::balance_of(&mut Token::default(), owner))
-            .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::balance_of(&mut Token::default(), owner)).unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -121,12 +112,8 @@ fn allowance() {
     let owner: Address = runtime::get_named_arg("owner");
     let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::allowance(
-            &mut Token::default(),
-            owner,
-            spender,
-        ))
-        .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::allowance(&mut Token::default(), owner, spender))
+            .unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -146,15 +133,11 @@ fn total_supply() {
 
 #[no_mangle]
 fn name() {
-    runtime::ret(
-        CLValue::from_t(CURVEERC20::name(&mut Token::default())).unwrap_or_revert(),
-    );
+    runtime::ret(CLValue::from_t(CURVEERC20::name(&mut Token::default())).unwrap_or_revert());
 }
 #[no_mangle]
 fn symbol() {
-    runtime::ret(
-        CLValue::from_t(CURVEERC20::symbol(&mut Token::default())).unwrap_or_revert(),
-    );
+    runtime::ret(CLValue::from_t(CURVEERC20::symbol(&mut Token::default())).unwrap_or_revert());
 }
 
 /// @notice Get the number of decimals for this token
@@ -190,9 +173,9 @@ fn commit_transfer_ownership() {
 
 #[no_mangle]
 fn transfer() {
-    let recipient: Address= runtime::get_named_arg("recipient");
+    let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    REWARDONLYGAUGE::transfer(&mut Token::default(),recipient, amount).unwrap_or_revert();
+    REWARDONLYGAUGE::transfer(&mut Token::default(), recipient, amount).unwrap_or_revert();
 }
 
 /// @notice Transfer tokens from one address to another.
@@ -204,9 +187,10 @@ fn transfer() {
 #[no_mangle]
 fn transfer_from() {
     let owner: Address = runtime::get_named_arg("owner");
-    let recipient:Address = runtime::get_named_arg("recipient");
+    let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    REWARDONLYGAUGE::transfer_from(&mut Token::default(),owner, recipient, amount).unwrap_or_revert();
+    REWARDONLYGAUGE::transfer_from(&mut Token::default(), owner, recipient, amount)
+        .unwrap_or_revert();
 }
 
 /// @notice Approve the passed address to transfer the specified amount of

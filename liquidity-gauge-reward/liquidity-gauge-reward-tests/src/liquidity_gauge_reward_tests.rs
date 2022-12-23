@@ -124,15 +124,14 @@ fn deploy() -> (
     AccountHash,
     LIQUIDITYGAUGEREWARDInstance,
     TestContract,
-    u64
+    u64,
 ) {
     let blocktime = LIQUIDITYGAUGEREWARDInstance::now();
     let env = TestEnv::new();
     let owner = env.next_user();
     let erc20 = deploy_erc20(&env, owner, blocktime);
     let token = deploy_erc20(&env, owner, blocktime);
-    
-    
+
     let erc20_crv = deploy_erc20_crv(&env, owner, blocktime);
     let voting_escrow = deploy_voting_escrow(
         &env,
@@ -345,7 +344,11 @@ mod deposit_withdraw_kill_me_and_approve_test_cases {
         let ret: U256 = env.query_account_named_key(owner, &[BALANCE_OF.into()]);
         assert_eq!(ret, U256::from(1010000000000_u128), "Invalid result");
         instance.deposit(owner, None, value, blocktime);
-        assert_eq!(instance.balance_of(Address::Account(owner)), U256::from(10000000000_u128), "Invalid result");
+        assert_eq!(
+            instance.balance_of(Address::Account(owner)),
+            U256::from(10000000000_u128),
+            "Invalid result"
+        );
     }
 
     #[test]
@@ -372,9 +375,17 @@ mod deposit_withdraw_kill_me_and_approve_test_cases {
             blocktime,
         );
         instance.deposit(owner, None, value, blocktime);
-        assert_eq!(instance.balance_of(Address::Account(owner)), U256::from(10000000000_u128), "Invalid result");
+        assert_eq!(
+            instance.balance_of(Address::Account(owner)),
+            U256::from(10000000000_u128),
+            "Invalid result"
+        );
         instance.withdraw(owner, claim_rewards, value, blocktime);
-        assert_eq!(instance.balance_of(Address::Account(owner)), U256::from(0_u128), "Invalid result");
+        assert_eq!(
+            instance.balance_of(Address::Account(owner)),
+            U256::from(0_u128),
+            "Invalid result"
+        );
     }
 
     #[test]
@@ -489,7 +500,7 @@ mod panic_test_cases {
         let (env, owner, instance, _, blocktime) = deploy();
         let value: U256 = U256::from(10000000000_u128);
         instance.withdraw(owner, true, value, blocktime);
-         TestContract::new(
+        TestContract::new(
             &env,
             TEST_SESSION_CODE_WASM,
             TEST_SESSION_CODE_NAME,

@@ -139,7 +139,7 @@ impl ERC20 {
     pub fn decimals(&self) -> u8 {
         detail::read_from(DECIMALS_KEY_NAME)
     }
-    
+
     /// Returns the total supply of the token.
     pub fn total_supply(&self) -> U256 {
         self.read_total_supply()

@@ -25,7 +25,7 @@ pub trait CURVEERC20<Storage: ContractStorage>: ContractContext<Storage> {
     fn set_total_supply(&self, total_supply: U256) {
         CasperErc20::default().write_total_supply(total_supply);
     }
-    
+
     fn name(&self) -> String {
         CasperErc20::default().name()
     }

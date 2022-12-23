@@ -1,7 +1,13 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, string::String, vec};
+use alloc::{
+    boxed::Box,
+    collections::BTreeSet,
+    format,
+    string::{String, ToString},
+    vec,
+};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -11,6 +17,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use curve_erc20_crate::{self, Address, CURVEERC20};
 use liquidity_gauge_reward_wrapper_crate::{
     self,
     data::{self},
@@ -24,7 +31,7 @@ impl ContractContext<OnChainContractStorage> for LiquidityGaugeRewardWrapper {
         &self.0
     }
 }
-
+impl CURVEERC20<OnChainContractStorage> for LiquidityGaugeRewardWrapper {}
 impl LIQUIDITYGAUGEREWARDWRAPPER<OnChainContractStorage> for LiquidityGaugeRewardWrapper {}
 impl LiquidityGaugeRewardWrapper {
     fn constructor(
@@ -111,47 +118,73 @@ fn withdraw() {
 }
 #[no_mangle]
 fn allowance() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let spender: Key = runtime::get_named_arg("spender");
-    let ret = LiquidityGaugeRewardWrapper::default().allowance(owner, spender);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    let owner: Address = runtime::get_named_arg("owner");
+    let spender: Address = runtime::get_named_arg("spender");
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::allowance(
+            &mut LiquidityGaugeRewardWrapper::default(),
+            owner,
+            spender,
+        ))
+        .unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn transfer() {
-    let recipient: Key = runtime::get_named_arg("recipient");
+    let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = LiquidityGaugeRewardWrapper::default().transfer(recipient, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    LIQUIDITYGAUGEREWARDWRAPPER::transfer(
+        &mut LiquidityGaugeRewardWrapper::default(),
+        recipient,
+        amount,
+    )
+    .unwrap_or_revert();
 }
 #[no_mangle]
 fn transfer_from() {
-    let owner: Key = runtime::get_named_arg("owner");
-    let recipient: Key = runtime::get_named_arg("recipient");
+    let owner: Address = runtime::get_named_arg("owner");
+    let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret = LiquidityGaugeRewardWrapper::default().transfer_from(owner, recipient, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    LIQUIDITYGAUGEREWARDWRAPPER::transfer_from(
+        &mut LiquidityGaugeRewardWrapper::default(),
+        owner,
+        recipient,
+        amount,
+    )
+    .unwrap_or_revert();
 }
 #[no_mangle]
 fn approve() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    LiquidityGaugeRewardWrapper::default().approve(spender, amount);
+    LIQUIDITYGAUGEREWARDWRAPPER::approve(
+        &mut LiquidityGaugeRewardWrapper::default(),
+        spender,
+        amount,
+    )
+    .unwrap_or_revert();
 }
 #[no_mangle]
 fn increase_allowance() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> =
-        LiquidityGaugeRewardWrapper::default().increase_allowance(spender, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    LIQUIDITYGAUGEREWARDWRAPPER::increase_allowance(
+        &mut LiquidityGaugeRewardWrapper::default(),
+        spender,
+        amount,
+    )
+    .unwrap_or_revert();
 }
 #[no_mangle]
 fn decrease_allowance() {
-    let spender: Key = runtime::get_named_arg("spender");
+    let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    let ret: Result<(), u32> =
-        LiquidityGaugeRewardWrapper::default().decrease_allowance(spender, amount);
-    runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
+    LIQUIDITYGAUGEREWARDWRAPPER::decrease_allowance(
+        &mut LiquidityGaugeRewardWrapper::default(),
+        spender,
+        amount,
+    )
+    .unwrap_or_revert();
 }
 
 #[no_mangle]
@@ -194,25 +227,49 @@ fn gauge() {
 }
 #[no_mangle]
 fn balance_of() {
-    let owner: Key = runtime::get_named_arg("owner");
-    runtime::ret(CLValue::from_t(data::BalanceOf::instance().get(&owner)).unwrap_or_revert());
+    let owner: Address = runtime::get_named_arg("owner");
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::balance_of(
+            &mut LiquidityGaugeRewardWrapper::default(),
+            owner,
+        ))
+        .unwrap_or_revert(),
+    );
 }
 
 #[no_mangle]
 fn total_supply() {
-    runtime::ret(CLValue::from_t(data::get_total_supply()).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::total_supply(
+            &mut LiquidityGaugeRewardWrapper::default(),
+        ))
+        .unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn name() {
-    runtime::ret(CLValue::from_t(data::name()).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::name(&mut LiquidityGaugeRewardWrapper::default()))
+            .unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn symbol() {
-    runtime::ret(CLValue::from_t(data::symbol()).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::symbol(
+            &mut LiquidityGaugeRewardWrapper::default(),
+        ))
+        .unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn decimals() {
-    runtime::ret(CLValue::from_t(data::decimals()).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::decimals(
+            &mut LiquidityGaugeRewardWrapper::default(),
+        ))
+        .unwrap_or_revert(),
+    );
 }
 #[no_mangle]
 fn approved_to_deposit() {
@@ -337,73 +394,61 @@ fn get_entry_points() -> EntryPoints {
     entry_points.add_entry_point(EntryPoint::new(
         "allowance",
         vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("owner", Address::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
         ],
-        U256::cl_type(),
+        CLType::U256,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "transfer",
         vec![
-            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("recipient", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "transfer_from",
         vec![
-            Parameter::new("owner", Key::cl_type()),
-            Parameter::new("recipient", Key::cl_type()),
+            Parameter::new("owner", Address::cl_type()),
+            Parameter::new("recipient", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "approve",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        <()>::cl_type(),
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "increase_allowance",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "decrease_allowance",
         vec![
-            Parameter::new("spender", Key::cl_type()),
+            Parameter::new("spender", Address::cl_type()),
             Parameter::new("amount", U256::cl_type()),
         ],
-        CLType::Result {
-            ok: Box::new(CLType::Unit),
-            err: Box::new(CLType::U32),
-        },
+        CLType::Unit,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -466,8 +511,8 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("owner", Key::cl_type())],
-        U256::cl_type(),
+        vec![Parameter::new("owner", Address::cl_type())],
+        CLType::U256,
         EntryPointAccess::Public,
         EntryPointType::Contract,
     ));
@@ -571,8 +616,13 @@ fn call() {
         // Build new package.
         let (package_hash, access_token) = storage::create_contract_package_at_hash();
         // add a first version to this package
-        let (contract_hash, _): (ContractHash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+        let (contract_hash, _): (ContractHash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            LiquidityGaugeRewardWrapper::default()
+                .named_keys("".to_string(), "".to_string(), 9, 0.into())
+                .unwrap_or_revert(),
+        );
         //Variables
         let name: String = runtime::get_named_arg("name");
         let symbol: String = runtime::get_named_arg("symbol");

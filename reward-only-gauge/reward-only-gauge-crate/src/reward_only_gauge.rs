@@ -1,14 +1,16 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, ClaimData, ClaimDataStruct, RewardBalances, RewardData,
-    RewardIntegral, RewardIntegralFor, RewardTokens, RewardsReceiver, CLAIM_FREQUENCY, MAX_REWARDS,
+    self, ClaimData, ClaimDataStruct, RewardBalances, RewardData, RewardIntegral,
+    RewardIntegralFor, RewardTokens, RewardsReceiver, CLAIM_FREQUENCY, MAX_REWARDS,
 };
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 
-use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256, ContractHash};
+use casper_types::{
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
+};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
 use curve_casper_erc20_crate::Error as Erc20Error;
@@ -68,7 +70,9 @@ impl REWARDONLYGAUGEEvent {
     }
 }
 
-pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + CURVEERC20<Storage>{
+pub trait REWARDONLYGAUGE<Storage: ContractStorage>:
+    ContractContext<Storage> + CURVEERC20<Storage>
+{
     /// @notice Contract constructor
     /// @param _admin Admin who can kill the gauge
     /// @param _lp_token Liquidity Pool contract address
@@ -80,7 +84,6 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-
         let _lp_token_hash_add_array = match _lp_token {
             Key::Hash(package) => package,
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
@@ -96,9 +99,9 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
         let post_name: &str = " RewardGauge Deposit";
         name.push_str(symbol.as_str());
         name.push_str(post_name);
-       data::set_hash(contract_hash);
+        data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-       CURVEERC20::init(self, data::get_hash(), data::get_package_hash());
+        CURVEERC20::init(self, data::get_hash(), data::get_package_hash());
         CURVEERC20::set_name(self, name);
         CURVEERC20::set_symbol(self, symbol + "-gauge");
         data::set_admin(_admin);
@@ -110,9 +113,6 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
         RewardIntegral::init();
         RewardIntegralFor::init();
         ClaimData::init();
-       
-    
-        
     }
 
     fn reward_balances(&mut self, owner: Key) -> U256 {
@@ -128,7 +128,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
         RewardTokens::instance().get(&index)
     }
 
-    fn transfer(&mut self, _to: Address, _value: U256) -> Result<(),Erc20Error > {
+    fn transfer(&mut self, _to: Address, _value: U256) -> Result<(), Erc20Error> {
         let lock = data::get_lock();
         if lock != 0 {
             //Reward Only Gauge: Locked
@@ -139,7 +139,6 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
         data::set_lock(0);
         Ok(())
     }
-    
 
     fn approve(&self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
         CURVEERC20::approve(self, spender, amount)
@@ -155,10 +154,10 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
     fn increase_allowance(&mut self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
         let res = CURVEERC20::increase_allowance(self, spender, amount);
         self.emit(&REWARDONLYGAUGEEvent::Approval {
-                    owner: self.get_caller(),
-                    spender: Key::from(spender),
-                    value: CURVEERC20::allowance(self, Address::from(self.get_caller()), spender),
-                });
+            owner: self.get_caller(),
+            spender: Key::from(spender),
+            value: CURVEERC20::allowance(self, Address::from(self.get_caller()), spender),
+        });
         res
     }
     fn decrease_allowance(&mut self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
@@ -170,7 +169,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
         });
         res
     }
-    
+
     fn transfer_from(&mut self, _from: Address, _to: Address, _value: U256) -> Result<(), u32> {
         let lock = data::get_lock();
         if lock != 0 {
@@ -178,7 +177,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
             runtime::revert(Error::RewardOnlyGaugeLocked1);
         }
         data::set_lock(1);
-       let _allowance: U256 = CURVEERC20::allowance(self, _from, Address::from(self.get_caller()));
+        let _allowance: U256 = CURVEERC20::allowance(self, _from, Address::from(self.get_caller()));
         if _allowance != U256::MAX {
             let new_allowance: U256 = _allowance
                 .checked_sub(_value)
@@ -207,7 +206,6 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
                 .checked_add(_value)
                 .unwrap_or_revert_with(Error::RewardOnlyGaugeUnderFlow4);
             CURVEERC20::set_balance(self, Address::from(_to), to_new_balance);
-            
         }
         self.emit(&REWARDONLYGAUGEEvent::Transfer {
             from: _from,
@@ -330,7 +328,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-        let _result:() = runtime::call_versioned_contract(
+        let _result: () = runtime::call_versioned_contract(
             token_package_hash,
             None,
             "transfer",
@@ -372,19 +370,19 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
         let _reward_contract: Key = reward_data.address;
         let total_supply = self.total_supply();
         self._checkpoint_rewards(addr, total_supply, claim_rewards, account_zero_address());
-        CURVEERC20::mint(self,Address::from(self.get_caller()),_value).unwrap_or_revert();
+        CURVEERC20::mint(self, Address::from(self.get_caller()), _value).unwrap_or_revert();
         let lp_token = self.lp_token();
         let token_hash_add_array = match lp_token {
             Key::Hash(package) => package,
             _ => runtime::revert(ApiError::UnexpectedKeyVariant),
         };
         let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-        let _result: ()= runtime::call_versioned_contract(
+        let _result: () = runtime::call_versioned_contract(
             token_package_hash,
             None,
             "transfer_from",
             runtime_args! {"owner" => Address::from(self.get_caller()),"recipient" =>  Address::from(Key::from(data::get_package_hash())),"amount" => _value},
-        );  
+        );
         self.emit(&REWARDONLYGAUGEEvent::Deposit {
             provider: self.get_caller(),
             value: _value,
@@ -525,7 +523,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
                 receiver = _user;
             }
         }
-        let user_balance = CURVEERC20::balance_of(self,Address::from(_user));
+        let user_balance = CURVEERC20::balance_of(self, Address::from(_user));
         for i in 0..(MAX_REWARDS.as_usize()) {
             let token = self.reward_tokens(i.into());
             if token == zero_address() || token == account_zero_address() {
@@ -590,7 +588,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
                         _ => runtime::revert(ApiError::UnexpectedKeyVariant),
                     };
                     let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-                    let _res:() = runtime::call_versioned_contract(
+                    let _res: () = runtime::call_versioned_contract(
                         token_package_hash,
                         None,
                         "transfer",
@@ -613,9 +611,7 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>: ContractContext<Storage> + 
             }
         }
     }
-    fn named_keys(
-        &self,
-    ) -> Result<BTreeMap<String, Key>, Erc20Error> {
+    fn named_keys(&self) -> Result<BTreeMap<String, Key>, Erc20Error> {
         CURVEERC20::named_keys(self, "".to_string(), "".to_string(), 9, 0.into())
     }
     fn emit(&mut self, reward_only_gauge_event: &REWARDONLYGAUGEEvent) {
