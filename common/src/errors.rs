@@ -2,8 +2,10 @@ use casper_types::ApiError;
 
 #[repr(u16)]
 pub enum Error {
-    /// 65,546 for (ERC20 CRV Invalid Minter)
-    Erc20CurveZeroAddress = 10000,
+    /// 65,546 for (ERC20 Curve Zero Address 1)
+    Erc20CurveZeroAddress1 = 9999,
+    /// 65,546 for (ERC20 Curve Zero Address 2)
+    Erc20CurveZeroAddress2 = 10000,
     /// ERC20 CRV ERRORS
     /// 65,546 for (ERC20 CRV Invalid Minter)
     Erc20CRVInvalidMinter = 10001,

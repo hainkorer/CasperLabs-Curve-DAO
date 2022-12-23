@@ -75,7 +75,7 @@ pub trait CURVEERC20<Storage: ContractStorage>: ContractContext<Storage> {
         if recipient == Address::from(zero_address())
             || recipient == Address::from(account_zero_address())
         {
-            runtime::revert(Errors::Erc20CurveZeroAddress);
+            runtime::revert(Errors::Erc20CurveZeroAddress1);
         }
         let ret = CasperErc20::default().transfer(recipient, amount);
         if ret.is_ok() {
@@ -104,7 +104,7 @@ pub trait CURVEERC20<Storage: ContractStorage>: ContractContext<Storage> {
         if recipient == Address::from(zero_address())
             || recipient == Address::from(account_zero_address())
         {
-            runtime::revert(Errors::Erc20CurveZeroAddress);
+            runtime::revert(Errors::Erc20CurveZeroAddress2);
         }
         let ret = CasperErc20::default().transfer_from(owner, recipient, amount);
         if ret.is_ok() {
