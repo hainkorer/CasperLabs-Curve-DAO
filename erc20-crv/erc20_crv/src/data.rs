@@ -8,7 +8,7 @@ use casper_types::{
 
 use core::convert::TryInto;
 
-use casperlabs_contract_utils::{get_key, set_key};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 use common::{keys::*, utils::*};
 pub const YEAR: U256 = U256([31536000000, 0, 0, 0]);
 pub const INITIAL_SUPPLY: U256 = U256([1_303_030_303, 0, 0, 0]);
@@ -18,6 +18,30 @@ pub const RATE_REDUCTION_COEFFICIENT: U256 = U256([1189207115, 0, 0, 0]); //2 **
 
 pub const RATE_DENOMINATOR: U256 = U256([1000000000, 0, 0, 0]); //10^9
 pub const INFLATION_DELAY: U256 = U256([86400000, 0, 0, 0]);
+
+pub struct AdminWhitelist {
+    dict: Dict,
+}
+
+impl AdminWhitelist {
+    pub fn instance() -> AdminWhitelist {
+        AdminWhitelist {
+            dict: Dict::instance(ADMIN_WHITELIST),
+        }
+    }
+
+    pub fn init() {
+        Dict::init(ADMIN_WHITELIST)
+    }
+
+    pub fn get(&self, key: &Key) -> bool {
+        self.dict.get_by_key(key).unwrap_or_default()
+    }
+
+    pub fn set(&self, key: &Key, value: bool) {
+        self.dict.set_by_key(key, value);
+    }
+}
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
     match runtime::get_key(RESULT) {
@@ -62,12 +86,6 @@ pub fn get_minter() -> Key {
 }
 pub fn set_minter(minter: Key) {
     set_key(MINTER, minter);
-}
-pub fn get_admin() -> Key {
-    get_key(ADMIN).unwrap_or_else(zero_address)
-}
-pub fn set_admin(admin: Key) {
-    set_key(ADMIN, admin);
 }
 pub fn get_mining_epoch() -> U128 {
     get_key(MINING_EPOCH).unwrap_or_default()

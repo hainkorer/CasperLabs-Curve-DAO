@@ -83,6 +83,12 @@ pub enum Error {
     Erc20CRVOverFlow18 = 10037,
     /// 65,546 for (ERC20 CRV Over flow19)
     Erc20CRVOverFlow19 = 10038,
+    /// 65,546 for (Erc20 CRV Already Added)
+    Erc20CRVAlreadyAdded = 10039,
+    /// 65,546 for (Erc20 CRV Already Removed)
+    Erc20CRVAlreadyRemoved = 10040,
+    /// 65,546 for (ERC20 CRV Zero Address 1)
+    Erc20CRVZeroAddress1 = 10041,
     /// 65,546 for (Liquidity Gauge Reward Unauthorized)
     LiquidityGaugeRewardUnauthorized = 10101,
     /// 65,546 for (Liquidity Gauge Reward Kick Not Allowed1)

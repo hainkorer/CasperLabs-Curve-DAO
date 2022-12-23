@@ -1,3 +1,4 @@
+use alloc::string::{String, ToString};
 use casper_types::{Key, U128};
 use core::convert::TryInto;
 
@@ -11,6 +12,14 @@ pub fn account_zero_address() -> Key {
         "account-hash-0000000000000000000000000000000000000000000000000000000000000000",
     )
     .unwrap()
+}
+
+pub fn key_to_str(key: &Key) -> String {
+    match key {
+        Key::Account(account) => account.to_string(),
+        Key::Hash(package) => hex::encode(package),
+        _ => "".into(),
+    }
 }
 
 // ---- TUPLE USAGE FOR int128 ----

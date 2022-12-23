@@ -1,4 +1,4 @@
-use crate::data::{self};
+use crate::data::{self, AdminWhitelist};
 
 use alloc::{
     collections::BTreeMap,
@@ -33,6 +33,9 @@ pub enum Erc20CrvEvent {
     SetAdmin {
         admin: Key,
     },
+    RemoveAdmin {
+        admin: Key,
+    },
 }
 
 impl Erc20CrvEvent {
@@ -50,6 +53,7 @@ impl Erc20CrvEvent {
             } => "update_mining_parameters",
             Erc20CrvEvent::SetMinter { minter: _ } => "set_minter",
             Erc20CrvEvent::SetAdmin { admin: _ } => "set_admin",
+            Erc20CrvEvent::RemoveAdmin { admin: _ } => "remove_admin",
         }
         .to_string()
     }
@@ -63,10 +67,10 @@ pub trait ERC20CRV<Storage: ContractStorage>:
             data::INITIAL_SUPPLY * (base.pow(u32::from(CURVEERC20::decimals(self)))),
         );
         data::set_is_updated(false);
-        data::set_admin(self.get_caller());
         data::set_hash(contract_hash);
         data::set_package_hash(package_hash);
-
+        AdminWhitelist::init();
+        AdminWhitelist::instance().set(&self.get_caller(), true);
         CURVEERC20::init(self, data::get_hash(), data::get_package_hash());
         CURVEERC20::mint(
             self,
@@ -295,8 +299,11 @@ pub trait ERC20CRV<Storage: ContractStorage>:
     ///@dev Only callable once, when minter has not yet been set
     ///@param minter Address of the minter
     fn set_minter(&self, minter: Key) {
-        if self.get_caller() != data::get_admin() {
+        if !AdminWhitelist::instance().get(&self.get_caller()) {
             runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
+        }
+        if minter == zero_address() || minter == account_zero_address() {
+            runtime::revert(ApiError::from(Error::Erc20CRVZeroAddress1));
         }
         data::set_minter(minter);
         self.erc20_crv_emit(&Erc20CrvEvent::SetMinter { minter });
@@ -305,11 +312,27 @@ pub trait ERC20CRV<Storage: ContractStorage>:
     ///@dev After all is set up, admin only can change the token name
     ///@param _admin New admin address
     fn set_admin(&self, admin: Key) {
-        if self.get_caller() != data::get_admin() {
+        if !AdminWhitelist::instance().get(&self.get_caller()) {
             runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly));
         }
-        data::set_admin(admin);
+        if AdminWhitelist::instance().get(&admin) {
+            runtime::revert(ApiError::from(Error::Erc20CRVAlreadyAdded));
+        }
+        AdminWhitelist::instance().set(&admin, true);
         self.erc20_crv_emit(&Erc20CrvEvent::SetAdmin { admin });
+    }
+    ///@notice Remove an admin.
+    ///@dev After all is set up, admin only can change the token name
+    ///@param _admin Removal admin address
+    fn remove_admin(&self, admin: Key) {
+        if !AdminWhitelist::instance().get(&self.get_caller()) {
+            runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly));
+        }
+        if !AdminWhitelist::instance().get(&admin) {
+            runtime::revert(ApiError::from(Error::Erc20CRVAlreadyRemoved));
+        }
+        AdminWhitelist::instance().set(&admin, false);
+        self.erc20_crv_emit(&Erc20CrvEvent::RemoveAdmin { admin });
     }
     ///@notice Mint `amount` tokens and assign them to `to`
     ///@dev Emits a Transfer event originating from 0x00
@@ -406,6 +429,13 @@ pub trait ERC20CRV<Storage: ContractStorage>:
                 events.push(event);
             }
             Erc20CrvEvent::SetAdmin { admin } => {
+                let mut event = BTreeMap::new();
+                event.insert("contract_package_hash", package.to_string());
+                event.insert("event_type", erc20_crv_event.type_name());
+                event.insert("admin", admin.to_string());
+                events.push(event);
+            }
+            Erc20CrvEvent::RemoveAdmin { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", erc20_crv_event.type_name());

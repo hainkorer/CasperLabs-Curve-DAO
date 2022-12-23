@@ -53,6 +53,11 @@ fn set_admin() {
     Erc20Crv::default().set_admin(admin);
 }
 #[no_mangle]
+fn remove_admin() {
+    let admin: Key = runtime::get_named_arg("admin");
+    Erc20Crv::default().remove_admin(admin);
+}
+#[no_mangle]
 fn start_epoch_time_write() {
     let ret = Erc20Crv::default().start_epoch_time_write();
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
@@ -170,11 +175,6 @@ fn minter() {
     runtime::ret(CLValue::from_t(data::get_minter()).unwrap_or_revert());
 }
 #[no_mangle]
-fn admin() {
-    runtime::ret(CLValue::from_t(data::get_admin()).unwrap_or_revert());
-}
-
-#[no_mangle]
 fn rate() {
     runtime::ret(CLValue::from_t(data::get_rate()).unwrap_or_revert());
 }
@@ -210,6 +210,13 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "set_admin",
+        vec![Parameter::new("admin", Key::cl_type())],
+        <()>::cl_type(),
+        EntryPointAccess::Public,
+        EntryPointType::Contract,
+    ));
+    entry_points.add_entry_point(EntryPoint::new(
+        "remove_admin",
         vec![Parameter::new("admin", Key::cl_type())],
         <()>::cl_type(),
         EntryPointAccess::Public,
@@ -367,13 +374,6 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "minter",
-        vec![],
-        Address::cl_type(),
-        EntryPointAccess::Public,
-        EntryPointType::Contract,
-    ));
-    entry_points.add_entry_point(EntryPoint::new(
-        "admin",
         vec![],
         Address::cl_type(),
         EntryPointAccess::Public,

@@ -1,11 +1,13 @@
 use crate::erc20_crv_instance::ERC20CRVInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
-use common::keys::*;
+use common::{keys::*, utils::key_to_str};
 use curve_erc20_crate::Address;
 use erc20_crv::data::*;
+
 pub const TEN_E_NINE: u128 = 1000000000;
 const MILLI_SECONDS_IN_DAY: u64 = 86_400_000;
+
 fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance, u64) {
     let env = TestEnv::new();
     let owner = env.next_user();
@@ -26,7 +28,13 @@ fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance, u64) {
 fn test_deploy() {
     let (env, owner, contract, time_now) = deploy();
     assert_eq!(contract.get_init_supply(), 1303030303000000000_i64.into());
-    assert_eq!(contract.get_admin(), Key::Account(owner));
+    assert_eq!(
+        contract
+            .contract()
+            .query_dictionary::<bool>("admin_whitelist", key_to_str(&Key::Account(owner)))
+            .unwrap(),
+        true
+    );
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -78,11 +86,25 @@ fn burn() {
     assert_eq!(ret, 0.into());
 }
 #[test]
-fn set_admin() {
+fn set_and_remove_admin() {
     let (env, owner, contract, _) = deploy();
     let admin: Key = Key::Account(env.next_user());
     contract.set_admin(owner, admin);
-    assert_eq!(contract.get_admin(), admin);
+    assert_eq!(
+        contract
+            .contract()
+            .query_dictionary::<bool>("admin_whitelist", key_to_str(&admin))
+            .unwrap(),
+        true
+    );
+    contract.remove_admin(owner, admin);
+    assert_eq!(
+        contract
+            .contract()
+            .query_dictionary::<bool>("admin_whitelist", key_to_str(&admin))
+            .unwrap(),
+        false
+    );
 }
 #[test]
 fn test_set_minter() {
