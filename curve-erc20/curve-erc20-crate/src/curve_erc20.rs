@@ -1,10 +1,15 @@
 use crate::data;
 use crate::event::*;
 use alloc::string::String;
+use casper_contract::contract_api::runtime;
 use casper_types::ContractHash;
 use casper_types::Key;
 use casper_types::{ContractPackageHash, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
+use common::{
+    errors::Error as Errors,
+    utils::{account_zero_address, zero_address},
+};
 use curve_casper_erc20_crate::{Address, Error, ERC20 as CasperErc20};
 use std::collections::BTreeMap;
 
@@ -67,6 +72,11 @@ pub trait CURVEERC20<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn transfer(&self, recipient: Address, amount: U256) -> Result<(), Error> {
+        if recipient == Address::from(zero_address())
+            || recipient == Address::from(account_zero_address())
+        {
+            runtime::revert(Errors::Erc20CurveZeroAddress1);
+        }
         let ret = CasperErc20::default().transfer(recipient, amount);
         if ret.is_ok() {
             emit(&ERC20Event::Transfer {
@@ -91,6 +101,11 @@ pub trait CURVEERC20<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn transfer_from(&self, owner: Address, recipient: Address, amount: U256) -> Result<(), Error> {
+        if recipient == Address::from(zero_address())
+            || recipient == Address::from(account_zero_address())
+        {
+            runtime::revert(Errors::Erc20CurveZeroAddress2);
+        }
         let ret = CasperErc20::default().transfer_from(owner, recipient, amount);
         if ret.is_ok() {
             emit(&ERC20Event::Transfer {
