@@ -401,10 +401,6 @@ fn call() {
     // Contract name must be same for all new versions of the contracts
     let contract_name: alloc::string::String = runtime::get_named_arg("contract_name");
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
-        // Build new package with initial a first version of the contract.
-        let (package_hash, _access_token) = storage::create_contract_package_at_hash();
-        let (_contract_hash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
         let name: String = runtime::get_named_arg("name");
         let symbol: String = runtime::get_named_arg("symbol");
         let decimals: u8 = runtime::get_named_arg("decimals");
