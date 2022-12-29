@@ -182,7 +182,7 @@ fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
     runtime::ret(
         CLValue::from_t(CURVEERC20::balance_of(
-            &mut LiquidityGaugeReward::default(),
+            &LiquidityGaugeReward::default(),
             owner,
         ))
         .unwrap_or_revert(),
@@ -192,10 +192,8 @@ fn balance_of() {
 #[no_mangle]
 fn total_supply() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::total_supply(
-            &mut LiquidityGaugeReward::default(),
-        ))
-        .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::total_supply(&LiquidityGaugeReward::default()))
+            .unwrap_or_revert(),
     );
 }
 

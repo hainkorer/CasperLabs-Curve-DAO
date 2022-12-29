@@ -366,7 +366,7 @@ fn future_epoch_time() {
 #[no_mangle]
 fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
-    let ret: U256 = CURVEERC20::balance_of(&mut LiquidityGaugeV3::default(), owner);
+    let ret: U256 = CURVEERC20::balance_of(&LiquidityGaugeV3::default(), owner);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
@@ -380,7 +380,7 @@ fn allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
         CLValue::from_t(CURVEERC20::allowance(
-            &mut LiquidityGaugeV3::default(),
+            &LiquidityGaugeV3::default(),
             owner,
             spender,
         ))
@@ -390,13 +390,13 @@ fn allowance() {
 #[no_mangle]
 fn name() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::name(&mut LiquidityGaugeV3::default())).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::name(&LiquidityGaugeV3::default())).unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn symbol() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::symbol(&mut LiquidityGaugeV3::default())).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::symbol(&LiquidityGaugeV3::default())).unwrap_or_revert(),
     );
 }
 #[no_mangle]

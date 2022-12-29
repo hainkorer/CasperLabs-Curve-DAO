@@ -1,4 +1,4 @@
-use alloc::{vec::Vec};
+use alloc::vec::Vec;
 
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};

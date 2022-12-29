@@ -75,7 +75,7 @@ fn future_admin() {
 fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::balance_of(&mut Token::default(), owner)).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::balance_of(&Token::default(), owner)).unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -112,7 +112,7 @@ fn allowance() {
     let owner: Address = runtime::get_named_arg("owner");
     let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::allowance(&mut Token::default(), owner, spender))
+        CLValue::from_t(CURVEERC20::allowance(&Token::default(), owner, spender))
             .unwrap_or_revert(),
     );
 }
@@ -126,18 +126,16 @@ fn reward_integral_for() {
 
 #[no_mangle]
 fn total_supply() {
-    runtime::ret(
-        CLValue::from_t(CURVEERC20::total_supply(&mut Token::default())).unwrap_or_revert(),
-    );
+    runtime::ret(CLValue::from_t(CURVEERC20::total_supply(&Token::default())).unwrap_or_revert());
 }
 
 #[no_mangle]
 fn name() {
-    runtime::ret(CLValue::from_t(CURVEERC20::name(&mut Token::default())).unwrap_or_revert());
+    runtime::ret(CLValue::from_t(CURVEERC20::name(&Token::default())).unwrap_or_revert());
 }
 #[no_mangle]
 fn symbol() {
-    runtime::ret(CLValue::from_t(CURVEERC20::symbol(&mut Token::default())).unwrap_or_revert());
+    runtime::ret(CLValue::from_t(CURVEERC20::symbol(&Token::default())).unwrap_or_revert());
 }
 
 /// @notice Get the number of decimals for this token

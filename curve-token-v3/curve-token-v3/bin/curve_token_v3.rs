@@ -103,22 +103,17 @@ fn set_name() {
 //[no_mangle] of public variables
 #[no_mangle]
 fn name() {
-    runtime::ret(
-        CLValue::from_t(CURVEERC20::name(&mut CurveTokenV3::default())).unwrap_or_revert(),
-    );
+    runtime::ret(CLValue::from_t(CURVEERC20::name(&CurveTokenV3::default())).unwrap_or_revert());
 }
 #[no_mangle]
 fn symbol() {
-    runtime::ret(
-        CLValue::from_t(CURVEERC20::symbol(&mut CurveTokenV3::default())).unwrap_or_revert(),
-    );
+    runtime::ret(CLValue::from_t(CURVEERC20::symbol(&CurveTokenV3::default())).unwrap_or_revert());
 }
 #[no_mangle]
 fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::balance_of(&mut CurveTokenV3::default(), owner))
-            .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::balance_of(&CurveTokenV3::default(), owner)).unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -127,7 +122,7 @@ fn allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
         CLValue::from_t(CURVEERC20::allowance(
-            &mut CurveTokenV3::default(),
+            &CurveTokenV3::default(),
             owner,
             spender,
         ))
@@ -137,7 +132,7 @@ fn allowance() {
 #[no_mangle]
 fn total_supply() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::total_supply(&mut CurveTokenV3::default())).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::total_supply(&CurveTokenV3::default())).unwrap_or_revert(),
     );
 }
 #[no_mangle]

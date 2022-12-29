@@ -808,7 +808,7 @@ mod deposit_and_withdraw_test_cases {
             owner,
             "approve",
             runtime_args! {
-                        "spender"=>Address::Contract(reward_only_gauge.contract_package_hash().into()),
+                        "spender"=>Address::Contract(reward_only_gauge.contract_package_hash()),
                     "amount"=>deposit
             },
             time_now,
@@ -858,7 +858,7 @@ mod deposit_and_withdraw_test_cases {
             owner,
             "approve",
             runtime_args! {
-                        "spender"=>Address::Contract(reward_only_gauge.contract_package_hash().into()),
+                        "spender"=>Address::Contract(reward_only_gauge.contract_package_hash()),
                     "amount"=>deposit
             },
             time_now,
@@ -920,7 +920,7 @@ mod transfer_and_transfer_from_test_cases {
             owner,
             "approve",
             runtime_args! {
-                        "spender"=>Address::Contract(reward_only_gauge.contract_package_hash().into()),
+                        "spender"=>Address::Contract(reward_only_gauge.contract_package_hash()),
                     "amount"=>deposit
             },
             time_now,
@@ -986,7 +986,7 @@ mod transfer_and_transfer_from_test_cases {
             owner,
             "approve",
             runtime_args! {
-                        "spender"=>Address::Contract(reward_only_gauge.contract_package_hash().into()),
+                        "spender"=>Address::Contract(reward_only_gauge.contract_package_hash()),
                     "amount"=>deposit
             },
             time_now,

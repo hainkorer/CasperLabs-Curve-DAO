@@ -827,18 +827,13 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
         }
         data::set_lock(true);
         //let allowances = Allowance::instance();
-        let _allowance: U256 =
-            self.allowance(Address::from(owner), Address::from(self.get_caller()));
+        let _allowance: U256 = self.allowance(owner, Address::from(self.get_caller()));
         if _allowance != U256::MAX {
             let _new_allowance: U256 = _allowance
                 .checked_sub(amount)
                 .ok_or(Error::LiquidityGaugeUnderFlow2)
                 .unwrap_or_revert();
-            self.set_allowance(
-                Address::from(owner),
-                Address::from(self.get_caller()),
-                _new_allowance,
-            );
+            self.set_allowance(owner, Address::from(self.get_caller()), _new_allowance);
         }
         self._transfer(Key::from(owner), Key::from(recipient), amount);
         data::set_lock(false);
