@@ -28,13 +28,10 @@ fn deploy() -> (TestEnv, AccountHash, ERC20CRVInstance, u64) {
 fn test_deploy() {
     let (env, owner, contract, time_now) = deploy();
     assert_eq!(contract.get_init_supply(), 1303030303000000000_i64.into());
-    assert_eq!(
-        contract
-            .contract()
-            .query_dictionary::<bool>("admin_whitelist", key_to_str(&Key::Account(owner)))
-            .unwrap(),
-        true
-    );
+    assert!(contract
+        .contract()
+        .query_dictionary::<bool>("admin_whitelist", key_to_str(&Key::Account(owner)))
+        .unwrap());
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -90,21 +87,15 @@ fn set_and_remove_admin() {
     let (env, owner, contract, _) = deploy();
     let admin: Key = Key::Account(env.next_user());
     contract.set_admin(owner, admin);
-    assert_eq!(
-        contract
-            .contract()
-            .query_dictionary::<bool>("admin_whitelist", key_to_str(&admin))
-            .unwrap(),
-        true
-    );
+    assert!(contract
+        .contract()
+        .query_dictionary::<bool>("admin_whitelist", key_to_str(&admin))
+        .unwrap());
     contract.remove_admin(owner, admin);
-    assert_eq!(
-        contract
-            .contract()
-            .query_dictionary::<bool>("admin_whitelist", key_to_str(&admin))
-            .unwrap(),
-        false
-    );
+    assert!(!contract
+        .contract()
+        .query_dictionary::<bool>("admin_whitelist", key_to_str(&admin))
+        .unwrap());
 }
 #[test]
 fn test_set_minter() {
@@ -197,7 +188,7 @@ fn test_mintable_in_timeframe() {
     let (env, owner, contract, time_now) = deploy();
     contract.update_mining_parameters(owner, time_now + MILLI_SECONDS_IN_DAY);
     let start: U256 = U256::from(time_now);
-    let end: U256 = U256::from(start + MILLI_SECONDS_IN_DAY);
+    let end: U256 = start + MILLI_SECONDS_IN_DAY;
     TestContract::new(
         &env,
         TEST_SESSION_CODE_WASM,
@@ -259,7 +250,7 @@ fn test_increase_allowance() {
             "entrypoint" => String::from(ALLOWANCE_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Address::from(owner),
-            "spender"=>Address::from(spender)
+            "spender"=>spender
         },
         0,
     );
@@ -281,7 +272,7 @@ fn test_decrease_allowance() {
             "entrypoint" => String::from(ALLOWANCE_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Address::from(owner),
-            "spender"=>Address::from(spender)
+            "spender"=>spender
         },
         0,
     );
@@ -298,7 +289,7 @@ fn test_decrease_allowance() {
             "entrypoint" => String::from(ALLOWANCE_CRV),
             "package_hash" => Key::Hash(contract.package_hash()),
             "owner"=>Address::from(owner),
-            "spender"=>Address::from(spender)
+            "spender"=>spender
         },
         0,
     );

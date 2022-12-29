@@ -359,7 +359,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
         if total_supply > self.available_supply() {
             runtime::revert(ApiError::from(Error::Erc20CRVExceedsAllowableMint));
         }
-        CURVEERC20::mint(self, Address::from(to), amount).unwrap_or_revert();
+        CURVEERC20::mint(self, to, amount).unwrap_or_revert();
 
         self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
             from: Address::from(zero_address()),
@@ -373,8 +373,8 @@ pub trait ERC20CRV<Storage: ContractStorage>:
     ///@param name New token name
     ///@param symbol New token symbol
     fn set_name(&self, name: String, symbol: String) {
-        if data::get_admin() != self.get_caller() {
-            runtime::revert(ApiError::from(Error::Erc20CRVOnlyAdminAllowed1));
+        if !AdminWhitelist::instance().get(&self.get_caller()) {
+            runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
         }
         CURVEERC20::set_name(self, name);
         CURVEERC20::set_symbol(self, symbol);
@@ -387,7 +387,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
         self.erc20_crv_emit(&Erc20CrvEvent::Transfer {
             from: Address::from(self.get_caller()),
             to: Address::from(zero_address()),
-            value: value,
+            value,
         });
         Ok(())
     }

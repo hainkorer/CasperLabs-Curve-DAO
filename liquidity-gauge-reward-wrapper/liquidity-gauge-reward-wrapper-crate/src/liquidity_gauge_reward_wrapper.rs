@@ -519,11 +519,10 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>:
         recipient: Address,
         amount: U256,
     ) -> Result<(), Erc20Error> {
-        let allowance: U256 =
-            CURVEERC20::allowance(self, Address::from(owner), Address::from(self.get_caller()));
+        let allowance: U256 = CURVEERC20::allowance(self, owner, Address::from(self.get_caller()));
         if allowance != U256::MAX {
             self.set_allowance(
-                Address::from(owner),
+                owner,
                 Address::from(self.get_caller()),
                 allowance
                     .checked_sub(amount)

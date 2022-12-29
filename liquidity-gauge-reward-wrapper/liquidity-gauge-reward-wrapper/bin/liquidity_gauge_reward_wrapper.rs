@@ -122,7 +122,7 @@ fn allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
         CLValue::from_t(CURVEERC20::allowance(
-            &mut LiquidityGaugeRewardWrapper::default(),
+            &LiquidityGaugeRewardWrapper::default(),
             owner,
             spender,
         ))
@@ -157,19 +157,15 @@ fn transfer_from() {
 fn approve() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    LIQUIDITYGAUGEREWARDWRAPPER::approve(
-        &mut LiquidityGaugeRewardWrapper::default(),
-        spender,
-        amount,
-    )
-    .unwrap_or_revert();
+    LIQUIDITYGAUGEREWARDWRAPPER::approve(&LiquidityGaugeRewardWrapper::default(), spender, amount)
+        .unwrap_or_revert();
 }
 #[no_mangle]
 fn increase_allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
     LIQUIDITYGAUGEREWARDWRAPPER::increase_allowance(
-        &mut LiquidityGaugeRewardWrapper::default(),
+        &LiquidityGaugeRewardWrapper::default(),
         spender,
         amount,
     )
@@ -180,7 +176,7 @@ fn decrease_allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
     LIQUIDITYGAUGEREWARDWRAPPER::decrease_allowance(
-        &mut LiquidityGaugeRewardWrapper::default(),
+        &LiquidityGaugeRewardWrapper::default(),
         spender,
         amount,
     )
@@ -230,7 +226,7 @@ fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
     runtime::ret(
         CLValue::from_t(CURVEERC20::balance_of(
-            &mut LiquidityGaugeRewardWrapper::default(),
+            &LiquidityGaugeRewardWrapper::default(),
             owner,
         ))
         .unwrap_or_revert(),
@@ -241,7 +237,7 @@ fn balance_of() {
 fn total_supply() {
     runtime::ret(
         CLValue::from_t(CURVEERC20::total_supply(
-            &mut LiquidityGaugeRewardWrapper::default(),
+            &LiquidityGaugeRewardWrapper::default(),
         ))
         .unwrap_or_revert(),
     );
@@ -249,26 +245,22 @@ fn total_supply() {
 #[no_mangle]
 fn name() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::name(&mut LiquidityGaugeRewardWrapper::default()))
+        CLValue::from_t(CURVEERC20::name(&LiquidityGaugeRewardWrapper::default()))
             .unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn symbol() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::symbol(
-            &mut LiquidityGaugeRewardWrapper::default(),
-        ))
-        .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::symbol(&LiquidityGaugeRewardWrapper::default()))
+            .unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn decimals() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::decimals(
-            &mut LiquidityGaugeRewardWrapper::default(),
-        ))
-        .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::decimals(&LiquidityGaugeRewardWrapper::default()))
+            .unwrap_or_revert(),
     );
 }
 #[no_mangle]

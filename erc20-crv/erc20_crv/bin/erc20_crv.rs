@@ -95,66 +95,63 @@ fn transfer_from() {
     let owner: Address = runtime::get_named_arg("owner");
     let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    CURVEERC20::transfer_from(&mut Erc20Crv::default(), owner, recipient, amount)
-        .unwrap_or_revert();
+    CURVEERC20::transfer_from(&Erc20Crv::default(), owner, recipient, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn approve() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    CURVEERC20::approve(&mut Erc20Crv::default(), spender, amount).unwrap_or_revert();
+    CURVEERC20::approve(&Erc20Crv::default(), spender, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn transfer() {
     let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    CURVEERC20::transfer(&mut Erc20Crv::default(), recipient, amount).unwrap_or_revert();
+    CURVEERC20::transfer(&Erc20Crv::default(), recipient, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn total_supply() {
-    let ret: U256 = CURVEERC20::total_supply(&mut Erc20Crv::default());
+    let ret: U256 = CURVEERC20::total_supply(&Erc20Crv::default());
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 #[no_mangle]
 fn increase_allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    CURVEERC20::increase_allowance(&mut Erc20Crv::default(), spender, amount).unwrap_or_revert();
+    CURVEERC20::increase_allowance(&Erc20Crv::default(), spender, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn decrease_allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    CURVEERC20::decrease_allowance(&mut Erc20Crv::default(), spender, amount).unwrap_or_revert();
+    CURVEERC20::decrease_allowance(&Erc20Crv::default(), spender, amount).unwrap_or_revert();
 }
 #[no_mangle]
 fn allowance() {
     let owner: Address = runtime::get_named_arg("owner");
     let spender: Address = runtime::get_named_arg("spender");
-    let ret: U256 = CURVEERC20::allowance(&mut Erc20Crv::default(), owner, spender);
+    let ret: U256 = CURVEERC20::allowance(&Erc20Crv::default(), owner, spender);
     runtime::ret(CLValue::from_t(ret).unwrap_or_revert());
 }
 
 //[no_mangle] of public variables
 #[no_mangle]
 fn name() {
-    runtime::ret(CLValue::from_t(CURVEERC20::name(&mut Erc20Crv::default())).unwrap_or_revert());
+    runtime::ret(CLValue::from_t(CURVEERC20::name(&Erc20Crv::default())).unwrap_or_revert());
 }
 #[no_mangle]
 fn symbol() {
-    runtime::ret(CLValue::from_t(CURVEERC20::symbol(&mut Erc20Crv::default())).unwrap_or_revert());
+    runtime::ret(CLValue::from_t(CURVEERC20::symbol(&Erc20Crv::default())).unwrap_or_revert());
 }
 #[no_mangle]
 fn decimals() {
-    runtime::ret(
-        CLValue::from_t(CURVEERC20::decimals(&mut Erc20Crv::default())).unwrap_or_revert(),
-    );
+    runtime::ret(CLValue::from_t(CURVEERC20::decimals(&Erc20Crv::default())).unwrap_or_revert());
 }
 #[no_mangle]
 fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::balance_of(&mut Erc20Crv::default(), owner)).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::balance_of(&Erc20Crv::default(), owner)).unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -162,12 +159,8 @@ fn allowances() {
     let owner: Address = runtime::get_named_arg("owner");
     let spender: Address = runtime::get_named_arg("spender");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::allowance(
-            &mut Erc20Crv::default(),
-            owner,
-            spender,
-        ))
-        .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::allowance(&Erc20Crv::default(), owner, spender))
+            .unwrap_or_revert(),
     );
 }
 #[no_mangle]

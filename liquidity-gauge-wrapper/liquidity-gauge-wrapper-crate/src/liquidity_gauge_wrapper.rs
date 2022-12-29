@@ -14,7 +14,8 @@ use common::{errors::*, utils::*};
 use curve_casper_erc20_crate::Error as Erc20Error;
 use curve_erc20_crate::{self, Address, CURVEERC20};
 pub trait LIQUIDITYGAUGEWRAPPER<Storage: ContractStorage>:
-ContractContext<Storage> + CURVEERC20<Storage> {
+    ContractContext<Storage> + CURVEERC20<Storage>
+{
     /// @notice Contract constructor
     /// @param _name Token full name
     /// @param _symbol Token symbol
@@ -29,7 +30,6 @@ ContractContext<Storage> + CURVEERC20<Storage> {
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-       
         CURVEERC20::init(self, contract_hash, package_hash);
         self.set_name(name);
         self.set_symbol(symbol);
@@ -70,7 +70,6 @@ ContractContext<Storage> + CURVEERC20<Storage> {
         ApprovedToDeposit::init();
         set_contract_hash(contract_hash);
         set_package_hash(package_hash);
-        
     }
     fn _checkpoint(&self, addr: Key) {
         let crv_token: Key = get_crv_token();
@@ -235,15 +234,17 @@ ContractContext<Storage> + CURVEERC20<Storage> {
         }
         self._checkpoint(addr);
         if value != 0.into() {
-            let balance: U256 =self.balance_of(Address::from(addr))
+            let balance: U256 = self
+                .balance_of(Address::from(addr))
                 .checked_add(value)
                 .unwrap_or_revert_with(Error::GaugeWrapperAdditionError5);
-            let supply: U256 = self.total_supply()
+            let supply: U256 = self
+                .total_supply()
                 .checked_add(value)
                 .unwrap_or_revert_with(Error::GaugeWrapperAdditionError6);
             self.set_balance(Address::from(addr), balance);
             self.set_total_supply(supply);
-            let ()= runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 get_lp_token().into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer_from",
@@ -291,10 +292,12 @@ ContractContext<Storage> + CURVEERC20<Storage> {
         set_lock(true);
         self._checkpoint(self.get_caller());
         if value != 0.into() {
-            let balance: U256 = self.balance_of(Address::from(self.get_caller()))
+            let balance: U256 = self
+                .balance_of(Address::from(self.get_caller()))
                 .checked_sub(value)
                 .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError4);
-            let supply: U256 = self.total_supply()
+            let supply: U256 = self
+                .total_supply()
                 .checked_sub(value)
                 .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError5);
             self.set_balance(Address::from(self.get_caller()), balance);
@@ -349,12 +352,13 @@ ContractContext<Storage> + CURVEERC20<Storage> {
         self._checkpoint(owner);
         self._checkpoint(recipient);
         if amount != 0.into() {
-            let balance_owner: U256 = self.balance_of(Address::from(owner))
+            let balance_owner: U256 = self
+                .balance_of(Address::from(owner))
                 .checked_sub(amount)
                 .unwrap_or_revert_with(Error::GaugeWrapperSubtractionError6);
             self.set_balance(Address::from(owner), balance_owner);
-            let balance_recipient: U256 = 
-                self.balance_of(Address::from(recipient))
+            let balance_recipient: U256 = self
+                .balance_of(Address::from(recipient))
                 .checked_add(amount)
                 .unwrap_or_revert_with(Error::GaugeWrapperAdditionError7);
 
@@ -380,7 +384,12 @@ ContractContext<Storage> + CURVEERC20<Storage> {
     /// @param _from address The address which you want to send tokens from
     /// @param _to address The address which you want to transfer to
     /// @param _value uint256 the amount of tokens to be transferred
-    fn transfer_from(&mut self, owner: Address, recipient: Address, amount: U256) -> Result<(), Error> {
+    fn transfer_from(
+        &mut self,
+        owner: Address,
+        recipient: Address,
+        amount: U256,
+    ) -> Result<(), Error> {
         let allowance: U256 = CURVEERC20::allowance(self, owner, Address::from(self.get_caller()));
         if allowance != U256::MAX {
             CURVEERC20::set_allowance(

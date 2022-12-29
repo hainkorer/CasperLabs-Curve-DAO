@@ -1,7 +1,13 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, string::{String, ToString}, vec};
+use alloc::{
+    boxed::Box,
+    collections::BTreeSet,
+    format,
+    string::{String, ToString},
+    vec,
+};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -11,12 +17,12 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use curve_erc20_crate::{self, Address, CURVEERC20};
 use liquidity_gauge_wrapper_crate::{
     self,
     data::{self},
     LIQUIDITYGAUGEWRAPPER,
 };
-use curve_erc20_crate::{self, Address, CURVEERC20};
 
 #[derive(Default)]
 struct LiquidityGaugeWrapper(OnChainContractStorage);
@@ -114,33 +120,39 @@ fn allowance() {
 fn transfer() {
     let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    LiquidityGaugeWrapper::default().transfer(recipient, amount).unwrap_or_revert();
+    LiquidityGaugeWrapper::default()
+        .transfer(recipient, amount)
+        .unwrap_or_revert();
 }
 #[no_mangle]
 fn transfer_from() {
     let owner: Address = runtime::get_named_arg("owner");
     let recipient: Address = runtime::get_named_arg("recipient");
     let amount: U256 = runtime::get_named_arg("amount");
-    LiquidityGaugeWrapper::default().transfer_from(owner, recipient, amount).unwrap_or_revert();
+    LiquidityGaugeWrapper::default()
+        .transfer_from(owner, recipient, amount)
+        .unwrap_or_revert();
 }
 #[no_mangle]
 fn approve() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    LIQUIDITYGAUGEWRAPPER::approve(&LiquidityGaugeWrapper::default(), spender, amount).unwrap_or_revert();
+    LIQUIDITYGAUGEWRAPPER::approve(&LiquidityGaugeWrapper::default(), spender, amount)
+        .unwrap_or_revert();
 }
 #[no_mangle]
 fn increase_allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    LIQUIDITYGAUGEWRAPPER::increase_allowance(&LiquidityGaugeWrapper::default(), spender, amount).unwrap_or_revert();
+    LIQUIDITYGAUGEWRAPPER::increase_allowance(&LiquidityGaugeWrapper::default(), spender, amount)
+        .unwrap_or_revert();
 }
 #[no_mangle]
 fn decrease_allowance() {
     let spender: Address = runtime::get_named_arg("spender");
     let amount: U256 = runtime::get_named_arg("amount");
-    LIQUIDITYGAUGEWRAPPER::decrease_allowance(&LiquidityGaugeWrapper::default(), spender, amount).unwrap_or_revert();
-   
+    LIQUIDITYGAUGEWRAPPER::decrease_allowance(&LiquidityGaugeWrapper::default(), spender, amount)
+        .unwrap_or_revert();
 }
 
 #[no_mangle]
@@ -181,33 +193,37 @@ fn gauge() {
 fn balance_of() {
     let owner: Address = runtime::get_named_arg("owner");
     runtime::ret(
-        CLValue::from_t(CURVEERC20::balance_of(&mut LiquidityGaugeWrapper::default(), owner))
-            .unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::balance_of(
+            &LiquidityGaugeWrapper::default(),
+            owner,
+        ))
+        .unwrap_or_revert(),
     );
 }
 
 #[no_mangle]
 fn total_supply() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::total_supply(&mut LiquidityGaugeWrapper::default())).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::total_supply(&LiquidityGaugeWrapper::default()))
+            .unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn name() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::name(&mut LiquidityGaugeWrapper::default())).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::name(&LiquidityGaugeWrapper::default())).unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn symbol() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::symbol(&mut LiquidityGaugeWrapper::default())).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::symbol(&LiquidityGaugeWrapper::default())).unwrap_or_revert(),
     );
 }
 #[no_mangle]
 fn decimals() {
     runtime::ret(
-        CLValue::from_t(CURVEERC20::decimals(&mut LiquidityGaugeWrapper::default())).unwrap_or_revert(),
+        CLValue::from_t(CURVEERC20::decimals(&LiquidityGaugeWrapper::default())).unwrap_or_revert(),
     );
 }
 #[no_mangle]
@@ -504,8 +520,13 @@ fn call() {
         // Build new package.
         let (package_hash, access_token) = storage::create_contract_package_at_hash();
         // add a first version to this package
-        let (contract_hash, _): (ContractHash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), LiquidityGaugeWrapper::default().named_keys("".to_string(), "".to_string(), 9, 0.into()).unwrap_or_revert());
+        let (contract_hash, _): (ContractHash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            LiquidityGaugeWrapper::default()
+                .named_keys("".to_string(), "".to_string(), 9, 0.into())
+                .unwrap_or_revert(),
+        );
 
         let name: String = runtime::get_named_arg("name");
         let symbol: String = runtime::get_named_arg("symbol");

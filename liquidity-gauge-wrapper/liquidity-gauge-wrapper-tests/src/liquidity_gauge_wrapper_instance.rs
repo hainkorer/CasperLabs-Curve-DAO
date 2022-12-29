@@ -1,13 +1,15 @@
-use casper_types::{
-    account::AccountHash, bytesrepr::{FromBytes, ToBytes}, runtime_args, CLTyped, Key, RuntimeArgs, U256,
-};
 use blake2::{
     digest::{Update, VariableOutput},
     VarBlake2b,
 };
+use casper_types::{
+    account::AccountHash,
+    bytesrepr::{FromBytes, ToBytes},
+    runtime_args, CLTyped, Key, RuntimeArgs, U256,
+};
 use casperlabs_test_env::{TestContract, TestEnv};
-use std::time::SystemTime;
 use curve_erc20_crate::Address;
+use std::time::SystemTime;
 pub const ALLOWANCES: &str = "allowances";
 use common::keys::*;
 use hex::encode;
@@ -202,18 +204,11 @@ impl LIQUIDITYGAUGEWRAPPERInstance {
             block_time,
         );
     }
-    pub fn balance_of(
-        &self,
-        owner: Address,
-    )->U256 {
+    pub fn balance_of(&self, owner: Address) -> U256 {
         self.0.query(BALANCES, address_to_str(&owner))
-        
     }
-    pub fn allowance(&self,owner:Address,spender:Address) -> U256 {
-        let ret: U256 =self.0.query(
-            ALLOWANCES,
-            addresses_to_str(owner, spender),
-        );
+    pub fn allowance(&self, owner: Address, spender: Address) -> U256 {
+        let ret: U256 = self.0.query(ALLOWANCES, addresses_to_str(owner, spender));
         ret
     }
     pub fn package_hash(&self) -> [u8; 32] {
