@@ -1,7 +1,7 @@
 use crate::data::*;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::ApiError;
 use casper_types::{runtime_args, Key, RuntimeArgs, U256};
+use casper_types::{ApiError, ContractHash, ContractPackageHash};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use curve_erc20_crate::data::get_package_hash;
 use curve_erc20_crate::{Address, CURVEERC20};
@@ -23,7 +23,8 @@ impl From<Error> for ApiError {
 pub trait LPTOKENWRAPPER<Storage: ContractStorage>:
     ContractContext<Storage> + CURVEERC20<Storage>
 {
-    fn init(&self, uni: Key) {
+    fn init(&self, uni: Key, contract_hash: ContractHash, package_hash: ContractPackageHash) {
+        CURVEERC20::init(self, contract_hash, package_hash);
         set_uni(uni);
     }
     fn stake(&mut self, amount: U256) {

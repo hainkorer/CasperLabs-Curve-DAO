@@ -32,8 +32,7 @@ impl LpTokenWrapper {
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-        CURVEERC20::init(self, contract_hash, package_hash);
-        LPTOKENWRAPPER::init(self, uni);
+        LPTOKENWRAPPER::init(self, uni, contract_hash, package_hash);
     }
 }
 

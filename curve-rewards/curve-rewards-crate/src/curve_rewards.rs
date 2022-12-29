@@ -24,7 +24,7 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
         package_hash: ContractPackageHash,
     ) {
         IREWARDDISTRIBUTIONRECIPIENT::init(self, contract_hash, package_hash);
-        LPTOKENWRAPPER::init(self, token);
+        LPTOKENWRAPPER::init(self, token, contract_hash, package_hash);
         set_reward_distribution(self.get_caller());
         set_snx(reward);
         UserRewardPerTokenPaid::init();

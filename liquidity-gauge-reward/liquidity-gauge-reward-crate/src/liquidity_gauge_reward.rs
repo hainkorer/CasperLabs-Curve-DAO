@@ -13,7 +13,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
-use curve_erc20_crate::{self, Address, CURVEERC20};
+use curve_erc20_crate::{self, get_package_hash, Address, CURVEERC20};
 
 #[allow(clippy::too_many_arguments)]
 pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
@@ -45,6 +45,8 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardZeroAddress3));
         }
 
+        CURVEERC20::init(self, contract_hash, package_hash);
+
         ApprovedToDeposit::init();
         WorkingBalances::init();
         PeriodTimestamp::init();
@@ -56,9 +58,6 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
         RewardsFor::init();
         ClaimedRewardsFor::init();
 
-        set_contract_hash(contract_hash);
-        set_package_hash(package_hash);
-        CURVEERC20::init(self, get_contract_hash(), get_package_hash());
         set_lp_token(lp_addr);
         set_minter(minter);
         let crv_addr: Key = runtime::call_versioned_contract(
@@ -572,7 +571,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
                 "transfer_from",
                 runtime_args! {
                     "owner" => Address::from(self.get_caller()),
-                    "recipient" => Address::from(Key::from(get_package_hash())),
+                    "recipient" => Address::Contract(get_package_hash()),
                     "amount" => value
                 },
             );
