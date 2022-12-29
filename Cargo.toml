@@ -4,15 +4,13 @@ members = [
   "common",
   # Test Session Code
   "test-session-code",
+  # CRV20
+  "curve-erc20/curve-erc20",
+  "curve-erc20/curve-erc20-tests",
   # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
   "curve-token-v3/curve-token-v3-crate",
   "curve-token-v3/curve-token-v3-tests",
-  "curve-casper-erc20-crate",
-  # ERC20
-  "curve-erc20/curve-erc20",
-  "curve-erc20/curve-erc20-crate",
-  "curve-erc20/curve-erc20-tests",
   # ERC-20 CRV
   "erc20-crv/erc20_crv",
   "erc20-crv/erc20_crv_tests",

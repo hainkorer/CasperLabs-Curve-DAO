@@ -13,7 +13,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
-use curve_erc20_crate::{self, Address};
+use crv20::{self, Address};
 
 #[allow(clippy::too_many_arguments)]
 pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {

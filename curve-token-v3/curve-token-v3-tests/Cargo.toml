@@ -13,7 +13,7 @@ casper-hashing = "1.4.3"
 casperlabs-test-env = "0.3.0"
 base64 = "0.13.0"
 
-curve-erc20-crate = {path="../../curve-erc20/curve-erc20-crate"}
+crv20 = "0.1.0"
 casperlabs-contract-utils = "0.2.1"
 common = { path = "../../common" }
 hex = "0.4.3"

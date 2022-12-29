@@ -13,7 +13,7 @@ casper-engine-test-support = "2.1.0"
 common = { path = "../../common" }
 casperlabs-test-env = "0.3.0"
 casperlabs-contract-utils = "0.2.1"
-curve-erc20-crate = {path="../../curve-erc20/curve-erc20-crate"}
+crv20 = "0.1.0"
 liquidity-gauge-reward-wrapper-crate = { path = "../liquidity-gauge-reward-wrapper-crate" }
 hex = "0.4.3"
 blake2 = "0.9.1"

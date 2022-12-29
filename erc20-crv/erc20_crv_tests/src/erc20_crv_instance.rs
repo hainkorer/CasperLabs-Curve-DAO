@@ -1,7 +1,7 @@
 use casper_types::{
     account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
-use curve_erc20_crate::Address;
+use crv20::Address;
 use std::time::SystemTime;
 
 use casperlabs_test_env::{TestContract, TestEnv};

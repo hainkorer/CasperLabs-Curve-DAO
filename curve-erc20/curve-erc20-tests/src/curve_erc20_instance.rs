@@ -3,7 +3,7 @@ use blake2::{
     VarBlake2b,
 };
 use casper_types::{bytesrepr::ToBytes, U256};
-use curve_casper_erc20_crate::Address;
+use curve_casper_erc20::Address;
 use hex::encode;
 
 pub const BALANCES: &str = "balances";

@@ -14,7 +14,7 @@ common = { path = "../../common" }
 casperlabs-test-env = "0.3.0"
 casperlabs-contract-utils = "0.2.1"
 casper_types_derive = "0.1.0"
-curve-erc20-crate = {path="../../curve-erc20/curve-erc20-crate"}
+crv20 = "0.1.0"
 liquidity-gauge-reward-crate = { path = "../liquidity-gauge-reward-crate" }
 base64 = "0.13.0"
 blake2 = "0.9.1"

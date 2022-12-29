@@ -17,7 +17,7 @@ use casper_types::{
     EntryPointAccess, EntryPointType, EntryPoints, Group, Key, Parameter, RuntimeArgs, URef, U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use curve_erc20_crate::{self, Address, CURVEERC20};
+use crv20::{self, Address, CURVEERC20};
 use liquidity_gauge_wrapper_crate::{
     self,
     data::{self},

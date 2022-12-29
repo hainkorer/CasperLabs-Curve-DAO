@@ -11,8 +11,8 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use curve_casper_erc20_crate::Error as Erc20Error;
-use curve_erc20_crate::{self, Address, CURVEERC20};
+use crv20::{self, Address, CURVEERC20};
+use curve_casper_erc20::Error as Erc20Error;
 
 use casper_types::{
     runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,

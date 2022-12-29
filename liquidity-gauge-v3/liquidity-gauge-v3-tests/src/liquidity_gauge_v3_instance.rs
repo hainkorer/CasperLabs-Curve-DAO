@@ -17,7 +17,7 @@ pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
 pub const ALLOWANCES: &str = "allowances";
-use curve_erc20_crate::Address;
+use crv20::Address;
 use hex::encode;
 
 pub fn address_to_str(owner: &Address) -> String {

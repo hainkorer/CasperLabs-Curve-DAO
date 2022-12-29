@@ -12,4 +12,4 @@ casperlabs-test-env = "0.3.0"
 base64 = "0.13.0"
 hex = "0.4.3"
 blake2 = "0.9.1"
-curve-casper-erc20-crate = { path = "../../curve-casper-erc20-crate" }
+curve-casper-erc20 = "0.1.0"

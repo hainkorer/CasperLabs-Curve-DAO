@@ -13,7 +13,7 @@ use casper_types::{
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_test_env::{TestContract, TestEnv};
-use curve_erc20_crate::Address;
+use crv20::Address;
 use hex::encode;
 
 pub type TokenId = U256;

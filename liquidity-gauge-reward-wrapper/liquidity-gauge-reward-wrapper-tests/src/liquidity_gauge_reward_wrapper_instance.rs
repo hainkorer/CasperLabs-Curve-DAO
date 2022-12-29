@@ -8,7 +8,7 @@ use casper_types::{
     runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
-use curve_erc20_crate::Address;
+use crv20::Address;
 use std::time::SystemTime;
 pub const ALLOWANCES: &str = "allowances";
 use common::keys::*;

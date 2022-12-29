@@ -13,8 +13,8 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
-use curve_casper_erc20_crate::Error as Erc20Error;
-use curve_erc20_crate::{self, Address, CURVEERC20};
+use crv20::{self, Address, CURVEERC20};
+use curve_casper_erc20::Error as Erc20Error;
 pub enum REWARDONLYGAUGEEvent {
     Withdraw {
         provider: Key,

@@ -5,7 +5,7 @@ use casper_types::{
 };
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
-use curve_erc20_crate::Address;
+use crv20::Address;
 use std::time::SystemTime;
 pub fn address_to_str(owner: &Address) -> String {
     let preimage = owner.to_bytes().unwrap();

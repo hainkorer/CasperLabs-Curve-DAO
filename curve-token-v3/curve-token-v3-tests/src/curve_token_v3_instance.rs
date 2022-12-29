@@ -8,7 +8,7 @@ use casper_types::{
     runtime_args, CLTyped, ContractPackageHash, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
-use curve_erc20_crate::Address;
+use crv20::Address;
 use hex::encode;
 use std::{collections::BTreeMap, time::SystemTime};
 
