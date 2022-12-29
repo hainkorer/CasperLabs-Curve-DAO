@@ -1,7 +1,7 @@
 use crate::curve_erc20_instance::*;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{now, TestContract, TestEnv};
-use curve_casper_erc20_crate::Address;
+use curve_casper_erc20::Address;
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")

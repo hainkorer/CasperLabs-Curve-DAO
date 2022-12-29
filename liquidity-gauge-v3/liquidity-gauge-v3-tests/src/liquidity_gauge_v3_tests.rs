@@ -2,7 +2,7 @@ use crate::liquidity_gauge_v3_instance::LIQUIDITYGUAGEV3INSTANCEInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
-use curve_erc20_crate::Address;
+use crv20::Address;
 
 pub const TEN_E_NINE: u128 = 1000000000;
 const NAME: &str = "LiquidityGaugeV3";

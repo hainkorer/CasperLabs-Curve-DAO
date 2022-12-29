@@ -6,7 +6,7 @@ use casper_contract::{
 };
 use casper_types::*;
 use casperlabs_contract_utils::*;
-use curve_erc20_crate::{Address, CURVEERC20};
+use crv20::{Address, CURVEERC20};
 use std::collections::BTreeSet;
 
 #[derive(Default)]

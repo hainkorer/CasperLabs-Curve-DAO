@@ -2,7 +2,7 @@ use crate::erc20_crv_instance::ERC20CRVInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::{keys::*, utils::key_to_str};
-use curve_erc20_crate::Address;
+use crv20::Address;
 use erc20_crv::data::*;
 
 pub const TEN_E_NINE: u128 = 1000000000;

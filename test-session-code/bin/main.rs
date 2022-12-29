@@ -13,7 +13,7 @@ use casper_types::{
     bytesrepr::ToBytes, runtime_args, ApiError, CLTyped, Key, RuntimeArgs, URef, U128, U256,
 };
 use common::keys::*;
-use curve_erc20_crate::Address;
+use crv20::Address;
 
 // Key is the same a destination
 fn store<T: CLTyped + ToBytes>(key: &str, value: T) {

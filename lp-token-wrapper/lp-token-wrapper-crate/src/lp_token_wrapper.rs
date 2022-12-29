@@ -3,8 +3,8 @@ use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, Key, RuntimeArgs, U256};
 use casper_types::{ApiError, ContractHash, ContractPackageHash};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-use curve_erc20_crate::data::get_package_hash;
-use curve_erc20_crate::{Address, CURVEERC20};
+use crv20::data::get_package_hash;
+use crv20::{Address, CURVEERC20};
 
 #[repr(u16)]
 pub enum Error {

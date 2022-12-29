@@ -12,7 +12,7 @@ use casper_types::{
     U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
-use curve_erc20_crate::{self, Address, CURVEERC20};
+use crv20::{self, Address, CURVEERC20};
 use liquidity_gauge_reward_crate::{self, data, LIQUIDITYGAUGEREWARD};
 #[derive(Default)]
 struct LiquidityGaugeReward(OnChainContractStorage);

@@ -4,7 +4,7 @@ use casperlabs_test_env::{TestContract, TestEnv};
 use crate::reward_only_gauge_instance::REWARDONLYGAUGEInstance;
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use common::keys::*;
-use curve_erc20_crate::Address;
+use crv20::Address;
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
 pub struct ClaimDataStruct {

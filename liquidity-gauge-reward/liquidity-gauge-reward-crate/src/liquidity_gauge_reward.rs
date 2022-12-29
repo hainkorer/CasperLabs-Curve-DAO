@@ -13,7 +13,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
-use curve_erc20_crate::{self, get_package_hash, Address, CURVEERC20};
+use crv20::{self, get_package_hash, Address, CURVEERC20};
 
 #[allow(clippy::too_many_arguments)]
 pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:

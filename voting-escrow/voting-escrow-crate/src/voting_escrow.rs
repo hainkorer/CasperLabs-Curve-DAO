@@ -18,7 +18,7 @@ use casper_types::{
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
-use curve_erc20_crate::{self, Address};
+use crv20::{self, Address};
 
 /// @notice Votes have a weight depending on time, so that users are committed to the future of (whatever they are voting for)
 /// @dev Vote weight decays linearly over time. Lock time cannot be more than `MAXTIME` (4 years).

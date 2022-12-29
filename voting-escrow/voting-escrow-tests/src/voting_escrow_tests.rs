@@ -4,7 +4,7 @@ use crate::voting_escrow_instance::{
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
-use curve_erc20_crate::Address;
+use crv20::Address;
 use voting_escrow_crate::data::{LockedBalance, Point, LOCKED, USER_POINT_HISTORY, WEEK};
 pub const TEN_E_NINE: u128 = 1000000000;
 // CRV
