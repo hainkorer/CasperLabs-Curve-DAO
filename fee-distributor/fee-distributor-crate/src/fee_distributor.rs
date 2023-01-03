@@ -766,37 +766,35 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn emit(&self, fee_distributor_event: &FeeDistributorEvent) {
-        let mut events = Vec::new();
-        let package = get_package_hash();
         match fee_distributor_event {
             FeeDistributorEvent::CommitAdmin { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             FeeDistributorEvent::ApplyAdmin { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             FeeDistributorEvent::ToggleAllowCheckpointToken { toggle_flag } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("toggle_flag", toggle_flag.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             FeeDistributorEvent::CheckpointToken { time, tokens } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("time", time.to_string());
                 event.insert("tokens", tokens.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             FeeDistributorEvent::Claimed {
                 recipient,
@@ -805,17 +803,14 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                 max_epoch,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("recipient", recipient.to_string());
                 event.insert("amount", amount.to_string());
                 event.insert("claim_epoch", claim_epoch.to_string());
                 event.insert("max_epoch", max_epoch.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

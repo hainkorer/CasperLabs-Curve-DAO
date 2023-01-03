@@ -133,34 +133,29 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn emit(&self, gauge_proxy_event: &GaugeProxyEvent) {
-        let mut events = Vec::new();
-        let package = get_package_hash();
         match gauge_proxy_event {
             GaugeProxyEvent::CommitAdmins {
                 emergency_admin,
                 ownership_admin,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_proxy_event.type_name());
                 event.insert("emergency_admin", emergency_admin.to_string());
                 event.insert("ownership_admin", ownership_admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GaugeProxyEvent::ApplyAdmins {
                 emergency_admin,
                 ownership_admin,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_proxy_event.type_name());
                 event.insert("emergency_admin", emergency_admin.to_string());
                 event.insert("ownership_admin", ownership_admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

@@ -1,6 +1,6 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, ClaimData, ClaimDataStruct, RewardBalances, RewardData, RewardIntegral,
+    self, get_package_hash, ClaimData, ClaimDataStruct, RewardBalances, RewardData, RewardIntegral,
     RewardIntegralFor, RewardTokens, RewardsReceiver, CLAIM_FREQUENCY, MAX_REWARDS,
 };
 use alloc::collections::BTreeMap;
@@ -615,38 +615,36 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>:
         CURVEERC20::named_keys(self, "".to_string(), "".to_string(), 9, 0.into())
     }
     fn emit(&mut self, reward_only_gauge_event: &REWARDONLYGAUGEEvent) {
-        let mut events = Vec::new();
-        let package = data::get_package_hash();
         match reward_only_gauge_event {
             REWARDONLYGAUGEEvent::Withdraw { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", reward_only_gauge_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             REWARDONLYGAUGEEvent::Deposit { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", reward_only_gauge_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             REWARDONLYGAUGEEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", reward_only_gauge_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             REWARDONLYGAUGEEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", reward_only_gauge_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             REWARDONLYGAUGEEvent::Approval {
                 owner,
@@ -654,27 +652,23 @@ pub trait REWARDONLYGAUGE<Storage: ContractStorage>:
                 value,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", reward_only_gauge_event.type_name());
                 event.insert("owner", owner.to_string());
                 event.insert("spender", spender.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             REWARDONLYGAUGEEvent::Transfer { from, to, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", reward_only_gauge_event.type_name());
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 
     fn get_package_hash(&mut self) -> ContractPackageHash {

@@ -1,16 +1,15 @@
 use crate::alloc::string::ToString;
 use crate::data::{
-    self, ChangesSum, ChangesWeight, GaugeTypeNames, GaugeTypes_, Gauges, LastUserVote, Point,
-    PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum, TimeTypeWeight, TimeWeight,
-    VoteUserPower, VoteUserSlopes, VotedSlope, MULTIPLIER, WEEK, WEIGHT_VOTE_DELAY,
+    self, get_package_hash, ChangesSum, ChangesWeight, GaugeTypeNames, GaugeTypes_, Gauges,
+    LastUserVote, Point, PointsSum, PointsTotal, PointsTypeWeight, PointsWeight, TimeSum,
+    TimeTypeWeight, TimeWeight, VoteUserPower, VoteUserSlopes, VotedSlope, MULTIPLIER, WEEK,
+    WEIGHT_VOTE_DELAY,
 };
 use alloc::collections::BTreeMap;
-use alloc::{string::String, vec::Vec};
+use alloc::string::String;
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{
-    runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
-};
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, U128, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
 
@@ -1046,8 +1045,6 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn emit(&mut self, gauge_controller_event: &GAUGECONLTROLLEREvent) {
-        let mut events = Vec::new();
-        let package = data::get_package_hash();
         match gauge_controller_event {
             GAUGECONLTROLLEREvent::Minted {
                 recipient,
@@ -1055,26 +1052,26 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 minted,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("recipient", recipient.to_string());
                 event.insert("gauge", gauge.to_string());
                 event.insert("minted", minted.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GAUGECONLTROLLEREvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GAUGECONLTROLLEREvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GAUGECONLTROLLEREvent::NewTypeWeight {
                 type_id,
@@ -1083,13 +1080,13 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 total_weight,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("type_id", type_id.to_string());
                 event.insert("time", time.to_string());
                 event.insert("weight", weight.to_string());
                 event.insert("total_weight", total_weight.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GAUGECONLTROLLEREvent::NewGaugeWeight {
                 gauge_address,
@@ -1098,21 +1095,21 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 total_weight,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("gauge_address", gauge_address.to_string());
                 event.insert("time", time.to_string());
                 event.insert("weight", weight.to_string());
                 event.insert("total_weight", total_weight.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GAUGECONLTROLLEREvent::AddType { name, type_id } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("name", name.to_string());
                 event.insert("type_id", type_id.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GAUGECONLTROLLEREvent::NewGauge {
                 addr,
@@ -1120,12 +1117,12 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 weight,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("addr", addr.to_string());
                 event.insert("gauge_type", gauge_type.to_string());
                 event.insert("weight", weight.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GAUGECONLTROLLEREvent::VoteForGauge {
                 time,
@@ -1134,19 +1131,15 @@ pub trait GAUGECONLTROLLER<Storage: ContractStorage>: ContractContext<Storage> {
                 weight,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_controller_event.type_name());
                 event.insert("time", time.to_string());
                 event.insert("user", user.to_string());
                 event.insert("gauge_addr", gauge_addr.to_string());
                 event.insert("weight", weight.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 
     fn get_package_hash(&mut self) -> ContractPackageHash {
