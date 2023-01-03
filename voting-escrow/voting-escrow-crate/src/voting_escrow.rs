@@ -922,22 +922,20 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn emit(&self, voting_escrow_event: &VotingEscrowEvent) {
-        let mut events = Vec::new();
-        let package = get_package_hash();
         match voting_escrow_event {
             VotingEscrowEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VotingEscrowEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VotingEscrowEvent::Deposit {
                 provider,
@@ -947,14 +945,14 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 ts,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
                 event.insert("locktime", locktime.to_string());
                 event.insert("_type", _type.to_string());
                 event.insert("ts", ts.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VotingEscrowEvent::Withdraw {
                 provider,
@@ -962,27 +960,24 @@ pub trait VOTINGESCROW<Storage: ContractStorage>: ContractContext<Storage> {
                 ts,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
                 event.insert("ts", ts.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VotingEscrowEvent::Supply {
                 prev_supply,
                 supply,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", voting_escrow_event.type_name());
                 event.insert("prev_supply", prev_supply.to_string());
                 event.insert("supply", supply.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

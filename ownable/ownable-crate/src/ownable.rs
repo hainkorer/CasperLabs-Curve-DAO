@@ -92,7 +92,6 @@ pub trait OWNABLE<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn ownable_emit(&mut self, ownable_event: &OwnableEvent) {
-        let mut events = Vec::new();
         let package = data::get_package_hash();
         match ownable_event {
             OwnableEvent::OwnershipTransferred {
@@ -104,11 +103,8 @@ pub trait OWNABLE<Storage: ContractStorage>: ContractContext<Storage> {
                 event.insert("event_type", ownable_event.type_name());
                 event.insert("previous_owner", previous_owner.to_string());
                 event.insert("new_owner", new_owner.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

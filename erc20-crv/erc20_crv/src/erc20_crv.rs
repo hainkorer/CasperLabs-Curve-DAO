@@ -400,7 +400,6 @@ pub trait ERC20CRV<Storage: ContractStorage>:
         CURVEERC20::named_keys(self, name, symbol, decimals, 0.into())
     }
     fn erc20_crv_emit(&self, erc20_crv_event: &Erc20CrvEvent) {
-        let mut events = Vec::new();
         let package = data::get_package_hash();
         match erc20_crv_event {
             Erc20CrvEvent::Transfer { from, to, value } => {
@@ -410,7 +409,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             Erc20CrvEvent::UpdateMiningParameters { time, rate, supply } => {
                 let mut event = BTreeMap::new();
@@ -419,32 +418,29 @@ pub trait ERC20CRV<Storage: ContractStorage>:
                 event.insert("time", time.to_string());
                 event.insert("rate", rate.to_string());
                 event.insert("supply", supply.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             Erc20CrvEvent::SetMinter { minter } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", erc20_crv_event.type_name());
                 event.insert("minter", minter.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             Erc20CrvEvent::SetAdmin { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", erc20_crv_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             Erc20CrvEvent::RemoveAdmin { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", erc20_crv_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

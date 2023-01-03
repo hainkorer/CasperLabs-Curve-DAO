@@ -164,7 +164,6 @@ pub trait CURVETOKENV3<Storage: ContractStorage>:
         CURVEERC20::named_keys(self, name, symbol, 9, 0.into())
     }
     fn curve_token_v3_emit(&self, curve_token_v3_event: &CurveTokenV3Event) {
-        let mut events = Vec::new();
         let package = get_package_hash();
         match curve_token_v3_event {
             CurveTokenV3Event::Transfer { from, to, value } => {
@@ -174,7 +173,7 @@ pub trait CURVETOKENV3<Storage: ContractStorage>:
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             CurveTokenV3Event::Approval {
                 owner,
@@ -187,11 +186,8 @@ pub trait CURVETOKENV3<Storage: ContractStorage>:
                 event.insert("owner", owner.to_string());
                 event.insert("spender", spender.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }
