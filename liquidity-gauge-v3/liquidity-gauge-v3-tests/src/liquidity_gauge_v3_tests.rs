@@ -26,7 +26,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
 fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
         env,
-        "erc20_crv.wasm",
+        "erc20-crv.wasm",
         "erc20-crv",
         sender,
         runtime_args! {

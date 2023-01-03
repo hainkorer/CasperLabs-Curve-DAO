@@ -1,7 +1,7 @@
 [package]
 authors = ["Nouman Nadeem <nouman.nadeem.zafar@scytalelabs.com>"]
 edition = "2018"
-name = "erc20_crv"
+name = "erc20-crv"
 version = "0.1.0"
 
 [dependencies]
@@ -17,7 +17,7 @@ common = { path = "../../common" }
 [[bin]]
 bench = false
 doctest = false
-name = "erc20_crv"
+name = "erc20-crv"
 path = "bin/erc20_crv.rs"
 test = false
 

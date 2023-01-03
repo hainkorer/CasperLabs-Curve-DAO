@@ -11,7 +11,7 @@ pub const TEN_E_NINE: u128 = 1000000000;
 fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash, time_now: u64) -> TestContract {
     TestContract::new(
         env,
-        "erc20_crv.wasm",
+        "erc20-crv.wasm",
         "erc20-crv",
         sender,
         runtime_args! {
