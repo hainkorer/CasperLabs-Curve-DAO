@@ -711,24 +711,22 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
     }
 
     fn emit(&self, liquidity_gauge_reward_event: &LiquidityGaugeRewardEvent) {
-        let mut events = Vec::new();
-        let package = get_package_hash();
         match liquidity_gauge_reward_event {
             LiquidityGaugeRewardEvent::Deposit { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardEvent::Withdraw { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardEvent::UpdateLiquidityLimit {
                 user,
@@ -738,32 +736,29 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
                 working_supply,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("user", user.to_string());
                 event.insert("original_balance", original_balance.to_string());
                 event.insert("original_supply", original_supply.to_string());
                 event.insert("working_balance", working_balance.to_string());
                 event.insert("working_supply", working_supply.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", liquidity_gauge_reward_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

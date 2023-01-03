@@ -1,5 +1,5 @@
 use crate::alloc::string::ToString;
-use crate::data::{self, MIN_VESTING_DURATION};
+use crate::data::{self, get_package_hash, MIN_VESTING_DURATION};
 use alloc::collections::BTreeMap;
 use alloc::format;
 use alloc::{string::String, vec::Vec};
@@ -152,28 +152,22 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
     }
 
     fn emit(&mut self, vesting_escrow_factory_event: &VESTINGESCROWFACTORYEvent) {
-        let mut events = Vec::new();
-        let package = data::get_package_hash();
         match vesting_escrow_factory_event {
             VESTINGESCROWFACTORYEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", vesting_escrow_factory_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VESTINGESCROWFACTORYEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", vesting_escrow_factory_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 
     fn get_package_hash(&mut self) -> ContractPackageHash {

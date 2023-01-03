@@ -618,54 +618,52 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>:
     }
 
     fn emit(&self, liquidity_gauge_reward_wrapper_event: &LiquidityGaugeRewardWrapperEvent) {
-        let mut events = Vec::new();
-        let package = get_package_hash();
         match liquidity_gauge_reward_wrapper_event {
             LiquidityGaugeRewardWrapperEvent::Deposit { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
                 );
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::Withdraw { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
                 );
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
                 );
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
                 );
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::Transfer { from, to, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
@@ -673,7 +671,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>:
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::Approval {
                 owner,
@@ -681,7 +679,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>:
                 value,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
@@ -689,11 +687,8 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>:
                 event.insert("from", owner.to_string());
                 event.insert("to", spender.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

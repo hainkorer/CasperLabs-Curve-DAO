@@ -165,43 +165,38 @@ pub trait CURVEREWARDS<Storage: ContractStorage>:
     }
 
     fn emit(&mut self, curve_rewards_event: &CurveRewardsEvent) {
-        let mut events = Vec::new();
-        let package = get_package_hash();
         match curve_rewards_event {
             CurveRewardsEvent::RewardAdded { reward } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", curve_rewards_event.type_name());
                 event.insert("reward", reward.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             CurveRewardsEvent::Staked { user, amount } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", curve_rewards_event.type_name());
                 event.insert("user", user.to_string());
                 event.insert("amount", amount.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             CurveRewardsEvent::Withdrawn { user, amount } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", curve_rewards_event.type_name());
                 event.insert("user", user.to_string());
                 event.insert("amount", amount.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             CurveRewardsEvent::RewardPaid { user, reward } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", curve_rewards_event.type_name());
                 event.insert("user", user.to_string());
                 event.insert("reward", reward.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }
