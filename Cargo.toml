@@ -12,9 +12,9 @@ members = [
   "curve-token-v3/curve-token-v3-crate",
   "curve-token-v3/curve-token-v3-tests",
   # ERC-20 CRV
-  "erc20-crv/erc20_crv",
-  "erc20-crv/erc20_crv_tests",
-  "erc20-crv/session_code",
+  "erc20-crv/erc20-crv",
+  "erc20-crv/erc20-crv-tests",
+  "erc20-crv/erc20-crv-session-code",
   # FEE DISTRIBUTOR
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",

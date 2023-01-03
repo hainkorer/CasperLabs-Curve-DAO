@@ -4,7 +4,7 @@ deploy_wasms = ./script/wasm
 
 curve_token_v3_des_wasm = ./curve-token-v3/curve-token-v3-tests/wasm
 erc20_des_wasm = ./curve-erc20/curve-erc20-tests/wasm
-erc20_crv_des_wasm = ./erc20-crv/erc20_crv_tests/wasm
+erc20_crv_des_wasm = ./erc20-crv/erc20-crv-tests/wasm
 fee_distributor_des_wasm = ./fee-distributor/fee-distributor-tests/wasm
 gauge_controller_des_wasm = ./gauge-controller/gauge-controller-tests/wasm
 gauge_proxy_des_wasm = ./gauge-proxy/gauge-proxy-tests/wasm
@@ -38,31 +38,31 @@ build-contract-curve-erc20:
 	cargo build --release -p curve-erc20 --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/curve-erc20.wasm 2>/dev/null | true
 build-contract-erc20-crv:
-	cargo build --release -p test-session-code -p erc20-crv-session-code -p erc20_crv --target wasm32-unknown-unknown
-	wasm-strip target/wasm32-unknown-unknown/release/erc20_crv.wasm 2>/dev/null | true
+	cargo build --release -p test-session-code -p erc20-crv-session-code -p erc20-crv --target wasm32-unknown-unknown
+	wasm-strip target/wasm32-unknown-unknown/release/erc20-crv.wasm 2>/dev/null | true
 build-contract-fee-distributor:
-	cargo build --release -p test-session-code -p curve-erc20 -p fee-distributor-session-code -p voting-escrow -p fee-distributor -p erc20_crv --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p curve-erc20 -p fee-distributor-session-code -p voting-escrow -p fee-distributor -p erc20-crv --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/fee-distributor.wasm 2>/dev/null | true
 build-contract-gauge-controller:
-	cargo build --release -p minter -p test-session-code -p erc20_crv -p liquidity-gauge-v3 -p gauge-controller-session-code -p curve-erc20 -p voting-escrow -p gauge-controller --target wasm32-unknown-unknown
+	cargo build --release -p minter -p test-session-code -p erc20-crv -p liquidity-gauge-v3 -p gauge-controller-session-code -p curve-erc20 -p voting-escrow -p gauge-controller --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/gauge-controller-token.wasm 2>/dev/null | true
 build-contract-gauge-proxy:
 	cargo build --release -p gauge-proxy --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/gauge-proxy.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward:
-	cargo build --release -p liquidity-gauge-reward-session-code -p test-session-code -p curve-rewards -p erc20_crv -p curve-erc20 -p voting-escrow -p gauge-controller  -p minter -p liquidity-gauge-reward --target wasm32-unknown-unknown
+	cargo build --release -p liquidity-gauge-reward-session-code -p test-session-code -p curve-rewards -p erc20-crv -p curve-erc20 -p voting-escrow -p gauge-controller  -p minter -p liquidity-gauge-reward --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-reward-wrapper:
-	cargo build --release -p erc20_crv -p curve-erc20 -p test-session-code -p minter -p voting-escrow -p gauge-controller -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p curve-rewards --target wasm32-unknown-unknown
+	cargo build --release -p erc20-crv -p curve-erc20 -p test-session-code -p minter -p voting-escrow -p gauge-controller -p liquidity-gauge-reward -p liquidity-gauge-reward-wrapper -p liquidity-gauge-reward-wrapper-session-code -p curve-rewards --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-reward-wrapper.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-wrapper:
-	cargo build --release -p erc20_crv -p curve-erc20 -p test-session-code -p minter -p liquidity-gauge-v3 -p voting-escrow -p gauge-controller -p liquidity-gauge-wrapper-session-code -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
+	cargo build --release -p erc20-crv -p curve-erc20 -p test-session-code -p minter -p liquidity-gauge-v3 -p voting-escrow -p gauge-controller -p liquidity-gauge-wrapper-session-code -p liquidity-gauge-wrapper --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-wrapper.wasm 2>/dev/null | true
 build-contract-minter:
-	cargo build --release -p curve-erc20 -p erc20_crv -p erc20-crv-session-code -p liquidity-gauge-v3 -p liquidity-gauge-reward -p voting-escrow -p gauge-controller -p minter --target wasm32-unknown-unknown
+	cargo build --release -p curve-erc20 -p erc20-crv -p erc20-crv-session-code -p liquidity-gauge-v3 -p liquidity-gauge-reward -p voting-escrow -p gauge-controller -p minter --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/minter-token.wasm 2>/dev/null | true
 build-contract-reward-only-gauge:
-	cargo build --release -p test-session-code -p curve-erc20 -p erc20_crv -p curve-rewards -p reward-only-gauge -p reward-only-gauge-session-code --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p curve-erc20 -p erc20-crv -p curve-rewards -p reward-only-gauge -p reward-only-gauge-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/reward-only-gauge.wasm 2>/dev/null | true
 build-contract-vesting-escrow:
 	cargo build --release -p test-session-code -p vesting-escrow-session-code  -p curve-erc20 -p vesting-escrow --target wasm32-unknown-unknown
@@ -71,13 +71,13 @@ build-contract-vesting-escrow-factory:
 	cargo build --release -p vesting-escrow-simple -p curve-erc20 -p vesting-escrow-factory -p vesting-escrow-factory-session-code --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-factory.wasm 2>/dev/null | true
 build-contract-liquidity-gauge-v3:
-	cargo build --release -p test-session-code -p liquidity-gauge-v3-session-code -p liquidity-gauge-v3 -p curve-erc20 -p minter -p voting-escrow -p gauge-controller -p erc20_crv  --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p liquidity-gauge-v3-session-code -p liquidity-gauge-v3 -p curve-erc20 -p minter -p voting-escrow -p gauge-controller -p erc20-crv  --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/liquidity-gauge-v3.wasm 2>/dev/null | true
 build-contract-vesting-escrow-simple:
 	cargo build --release -p curve-erc20 -p vesting-escrow-simple --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting-escrow-simple.wasm 2>/dev/null | true
 build-contract-voting-escrow:
-	cargo build --release -p test-session-code -p erc20_crv -p voting-escrow --target wasm32-unknown-unknown
+	cargo build --release -p test-session-code -p erc20-crv -p voting-escrow --target wasm32-unknown-unknown
 	wasm-strip target/wasm32-unknown-unknown/release/vesting_escrow_simple.wasm 2>/dev/null | true
 build-contract-ownable:
 	cargo build --release -p test-session-code -p ownable --target wasm32-unknown-unknown
@@ -91,7 +91,7 @@ test-only-curve-token-v3:
 test-only-curve-erc20:
 	cargo test -p curve-erc20-tests
 test-only-erc20-crv:
-	cargo test -p erc20_crv_tests
+	cargo test -p erc20-crv-tests
 test-only-fee-distributor:
 	cargo test -p fee-distributor-tests 
 test-only-gauge-controller:
@@ -179,13 +179,13 @@ copy-wasm-file-curve-erc20:
 	cp ${wasm_src_path}/curve-erc20.wasm ${erc20_des_wasm}
 copy-wasm-file-erc20-crv:
 	cp ${wasm_src_path}/erc20-crv-session-code.wasm ${erc20_crv_des_wasm}
-	cp ${wasm_src_path}/erc20_crv.wasm ${erc20_crv_des_wasm}
+	cp ${wasm_src_path}/erc20-crv.wasm ${erc20_crv_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${erc20_crv_des_wasm}
 copy-wasm-file-fee-distributor:
 	cp ${wasm_src_path}/fee-distributor-session-code.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/fee-distributor.wasm ${fee_distributor_des_wasm}
-	cp ${wasm_src_path}/erc20_crv.wasm ${fee_distributor_des_wasm}
+	cp ${wasm_src_path}/erc20-crv.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/curve-erc20.wasm ${fee_distributor_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${fee_distributor_des_wasm}
 copy-wasm-file-gauge-controller:
@@ -195,12 +195,12 @@ copy-wasm-file-gauge-controller:
 	cp ${wasm_src_path}/minter-token.wasm ${gauge_controller_des_wasm}
 	cp ${wasm_src_path}/liquidity-gauge-v3.wasm ${gauge_controller_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-session-code.wasm ${gauge_controller_des_wasm}
-	cp ${wasm_src_path}/erc20_crv.wasm ${gauge_controller_des_wasm}
+	cp ${wasm_src_path}/erc20-crv.wasm ${gauge_controller_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${gauge_controller_des_wasm}
 copy-wasm-file-gauge-proxy:
 	cp ${wasm_src_path}/gauge-proxy.wasm ${gauge_proxy_des_wasm}
 copy-wasm-file-liquidity-gauge-reward:
-	cp ${wasm_src_path}/erc20_crv.wasm ${liquidity_gauge_reward_des_wasm}
+	cp ${wasm_src_path}/erc20-crv.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/curve-erc20.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${liquidity_gauge_reward_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-token.wasm ${liquidity_gauge_reward_des_wasm}
@@ -218,7 +218,7 @@ copy-wasm-file-liquidity-gauge-reward-wrapper:
 	cp ${wasm_src_path}/curve-rewards.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-token.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
-	cp ${wasm_src_path}/erc20_crv.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
+	cp ${wasm_src_path}/erc20-crv.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${liquidity_gauge_reward_wrapper_des_wasm}
 copy-wasm-file-liquidity-gauge-wrapper:
 	cp ${wasm_src_path}/curve-erc20.wasm ${liquidity_gauge_wrapper_des_wasm}
@@ -228,10 +228,10 @@ copy-wasm-file-liquidity-gauge-wrapper:
 	cp ${wasm_src_path}/liquidity-gauge-v3.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/gauge-controller-token.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${liquidity_gauge_wrapper_des_wasm}
-	cp ${wasm_src_path}/erc20_crv.wasm ${liquidity_gauge_wrapper_des_wasm}
+	cp ${wasm_src_path}/erc20-crv.wasm ${liquidity_gauge_wrapper_des_wasm}
 	cp ${wasm_src_path}/test-session-code.wasm ${liquidity_gauge_wrapper_des_wasm}
 copy-wasm-file-minter:
-	cp ${wasm_src_path}/erc20_crv.wasm ${minter_des_wasm}
+	cp ${wasm_src_path}/erc20-crv.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/curve-erc20.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/voting-escrow.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/minter-token.wasm ${minter_des_wasm}
@@ -240,7 +240,7 @@ copy-wasm-file-minter:
 	cp ${wasm_src_path}/liquidity-gauge-v3.wasm ${minter_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${minter_des_wasm}
 copy-wasm-file-reward-only-gauge:
-	cp ${wasm_src_path}/erc20_crv.wasm ${reward_only_gauge_des_wasm}
+	cp ${wasm_src_path}/erc20-crv.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-token.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/reward-only-gauge-session-code.wasm ${reward_only_gauge_des_wasm}
 	cp ${wasm_src_path}/curve-rewards.wasm ${reward_only_gauge_des_wasm}
@@ -262,7 +262,7 @@ copy-wasm-file-voting-escrow:
 copy-wasm-file-liquidity-gauge-v3:
 	cp ${root_directory}${wasm_src_path}liquidity-gauge-v3.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}curve-erc20.wasm ${liquidity_gauge_v3_des_wasm}
-	cp ${root_directory}${wasm_src_path}erc20_crv.wasm ${liquidity_gauge_v3_des_wasm}
+	cp ${root_directory}${wasm_src_path}erc20-crv.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}gauge-controller-token.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}minter-token.wasm ${liquidity_gauge_v3_des_wasm}
 	cp ${root_directory}${wasm_src_path}voting-escrow.wasm ${liquidity_gauge_v3_des_wasm}

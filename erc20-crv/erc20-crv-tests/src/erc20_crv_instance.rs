@@ -19,7 +19,7 @@ impl ERC20CRVInstance {
     ) -> ERC20CRVInstance {
         ERC20CRVInstance(TestContract::new(
             env,
-            "erc20_crv.wasm",
+            "erc20-crv.wasm",
             contract_name,
             sender,
             runtime_args! {

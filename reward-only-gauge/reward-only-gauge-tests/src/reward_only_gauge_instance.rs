@@ -62,7 +62,7 @@ impl REWARDONLYGAUGEInstance {
     ) -> TestContract {
         TestContract::new(
             env,
-            "erc20_crv.wasm",
+            "erc20-crv.wasm",
             "proxy_test2",
             sender,
             runtime_args! {
