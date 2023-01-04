@@ -121,11 +121,11 @@ pub trait ERC20CRV<Storage: ContractStorage>:
             start_epoch_supply = start_epoch_supply
                 .checked_add(
                     rate.checked_mul(data::RATE_REDUCTION_TIME)
-                        .unwrap_or_revert(),
+                        .unwrap_or_revert_with(Error::Erc20CRVOverFlow22),
                 )
                 .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError4);
             data::set_start_epoch_supply(start_epoch_supply);
-            rate = (rate.checked_mul(data::RATE_DENOMINATOR).unwrap_or_revert())
+            rate = (rate.checked_mul(data::RATE_DENOMINATOR).unwrap_or_revert_with(Error::Erc20CRVOverFlow23))
                 .checked_div(data::RATE_REDUCTION_COEFFICIENT)
                 .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError5);
         }
@@ -198,7 +198,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
             .unwrap_or_revert_with(Error::Erc20CRVUnderFlow4);
         let ans: U256 = blocktime_sub_st_epoch
             .checked_mul(data::get_rate())
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::Erc20CRVOverFlow24);
         data::get_start_epoch_supply()
             .checked_add(ans)
             .unwrap_or_revert_with(Error::Erc20CRVOverFlow16)
@@ -230,7 +230,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
                 .checked_mul(
                     data::RATE_DENOMINATOR
                         .checked_div(data::RATE_REDUCTION_COEFFICIENT)
-                        .unwrap_or_revert(),
+                        .unwrap_or_revert_with(Error::Erc20CRVUnderFlow2),
                 )
                 .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError1);
         }
@@ -271,7 +271,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
                     .unwrap_or_revert_with(Error::Erc20CRVOverFlow7);
                 to_mint = to_mint
                     .checked_add(current_rate)
-                    .unwrap_or_revert()
+                    .unwrap_or_revert_with(Error::Erc20CRVOverFlow21)
                     .checked_mul(current_end_sub_current_st)
                     .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError2);
                 if start >= current_epoch_time {
@@ -285,7 +285,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
                 .checked_mul(
                     data::RATE_REDUCTION_COEFFICIENT
                         .checked_div(data::RATE_DENOMINATOR)
-                        .unwrap_or_revert(),
+                        .unwrap_or_revert_with(Error::Erc20CRVUnderFlow5),
                 )
                 .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError3);
             if current_rate > data::INITIAL_RATE {
