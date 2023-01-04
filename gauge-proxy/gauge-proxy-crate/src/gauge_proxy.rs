@@ -6,9 +6,7 @@ use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 
-use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef,
-};
+use casper_types::{runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 
 #[repr(u16)]

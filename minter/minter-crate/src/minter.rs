@@ -4,9 +4,7 @@ use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
-use casper_types::{
-    runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
-};
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, U128, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
 

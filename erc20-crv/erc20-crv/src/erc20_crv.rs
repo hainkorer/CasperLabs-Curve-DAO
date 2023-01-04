@@ -3,13 +3,12 @@ use crate::data::{self, AdminWhitelist};
 use alloc::{
     collections::BTreeMap,
     string::{String, ToString},
-    vec::Vec,
 };
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::{ApiError, ContractHash, ContractPackageHash, Key, URef, U256};
+use casper_types::{ApiError, ContractHash, ContractPackageHash, Key, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
 use crv20::{self, Address, CURVEERC20};
