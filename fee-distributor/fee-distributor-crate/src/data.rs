@@ -5,7 +5,7 @@ use casper_types::{
 };
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::{keys::*, utils::*};
+use common::{keys::*, utils::*,errors::*};
 
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
 pub const TOKEN_CHECKPOINT_DEADLINE: U256 = U256([86400000, 0, 0, 0]);
@@ -99,7 +99,7 @@ impl TokensPerWeek {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self.length.checked_add(1.into()).unwrap_or_revert_with(Error::FeeDistributorAdditionError20);
     }
 }
 
@@ -131,7 +131,7 @@ impl VeSupply {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self.length.checked_add(1.into()).unwrap_or_revert_with(Error::FeeDistributorAdditionError21);
     }
 }
 

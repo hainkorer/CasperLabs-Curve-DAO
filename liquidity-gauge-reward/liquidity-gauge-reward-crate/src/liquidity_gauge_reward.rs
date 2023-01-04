@@ -134,41 +134,41 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
         );
         let mut lim: U256 = l
             .checked_mul(TOKENLESS_PRODUCTION)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError3)
             .checked_div(100.into())
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError4);
         if (voting_total > 0.into())
             && (U256::from(u64::from(get_blocktime()))
                 > PeriodTimestamp::instance()
                     .get(&0.into())
                     .checked_add(BOOST_WARMUP)
-                    .unwrap_or_revert())
+                    .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError5))
         {
             lim = lim
                 .checked_add(
                     L.checked_mul(voting_balance)
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError6)
                         .checked_div(voting_total)
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError7)
                         .checked_mul(
                             U256::from(100)
                                 .checked_sub(TOKENLESS_PRODUCTION)
-                                .unwrap_or_revert(),
+                                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError8),
                         )
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError9)
                         .checked_div(100.into())
-                        .unwrap_or_revert(),
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError10),
                 )
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError11);
         }
         lim = U256::min(l, lim);
         let old_bal: U256 = WorkingBalances::instance().get(&addr);
         WorkingBalances::instance().set(&addr, lim);
         let working_supply: U256 = get_working_supply()
             .checked_add(lim)
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError12)
             .checked_sub(old_bal)
-            .unwrap_or_revert();
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError13);
         set_working_supply(working_supply);
         LIQUIDITYGAUGEREWARD::emit(
             self,
@@ -210,7 +210,9 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
                     "owner" => Key::from(get_package_hash())
                 },
             );
-            d_reward = _d_reward.checked_sub(d_reward).unwrap_or_revert();
+            d_reward = _d_reward
+                .checked_sub(d_reward)
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError14);
         }
 
         let user_balance: U256 = self.balance_of(Address::from(addr));
@@ -220,11 +222,13 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
             dI = U256::from(10)
                 .pow(18.into())
                 .checked_mul(d_reward)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError15)
                 .checked_div(total_balance)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError16);
         }
-        let I: U256 = get_reward_integral().checked_add(dI).unwrap_or_revert();
+        let I: U256 = get_reward_integral()
+            .checked_add(dI)
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError17);
         set_reward_integral(I);
         RewardsFor::instance().set(
             &addr,
@@ -234,14 +238,16 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
                     user_balance
                         .checked_mul(
                             I.checked_sub(RewardIntegralFor::instance().get(&addr))
-                                .unwrap_or_revert(),
+                                .unwrap_or_revert_with(
+                                    Error::LiquidityGaugeRewardArithmaticError18,
+                                ),
                         )
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError19)
                         .checked_div(10.into())
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError20)
                         .pow(18.into()),
                 )
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError21),
         );
         RewardIntegralFor::instance().set(&addr, I);
     }
@@ -290,22 +296,26 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
         if U256::from(u64::from(get_blocktime())) > period_time {
             let mut prev_week_time: U256 = period_time;
             let mut week_time: U256 = U256::min(
-                (period_time.checked_add(WEEK).unwrap_or_revert())
-                    .checked_div(WEEK)
-                    .unwrap_or_revert()
-                    .checked_mul(WEEK)
-                    .unwrap_or_revert(),
+                (period_time
+                    .checked_add(WEEK)
+                    .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError22))
+                .checked_div(WEEK)
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError23)
+                .checked_mul(WEEK)
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError24),
                 U256::from(u64::from(get_blocktime())),
             );
             for _ in 0..500 {
-                let dt: U256 = week_time.checked_sub(prev_week_time).unwrap_or_revert();
+                let dt: U256 = week_time
+                    .checked_sub(prev_week_time)
+                    .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError25);
                 let w: U256 = runtime::call_versioned_contract(
                     controller.into_hash().unwrap_or_revert().into(),
                     None,
                     "gauge_relative_weight",
                     runtime_args! {
                         "addr" => Key::from(get_package_hash()),
-                        "time" => prev_week_time.checked_div(WEEK).unwrap_or_revert().checked_mul(WEEK).unwrap_or_revert()
+                        "time" => prev_week_time.checked_div(WEEK).unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError26).checked_mul(WEEK).unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError27)
                     },
                 );
                 if working_supply > 0.into() {
@@ -318,41 +328,65 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
                         integrate_inv_supply = integrate_inv_supply
                             .checked_add(
                                 rate.checked_mul(w)
-                                    .unwrap_or_revert()
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError28,
+                                    )
                                     .checked_mul(
                                         prev_future_epoch
                                             .checked_sub(prev_week_time)
-                                            .unwrap_or_revert(),
+                                            .unwrap_or_revert_with(
+                                                Error::LiquidityGaugeRewardArithmaticError29,
+                                            ),
                                     )
-                                    .unwrap_or_revert()
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError30,
+                                    )
                                     .checked_div(working_supply)
-                                    .unwrap_or_revert(),
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError31,
+                                    ),
                             )
-                            .unwrap_or_revert();
+                            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError32);
                         rate = new_rate;
                         integrate_inv_supply = integrate_inv_supply
                             .checked_add(
                                 rate.checked_mul(w)
-                                    .unwrap_or_revert()
-                                    .checked_mul(
-                                        week_time.checked_sub(prev_future_epoch).unwrap_or_revert(),
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError33,
                                     )
-                                    .unwrap_or_revert()
+                                    .checked_mul(
+                                        week_time
+                                            .checked_sub(prev_future_epoch)
+                                            .unwrap_or_revert_with(
+                                                Error::LiquidityGaugeRewardArithmaticError34,
+                                            ),
+                                    )
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError35,
+                                    )
                                     .checked_div(working_supply)
-                                    .unwrap_or_revert(),
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError36,
+                                    ),
                             )
-                            .unwrap_or_revert();
+                            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError37);
                     } else {
                         integrate_inv_supply = integrate_inv_supply
                             .checked_add(
                                 rate.checked_mul(w)
-                                    .unwrap_or_revert()
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError38,
+                                    )
                                     .checked_mul(dt)
-                                    .unwrap_or_revert()
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError39,
+                                    )
                                     .checked_div(working_supply)
-                                    .unwrap_or_revert(),
+                                    .unwrap_or_revert_with(
+                                        Error::LiquidityGaugeRewardArithmaticError40,
+                                    ),
                             )
-                            .unwrap_or_revert();
+                            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError41);
                     }
                     // On precisions of the calculation
                     //  rate ~= 10e18
@@ -366,12 +400,16 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
                 }
                 prev_week_time = week_time;
                 week_time = U256::min(
-                    week_time.checked_add(WEEK).unwrap_or_revert(),
+                    week_time
+                        .checked_add(WEEK)
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError42),
                     U256::from(u64::from(get_blocktime())),
                 )
             }
         }
-        period = period.checked_add(1.into()).unwrap_or_revert();
+        period = period
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError43);
         set_period(period);
         PeriodTimestamp::instance().set(
             &period.as_u128().into(),
@@ -388,14 +426,16 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
                         .checked_mul(
                             integrate_inv_supply
                                 .checked_sub(IntegrateInvSupplyOf::instance().get(&addr))
-                                .unwrap_or_revert(),
+                                .unwrap_or_revert_with(
+                                    Error::LiquidityGaugeRewardArithmaticError44,
+                                ),
                         )
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError45)
                         .checked_div(10.into())
-                        .unwrap_or_revert()
+                        .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError46)
                         .pow(18.into()),
                 )
-                .unwrap_or_revert(),
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError47),
         );
         IntegrateInvSupplyOf::instance().set(&addr, integrate_inv_supply);
         IntegrateCheckpointOf::instance().set(&addr, U256::from(u64::from(get_blocktime())));
@@ -433,7 +473,7 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
                     "spender" => Key::from(get_package_hash())
                 },
             ))
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError48)
     }
 
     /// @notice Get the number of claimable reward tokens for a user
@@ -456,24 +496,26 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
             dI = U256::from(10)
                 .pow(18.into())
                 .checked_mul(d_reward)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError49)
                 .checked_div(total_balance)
-                .unwrap_or_revert();
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError50);
         }
-        let I: U256 = get_reward_integral().checked_add(dI).unwrap_or_revert();
+        let I: U256 = get_reward_integral()
+            .checked_add(dI)
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError51);
         RewardsFor::instance()
             .get(&addr)
             .checked_add(
                 user_balance
                     .checked_mul(
                         I.checked_sub(RewardIntegralFor::instance().get(&addr))
-                            .unwrap_or_revert(),
+                            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError52),
                     )
-                    .unwrap_or_revert(),
+                    .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError53),
             )
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError54)
             .checked_div(10.into())
-            .unwrap_or_revert()
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError55)
             .pow(18.into())
     }
 
@@ -515,9 +557,9 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
         if WorkingBalances::instance().get(&addr)
             <= balance
                 .checked_mul(TOKENLESS_PRODUCTION)
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError56)
                 .checked_div(100.into())
-                .unwrap_or_revert()
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError57)
         {
             runtime::revert(ApiError::from(Error::LiquidityGaugeRewardKickNotNeeded2));
         }
@@ -559,8 +601,11 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
             let balance: U256 = self
                 .balance_of(Address::from(addr))
                 .checked_add(value)
-                .unwrap_or_revert();
-            let supply: U256 = self.total_supply().checked_add(value).unwrap_or_revert();
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError58);
+            let supply: U256 = self
+                .total_supply()
+                .checked_add(value)
+                .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError59);
             self.set_balance(Address::from(addr), balance);
             self.set_total_supply(supply);
             self._update_liquidity_limit(addr, balance, supply);
@@ -605,8 +650,11 @@ pub trait LIQUIDITYGAUGEREWARD<Storage: ContractStorage>:
         let balance: U256 = self
             .balance_of(Address::from(self.get_caller()))
             .checked_sub(value)
-            .unwrap_or_revert();
-        let supply: U256 = self.total_supply().checked_sub(value).unwrap_or_revert();
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError60);
+        let supply: U256 = self
+            .total_supply()
+            .checked_sub(value)
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError61);
         self.set_balance(Address::from(self.get_caller()), balance);
         self.set_total_supply(supply);
         self._update_liquidity_limit(self.get_caller(), balance, supply);

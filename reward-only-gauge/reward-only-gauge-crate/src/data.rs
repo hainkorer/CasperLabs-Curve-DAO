@@ -6,7 +6,7 @@ use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::U
 use casper_types::{system::CallStackElement, ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
-use common::{keys::*, utils::*};
+use common::{keys::*, utils::*,errors::*};
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const CLAIM_FREQUENCY: U256 = U256([3600000, 0, 0, 0]);
@@ -52,7 +52,7 @@ impl RewardTokens {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self.length.checked_add(1.into()).unwrap_or_revert_with(Error::RewardOnlyGaugeOverFlow8);
     }
 }
 
