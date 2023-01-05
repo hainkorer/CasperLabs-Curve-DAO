@@ -197,7 +197,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             } else {
                 max = mid
                     .checked_sub(1.into())
-                    .unwrap_or_revert_with(Error::FeeDistributorDivisionError5);
+                    .unwrap_or_revert_with(Error::FeeDistributorDivisionError12);
             }
         }
         min

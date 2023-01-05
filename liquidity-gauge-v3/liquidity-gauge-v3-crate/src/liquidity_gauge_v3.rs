@@ -304,7 +304,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
                         .checked_mul(
                             integral
                                 .checked_sub(integral_for)
-                                .unwrap_or_revert_with(Error::LiquidityGaugeArithmeticError15),
+                                .unwrap_or_revert_with(Error::LiquidityGaugeArithmeticError47),
                         )
                         .unwrap_or_revert_with(Error::LiquidityGaugeArithmeticError16)
                         .checked_div(U256::from(1000000000))
@@ -333,7 +333,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
                         //     assert convert(response, bool)
                         claim_data.claimed_amount = total_claimed
                             .checked_add(total_claimable)
-                            .unwrap_or_revert_with(Error::LiquidityGaugeOverFlow7);
+                            .unwrap_or_revert_with(Error::LiquidityGaugeOverFlow3);
                         ClaimData::instance().set(&_user, &token, claim_data);
                     } else if new_claimable > 0.into() {
                         claim_data.claimed_amount = total_claimed;
@@ -497,7 +497,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
     }
     fn user_checkpoint(&mut self, addr: Key) -> bool {
         if !(self.get_caller() == addr || self.get_caller() == data::get_minter()) {
-            runtime::revert(Error::LiquidityGuageV3Unauthorized);
+            runtime::revert(Error::LiquidityGuageUnauthorized);
         }
         self._checkpoint(addr);
         self._update_liquidity_limit(
@@ -569,7 +569,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
         let lock = data::get_lock();
         if lock {
             // Locked
-            runtime::revert(Error::LiquidityGaugeLocked1);
+            runtime::revert(Error::LiquidityGaugeLocked2);
         }
         data::set_lock(true);
         let addr: Key = if let Some(..) = _addr {
@@ -624,7 +624,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
             },
         );
         if !((ret == 0.into()) || (t_ve > t_last)) {
-            runtime::revert(ApiError::User(Error::LiquidityGuageV3KickNotAllowed as u16));
+            runtime::revert(ApiError::User(Error::LiquidityGuageKickNotAllowed1 as u16));
         }
         if data::WorkingBalances::instance().get(&addr)
             <= balance
@@ -633,7 +633,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
                 .checked_div(100.into())
                 .unwrap_or_revert_with(Error::LiquidityGaugeArithmeticError46)
         {
-            runtime::revert(ApiError::User(Error::LiquidityGuageV3KickNotAllowed as u16));
+            runtime::revert(ApiError::User(Error::LiquidityGuageKickNotAllowed2 as u16));
         }
         self._checkpoint(addr);
         self._update_liquidity_limit(
@@ -670,11 +670,11 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
             }
             total_supply = total_supply
                 .checked_add(value)
-                .unwrap_or_revert_with(Error::LiquidityGaugeOverFlow4);
+                .unwrap_or_revert_with(Error::LiquidityGaugeOverFlow1);
             let balance = self.balance_of(Address::from(_addr));
             let new_balance = balance
                 .checked_add(value)
-                .unwrap_or_revert_with(Error::LiquidityGaugeOverFlow5);
+                .unwrap_or_revert_with(Error::LiquidityGaugeOverFlow2);
             self.set_balance(Address::from(_addr), new_balance);
             self.set_total_supply(total_supply);
             self._update_liquidity_limit(_addr, new_balance, total_supply);
@@ -723,7 +723,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
     fn withdraw(&mut self, value: U256, claim_rewards: Option<bool>) {
         let lock = data::get_lock();
         if lock {
-            runtime::revert(Error::LiquidityGaugeLocked1);
+            runtime::revert(Error::LiquidityGaugeLocked3);
         }
         data::set_lock(true);
         let claim_rewards: bool = claim_rewards.is_some();
@@ -742,11 +742,11 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
             }
             _total_supply = _total_supply
                 .checked_sub(value)
-                .unwrap_or_revert_with(Error::LiquidityGaugeUnderFlow10);
+                .unwrap_or_revert_with(Error::LiquidityGaugeUnderFlow5);
             let balance = self.balance_of(Address::from(self.get_caller()));
             let new_balance = balance
                 .checked_sub(value)
-                .unwrap_or_revert_with(Error::LiquidityGaugeUnderFlow11);
+                .unwrap_or_revert_with(Error::LiquidityGaugeUnderFlow6);
             self.set_balance(Address::from(self.get_caller()), new_balance);
             self.set_total_supply(_total_supply);
             self._update_liquidity_limit(self.get_caller(), new_balance, _total_supply);
@@ -819,7 +819,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
     fn transfer(&mut self, recipient: Address, amount: U256) -> Result<(), u32> {
         let lock = data::get_lock();
         if lock {
-            runtime::revert(Error::LiquidityGaugeLocked1);
+            runtime::revert(Error::LiquidityGaugeLocked4);
         }
         data::set_lock(true);
         self._transfer(self.get_caller(), Key::from(recipient), amount);
@@ -835,7 +835,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
         let lock = data::get_lock();
         if lock {
             //Locked
-            runtime::revert(Error::LiquidityGaugeLocked1);
+            runtime::revert(Error::LiquidityGaugeLocked5);
         }
         data::set_lock(true);
         //let allowances = Allowance::instance();
@@ -876,7 +876,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
     fn set_rewards(&mut self, reward_contract: Key, sigs: String, reward_tokens: Vec<String>) {
         let lock = data::get_lock();
         if lock {
-            runtime::revert(Error::LiquidityGaugeLocked1);
+            runtime::revert(Error::LiquidityGaugeLocked6);
         }
         data::set_lock(true);
         let _sigs: Bytes = Bytes::from(sigs.as_bytes());
@@ -989,7 +989,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
 
             if current_token != zero_address() {
                 if current_token != new_token {
-                    runtime::revert(Error::LiquidityGaugeCannotModifyExistingRewardtoken);
+                    runtime::revert(Error::LiquidityGaugeCannotModifyExistingRewardToken);
                 }
             } else if new_token != zero_address() {
                 RewardTokens::instance().set(&i.into(), new_token);
@@ -1013,7 +1013,7 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
 
     fn commit_transfer_ownership(&mut self, addr: Key) {
         if self.get_caller() != self.admin() {
-            runtime::revert(Error::LiquidityGaugeOnlyAdmin1);
+            runtime::revert(Error::LiquidityGaugeOnlyAdmin3);
         }
         data::set_future_admin(addr);
         self.emit(&LiquidityGaugeV3Event::CommitOwnership { admin: addr });
