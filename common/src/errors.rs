@@ -1340,6 +1340,23 @@ pub enum Error {
     LiquidityGaugeArithmeticError46 = 11974,
     /// (Liquidity guage v3 Arithmetic error 47)
     LiquidityGaugeArithmeticError47 = 11975,
+
+    /// (Gauge Proxy Access Denied)
+    GaugeProxyAccessDenied1 = 11976,
+    /// (Gauge Proxy Access Denied)
+    GaugeProxyAccessDenied2 = 11977,
+    /// (Gauge Proxy Access Denied)
+    GaugeProxyAccessDenied3 = 11978,
+    /// (Gauge Proxy Access Denied)
+    GaugeProxyAccessDenied4 = 11979,
+    /// (Gauge Proxy Access Denied)
+    GaugeProxyAccessDenied5 = 11980,
+    /// (Gauge Proxy Is Locked)
+    GaugeProxyIsLocked1 = 11981,
+    /// (Gauge Proxy Is Locked)
+    GaugeProxyIsLocked2 = 11982,
+    /// (Gauge Proxy Is Locked)
+    GaugeProxyIsLocked3 = 11983,
 }
 
 impl From<Error> for ApiError {
