@@ -525,7 +525,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>:
                 Address::from(self.get_caller()),
                 allowance
                     .checked_sub(amount)
-                    .unwrap_or_revert_with(Error::RewardWrapperSubtractionError11),
+                    .unwrap_or_revert_with(Error::RewardWrapperSubtractionError12),
             );
         }
         self._transfer(Key::from(owner), Key::from(recipient), amount);

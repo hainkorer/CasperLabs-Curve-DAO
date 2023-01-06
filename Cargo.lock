@@ -399,6 +399,7 @@ dependencies = [
  "casper-types",
  "casperlabs-contract-utils 0.2.2",
  "casperlabs-ownable",
+ "common",
  "cryptoxide",
  "hex",
 ]
@@ -423,6 +424,7 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "casperlabs-contract-utils 0.2.2",
+ "common",
  "cryptoxide",
  "hex",
 ]

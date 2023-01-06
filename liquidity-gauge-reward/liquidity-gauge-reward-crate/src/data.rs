@@ -3,7 +3,7 @@ use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::{bytesrepr::ToBytes, CLTyped, Key, U128, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::{keys::*, utils::*,errors::*};
+use common::{errors::*, keys::*, utils::*};
 
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
 pub const BOOST_WARMUP: U256 = U256([1209600000, 0, 0, 0]);
@@ -90,7 +90,10 @@ impl PeriodTimestamp {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError1);
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError1);
     }
 }
 
@@ -125,7 +128,10 @@ impl IntegrateInvSupply {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError2);
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError2);
     }
 }
 

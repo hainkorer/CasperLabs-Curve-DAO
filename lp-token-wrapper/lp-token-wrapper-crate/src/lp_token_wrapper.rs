@@ -1,24 +1,10 @@
 use crate::data::*;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
 use casper_types::{runtime_args, Key, RuntimeArgs, U256};
-use casper_types::{ApiError, ContractHash, ContractPackageHash};
+use casper_types::{ContractHash, ContractPackageHash};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use crv20::data::get_package_hash;
 use crv20::{Address, CURVEERC20};
-
-#[repr(u16)]
-pub enum Error {
-    /// 65,540 for (Lp Token Wrapper Subtraction Error 1)
-    LpTokenWrapperSubtractionError1 = 11903,
-    /// 65,540 for (Lp Token Wrapper Subtraction Error 2)
-    LpTokenWrapperSubtractionError2 = 11904,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
-    }
-}
 
 pub trait LPTOKENWRAPPER<Storage: ContractStorage>:
     ContractContext<Storage> + CURVEERC20<Storage>

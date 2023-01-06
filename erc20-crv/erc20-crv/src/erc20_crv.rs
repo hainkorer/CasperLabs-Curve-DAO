@@ -125,9 +125,11 @@ pub trait ERC20CRV<Storage: ContractStorage>:
                 )
                 .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError4);
             data::set_start_epoch_supply(start_epoch_supply);
-            rate = (rate.checked_mul(data::RATE_DENOMINATOR).unwrap_or_revert_with(Error::Erc20CRVOverFlow23))
-                .checked_div(data::RATE_REDUCTION_COEFFICIENT)
-                .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError5);
+            rate = (rate
+                .checked_mul(data::RATE_DENOMINATOR)
+                .unwrap_or_revert_with(Error::Erc20CRVOverFlow23))
+            .checked_div(data::RATE_REDUCTION_COEFFICIENT)
+            .unwrap_or_revert_with(Error::Erc20CRVAirthmeticError5);
         }
         data::set_rate(rate);
         let blocktime: u64 = runtime::get_blocktime().into();
@@ -299,7 +301,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
     ///@param minter Address of the minter
     fn set_minter(&self, minter: Key) {
         if !AdminWhitelist::instance().get(&self.get_caller()) {
-            runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
+            runtime::revert(ApiError::from(Error::Erc20CRVInvalidAdmin1));
         }
         if minter == zero_address() || minter == account_zero_address() {
             runtime::revert(ApiError::from(Error::Erc20CRVZeroAddress1));
@@ -312,7 +314,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
     ///@param _admin New admin address
     fn set_admin(&self, admin: Key) {
         if !AdminWhitelist::instance().get(&self.get_caller()) {
-            runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly));
+            runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly2));
         }
         if AdminWhitelist::instance().get(&admin) {
             runtime::revert(ApiError::from(Error::Erc20CRVAlreadyAdded));
@@ -325,7 +327,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
     ///@param _admin Removal admin address
     fn remove_admin(&self, admin: Key) {
         if !AdminWhitelist::instance().get(&self.get_caller()) {
-            runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly));
+            runtime::revert(ApiError::from(Error::Erc20CRVAdminOnly1));
         }
         if !AdminWhitelist::instance().get(&admin) {
             runtime::revert(ApiError::from(Error::Erc20CRVAlreadyRemoved));
@@ -373,7 +375,7 @@ pub trait ERC20CRV<Storage: ContractStorage>:
     ///@param symbol New token symbol
     fn set_name(&self, name: String, symbol: String) {
         if !AdminWhitelist::instance().get(&self.get_caller()) {
-            runtime::revert(ApiError::from(Error::Erc20CRVInvalidMinter));
+            runtime::revert(ApiError::from(Error::Erc20CRVInvalidAdmin2));
         }
         CURVEERC20::set_name(self, name);
         CURVEERC20::set_symbol(self, symbol);

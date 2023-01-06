@@ -12,5 +12,6 @@ description = "this package have basic functionalities for CasperLabs Curve Dao'
 casper-contract = "1.4.4"
 casper-types = "= 1.5.0"
 casperlabs-contract-utils = "0.2.1"
+common = { path = "../../common" }
 hex = { version = "0.4.3", default-features = false }
 cryptoxide = "0.3.3"

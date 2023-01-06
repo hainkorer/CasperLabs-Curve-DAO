@@ -7,9 +7,9 @@ use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::*;
 use common::{
+    errors::*,
     keys::*,
     utils::{key_to_str, *},
-    errors::*
 };
 
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
@@ -257,7 +257,10 @@ impl Gauges {
 
     pub fn push(&mut self, value: Key) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert_with(Error::GaugeControllerOverFlow28);
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::GaugeControllerOverFlow28);
     }
 }
 
@@ -288,7 +291,10 @@ impl TimeSum {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert_with(Error::GaugeControllerOverFlow29);
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::GaugeControllerOverFlow29);
     }
 }
 
@@ -421,7 +427,10 @@ impl TimeTypeWeight {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert_with(Error::GaugeControllerOverFlow30);
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::GaugeControllerOverFlow30);
     }
 }
 
