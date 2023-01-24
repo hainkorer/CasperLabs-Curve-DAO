@@ -19,7 +19,7 @@ use hex::encode;
 pub type TokenId = U256;
 pub type Meta = BTreeMap<String, String>;
 
-#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
+#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct ClaimDataStruct {
     pub claimable_amount: U256,
     pub claimed_amount: U256,
@@ -30,6 +30,7 @@ pub struct RewardData {
     pub address: Key,
     pub time_stamp: U256,
 }
+
 pub fn address_to_str(owner: &Address) -> String {
     let preimage = owner.to_bytes().unwrap();
     base64::encode(&preimage)

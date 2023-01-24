@@ -505,6 +505,7 @@ dependencies = [
  "casper-contract",
  "casper-types",
  "hex",
+ "renvm-sig",
 ]
 
 [[package]]
