@@ -1,4 +1,5 @@
 use alloc::{
+    format,
     string::{String, ToString},
     vec::Vec,
 };
@@ -93,11 +94,93 @@ impl VoteUserSlopes {
     }
 
     pub fn get(&self, owner: &Key, spender: &Key) -> VotedSlope {
-        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
+        VotedSlope {
+            slope: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        VOTE_USER_SLOPES_DICT,
+                        "_slope_",
+                        owner.to_formatted_string(),
+                        "_",
+                        spender.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            power: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        VOTE_USER_SLOPES_DICT,
+                        "_power_",
+                        owner.to_formatted_string(),
+                        "_",
+                        spender.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            end: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        VOTE_USER_SLOPES_DICT,
+                        "_end_",
+                        owner.to_formatted_string(),
+                        "_",
+                        spender.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, owner: &Key, spender: &Key, value: VotedSlope) {
-        self.dict.set_by_keys((owner, spender), value);
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                VOTE_USER_SLOPES_DICT,
+                "_slope_",
+                owner.to_formatted_string(),
+                "_",
+                spender.to_formatted_string()
+            ))
+            .as_str(),
+            value.slope,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                VOTE_USER_SLOPES_DICT,
+                "_power_",
+                owner.to_formatted_string(),
+                "_",
+                spender.to_formatted_string()
+            ))
+            .as_str(),
+            value.power,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                VOTE_USER_SLOPES_DICT,
+                "_end_",
+                owner.to_formatted_string(),
+                "_",
+                spender.to_formatted_string()
+            ))
+            .as_str(),
+            value.end,
+        );
     }
 }
 
@@ -165,13 +248,65 @@ impl PointsWeight {
     }
 
     pub fn get(&self, owner: &Key, recipient: &U256) -> Point {
-        let key_: String = key_and_value_to_str(owner, recipient);
-        self.dict.get(key_.as_str()).unwrap_or_default()
+        Point {
+            bias: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        POINTS_WEIGHT_DICT,
+                        "_bias_",
+                        owner.to_formatted_string(),
+                        "_",
+                        recipient
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            slope: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        POINTS_WEIGHT_DICT,
+                        "_slope_",
+                        owner.to_formatted_string(),
+                        "_",
+                        recipient
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, owner: &Key, recipient: &U256, value: Point) {
-        let key_: String = key_and_value_to_str(owner, recipient);
-        self.dict.set(key_.as_str(), value);
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                POINTS_WEIGHT_DICT,
+                "_bias_",
+                owner.to_formatted_string(),
+                "_",
+                recipient
+            ))
+            .as_str(),
+            value.bias,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                POINTS_WEIGHT_DICT,
+                "_slope_",
+                owner.to_formatted_string(),
+                "_",
+                recipient
+            ))
+            .as_str(),
+            value.slope,
+        );
     }
 }
 
@@ -314,13 +449,49 @@ impl PointsSum {
     }
 
     pub fn get(&self, owner: &i128, recipient: &U256) -> Point {
-        let key_: String = values_to_str(&owner.to_string(), recipient);
-        self.dict.get(key_.as_str()).unwrap_or_default()
+        Point {
+            bias: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        POINTS_SUM_DICT, "_bias_", owner, "_", recipient
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            slope: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        POINTS_SUM_DICT, "_slope_", owner, "_", recipient
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, owner: &i128, recipient: &U256, value: Point) {
-        let key_: String = values_to_str(&owner.to_string(), recipient);
-        self.dict.set(key_.as_str(), value);
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                POINTS_SUM_DICT, "_bias_", owner, "_", recipient
+            ))
+            .as_str(),
+            value.bias,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                POINTS_SUM_DICT, "_slope_", owner, "_", recipient
+            ))
+            .as_str(),
+            value.slope,
+        );
     }
 }
 

@@ -8,8 +8,10 @@ use casper_types::{
     runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use common::utils::hash;
 use hex::encode;
 use std::time::SystemTime;
+use voting_escrow_crate::data::{LockedBalance, Point, LOCKED, USER_POINT_HISTORY};
 
 pub const MILLI_SECONDS_IN_DAY: u64 = 86400000;
 
@@ -146,12 +148,102 @@ impl VOTINGESCROWInstance {
     }
 
     // Get stored key values
+    pub fn contract(&self) -> &TestContract {
+        &self.0
+    }
+
     pub fn key_value<T: CLTyped + FromBytes>(&self, key: String) -> T {
         self.0.query_named_key(key)
     }
 
-    pub fn contract(&self) -> &TestContract {
-        &self.0
+    pub fn query_locked(&self, owner: &Key) -> LockedBalance {
+        LockedBalance {
+            amount: self
+                .0
+                .query_dictionary(
+                    LOCKED,
+                    hash(format!(
+                        "{}{}{}",
+                        LOCKED,
+                        "_amount_",
+                        owner.to_formatted_string()
+                    )),
+                )
+                .unwrap(),
+            end: self
+                .0
+                .query_dictionary(
+                    LOCKED,
+                    hash(format!(
+                        "{}{}{}",
+                        LOCKED,
+                        "_end_",
+                        owner.to_formatted_string()
+                    )),
+                )
+                .unwrap(),
+        }
+    }
+
+    pub fn query_user_point_history(&self, user: &Key, user_epoch: &U256) -> Point {
+        Point {
+            bias: self
+                .0
+                .query_dictionary(
+                    USER_POINT_HISTORY,
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        USER_POINT_HISTORY,
+                        "_bias_",
+                        user.to_formatted_string(),
+                        "_",
+                        user_epoch
+                    )),
+                )
+                .unwrap(),
+            slope: self
+                .0
+                .query_dictionary(
+                    USER_POINT_HISTORY,
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        USER_POINT_HISTORY,
+                        "_slope_",
+                        user.to_formatted_string(),
+                        "_",
+                        user_epoch
+                    )),
+                )
+                .unwrap(),
+            ts: self
+                .0
+                .query_dictionary(
+                    USER_POINT_HISTORY,
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        USER_POINT_HISTORY,
+                        "_ts_",
+                        user.to_formatted_string(),
+                        "_",
+                        user_epoch
+                    )),
+                )
+                .unwrap(),
+            blk: self
+                .0
+                .query_dictionary(
+                    USER_POINT_HISTORY,
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        USER_POINT_HISTORY,
+                        "_blk_",
+                        user.to_formatted_string(),
+                        "_",
+                        user_epoch
+                    )),
+                )
+                .unwrap(),
+        }
     }
 }
 

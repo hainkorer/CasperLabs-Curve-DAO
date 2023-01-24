@@ -1,6 +1,8 @@
 use alloc::string::{String, ToString};
 use casper_types::{Key, U128};
 use core::convert::TryInto;
+use hex::encode;
+use renvm_sig::keccak256;
 
 pub fn zero_address() -> Key {
     Key::from_formatted_str("hash-0000000000000000000000000000000000000000000000000000000000000000")
@@ -46,4 +48,8 @@ pub fn i128_to_tuple(value: i128) -> (bool, U128) {
         val.1 = value.into();
     }
     val
+}
+
+pub fn hash(string: String) -> String {
+    encode(keccak256(string.as_bytes()))
 }

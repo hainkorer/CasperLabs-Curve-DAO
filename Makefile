@@ -375,7 +375,6 @@ build-copy-wasms:
 	make build-liquidity-gauge-reward-wrapper-session-code
 	make build-i-reward-distribution-recipient
 	make build-liquidity-gauge-wrapper-session-code
-	make build-contract-erc20
 	make build-contract-erc20-crv
 	make build-contract-fee-distributor
 	make build-contract-gauge-controller

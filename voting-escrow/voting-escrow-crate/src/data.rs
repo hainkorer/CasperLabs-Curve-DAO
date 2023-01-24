@@ -1,11 +1,12 @@
 use alloc::{
+    format,
     string::{String, ToString},
     vec::Vec,
 };
-use casper_contract::{contract_api::runtime::get_blocktime, unwrap_or_revert::UnwrapOrRevert};
+use casper_contract::contract_api::runtime::get_blocktime;
 use casper_types::{ContractHash, ContractPackageHash, Key, U128, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
-use casperlabs_contract_utils::{get_key, key_and_value_to_str, set_key, Dict};
+use casperlabs_contract_utils::{get_key, set_key, Dict};
 use common::{keys::*, utils::*};
 
 pub const DEPOSIT_FOR_TYPE: i128 = 0;
@@ -47,10 +48,9 @@ impl Point {
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct LockedBalance {
-    amount: (bool, U128),
+    pub amount: (bool, U128),
     pub end: U256,
 }
-
 impl LockedBalance {
     pub fn set_amount(&mut self, value: i128) {
         self.amount = i128_to_tuple(value);
@@ -79,11 +79,57 @@ impl Locked {
     }
 
     pub fn get(&self, owner: &Key) -> LockedBalance {
-        self.dict.get_by_key(owner).unwrap_or_default()
+        LockedBalance {
+            amount: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}",
+                        LOCKED,
+                        "_amount_",
+                        owner.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            end: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}",
+                        LOCKED,
+                        "_end_",
+                        owner.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, owner: &Key, value: LockedBalance) {
-        self.dict.set_by_key(owner, value);
+        self.dict.set(
+            hash(format!(
+                "{}{}{}",
+                LOCKED,
+                "_amount_",
+                owner.to_formatted_string()
+            ))
+            .as_str(),
+            value.amount,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}",
+                LOCKED,
+                "_end_",
+                owner.to_formatted_string()
+            ))
+            .as_str(),
+            value.end,
+        );
     }
 }
 
@@ -105,13 +151,118 @@ impl UserPointHistory {
     }
 
     pub fn get(&self, user: &Key, user_epoch: &U256) -> Point {
-        let key_: String = key_and_value_to_str(user, user_epoch);
-        self.dict.get(key_.as_str()).unwrap_or_default()
+        Point {
+            bias: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        USER_POINT_HISTORY,
+                        "_bias_",
+                        user.to_formatted_string(),
+                        "_",
+                        user_epoch
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+            slope: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        USER_POINT_HISTORY,
+                        "_slope_",
+                        user.to_formatted_string(),
+                        "_",
+                        user_epoch
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+            ts: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        USER_POINT_HISTORY,
+                        "_ts_",
+                        user.to_formatted_string(),
+                        "_",
+                        user_epoch
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+            blk: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        USER_POINT_HISTORY,
+                        "_blk_",
+                        user.to_formatted_string(),
+                        "_",
+                        user_epoch
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, user: &Key, user_epoch: &U256, value: Point) {
-        let key_: String = key_and_value_to_str(user, user_epoch);
-        self.dict.set(key_.as_str(), value);
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                USER_POINT_HISTORY,
+                "_bias_",
+                user.to_formatted_string(),
+                "_",
+                user_epoch
+            ))
+            .as_str(),
+            value.bias,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                USER_POINT_HISTORY,
+                "_slope_",
+                user.to_formatted_string(),
+                "_",
+                user_epoch
+            ))
+            .as_str(),
+            value.slope,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                USER_POINT_HISTORY,
+                "_ts_",
+                user.to_formatted_string(),
+                "_",
+                user_epoch
+            ))
+            .as_str(),
+            value.ts,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                USER_POINT_HISTORY,
+                "_blk_",
+                user.to_formatted_string(),
+                "_",
+                user_epoch
+            ))
+            .as_str(),
+            value.blk,
+        );
     }
 }
 
@@ -189,18 +340,46 @@ impl PointHistory {
     }
 
     pub fn get(&self, epoch: &U256) -> Point {
-        self.dict
-            .get(epoch.to_string().as_str())
-            .unwrap_or_default()
+        Point {
+            bias: self
+                .dict
+                .get(hash(format!("{}{}{}", POINT_HISTORY, "_bias_", epoch)).as_str())
+                .unwrap_or_default(),
+            slope: self
+                .dict
+                .get(hash(format!("{}{}{}", POINT_HISTORY, "_slope_", epoch)).as_str())
+                .unwrap_or_default(),
+            ts: self
+                .dict
+                .get(hash(format!("{}{}{}", POINT_HISTORY, "_ts_", epoch)).as_str())
+                .unwrap_or_default(),
+            blk: self
+                .dict
+                .get(hash(format!("{}{}{}", POINT_HISTORY, "_blk_", epoch)).as_str())
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, epoch: &U256, value: Point) {
-        self.dict.set(epoch.to_string().as_str(), value);
-    }
+        self.dict.set(
+            hash(format!("{}{}{}", POINT_HISTORY, "_bias_", epoch)).as_str(),
+            value.bias,
+        );
 
-    pub fn push(&mut self, value: Point) {
-        self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.dict.set(
+            hash(format!("{}{}{}", POINT_HISTORY, "_slope_", epoch)).as_str(),
+            value.slope,
+        );
+
+        self.dict.set(
+            hash(format!("{}{}{}", POINT_HISTORY, "_ts_", epoch)).as_str(),
+            value.ts,
+        );
+
+        self.dict.set(
+            hash(format!("{}{}{}", POINT_HISTORY, "_blk_", epoch)).as_str(),
+            value.blk,
+        );
     }
 }
 

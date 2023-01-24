@@ -1,4 +1,5 @@
 use alloc::{
+    format,
     string::{String, ToString},
     vec::Vec,
 };
@@ -17,7 +18,7 @@ pub struct RewardData {
     pub time_stamp: U256,
 }
 
-#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
+#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct ClaimDataStruct {
     pub claimable_amount: U256,
     pub claimed_amount: U256,
@@ -176,18 +177,65 @@ impl ClaimData {
     }
 
     pub fn get(&self, user: &Key, claiming_address: &Key) -> ClaimDataStruct {
-        let data = ClaimDataStruct {
-            claimable_amount: 0.into(),
-            claimed_amount: 0.into(),
-        };
-        self.dict
-            .get_by_keys((user, claiming_address))
-            .unwrap_or(data)
+        ClaimDataStruct {
+            claimable_amount: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        CLAIM_DATA_DICT,
+                        "_claimable_amount_",
+                        user.to_formatted_string(),
+                        "_",
+                        claiming_address.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            claimed_amount: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        CLAIM_DATA_DICT,
+                        "_claimed_amount_",
+                        user.to_formatted_string(),
+                        "_",
+                        claiming_address.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
-    pub fn set(&self, user: &Key, claiming_address: &Key, claimed_amount: ClaimDataStruct) {
-        self.dict
-            .set_by_keys((user, claiming_address), claimed_amount);
+    pub fn set(&self, user: &Key, claiming_address: &Key, value: ClaimDataStruct) {
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                CLAIM_DATA_DICT,
+                "_claimable_amount_",
+                user.to_formatted_string(),
+                "_",
+                claiming_address.to_formatted_string()
+            ))
+            .as_str(),
+            value.claimable_amount,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                CLAIM_DATA_DICT,
+                "_claimed_amount_",
+                user.to_formatted_string(),
+                "_",
+                claiming_address.to_formatted_string()
+            ))
+            .as_str(),
+            value.claimed_amount,
+        );
     }
 }
 
@@ -208,15 +256,23 @@ pub fn set_claim_sig(claim_sig: String) {
 }
 
 pub fn reward_data() -> RewardData {
-    let data = RewardData {
-        address: zero_address(),
-        time_stamp: 0.into(),
-    };
-    get_key(REWARD_DATA).unwrap_or(data)
+    RewardData {
+        address: get_key(hash(format!("{}{}", REWARD_DATA, "_address")).as_str())
+            .unwrap_or_else(zero_address),
+        time_stamp: get_key(hash(format!("{}{}", REWARD_DATA, "_time_stamp")).as_str())
+            .unwrap_or_default(),
+    }
 }
 
 pub fn set_reward_data(reward_data: RewardData) {
-    set_key(REWARD_DATA, reward_data);
+    set_key(
+        hash(format!("{}{}", REWARD_DATA, "_address")).as_str(),
+        reward_data.address,
+    );
+    set_key(
+        hash(format!("{}{}", REWARD_DATA, "_time_stamp")).as_str(),
+        reward_data.time_stamp,
+    );
 }
 
 pub fn admin() -> Key {

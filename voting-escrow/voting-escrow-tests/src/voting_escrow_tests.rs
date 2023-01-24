@@ -1,11 +1,9 @@
-use crate::voting_escrow_instance::{
-    key_to_str, keys_to_str, now, VOTINGESCROWInstance, MILLI_SECONDS_IN_DAY,
-};
+use crate::voting_escrow_instance::{now, VOTINGESCROWInstance, MILLI_SECONDS_IN_DAY};
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
 use crv20::Address;
-use voting_escrow_crate::data::{LockedBalance, Point, LOCKED, USER_POINT_HISTORY, WEEK};
+use voting_escrow_crate::data::{LockedBalance, Point, WEEK};
 pub const TEN_E_NINE: u128 = 1000000000;
 // CRV
 fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash, time_now: u64) -> TestContract {
@@ -134,13 +132,7 @@ fn test_user_point_history_ts() {
         time_now,
     );
     instance.create_lock(owner, amount, unlock_time, time_now);
-    let ret: Point = instance
-        .contract()
-        .query_dictionary(
-            USER_POINT_HISTORY,
-            keys_to_str(&Key::from(owner), &U256::from(1)),
-        )
-        .unwrap_or_default();
+    let ret: Point = instance.query_user_point_history(&Key::from(owner), &U256::from(1));
     assert_eq!(ret.ts, U256::from(time_now), "Invalid default value");
 }
 #[test]
@@ -159,10 +151,7 @@ fn test_locked_end() {
         time_now,
     );
     instance.create_lock(owner, amount, unlock_time, time_now);
-    let ret: LockedBalance = instance
-        .contract()
-        .query_dictionary(LOCKED, key_to_str(&Key::from(owner)))
-        .unwrap_or_default();
+    let ret: LockedBalance = instance.query_locked(&Key::from(owner));
     assert_eq!(ret.end / WEEK, unlock_time / WEEK, "Invalid default value");
 }
 #[test]
