@@ -717,29 +717,26 @@ You can run this commands to build individual smart contracts.
 
 ```
   make build-contract-curve-token-v3
-  make build-liquidity-gauge-reward-wrapper-session-code
-  make build-i-reward-distribution-recipient
-  make build-contract-erc20
-  make build-contract-erc20-crv
-  make build-contract-fee-distributor
-  make build-contract-gauge-controller
-  make build-contract-gauge-proxy
-  make build-contract-liquidity-gauge-reward
-  make build-contract-liquidity-gauge-reward-wrapper
-  make build-contract-liquidity-gauge-wrapper
-  make build-contract-minter
-  make build-contract-reward-only-gauge
-  make build-contract-vesting-escrow
-  make build-contract-vesting-escrow-factory
-  make build-contract-liquidity-gauge-v3
-  make build-contract-vesting-escrow-simple
-  make build-contract-voting-escrow
-  make build-contract-ownable
-  make build-contract-ownable-test-contract
-  make build-lp-token-wrapper-session-code
-  make build-lp-token-wrapper
-  make build-curve-rewards-session-code
-  make build-curve-rewards
+	make build-liquidity-gauge-reward-wrapper-session-code
+	make build-i-reward-distribution-recipient
+	make build-liquidity-gauge-wrapper-session-code
+	make build-contract-erc20-crv
+	make build-contract-fee-distributor
+	make build-contract-gauge-controller
+	make build-contract-gauge-proxy
+	make build-contract-liquidity-gauge-reward
+	make build-contract-liquidity-gauge-reward-wrapper
+	make build-contract-liquidity-gauge-wrapper
+	make build-contract-minter
+	make build-contract-reward-only-gauge
+	make build-contract-vesting-escrow
+	make build-contract-vesting-escrow-factory
+	make build-contract-liquidity-gauge-v3
+	make build-contract-vesting-escrow-simple
+	make build-contract-voting-escrow
+	make build-contract-ownable
+	make build-lp-token-wrapper
+	make build-curve-rewards
 ```
 
 ## Test individual Smart Contract
@@ -748,24 +745,24 @@ You can run this commands to build individual smart contracts.
 
 ```
   make test-curve-token-v3
-  make test-erc20
-  make test-erc20-crv
-  make test-fee-distributor
-  make test-gauge-controller
-  make test-gauge-proxy
-  make test-liquidity-gauge-reward
-  make test-liquidity-gauge-reward-wrapper
-  make test-liquidity-gauge-wrapper
-  make test-minter
-  make test-reward-only-gauge
-  make test-vesting-escrow
-  make test-vesting-escrow-factory
-  make test-voting-escrow
-  make test-ownable
-  make test-i-reward-distribution-recipient
-  make test-lp-token-wrapper
-  make test-curve-rewards
-  make test-liquidity-gauge-v3
+	make test-curve-erc20
+	make test-erc20-crv
+	make test-fee-distributor
+	make test-gauge-controller
+	make test-gauge-proxy
+	make test-liquidity-gauge-reward
+	make test-liquidity-gauge-reward-wrapper
+	make test-liquidity-gauge-wrapper
+	make test-minter
+	make test-reward-only-gauge
+	make test-vesting-escrow
+	make test-vesting-escrow-factory
+	make test-voting-escrow
+	make test-ownable
+	make test-i-reward-distribution-recipient
+	make test-lp-token-wrapper
+	make test-curve-rewards
+	make test-liquidity-gauge-v3
 ```
 
 # Note: High processing power and memory is required to run liquidity gauge v3 test cases.
