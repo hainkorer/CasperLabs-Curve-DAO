@@ -716,7 +716,7 @@ available in your PATH to reduce the size of compiled Wasm.
 You can run this commands to build individual smart contracts.
 
 ```
-  make build-contract-curve-token-v3
+        make build-contract-curve-token-v3
 	make build-liquidity-gauge-reward-wrapper-session-code
 	make build-i-reward-distribution-recipient
 	make build-liquidity-gauge-wrapper-session-code
