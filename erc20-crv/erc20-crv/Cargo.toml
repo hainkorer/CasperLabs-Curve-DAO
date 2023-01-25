@@ -1,0 +1,25 @@
+[package]
+authors = ["Nouman Nadeem <nouman.nadeem.zafar@scytalelabs.com>"]
+edition = "2018"
+name = "erc20-crv"
+version = "0.1.0"
+
+[dependencies]
+casper-contract = "1.4.3"
+casper-types = "1.4.4"
+casperlabs-contract-utils = "0.2.1"
+hex = {version = "0.4.3", default-features = false}
+renvm-sig = "0.1.1"
+crv20 = "0.1.0"
+curve-casper-erc20 = "0.1.0"
+common = { path = "../../common" }
+
+[[bin]]
+bench = false
+doctest = false
+name = "erc20-crv"
+path = "bin/erc20_crv.rs"
+test = false
+
+[features]
+default = ["casper-contract/std", "casper-types/std"]

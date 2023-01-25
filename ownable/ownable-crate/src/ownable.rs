@@ -1,26 +1,12 @@
 use crate::alloc::string::ToString;
 use crate::data::{self};
 use alloc::collections::BTreeMap;
-use alloc::{string::String, vec::Vec};
+use alloc::string::String;
 use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
-use casper_types::{ApiError, ContractHash, ContractPackageHash, Key, URef};
+use casper_types::{ApiError, ContractHash, ContractPackageHash, Key};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-//Events
-
-#[repr(u16)]
-pub enum Error {
-    /// 65,546 for (Ownable: caller is not the owner)
-    OwnableNotOwner = 11501,
-    /// 65,540 for (Ownable: new owner is the zero address)
-    OwnableNewOwnerAddressZero = 11502,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
-    }
-}
+use common::errors::*;
 
 pub enum OwnableEvent {
     OwnershipTransferred { previous_owner: Key, new_owner: Key },
@@ -92,7 +78,6 @@ pub trait OWNABLE<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn ownable_emit(&mut self, ownable_event: &OwnableEvent) {
-        let mut events = Vec::new();
         let package = data::get_package_hash();
         match ownable_event {
             OwnableEvent::OwnershipTransferred {
@@ -104,11 +89,8 @@ pub trait OWNABLE<Storage: ContractStorage>: ContractContext<Storage> {
                 event.insert("event_type", ownable_event.type_name());
                 event.insert("previous_owner", previous_owner.to_string());
                 event.insert("new_owner", new_owner.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

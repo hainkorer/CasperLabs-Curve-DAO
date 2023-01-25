@@ -52,7 +52,7 @@ impl GAUGECONLTROLLERInstance {
     ) -> TestContract {
         TestContract::new(
             env,
-            "erc20-token.wasm",
+            "curve-erc20.wasm",
             "proxy_test2",
             sender,
             runtime_args! {
@@ -89,7 +89,7 @@ impl GAUGECONLTROLLERInstance {
     pub fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash, block_time: u64) -> TestContract {
         TestContract::new(
             env,
-            "erc20_crv.wasm",
+            "erc20-crv.wasm",
             "erc20-crv",
             sender,
             runtime_args! {

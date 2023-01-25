@@ -1,12 +1,10 @@
 use crate::alloc::string::ToString;
-use crate::data::{self, AllowedToMintFor, Minted};
+use crate::data::{self, get_package_hash, AllowedToMintFor, Minted};
 use alloc::collections::BTreeMap;
 use alloc::{string::String, vec::Vec};
 use casper_contract::contract_api::runtime;
 use casper_contract::contract_api::storage;
-use casper_types::{
-    runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U128, U256,
-};
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, U128, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
 
@@ -167,8 +165,6 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn emit(&mut self, minter_event: &MINTEREvent) {
-        let mut events = Vec::new();
-        let package = data::get_package_hash();
         match minter_event {
             MINTEREvent::Minted {
                 recipient,
@@ -176,17 +172,14 @@ pub trait MINTER<Storage: ContractStorage>: ContractContext<Storage> {
                 minted,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", minter_event.type_name());
                 event.insert("recipient", recipient.to_string());
                 event.insert("gauge", gauge.to_string());
                 event.insert("minted", minted.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 
     fn get_package_hash(&mut self) -> ContractPackageHash {

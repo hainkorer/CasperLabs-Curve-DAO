@@ -1,5 +1,6 @@
 // Common Keys
 pub const SESSION_CODE_WASM: &str = "session-code.wasm";
+pub const FD_SESSION_CODE_WASM: &str = "fee-distributor-session-code.wasm";
 pub const SESSION_CODE_NAME: &str = "session_code";
 pub const TEST_SESSION_CODE_WASM: &str = "test-session-code.wasm";
 pub const TEST_SESSION_CODE_NAME: &str = "test_session_code";
@@ -45,7 +46,9 @@ pub const GET_LAST_USER_SLOPE: &str = "get_last_user_slope";
 pub const USER_POINT_HISTORY_TS: &str = "user_point_history_ts";
 pub const LOCKED_END: &str = "locked_end";
 pub const BALANCE_OF_AT: &str = "balance_of_at";
+pub const VE_BALANCE_OF: &str = "ve_balance_of";
 pub const TOTAL_SUPPLY_AT: &str = "total_supply_at";
+pub const VE_TOTAL_SUPPLY: &str = "ve_total_supply";
 // Fee Distributor
 pub const VE_FOR_AT: &str = "ve_for_at";
 pub const CLAIM: &str = "claim";
@@ -58,6 +61,8 @@ pub const AVAILABLE_SUPPLY: &str = "available_supply";
 pub const MINT: &str = "mint";
 pub const MINTABLE_IN_TIMEFRAME: &str = "mintable_in_timeframe";
 // ERC-20 CRV
+pub const ADMIN_WHITELIST: &str = "admin_whitelist";
+pub const ALLOWANCE_CRV: &str = "allowance_crv";
 pub const MINING_EPOCH: &str = "mining_epoch";
 pub const IS_UPDATED: &str = "is_updated";
 pub const START_EPOCH_TIME: &str = "start_epoch_time";
@@ -87,7 +92,6 @@ pub const CLAIM_SIG: &str = "claim_sig";
 pub const REWARD_DATA: &str = "reward_data";
 pub const METHOD: &str = "method";
 pub const PARAMS: &str = "params";
-
 // Vesting Escrow
 pub const INITIAL_LOCKED_SUPPLY: &str = "initial_locked_supply";
 pub const UNALLOCATED_SUPPLY: &str = "unallocated_supply";
@@ -198,7 +202,6 @@ pub const IS_OWNER: &str = "is_owner";
 pub const MYVEC: &str = "myvec";
 pub const INTEGRATE_CHECKPOINT: &str = "integrate_checkpoint";
 pub const REWARD_SIGS: &str = "reward_sigs";
-
 //VESTING ESCROW
 pub const APPLY_TRANSFER_OWNERSHIP: &str = "apply_transfer_ownership";
 pub const COMMIT_TRANSFER_OWNERSHIP: &str = "commit_transfer_ownership";

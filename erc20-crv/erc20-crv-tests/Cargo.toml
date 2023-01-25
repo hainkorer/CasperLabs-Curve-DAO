@@ -1,0 +1,24 @@
+[package]
+authors = ["Nouman Nadeem <nouman.nadeem.zafar@scytalelabs.com>"]
+edition = "2018"
+name = "erc20-crv-tests"
+version = "0.2.0"
+
+[dependencies]
+casper-contract = { version = "1.4.4", default-features = false, features = ["test-support"] }
+casper-engine-test-support = { version = "2.1.0", features = ["test-support"] }
+casper-execution-engine = "1.5.0"
+casper-types = "1.5.0"
+casper-hashing = "1.4.3"
+casperlabs-test-env = "0.1.0"
+casperlabs-contract-utils = "0.1.0"
+crv20 = "0.1.0"
+hex = "0.4.3"
+blake2 = "0.9.1"
+common = { path = "../../common" }
+erc20-crv = { path = "../erc20-crv" }
+[features]
+default = ["casper-contract/std", "casper-types/std", "casper-contract/test-support"]
+
+
+

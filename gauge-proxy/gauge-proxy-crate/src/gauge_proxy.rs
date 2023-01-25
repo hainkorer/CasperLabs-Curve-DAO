@@ -1,27 +1,16 @@
 use crate::{data::*, event::GaugeProxyEvent};
-use alloc::string::String;
-use alloc::vec::Vec;
-use alloc::{collections::BTreeMap, string::ToString};
-use casper_contract::contract_api::runtime;
-use casper_contract::contract_api::storage;
-use casper_contract::unwrap_or_revert::UnwrapOrRevert;
-
-use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef,
+use alloc::{
+    string::String,
+    vec::Vec,
+    {collections::BTreeMap, string::ToString},
 };
+use casper_contract::{
+    contract_api::{runtime, storage},
+    unwrap_or_revert::UnwrapOrRevert,
+};
+use casper_types::{runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
-
-#[repr(u16)]
-pub enum Error {
-    AccessDenied = 0,
-    IsLocked,
-}
-
-impl From<Error> for ApiError {
-    fn from(error: Error) -> ApiError {
-        ApiError::User(error as u16)
-    }
-}
+use common::errors::Error;
 
 pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
     fn init(
@@ -39,7 +28,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn commit_set_admins(&self, o_admin: Key, e_admin: Key) {
         if self.get_caller() != get_ownership_admin() {
-            runtime::revert(ApiError::from(Error::AccessDenied));
+            runtime::revert(ApiError::from(Error::GaugeProxyAccessDenied1));
         };
         set_future_ownership_admin(o_admin);
         set_future_emergency_admin(e_admin);
@@ -51,7 +40,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn accept_set_admins(&self) {
         if self.get_caller() != get_future_ownership_admin() {
-            runtime::revert(ApiError::from(Error::AccessDenied));
+            runtime::revert(ApiError::from(Error::GaugeProxyAccessDenied2));
         };
         let e_admin: Key = get_future_emergency_admin();
         set_ownership_admin(self.get_caller());
@@ -64,11 +53,11 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn commit_transfer_ownership(&self, gauge: Key, new_owner: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::GaugeProxyIsLocked1));
         }
         set_lock(true);
         if self.get_caller() != get_ownership_admin() {
-            runtime::revert(ApiError::from(Error::AccessDenied));
+            runtime::revert(ApiError::from(Error::GaugeProxyAccessDenied3));
         };
         let () = runtime::call_versioned_contract(
             gauge.into_hash().unwrap_or_revert().into(),
@@ -83,7 +72,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn accept_transfer_ownership(&self, gauge: Key) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::GaugeProxyIsLocked2));
         }
         set_lock(true);
         let () = runtime::call_versioned_contract(
@@ -97,13 +86,13 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn set_killed(&self, gauge: Key, is_killed: bool) {
         if get_lock() {
-            runtime::revert(ApiError::from(Error::IsLocked));
+            runtime::revert(ApiError::from(Error::GaugeProxyIsLocked3));
         }
         set_lock(true);
         if !(self.get_caller() == get_ownership_admin()
             || self.get_caller() == get_emergency_admin())
         {
-            runtime::revert(ApiError::from(Error::AccessDenied));
+            runtime::revert(ApiError::from(Error::GaugeProxyAccessDenied4));
         }
         let () = runtime::call_versioned_contract(
             gauge.into_hash().unwrap_or_revert().into(),
@@ -118,7 +107,7 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
 
     fn set_rewards(&self, gauge: Key, reward_contract: Key, sigs: String, reward_tokens: Vec<Key>) {
         if self.get_caller() != get_ownership_admin() {
-            runtime::revert(ApiError::from(Error::AccessDenied));
+            runtime::revert(ApiError::from(Error::GaugeProxyAccessDenied5));
         };
         let () = runtime::call_versioned_contract(
             gauge.into_hash().unwrap_or_revert().into(),
@@ -133,37 +122,29 @@ pub trait GAUGEPROXY<Storage: ContractStorage>: ContractContext<Storage> {
     }
 
     fn emit(&self, gauge_proxy_event: &GaugeProxyEvent) {
-        let mut events = Vec::new();
-        let tmp = get_package_hash().to_formatted_string();
-        let split: char = '-';
-        let tmp: Vec<&str> = tmp.split(split).collect();
-        let package_hash = tmp[1].to_string();
         match gauge_proxy_event {
             GaugeProxyEvent::CommitAdmins {
                 emergency_admin,
                 ownership_admin,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_proxy_event.type_name());
                 event.insert("emergency_admin", emergency_admin.to_string());
                 event.insert("ownership_admin", ownership_admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             GaugeProxyEvent::ApplyAdmins {
                 emergency_admin,
                 ownership_admin,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", gauge_proxy_event.type_name());
                 event.insert("emergency_admin", emergency_admin.to_string());
                 event.insert("ownership_admin", ownership_admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

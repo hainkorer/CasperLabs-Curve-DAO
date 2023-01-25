@@ -1,11 +1,12 @@
-use alloc::string::{String, ToString};
+use alloc::format;
+use alloc::string::ToString;
 use alloc::vec::Vec;
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
 use casper_types::bytesrepr::Bytes;
 use casper_types::{ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
-use common::{keys::*, utils::*};
+use common::{errors::*, keys::*, utils::*};
 
 pub const MAX_REWARDS: U256 = U256([8, 0, 0, 0]);
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
@@ -18,7 +19,7 @@ pub struct RewardData {
     pub time_stamp: U256,
 }
 
-#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes)]
+#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct ClaimDataStruct {
     pub claimable_amount: U256,
     pub claimed_amount: U256,
@@ -40,18 +41,65 @@ impl ClaimData {
     }
 
     pub fn get(&self, user: &Key, claiming_address: &Key) -> ClaimDataStruct {
-        let data = ClaimDataStruct {
-            claimable_amount: 0.into(),
-            claimed_amount: 0.into(),
-        };
-        self.dict
-            .get_by_keys((user, claiming_address))
-            .unwrap_or(data)
+        ClaimDataStruct {
+            claimable_amount: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        CLAIM_DATA_DICT,
+                        "_claimable_amount_",
+                        user.to_formatted_string(),
+                        "_",
+                        claiming_address.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            claimed_amount: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        CLAIM_DATA_DICT,
+                        "_claimed_amount_",
+                        user.to_formatted_string(),
+                        "_",
+                        claiming_address.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
-    pub fn set(&self, user: &Key, claiming_address: &Key, claimed_amount: ClaimDataStruct) {
-        self.dict
-            .set_by_keys((user, claiming_address), claimed_amount);
+    pub fn set(&self, user: &Key, claiming_address: &Key, value: ClaimDataStruct) {
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                CLAIM_DATA_DICT,
+                "_claimable_amount_",
+                user.to_formatted_string(),
+                "_",
+                claiming_address.to_formatted_string()
+            ))
+            .as_str(),
+            value.claimable_amount,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                CLAIM_DATA_DICT,
+                "_claimed_amount_",
+                user.to_formatted_string(),
+                "_",
+                claiming_address.to_formatted_string()
+            ))
+            .as_str(),
+            value.claimed_amount,
+        );
     }
 }
 pub const REWARD_TOKENS: &str = "reward_tokens";
@@ -84,7 +132,10 @@ impl RewardTokens {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::LiquidityGaugeArithmeticError1);
     }
 }
 
@@ -113,55 +164,6 @@ impl RewardsReceiver {
 
     pub fn set(&self, owner: &Key, value: Key) {
         self.dict.set(&key_to_str(owner), value);
-    }
-}
-
-const BALANCE_OF: &str = "balance_of";
-pub struct BalanceOf {
-    dict: Dict,
-}
-
-impl BalanceOf {
-    pub fn instance() -> BalanceOf {
-        BalanceOf {
-            dict: Dict::instance(BALANCE_OF),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(BALANCE_OF)
-    }
-
-    pub fn get(&self, key: &Key) -> U256 {
-        self.dict.get_by_key(key).unwrap_or_default()
-    }
-
-    pub fn set(&self, key: &Key, value: U256) {
-        self.dict.set_by_key(key, value);
-    }
-}
-
-pub struct Allowance {
-    dict: Dict,
-}
-
-impl Allowance {
-    pub fn instance() -> Allowance {
-        Allowance {
-            dict: Dict::instance(ALLOWANCES_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(ALLOWANCES_DICT)
-    }
-
-    pub fn get(&self, key1: &Key, key2: &Key) -> U256 {
-        self.dict.get_by_keys((key1, key2)).unwrap_or_default()
-    }
-
-    pub fn set(&self, key1: &Key, key2: &Key, value: U256) {
-        self.dict.set_by_keys((key1, key2), value);
     }
 }
 
@@ -314,32 +316,6 @@ impl IntegrateFraction {
         self.dict.set_by_key(key, value);
     }
 }
-
-// const REWARDS_RECIEVER: &str = "rewards_receiver";
-// pub struct RewardsReciever {
-//     dict: Dict,
-// }
-
-// impl RewardsReciever {
-//     pub fn instance() -> RewardsReciever {
-//         RewardsReciever {
-//             dict: Dict::instance(REWARDS_RECIEVER),
-//         }
-//     }
-
-//     pub fn init() {
-//         Dict::init(REWARDS_RECIEVER)
-//     }
-
-//     pub fn get(&self, key: &Key) -> &Key {
-//         self.dict.get_by_key(key).unwrap_or_d
-//     }
-
-//     pub fn set(&self, key1: &Key, key2: &Key) {
-//         self.dict.set_by_key(key1, key2);
-//     }
-// }
-
 const REWARD_INTEGRAL: &str = "reward_integral";
 pub struct RewardIntegral {
     dict: Dict,
@@ -388,38 +364,6 @@ impl RewardIntegralFor {
         self.dict.set_by_keys((key1, key2), value);
     }
 }
-pub fn get_decimals() -> u8 {
-    get_key(DECIMALS).unwrap_or_revert()
-}
-
-pub fn set_decimals(decimals: u8) {
-    set_key(DECIMALS, decimals);
-}
-
-// const CLAIM_DATA: &str = "claim_data";
-// pub struct ClaimData {
-//     dict: Dict,
-// }
-
-// impl ClaimData {
-//     pub fn instance() -> ClaimData {
-//         ClaimData {
-//             dict: Dict::instance(CLAIM_DATA),
-//         }
-//     }
-
-//     pub fn init() {
-//         Dict::init(CLAIM_DATA)
-//     }
-
-//     pub fn get(&self, key1: &Key,key2: &Key) -> U256 {
-//         self.dict.get_by_keys((key1, key2)).unwrap_or_default()
-//     }
-
-//     pub fn set(&self, key1: &Key,key2: &Key ,value: U256) {
-//         self.dict.set_by_keys((key1, key2), value);
-//     }
-// }
 pub fn reward_sigs() -> Bytes {
     get_key(REWARD_SIGS).unwrap_or_revert()
 }
@@ -433,17 +377,27 @@ pub fn myvec() -> Vec<Key> {
 pub fn set_myvec(myvec: Vec<Key>) {
     set_key(MYVEC, myvec);
 }
+
 pub fn reward_data() -> RewardData {
-    let data = RewardData {
-        address: zero_address(),
-        time_stamp: 0.into(),
-    };
-    get_key(REWARD_DATA).unwrap_or(data)
+    RewardData {
+        address: get_key(hash(format!("{}{}", REWARD_DATA, "_address")).as_str())
+            .unwrap_or_else(zero_address),
+        time_stamp: get_key(hash(format!("{}{}", REWARD_DATA, "_time_stamp")).as_str())
+            .unwrap_or_default(),
+    }
 }
 
 pub fn set_reward_data(reward_data: RewardData) {
-    set_key(REWARD_DATA, reward_data);
+    set_key(
+        hash(format!("{}{}", REWARD_DATA, "_address")).as_str(),
+        reward_data.address,
+    );
+    set_key(
+        hash(format!("{}{}", REWARD_DATA, "_time_stamp")).as_str(),
+        reward_data.time_stamp,
+    );
 }
+
 pub fn set_minter(minter: Key) {
     set_key(MINTER, minter);
 }
@@ -490,29 +444,6 @@ pub fn set_future_epoch_time(future_epoch_time: U256) {
 
 pub fn get_future_epoch_time() -> U256 {
     get_key(FUTURE_EPOCH_TIME).unwrap_or_default()
-}
-pub fn set_total_supply(total_supply: U256) {
-    set_key(TOTAL_SUPPLY, total_supply);
-}
-
-pub fn get_total_supply() -> U256 {
-    get_key(TOTAL_SUPPLY).unwrap_or_default()
-}
-
-pub fn get_name() -> String {
-    get_key(NAME).unwrap_or_revert()
-}
-
-pub fn set_name(name: String) {
-    set_key(NAME, name);
-}
-
-pub fn set_symbol(symbol: String) {
-    set_key(SYMBOL, symbol);
-}
-
-pub fn get_symbol() -> String {
-    get_key(SYMBOL).unwrap_or_revert()
 }
 pub fn set_working_supply(working_supply: U256) {
     set_key(WORKING_SUPPLY, working_supply);

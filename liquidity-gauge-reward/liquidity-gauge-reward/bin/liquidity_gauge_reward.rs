@@ -1,7 +1,7 @@
 #![no_main]
 #![no_std]
 extern crate alloc;
-use alloc::{boxed::Box, collections::BTreeSet, format, vec};
+use alloc::{boxed::Box, collections::BTreeSet, format, string::ToString, vec};
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
@@ -12,8 +12,8 @@ use casper_types::{
     U256,
 };
 use casperlabs_contract_utils::{ContractContext, OnChainContractStorage};
+use crv20::{self, Address, CURVEERC20};
 use liquidity_gauge_reward_crate::{self, data, LIQUIDITYGAUGEREWARD};
-
 #[derive(Default)]
 struct LiquidityGaugeReward(OnChainContractStorage);
 impl ContractContext<OnChainContractStorage> for LiquidityGaugeReward {
@@ -21,7 +21,7 @@ impl ContractContext<OnChainContractStorage> for LiquidityGaugeReward {
         &self.0
     }
 }
-
+impl CURVEERC20<OnChainContractStorage> for LiquidityGaugeReward {}
 impl LIQUIDITYGAUGEREWARD<OnChainContractStorage> for LiquidityGaugeReward {}
 #[allow(clippy::too_many_arguments)]
 impl LiquidityGaugeReward {
@@ -179,13 +179,22 @@ fn voting_escrow() {
 
 #[no_mangle]
 fn balance_of() {
-    let owner: Key = runtime::get_named_arg("owner");
-    runtime::ret(CLValue::from_t(data::BalanceOf::instance().get(&owner)).unwrap_or_revert());
+    let owner: Address = runtime::get_named_arg("owner");
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::balance_of(
+            &LiquidityGaugeReward::default(),
+            owner,
+        ))
+        .unwrap_or_revert(),
+    );
 }
 
 #[no_mangle]
 fn total_supply() {
-    runtime::ret(CLValue::from_t(data::get_total_supply()).unwrap_or_revert());
+    runtime::ret(
+        CLValue::from_t(CURVEERC20::total_supply(&LiquidityGaugeReward::default()))
+            .unwrap_or_revert(),
+    );
 }
 
 #[no_mangle]
@@ -477,7 +486,7 @@ fn get_entry_points() -> EntryPoints {
     ));
     entry_points.add_entry_point(EntryPoint::new(
         "balance_of",
-        vec![Parameter::new("owner", Key::cl_type())],
+        vec![Parameter::new("owner", Address::cl_type())],
         U256::cl_type(),
         EntryPointAccess::Public,
         EntryPointType::Contract,
@@ -649,11 +658,15 @@ fn call() {
 
     // If this is the first deployment
     if !runtime::has_key(&format!("{}_package_hash", contract_name)) {
-        // Build new package.
+        // Build new package with initial a first version of the contract.
         let (package_hash, access_token) = storage::create_contract_package_at_hash();
-        // add a first version to this package
-        let (contract_hash, _): (ContractHash, _) =
-            storage::add_contract_version(package_hash, get_entry_points(), Default::default());
+        let (contract_hash, _) = storage::add_contract_version(
+            package_hash,
+            get_entry_points(),
+            LiquidityGaugeReward::default()
+                .named_keys("".to_string(), "".to_string(), 9, 0.into())
+                .unwrap_or_revert(),
+        );
 
         let lp_addr: Key = runtime::get_named_arg("lp_addr");
         let minter: Key = runtime::get_named_arg("minter");

@@ -2,6 +2,7 @@ use crate::liquidity_gauge_v3_instance::LIQUIDITYGUAGEV3INSTANCEInstance;
 use casper_types::{account::AccountHash, runtime_args, Key, RuntimeArgs, U128, U256};
 use casperlabs_test_env::{TestContract, TestEnv};
 use common::keys::*;
+use crv20::Address;
 
 pub const TEN_E_NINE: u128 = 1000000000;
 const NAME: &str = "LiquidityGaugeV3";
@@ -9,7 +10,7 @@ const NAME: &str = "LiquidityGaugeV3";
 fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
     TestContract::new(
         env,
-        "erc20-token.wasm",
+        "curve-erc20.wasm",
         "rewarded_token",
         owner,
         runtime_args! {
@@ -25,7 +26,7 @@ fn deploy_erc20(env: &TestEnv, owner: AccountHash) -> TestContract {
 fn deploy_erc20_crv(env: &TestEnv, sender: AccountHash) -> TestContract {
     TestContract::new(
         env,
-        "erc20_crv.wasm",
+        "erc20-crv.wasm",
         "erc20-crv",
         sender,
         runtime_args! {
@@ -142,7 +143,7 @@ fn deploy() -> (TestEnv, AccountHash, TestContract, u64) {
     erc20.call_contract(
         owner,
         "approve",
-        runtime_args! {"spender" => to , "amount" => amount},
+        runtime_args! {"spender" =>Address::Contract(liquidity_gauge_v3_instance.package_hash().into()) , "amount" => amount},
         time_now,
     );
     let _name: String = "type".to_string();
@@ -204,25 +205,6 @@ mod t1 {
         contract.commit_transfer_ownership(owner, addr, time_now);
         assert_eq!(contract.future_admin(), addr);
     }
-    #[test]
-    fn test_accept_transfer_ownership() {
-        let (env, owner, contract, time_now) = deploy();
-        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-        let addr = env.next_user();
-        contract.commit_transfer_ownership(owner, Key::from(addr), time_now);
-        assert_eq!(contract.future_admin(), Key::from(addr));
-        assert_eq!(contract.admin(), owner.into());
-        contract.accept_transfer_ownership(addr, time_now);
-        assert_eq!(contract.admin(), addr.into());
-    }
-    #[test]
-    fn test_set_killed() {
-        let (_, owner, contract, time_now) = deploy();
-        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
-        let is_killed: bool = true;
-        contract.set_killed(owner, is_killed, time_now);
-        assert_eq!(contract.is_killed(), is_killed);
-    }
 }
 mod t2 {
 
@@ -232,10 +214,12 @@ mod t2 {
         let (env, owner, contract, time_now) = deploy();
         let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
         let spender = env.next_user();
-        assert_eq!(contract.allowance(owner, spender), 0.into());
         let amount: U256 = 50000000.into();
-        contract.increase_allowance(owner, Key::from(spender), amount, time_now);
-        assert_eq!(contract.allowance(owner, spender), amount);
+        contract.increase_allowance(owner, Address::from(spender), amount, time_now);
+        assert_eq!(
+            contract.allowance(Address::from(owner), Address::from(spender)),
+            amount
+        );
     }
     #[test]
     fn test_decrease_allowance() {
@@ -243,11 +227,17 @@ mod t2 {
         let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
         let spender = env.next_user();
         let approve_amount: U256 = 500000.into();
-        contract.approve(owner, Key::from(spender), approve_amount, time_now);
-        assert_eq!(contract.allowance(owner, spender), approve_amount);
+        contract.approve(owner, Address::from(spender), approve_amount, time_now);
+        assert_eq!(
+            contract.allowance(Address::from(owner), Address::from(spender)),
+            approve_amount
+        );
         let amount: U256 = 100000.into();
-        contract.decrease_allowance(owner, Key::from(spender), amount, time_now);
-        assert_eq!(contract.allowance(owner, spender), 400000.into());
+        contract.decrease_allowance(owner, Address::from(spender), amount, time_now);
+        assert_eq!(
+            contract.allowance(Address::from(owner), Address::from(spender)),
+            400000.into()
+        );
     }
     #[test]
     fn test_approve() {
@@ -255,8 +245,11 @@ mod t2 {
         let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
         let spender = env.next_user();
         let approve_amount: U256 = 500000.into();
-        contract.approve(owner, Key::from(spender), approve_amount, time_now);
-        assert_eq!(contract.allowance(owner, spender), approve_amount);
+        contract.approve(owner, Address::from(spender), approve_amount, time_now);
+        assert_eq!(
+            contract.allowance(Address::from(owner), Address::from(spender)),
+            approve_amount
+        );
     }
     #[test]
     fn test_decimals() {
@@ -398,24 +391,7 @@ mod t8 {
         let amount: U256 = 100000.into();
         let recipient = env.next_user();
         contract.deposit(owner, value, None, None, time_now);
-        TestContract::new(
-            &env,
-            "liquidity_gauge_v3_session_code.wasm",
-            "SessionCode",
-            owner,
-            runtime_args! {
-                "entrypoint" => String::from(TRANSFER),
-                "package_hash" => Key::Hash(contract.package_hash()),
-                "recipient" => Key::Account(recipient),
-                "amount" => amount
-            },
-            time_now,
-        );
-        let ret: Result<(), u32> = env.query_account_named_key(owner, &[TRANSFER.into()]);
-        match ret {
-            Ok(()) => {}
-            Err(e) => panic!("Transfer Failed ERROR:{}", e),
-        }
+        contract.transfer(owner, Address::from(recipient), amount, time_now);
     }
 }
 mod t9 {
@@ -428,26 +404,14 @@ mod t9 {
         let amount: U256 = 100000.into();
         let recipient = env.next_user();
         contract.deposit(owner, amount, None, None, time_now);
-        contract.approve(owner, Key::from(spender), amount, time_now);
-        TestContract::new(
-            &env,
-            "liquidity_gauge_v3_session_code.wasm",
-            "SessionCode",
-            spender,
-            runtime_args! {
-                "entrypoint" => String::from(TRANSFER_FROM),
-                "package_hash" => Key::Hash(contract.package_hash()),
-                "owner" => Key::from(owner),
-                "recipient" => Key::from(recipient),
-                "amount" => amount
-            },
+        contract.approve(owner, Address::from(spender), amount, time_now);
+        contract.transfer_from(
+            owner,
+            Address::from(owner),
+            Address::from(recipient),
+            amount,
             time_now,
         );
-        let ret: Result<(), u32> = env.query_account_named_key(spender, &[TRANSFER_FROM.into()]);
-        match ret {
-            Ok(()) => {}
-            Err(e) => panic!("Transfer From Failed ERROR:{}", e),
-        }
     }
 }
 mod t10 {
@@ -576,5 +540,28 @@ mod t5 {
         )
         .unwrap();
         contract.set_rewards(owner, reciever, sigs, reward_tokens, time_now);
+    }
+}
+mod t12 {
+    use crate::liquidity_gauge_v3_tests::*;
+
+    #[test]
+    fn test_accept_transfer_ownership() {
+        let (env, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let addr = env.next_user();
+        contract.commit_transfer_ownership(owner, Key::from(addr), time_now);
+        assert_eq!(contract.future_admin(), Key::from(addr));
+        assert_eq!(contract.admin(), owner.into());
+        contract.accept_transfer_ownership(addr, time_now);
+        assert_eq!(contract.admin(), addr.into());
+    }
+    #[test]
+    fn test_set_killed() {
+        let (_, owner, contract, time_now) = deploy();
+        let contract = LIQUIDITYGUAGEV3INSTANCEInstance::instance(contract);
+        let is_killed: bool = true;
+        contract.set_killed(owner, is_killed, time_now);
+        assert_eq!(contract.is_killed(), is_killed);
     }
 }

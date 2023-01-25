@@ -1,6 +1,5 @@
 use crate::{data::*, event::LiquidityGaugeRewardWrapperEvent};
 use alloc::string::String;
-use alloc::vec::Vec;
 use alloc::{collections::BTreeMap, string::ToString};
 use casper_contract::{
     contract_api::{
@@ -10,12 +9,16 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
+use crv20::{self, Address, CURVEERC20};
+use curve_casper_erc20::Error as Erc20Error;
 
-pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext<Storage> {
+pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>:
+    ContractContext<Storage> + CURVEERC20<Storage>
+{
     /// @notice Contract constructor
     /// @param _name Token full name
     /// @param _symbol Token symbol
@@ -30,9 +33,9 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         contract_hash: ContractHash,
         package_hash: ContractPackageHash,
     ) {
-        set_name(name);
-        set_symbol(symbol);
-        set_decimals(9);
+        self.set_name(name);
+        self.set_symbol(symbol);
+        // self.set_decimals(9);
         let lp_token: Key = runtime::call_versioned_contract(
             gauge.into_hash().unwrap_or_revert().into(),
             None,
@@ -72,8 +75,6 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         set_lp_token(lp_token);
         set_gauge(gauge);
         set_admin(admin);
-        Allowances::init();
-        BalanceOf::init();
         RewardIntegralFor::init();
         CrvIntegralFor::init();
         ClaimableCrv::init();
@@ -85,7 +86,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     fn _checkpoint(&self, addr: Key) {
         let gauge: Key = get_gauge();
         let mut token: Key = get_crv_token();
-        let total_balance: U256 = get_total_supply();
+        let total_balance: U256 = self.total_supply();
         let mut d_reward: U256 = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
@@ -125,7 +126,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             .checked_add(di)
             .unwrap_or_revert_with(Error::RewardWrapperAdditionError1);
         set_crv_integral(i);
-        let balance_of: U256 = BalanceOf::instance().get(&addr);
+        let balance_of: U256 = self.balance_of(Address::from(addr));
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
         ClaimableCrv::instance().set(
             &addr,
@@ -221,7 +222,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 "addr" => Key::from(get_package_hash())
             },
         );
-        let total_balance: U256 = get_total_supply();
+        let total_balance: U256 = self.total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
@@ -233,7 +234,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let i: U256 = get_crv_integral()
             .checked_add(di)
             .unwrap_or_revert_with(Error::RewardWrapperAdditionError5);
-        let balance_of: U256 = BalanceOf::instance().get(&addr);
+        let balance_of: U256 = self.balance_of(Address::from(addr));
         let crv_integral_for: U256 = CrvIntegralFor::instance().get(&addr);
         let claimable_crv: U256 = ClaimableCrv::instance().get(&addr);
         claimable_crv
@@ -272,7 +273,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let d_reward: U256 = claimable_reward
             .checked_sub(claimed_rewards_for)
             .unwrap_or_revert_with(Error::RewardWrapperSubtractionError6);
-        let total_balance: U256 = get_total_supply();
+        let total_balance: U256 = self.total_supply();
         let mut di: U256 = 0.into();
         if total_balance > 0.into() {
             di = U256::from(TEN_E_NINE)
@@ -284,7 +285,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         let i: U256 = get_reward_integral()
             .checked_add(di)
             .unwrap_or_revert_with(Error::RewardWrapperAdditionError7);
-        let balance_of: U256 = BalanceOf::instance().get(&addr);
+        let balance_of: U256 = self.balance_of(Address::from(addr));
         let reward_integral_for: U256 = RewardIntegralFor::instance().get(&addr);
         let claimable_rewards: U256 = ClaimableRewards::instance().get(&addr);
         claimable_rewards
@@ -308,7 +309,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
             None => self.get_caller(),
         };
         self._checkpoint(addr);
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             get_crv_token().into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
@@ -317,8 +318,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 "amount" => ClaimableCrv::instance().get(&addr)
             },
         );
-        ret.unwrap_or_revert();
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             get_rewarded_token().into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
@@ -327,7 +327,6 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 "amount" => ClaimableRewards::instance().get(&addr)
             },
         );
-        ret.unwrap_or_revert();
         ClaimableCrv::instance().set(&addr, 0.into());
         ClaimableRewards::instance().set(&addr, 0.into());
         set_lock(false);
@@ -362,16 +361,17 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         }
         self._checkpoint(addr);
         if value != 0.into() {
-            let balance: U256 = BalanceOf::instance()
-                .get(&addr)
+            let balance: U256 = self
+                .balance_of(Address::from(addr))
                 .checked_add(value)
                 .unwrap_or_revert_with(Error::RewardWrapperAdditionError9);
-            let supply: U256 = get_total_supply()
+            let supply: U256 = self
+                .total_supply()
                 .checked_add(value)
                 .unwrap_or_revert_with(Error::RewardWrapperAdditionError10);
-            BalanceOf::instance().set(&addr, balance);
-            set_total_supply(supply);
-            let ret: Result<(), u32> = runtime::call_versioned_contract(
+            self.set_balance(Address::from(addr), balance);
+            self.set_total_supply(supply);
+            let () = runtime::call_versioned_contract(
                 get_lp_token().into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer_from",
@@ -381,7 +381,6 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                     "amount" => value
                 },
             );
-            ret.unwrap_or_revert();
             let () = runtime::call_versioned_contract(
                 get_gauge().into_hash().unwrap_or_revert().into(),
                 None,
@@ -420,15 +419,16 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         set_lock(true);
         self._checkpoint(self.get_caller());
         if value != 0.into() {
-            let balance: U256 = BalanceOf::instance()
-                .get(&self.get_caller())
+            let balance: U256 = self
+                .balance_of(Address::from(self.get_caller()))
                 .checked_sub(value)
                 .unwrap_or_revert_with(Error::RewardWrapperSubtractionError8);
-            let supply: U256 = get_total_supply()
+            let supply: U256 = self
+                .total_supply()
                 .checked_sub(value)
                 .unwrap_or_revert_with(Error::RewardWrapperSubtractionError9);
-            BalanceOf::instance().set(&self.get_caller(), balance);
-            set_total_supply(supply);
+            self.set_balance(Address::from(self.get_caller()), balance);
+            self.set_total_supply(supply);
             let () = runtime::call_versioned_contract(
                 get_gauge().into_hash().unwrap_or_revert().into(),
                 None,
@@ -438,7 +438,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                     "claim_rewards" => true
                 },
             );
-            let ret: Result<(), u32> = runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 get_lp_token().into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer",
@@ -447,7 +447,6 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                     "amount" => value
                 },
             );
-            ret.unwrap_or_revert();
         }
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,
@@ -471,7 +470,8 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     /// @param _spender The address which will spend the funds.
     /// @return An uint256 specifying the amount of tokens still available for the spender.
     fn allowance(&self, owner: Key, spender: Key) -> U256 {
-        Allowances::instance().get(&owner, &spender)
+        // Allowances::instance().get(&owner, &spender)
+        CURVEERC20::allowance(self, Address::from(owner), Address::from(spender))
     }
     fn _transfer(&self, owner: Key, recipient: Key, amount: U256) {
         if get_is_killed() {
@@ -480,17 +480,17 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
         self._checkpoint(owner);
         self._checkpoint(recipient);
         if amount != 0.into() {
-            let balance_owner: U256 = BalanceOf::instance()
-                .get(&owner)
+            let balance_owner: U256 = self
+                .balance_of(Address::from(owner))
                 .checked_sub(amount)
                 .unwrap_or_revert_with(Error::RewardWrapperSubtractionError10);
-            BalanceOf::instance().set(&owner, balance_owner);
-            let balance_recipient: U256 = BalanceOf::instance()
-                .get(&recipient)
+            self.set_balance(Address::from(owner), balance_owner);
+            let balance_recipient: U256 = self
+                .balance_of(Address::from(recipient))
                 .checked_add(amount)
                 .unwrap_or_revert_with(Error::RewardWrapperSubtractionError11);
 
-            BalanceOf::instance().set(&recipient, balance_recipient);
+            self.set_balance(Address::from(recipient), balance_recipient);
         }
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,
@@ -504,26 +504,31 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     /// @dev Transfer token for a specified address
     /// @param _to The address to transfer to.
     /// @param _value The amount to be transferred.
-    fn transfer(&mut self, recipient: Key, amount: U256) -> Result<(), u32> {
-        self._transfer(self.get_caller(), recipient, amount);
+    fn transfer(&mut self, recipient: Address, amount: U256) -> Result<(), Erc20Error> {
+        self._transfer(self.get_caller(), Key::from(recipient), amount);
         Ok(())
     }
-    /// @dev Transfer tokens from one address to another.
-    /// @param _from address The address which you want to send tokens from
-    /// @param _to address The address which you want to transfer to
-    /// @param _value uint256 the amount of tokens to be transferred
-    fn transfer_from(&mut self, owner: Key, recipient: Key, amount: U256) -> Result<(), u32> {
-        let allowance: U256 = Allowances::instance().get(&owner, &self.get_caller());
+    //     /// @dev Transfer tokens from one address to another.
+    //     /// @param _from address The address which you want to send tokens from
+    //     /// @param _to address The address which you want to transfer to
+    //     /// @param _value uint256 the amount of tokens to be transferred
+    fn transfer_from(
+        &mut self,
+        owner: Address,
+        recipient: Address,
+        amount: U256,
+    ) -> Result<(), Erc20Error> {
+        let allowance: U256 = CURVEERC20::allowance(self, owner, Address::from(self.get_caller()));
         if allowance != U256::MAX {
-            Allowances::instance().set(
-                &owner,
-                &self.get_caller(),
+            self.set_allowance(
+                owner,
+                Address::from(self.get_caller()),
                 allowance
                     .checked_sub(amount)
-                    .unwrap_or_revert_with(Error::RewardWrapperSubtractionError11),
+                    .unwrap_or_revert_with(Error::RewardWrapperSubtractionError12),
             );
         }
-        self._transfer(owner, recipient, amount);
+        self._transfer(Key::from(owner), Key::from(recipient), amount);
         Ok(())
     }
     /// @notice Approve the passed address to transfer the specified amount of
@@ -535,16 +540,8 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     ///  https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
     /// @param _spender The address which will transfer the funds
     /// @param _value The amount of tokens that may be transferred
-    fn approve(&self, spender: Key, amount: U256) {
-        Allowances::instance().set(&self.get_caller(), &spender, amount);
-        LIQUIDITYGAUGEREWARDWRAPPER::emit(
-            self,
-            &LiquidityGaugeRewardWrapperEvent::Approval {
-                owner: self.get_caller(),
-                spender,
-                value: amount,
-            },
-        );
+    fn approve(&self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
+        CURVEERC20::approve(self, spender, amount)
     }
     /// @notice Increase the allowance granted to `_spender` by the caller
     /// @dev This is alternative to {approve} that can be used as a mitigation for
@@ -552,21 +549,17 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     /// @param _spender The address which will transfer the funds
     /// @param _added_value The amount of to increase the allowance
     /// @return Result on success
-    fn increase_allowance(&mut self, spender: Key, amount: U256) -> Result<(), u32> {
-        let allowance: U256 = Allowances::instance()
-            .get(&self.get_caller(), &spender)
-            .checked_add(amount)
-            .unwrap_or_revert_with(Error::RewardWrapperAdditionError12);
-        Allowances::instance().set(&self.get_caller(), &spender, allowance);
+    fn increase_allowance(&self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
+        let res = CURVEERC20::increase_allowance(self, spender, amount);
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,
             &LiquidityGaugeRewardWrapperEvent::Approval {
                 owner: self.get_caller(),
-                spender,
-                value: allowance,
+                spender: Key::from(spender),
+                value: CURVEERC20::allowance(self, Address::from(self.get_caller()), spender),
             },
         );
-        Ok(())
+        res
     }
     /// @notice Decrease the allowance granted to `_spender` by the caller
     /// @dev This is alternative to {approve} that can be used as a mitigation for
@@ -574,22 +567,19 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     /// @param _spender The address which will transfer the funds
     /// @param _subtracted_value The amount of to decrease the allowance
     /// @return Result on success
-    fn decrease_allowance(&mut self, spender: Key, amount: U256) -> Result<(), u32> {
-        let allowance: U256 = Allowances::instance()
-            .get(&self.get_caller(), &spender)
-            .checked_sub(amount)
-            .unwrap_or_revert_with(Error::RewardWrapperSubtractionError12);
-        Allowances::instance().set(&self.get_caller(), &spender, allowance);
+    fn decrease_allowance(&self, spender: Address, amount: U256) -> Result<(), Erc20Error> {
+        let res = CURVEERC20::decrease_allowance(self, spender, amount);
         LIQUIDITYGAUGEREWARDWRAPPER::emit(
             self,
             &LiquidityGaugeRewardWrapperEvent::Approval {
                 owner: self.get_caller(),
-                spender,
-                value: allowance,
+                spender: Key::from(spender),
+                value: CURVEERC20::allowance(self, Address::from(self.get_caller()), spender),
             },
         );
-        Ok(())
+        res
     }
+
     fn kill_me(&self) {
         if self.get_caller() != get_admin() {
             runtime::revert(ApiError::from(Error::RewardWrapperAdminOnly1));
@@ -627,57 +617,52 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
     }
 
     fn emit(&self, liquidity_gauge_reward_wrapper_event: &LiquidityGaugeRewardWrapperEvent) {
-        let mut events = Vec::new();
-        let tmp = get_package_hash().to_formatted_string();
-        let split: char = '-';
-        let tmp: Vec<&str> = tmp.split(split).collect();
-        let package_hash = tmp[1].to_string();
         match liquidity_gauge_reward_wrapper_event {
             LiquidityGaugeRewardWrapperEvent::Deposit { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
                 );
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::Withdraw { provider, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
                 );
                 event.insert("provider", provider.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
                 );
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
                 );
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::Transfer { from, to, value } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
@@ -685,7 +670,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 event.insert("from", from.to_string());
                 event.insert("to", to.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             LiquidityGaugeRewardWrapperEvent::Approval {
                 owner,
@@ -693,7 +678,7 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 value,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert(
                     "event_type",
                     liquidity_gauge_reward_wrapper_event.type_name(),
@@ -701,11 +686,8 @@ pub trait LIQUIDITYGAUGEREWARDWRAPPER<Storage: ContractStorage>: ContractContext
                 event.insert("from", owner.to_string());
                 event.insert("to", spender.to_string());
                 event.insert("value", value.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

@@ -2,14 +2,13 @@ use crate::data::*;
 use alloc::{
     collections::BTreeMap,
     string::{String, ToString},
-    vec::Vec,
 };
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
@@ -97,7 +96,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         set_end_time(end_time);
         set_can_disable(can_disable);
 
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
             "transfer_from",
@@ -107,7 +106,6 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 "amount" => amount
             },
         );
-        ret.unwrap_or_revert();
         InitialLocked::instance().set(&recipient, amount);
         set_initial_locked_supply(amount);
         self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Fund { recipient, amount });
@@ -271,7 +269,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
         let updated_total_claimed = _total_claimed.checked_add(claimable).unwrap_or_revert();
         TotalClaimed::instance().set(&_addr, updated_total_claimed);
         let token: Key = get_token();
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
@@ -280,11 +278,6 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 "amount" => claimable,
             },
         );
-        match ret {
-            Ok(()) => {}
-            Err(e) => runtime::revert(ApiError::User(e as u16)),
-        }
-
         self.vesting_escrow_simple_emit(&VestingEscrowSimpleEvent::Claim {
             recipient: _addr,
             claimed: claimable,
@@ -308,7 +301,6 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
     }
 
     fn vesting_escrow_simple_emit(&self, vesting_escrow_simple_event: &VestingEscrowSimpleEvent) {
-        let mut events = Vec::new();
         let package = get_package_hash();
         match vesting_escrow_simple_event {
             VestingEscrowSimpleEvent::Fund { recipient, amount } => {
@@ -317,7 +309,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 event.insert("event_type", vesting_escrow_simple_event.type_name());
                 event.insert("recipient", recipient.to_string());
                 event.insert("amount", amount.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VestingEscrowSimpleEvent::Claim { recipient, claimed } => {
                 let mut event = BTreeMap::new();
@@ -325,7 +317,7 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 event.insert("event_type", vesting_escrow_simple_event.type_name());
                 event.insert("recipient", recipient.to_string());
                 event.insert("claimed", claimed.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VestingEscrowSimpleEvent::ToggleDisable {
                 recipient,
@@ -336,25 +328,22 @@ pub trait VESTINGESCROWSIMPLE<Storage: ContractStorage>: ContractContext<Storage
                 event.insert("event_type", vesting_escrow_simple_event.type_name());
                 event.insert("recipient", recipient.to_string());
                 event.insert("disabled", disabled.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VestingEscrowSimpleEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", vesting_escrow_simple_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VestingEscrowSimpleEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
                 event.insert("contract_package_hash", package.to_string());
                 event.insert("event_type", vesting_escrow_simple_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

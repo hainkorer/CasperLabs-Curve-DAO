@@ -1,14 +1,13 @@
 use core::convert::TryInto;
 
-use alloc::string::String;
 use casper_contract::{
     contract_api::{runtime, storage},
     unwrap_or_revert::UnwrapOrRevert,
 };
-use casper_types::bytesrepr::ToBytes;
 use casper_types::CLTyped;
-use casper_types::{ContractPackageHash, Key, U256};
-use casperlabs_contract_utils::{get_key, key_to_str, set_key, Dict};
+use casper_types::{bytesrepr::ToBytes, ContractHash};
+use casper_types::{ContractPackageHash, Key};
+use casperlabs_contract_utils::{get_key, set_key};
 use common::{keys::*, utils::*};
 
 pub fn set_result<T: ToBytes + CLTyped>(value: T) {
@@ -22,75 +21,6 @@ pub fn set_result<T: ToBytes + CLTyped>(value: T) {
             runtime::put_key(CURVE_TOKEN_V3_RESULT, key);
         }
     }
-}
-pub struct Balances {
-    dict: Dict,
-}
-
-impl Balances {
-    pub fn instance() -> Balances {
-        Balances {
-            dict: Dict::instance(CURVE_TOKEN_V3_BALANCE_OF_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(CURVE_TOKEN_V3_BALANCE_OF_DICT)
-    }
-
-    pub fn get(&self, owner: &Key) -> U256 {
-        self.dict.get(&key_to_str(owner)).unwrap_or_default()
-    }
-
-    pub fn set(&self, owner: &Key, value: U256) {
-        self.dict.set(&key_to_str(owner), value);
-    }
-}
-pub struct Allowances {
-    dict: Dict,
-}
-
-impl Allowances {
-    pub fn instance() -> Allowances {
-        Allowances {
-            dict: Dict::instance(CURVE_TOKEN_V3_ALLOWANCES_DICT),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(CURVE_TOKEN_V3_ALLOWANCES_DICT)
-    }
-
-    pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
-        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
-    }
-
-    pub fn set(&self, owner: &Key, spender: &Key, value: U256) {
-        self.dict.set_by_keys((owner, spender), value);
-    }
-}
-
-pub fn get_name() -> String {
-    get_key(CURVE_TOKEN_V3_NAME).unwrap_or_default()
-}
-
-pub fn set_name(name: String) {
-    set_key(CURVE_TOKEN_V3_NAME, name);
-}
-pub fn get_symbol() -> String {
-    get_key(CURVE_TOKEN_V3_SYMBOL).unwrap_or_default()
-}
-
-pub fn set_symbol(symbol: String) {
-    set_key(CURVE_TOKEN_V3_SYMBOL, symbol);
-}
-
-pub fn get_total_supply() -> U256 {
-    get_key(CURVE_TOKEN_V3_TOTAL_SUPPLY).unwrap_or_default()
-}
-
-pub fn set_total_supply(init_supply: U256) {
-    set_key(CURVE_TOKEN_V3_TOTAL_SUPPLY, init_supply);
 }
 pub fn get_minter() -> Key {
     get_key(CURVE_TOKEN_V3_MINTER).unwrap_or_else(zero_address)
@@ -107,11 +37,11 @@ pub fn set_token(token: Key) {
     set_key(CURVE_TOKEN_V3_CURVE, token);
 }
 
-pub fn set_hash(contract_hash: Key) {
+pub fn set_hash(contract_hash: ContractHash) {
     set_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH, contract_hash);
 }
-pub fn get_hash() -> Key {
-    get_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH).unwrap_or_else(zero_address)
+pub fn get_hash() -> ContractHash {
+    get_key(CURVE_TOKEN_V3_SELF_CONTRACT_HASH).unwrap_or_default()
 }
 pub fn set_package_hash(package_hash: ContractPackageHash) {
     set_key(CURVE_TOKEN_V3_SELF_PACKAGE_HASH, package_hash);

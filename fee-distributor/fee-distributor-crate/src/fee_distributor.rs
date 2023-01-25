@@ -9,10 +9,11 @@ use casper_contract::{
     unwrap_or_revert::UnwrapOrRevert,
 };
 use casper_types::{
-    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, URef, U256,
+    runtime_args, ApiError, ContractHash, ContractPackageHash, Key, RuntimeArgs, U256,
 };
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
+use crv20::{self, Address};
 
 #[allow(clippy::too_many_arguments)]
 pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
@@ -59,7 +60,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "balance_of",
             runtime_args! {
-                "owner" => Key::from(get_package_hash())
+                "owner" => Address::from(Key::from(get_package_hash()))
             },
         );
         let to_distribute: U256 = token_balance
@@ -196,7 +197,7 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             } else {
                 max = mid
                     .checked_sub(1.into())
-                    .unwrap_or_revert_with(Error::FeeDistributorDivisionError5);
+                    .unwrap_or_revert_with(Error::FeeDistributorDivisionError12);
             }
         }
         min
@@ -538,18 +539,15 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
         let amount: U256 = self._claim(_addr, get_voting_escrow(), last_token_time);
         if amount != 0.into() {
             let token: Key = get_token();
-            let ret: Result<(), u32> = runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 token.into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer",
                 runtime_args! {
-                    "recipient" => addr,
+                    "recipient" =>Address::from(_addr),
                     "amount" => amount
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-            }
             set_token_last_balance(
                 get_token_last_balance()
                     .checked_sub(amount)
@@ -601,18 +599,15 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             }
             let amount: U256 = self._claim(addr, voting_escrow, last_token_time);
             if amount != 0.into() {
-                let ret: Result<(), u32> = runtime::call_versioned_contract(
+                let () = runtime::call_versioned_contract(
                     token.into_hash().unwrap_or_revert().into(),
                     None,
                     "transfer",
                     runtime_args! {
-                        "recipient" => addr,
+                        "recipient" => Address::from(addr),
                         "amount" => amount
                     },
                 );
-                if ret.is_err() {
-                    runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-                }
                 total = total
                     .checked_add(amount)
                     .unwrap_or_revert_with(Error::FeeDistributorAdditionError17);
@@ -644,23 +639,20 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "balance_of",
             runtime_args! {
-                "owner" => self.get_caller()
+                "owner" => Address::from(self.get_caller())
             },
         );
         if amount != 0.into() {
-            let ret: Result<(), u32> = runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 coin.into_hash().unwrap_or_revert().into(),
                 None,
                 "transfer_from",
                 runtime_args! {
-                    "owner" => self.get_caller(),
-                    "recipient" => Key::from(get_package_hash()),
+                    "owner" => Address::from(self.get_caller()),
+                    "recipient" => Address::from(Key::from(get_package_hash())),
                     "amount" => amount
                 },
             );
-            if ret.is_err() {
-                runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-            }
             if get_can_checkpoint_token()
                 && (U256::from(u64::from(get_blocktime()))
                     > get_last_token_time()
@@ -728,21 +720,18 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "balance_of",
             runtime_args! {
-                "owner" => Key::from(get_package_hash())
+                "owner" => Address::from(Key::from(get_package_hash()))
             },
         );
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             token.into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
             runtime_args! {
-                "recipient" => get_emergency_return(),
+                "recipient" => Address::from(get_emergency_return()),
                 "amount" => balance
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-        }
     }
 
     /// @notice Recover ERC20 tokens from this contract
@@ -761,59 +750,51 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
             None,
             "balance_of",
             runtime_args! {
-                "owner" => Key::from(get_package_hash())
+                "owner" => Address::from(Key::from(get_package_hash()))
             },
         );
-        let ret: Result<(), u32> = runtime::call_versioned_contract(
+        let () = runtime::call_versioned_contract(
             coin.into_hash().unwrap_or_revert().into(),
             None,
             "transfer",
             runtime_args! {
-                "recipient" => get_emergency_return(),
+                "recipient" => Address::from(get_emergency_return()),
                 "amount" => amount
             },
         );
-        if ret.is_err() {
-            runtime::revert(ApiError::User(ret.err().unwrap() as u16));
-        }
         true
     }
 
     fn emit(&self, fee_distributor_event: &FeeDistributorEvent) {
-        let mut events = Vec::new();
-        let tmp = get_package_hash().to_formatted_string();
-        let split: char = '-';
-        let tmp: Vec<&str> = tmp.split(split).collect();
-        let package_hash = tmp[1].to_string();
         match fee_distributor_event {
             FeeDistributorEvent::CommitAdmin { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             FeeDistributorEvent::ApplyAdmin { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             FeeDistributorEvent::ToggleAllowCheckpointToken { toggle_flag } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("toggle_flag", toggle_flag.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             FeeDistributorEvent::CheckpointToken { time, tokens } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("time", time.to_string());
                 event.insert("tokens", tokens.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             FeeDistributorEvent::Claimed {
                 recipient,
@@ -822,17 +803,14 @@ pub trait FEEDISTRIBUTOR<Storage: ContractStorage>: ContractContext<Storage> {
                 max_epoch,
             } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package_hash);
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", fee_distributor_event.type_name());
                 event.insert("recipient", recipient.to_string());
                 event.insert("amount", amount.to_string());
                 event.insert("claim_epoch", claim_epoch.to_string());
                 event.insert("max_epoch", max_epoch.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 }

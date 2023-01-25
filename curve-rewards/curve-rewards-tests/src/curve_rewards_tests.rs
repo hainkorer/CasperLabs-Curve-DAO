@@ -8,7 +8,7 @@ pub const WEEK: U256 = U256([604800000, 0, 0, 0]);
 fn deploy_token(env: &TestEnv, owner: AccountHash, block_time: u64) -> TestContract {
     TestContract::new(
         env,
-        "erc20-token.wasm",
+        "curve-erc20.wasm",
         "erc2020",
         owner,
         runtime_args! {
@@ -23,8 +23,8 @@ fn deploy_token(env: &TestEnv, owner: AccountHash, block_time: u64) -> TestContr
 fn deploy_reward(env: &TestEnv, owner: AccountHash, block_time: u64) -> TestContract {
     TestContract::new(
         env,
-        "erc20-token.wasm",
-        "erc2020",
+        "curve-erc20.wasm",
+        "erc",
         owner,
         runtime_args! {
             "name" => "Reward",

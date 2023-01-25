@@ -1,11 +1,9 @@
 use alloc::{string::ToString, vec::Vec};
 use casper_contract::unwrap_or_revert::UnwrapOrRevert;
-use casper_types::{
-    bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U128, U256,
-};
+use casper_types::{bytesrepr::ToBytes, CLTyped, Key, U128, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
-use common::{keys::*, utils::*};
+use common::{errors::*, keys::*, utils::*};
 
 pub const TOKENLESS_PRODUCTION: U256 = U256([40, 0, 0, 0]);
 pub const BOOST_WARMUP: U256 = U256([1209600000, 0, 0, 0]);
@@ -34,31 +32,6 @@ impl ApprovedToDeposit {
 
     pub fn set(&self, owner: &Key, spender: &Key, value: bool) {
         self.dict.set_by_keys((owner, spender), value);
-    }
-}
-
-#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
-pub struct BalanceOf {
-    dict: Dict,
-}
-
-impl BalanceOf {
-    pub fn instance() -> BalanceOf {
-        BalanceOf {
-            dict: Dict::instance(BALANCE_OF),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(BALANCE_OF)
-    }
-
-    pub fn get(&self, key: &Key) -> U256 {
-        self.dict.get_by_key(key).unwrap_or_default()
-    }
-
-    pub fn set(&self, key: &Key, value: U256) {
-        self.dict.set_by_key(key, value);
     }
 }
 
@@ -117,7 +90,10 @@ impl PeriodTimestamp {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError1);
     }
 }
 
@@ -152,7 +128,10 @@ impl IntegrateInvSupply {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::LiquidityGaugeRewardArithmaticError2);
     }
 }
 
@@ -355,14 +334,6 @@ pub fn set_voting_escrow(voting_escrow: Key) {
     set_key(VOTING_ESCROW, voting_escrow);
 }
 
-pub fn get_total_supply() -> U256 {
-    get_key(TOTAL_SUPPLY).unwrap_or_default()
-}
-
-pub fn set_total_supply(total_supply: U256) {
-    set_key(TOTAL_SUPPLY, total_supply);
-}
-
 pub fn get_future_epoch_time() -> U256 {
     get_key(FUTURE_EPOCH_TIME).unwrap_or_default()
 }
@@ -449,22 +420,6 @@ pub fn get_lock() -> bool {
 
 pub fn set_lock(lock: bool) {
     set_key(LOCK, lock);
-}
-
-pub fn get_contract_hash() -> ContractHash {
-    get_key(SELF_CONTRACT_HASH).unwrap_or_default()
-}
-
-pub fn set_contract_hash(contract_hash: ContractHash) {
-    set_key(SELF_CONTRACT_HASH, contract_hash);
-}
-
-pub fn get_package_hash() -> ContractPackageHash {
-    get_key(SELF_CONTRACT_PACKAGE_HASH).unwrap_or_default()
-}
-
-pub fn set_package_hash(package_hash: ContractPackageHash) {
-    set_key(SELF_CONTRACT_PACKAGE_HASH, package_hash);
 }
 
 pub fn js_ret<T: CLTyped + ToBytes>(ret: T) {

@@ -1,37 +1,11 @@
-use alloc::{string::String, vec::Vec};
-use casper_contract::unwrap_or_revert::UnwrapOrRevert;
+use alloc::vec::Vec;
+
 use casper_types::{bytesrepr::ToBytes, CLTyped, ContractHash, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::{get_key, set_key, Dict};
 use common::{keys::*, utils::*};
 
 pub const TEN_E_NINE: u128 = 1000000000;
-
-pub struct Allowances {
-    dict: Dict,
-}
-
-impl Allowances {
-    pub fn instance() -> Allowances {
-        Allowances {
-            dict: Dict::instance(ALLOWANCES),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(ALLOWANCES)
-    }
-
-    pub fn get(&self, owner: &Key, spender: &Key) -> U256 {
-        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
-    }
-
-    pub fn set(&self, owner: &Key, spender: &Key, value: U256) {
-        self.dict.set_by_keys((owner, spender), value);
-    }
-}
-
-/// caller -> recipient -> can deposit?
 
 #[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
 pub struct ApprovedToDeposit {
@@ -55,31 +29,6 @@ impl ApprovedToDeposit {
 
     pub fn set(&self, key_1: &Key, key_2: &Key, value: bool) {
         self.dict.set_by_keys((key_1, key_2), value);
-    }
-}
-
-#[derive(Clone, Copy, CLTyped, ToBytes, FromBytes, Default)]
-pub struct BalanceOf {
-    dict: Dict,
-}
-
-impl BalanceOf {
-    pub fn instance() -> BalanceOf {
-        BalanceOf {
-            dict: Dict::instance(BALANCE_OF),
-        }
-    }
-
-    pub fn init() {
-        Dict::init(BALANCE_OF)
-    }
-
-    pub fn get(&self, key: &Key) -> U256 {
-        self.dict.get_by_key(key).unwrap_or_default()
-    }
-
-    pub fn set(&self, key: &Key, value: U256) {
-        self.dict.set_by_key(key, value);
     }
 }
 
@@ -181,29 +130,6 @@ impl ClaimableRewards {
         self.dict.set_by_key(key, value);
     }
 }
-pub fn name() -> String {
-    get_key(NAME).unwrap_or_revert()
-}
-
-pub fn set_name(name: String) {
-    set_key(NAME, name);
-}
-
-pub fn symbol() -> String {
-    get_key(SYMBOL).unwrap_or_revert()
-}
-
-pub fn set_symbol(symbol: String) {
-    set_key(SYMBOL, symbol);
-}
-
-pub fn decimals() -> u8 {
-    get_key(DECIMALS).unwrap_or_revert()
-}
-
-pub fn set_decimals(decimals: u8) {
-    set_key(DECIMALS, decimals);
-}
 
 pub fn get_minter() -> Key {
     get_key(MINTER).unwrap_or_else(zero_address)
@@ -236,13 +162,6 @@ pub fn set_gauge(gauge: Key) {
     set_key(GAUGE, gauge);
 }
 
-pub fn get_total_supply() -> U256 {
-    get_key(TOTAL_SUPPLY).unwrap_or_default()
-}
-
-pub fn set_total_supply(total_supply: U256) {
-    set_key(TOTAL_SUPPLY, total_supply);
-}
 pub fn get_rewarded_token() -> Key {
     get_key(REWARDED_TOKEN).unwrap_or_else(zero_address)
 }

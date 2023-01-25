@@ -5,16 +5,13 @@ name = "curve-rewards"
 version = "0.2.0"
 
 [dependencies]
-curve-rewards-crate = { path = "../curve-rewards-crate" }
-casperlabs-i-reward-distribution-recipient = "0.1.0"
-casperlabs-lp-token-wrapper = "0.1.0"
-casperlabs-ownable = "0.1.0"
-common = {path = "../../common"}
 casper-contract = "1.4.4"
 casper-types = "1.5.0"
-casperlabs-contract-utils = "0.1.0"
+casperlabs-contract-utils = "0.2.1"
 cryptoxide = "0.3.3"
 hex = { version = "0.4.3", default-features = false }
+common = {path = "../../common"}
+curve-rewards-crate = { path = "../curve-rewards-crate" }
 
 [[bin]]
 bench = false

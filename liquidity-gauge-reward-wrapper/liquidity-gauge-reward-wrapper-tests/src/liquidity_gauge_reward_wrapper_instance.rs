@@ -1,9 +1,32 @@
+use blake2::{
+    digest::{Update, VariableOutput},
+    VarBlake2b,
+};
 use casper_types::{
-    account::AccountHash, bytesrepr::FromBytes, runtime_args, CLTyped, Key, RuntimeArgs, U256,
+    account::AccountHash,
+    bytesrepr::{FromBytes, ToBytes},
+    runtime_args, CLTyped, Key, RuntimeArgs, U256,
 };
 use casperlabs_test_env::{TestContract, TestEnv};
+use crv20::Address;
 use std::time::SystemTime;
+pub const ALLOWANCES: &str = "allowances";
+use common::keys::*;
+use hex::encode;
+pub fn address_to_str(owner: &Address) -> String {
+    let preimage = owner.to_bytes().unwrap();
+    base64::encode(&preimage)
+}
+pub fn addresses_to_str(owner: Address, spender: Address) -> String {
+    let mut hasher = VarBlake2b::new(32).unwrap();
+    hasher.update(owner.to_bytes().unwrap());
+    hasher.update(spender.to_bytes().unwrap());
 
+    let mut ret = [0u8; 32];
+    hasher.finalize_variable(|hash| ret.clone_from_slice(hash));
+
+    encode(ret)
+}
 pub struct LIQUIDITYGAUGEREWARDWRAPPERInstance(TestContract);
 #[allow(clippy::too_many_arguments)]
 impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
@@ -215,6 +238,13 @@ impl LIQUIDITYGAUGEREWARDWRAPPERInstance {
     }
     pub fn package_hash(&self) -> [u8; 32] {
         self.0.package_hash()
+    }
+    pub fn balance_of(&self, owner: Address) -> U256 {
+        self.0.query(BALANCES, address_to_str(&owner))
+    }
+    pub fn allowance(&self, owner: Address, spender: Address) -> U256 {
+        let ret: U256 = self.0.query(ALLOWANCES, addresses_to_str(owner, spender));
+        ret
     }
 
     // Get stored key values

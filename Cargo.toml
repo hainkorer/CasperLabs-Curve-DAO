@@ -2,28 +2,24 @@
 members = [
   # COMMON
   "common",
-  # SESSION CODE
-  "session-code",
   # Test Session Code
   "test-session-code",
+  # CRV20
+  "curve-erc20/curve-erc20",
+  "curve-erc20/curve-erc20-tests",
   # CURVE TOKEN V3
   "curve-token-v3/curve-token-v3",
   "curve-token-v3/curve-token-v3-crate",
-  "curve-token-v3/curve-token-v3-session-code",
   "curve-token-v3/curve-token-v3-tests",
-  # ERC20
-  "erc20/erc20",
-  "erc20/erc20-crate",
-  "erc20/erc20-proxy",
-  "erc20/erc20-tests",
   # ERC-20 CRV
-  "erc20-crv/erc20_crv",
-  "erc20-crv/erc20_crv_tests",
-  "erc20-crv/session_code",
+  "erc20-crv/erc20-crv",
+  "erc20-crv/erc20-crv-tests",
+  "erc20-crv/erc20-crv-session-code",
   # FEE DISTRIBUTOR
   "fee-distributor/fee-distributor",
   "fee-distributor/fee-distributor-crate",
   "fee-distributor/fee-distributor-tests",
+  "fee-distributor/session-code",
   # GAUGE CONTROLLER
   "gauge-controller/gauge-controller",
   "gauge-controller/gauge-controller-crate",
@@ -70,12 +66,6 @@ members = [
   # VESTING ESCROW SIMPLE
   "vesting-escrow-simple/vesting-escrow-simple-crate",
   "vesting-escrow-simple/vesting-escrow-simple",
-
-  # ERC20
-  "erc20/erc20",
-  "erc20/erc20-crate",
-  "erc20/erc20-proxy",
-  "erc20/erc20-tests",
   # LIQUIDITY GAUGE REWARD WRAPPER
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper",
   "liquidity-gauge-reward-wrapper/liquidity-gauge-reward-wrapper-crate",
@@ -111,7 +101,6 @@ members = [
   "liquidity-gauge-v3/liquidity-gauge-v3-crate",
   "liquidity-gauge-v3/liquidity-gauge-v3-tests",
   "liquidity-gauge-v3/liquidity-gauge-v3-session-code",
-
 ]
 
 [profile.release]

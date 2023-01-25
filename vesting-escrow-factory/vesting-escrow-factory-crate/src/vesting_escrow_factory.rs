@@ -1,11 +1,11 @@
 use crate::alloc::string::ToString;
-use crate::data::{self, MIN_VESTING_DURATION};
+use crate::data::{self, get_package_hash, MIN_VESTING_DURATION};
 use alloc::collections::BTreeMap;
 use alloc::format;
-use alloc::{string::String, vec::Vec};
+use alloc::string::String;
 use casper_contract::contract_api::storage;
 use casper_contract::{contract_api::runtime, unwrap_or_revert::UnwrapOrRevert};
-use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, URef, U256};
+use casper_types::{runtime_args, ApiError, ContractPackageHash, Key, RuntimeArgs, U256};
 use casperlabs_contract_utils::{ContractContext, ContractStorage};
 use common::{errors::*, utils::*};
 use vesting_escrow_simple_crate::entry_points::get_entry_points;
@@ -82,13 +82,13 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
             };
 
             let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-            let _ret: () = runtime::call_versioned_contract(
+            let () = runtime::call_versioned_contract(
                 token_package_hash,
                 None,
                 "approve",
                 runtime_args! {"spender" =>  Key::from(package_hash),"amount" => _amount},
             );
-            let _ret: bool = runtime::call_versioned_contract(
+            let _: bool = runtime::call_versioned_contract(
                 package_hash,
                 None,
                 "initialize",
@@ -152,28 +152,22 @@ pub trait VESTINGESCROWFACTORY<Storage: ContractStorage>: ContractContext<Storag
     }
 
     fn emit(&mut self, vesting_escrow_factory_event: &VESTINGESCROWFACTORYEvent) {
-        let mut events = Vec::new();
-        let package = data::get_package_hash();
         match vesting_escrow_factory_event {
             VESTINGESCROWFACTORYEvent::CommitOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", vesting_escrow_factory_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
             VESTINGESCROWFACTORYEvent::ApplyOwnership { admin } => {
                 let mut event = BTreeMap::new();
-                event.insert("contract_package_hash", package.to_string());
+                event.insert("contract_package_hash", get_package_hash().to_string());
                 event.insert("event_type", vesting_escrow_factory_event.type_name());
                 event.insert("admin", admin.to_string());
-                events.push(event);
+                storage::new_uref(event);
             }
         };
-
-        for event in events {
-            let _: URef = storage::new_uref(event);
-        }
     }
 
     fn get_package_hash(&mut self) -> ContractPackageHash {

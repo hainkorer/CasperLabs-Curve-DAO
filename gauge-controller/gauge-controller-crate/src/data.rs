@@ -1,4 +1,5 @@
 use alloc::{
+    format,
     string::{String, ToString},
     vec::Vec,
 };
@@ -6,7 +7,11 @@ use casper_contract::{contract_api::runtime::get_call_stack, unwrap_or_revert::U
 use casper_types::{system::CallStackElement, ContractPackageHash, Key, U256};
 use casper_types_derive::{CLTyped, FromBytes, ToBytes};
 use casperlabs_contract_utils::*;
-use common::{keys::*, utils::*};
+use common::{
+    errors::*,
+    keys::*,
+    utils::{key_to_str, *},
+};
 
 pub const WEEK: U256 = U256([604800000, 0, 0, 0]); // all future times are rounded by week
 pub const WEIGHT_VOTE_DELAY: U256 = U256([86400000, 0, 0, 0]);
@@ -89,11 +94,93 @@ impl VoteUserSlopes {
     }
 
     pub fn get(&self, owner: &Key, spender: &Key) -> VotedSlope {
-        self.dict.get_by_keys((owner, spender)).unwrap_or_default()
+        VotedSlope {
+            slope: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        VOTE_USER_SLOPES_DICT,
+                        "_slope_",
+                        owner.to_formatted_string(),
+                        "_",
+                        spender.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            power: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        VOTE_USER_SLOPES_DICT,
+                        "_power_",
+                        owner.to_formatted_string(),
+                        "_",
+                        spender.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            end: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        VOTE_USER_SLOPES_DICT,
+                        "_end_",
+                        owner.to_formatted_string(),
+                        "_",
+                        spender.to_formatted_string()
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, owner: &Key, spender: &Key, value: VotedSlope) {
-        self.dict.set_by_keys((owner, spender), value);
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                VOTE_USER_SLOPES_DICT,
+                "_slope_",
+                owner.to_formatted_string(),
+                "_",
+                spender.to_formatted_string()
+            ))
+            .as_str(),
+            value.slope,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                VOTE_USER_SLOPES_DICT,
+                "_power_",
+                owner.to_formatted_string(),
+                "_",
+                spender.to_formatted_string()
+            ))
+            .as_str(),
+            value.power,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                VOTE_USER_SLOPES_DICT,
+                "_end_",
+                owner.to_formatted_string(),
+                "_",
+                spender.to_formatted_string()
+            ))
+            .as_str(),
+            value.end,
+        );
     }
 }
 
@@ -161,13 +248,65 @@ impl PointsWeight {
     }
 
     pub fn get(&self, owner: &Key, recipient: &U256) -> Point {
-        let key_: String = key_and_value_to_str(owner, recipient);
-        self.dict.get(key_.as_str()).unwrap_or_default()
+        Point {
+            bias: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        POINTS_WEIGHT_DICT,
+                        "_bias_",
+                        owner.to_formatted_string(),
+                        "_",
+                        recipient
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            slope: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        POINTS_WEIGHT_DICT,
+                        "_slope_",
+                        owner.to_formatted_string(),
+                        "_",
+                        recipient
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, owner: &Key, recipient: &U256, value: Point) {
-        let key_: String = key_and_value_to_str(owner, recipient);
-        self.dict.set(key_.as_str(), value);
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                POINTS_WEIGHT_DICT,
+                "_bias_",
+                owner.to_formatted_string(),
+                "_",
+                recipient
+            ))
+            .as_str(),
+            value.bias,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                POINTS_WEIGHT_DICT,
+                "_slope_",
+                owner.to_formatted_string(),
+                "_",
+                recipient
+            ))
+            .as_str(),
+            value.slope,
+        );
     }
 }
 
@@ -253,7 +392,10 @@ impl Gauges {
 
     pub fn push(&mut self, value: Key) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::GaugeControllerOverFlow28);
     }
 }
 
@@ -284,7 +426,10 @@ impl TimeSum {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::GaugeControllerOverFlow29);
     }
 }
 
@@ -304,13 +449,49 @@ impl PointsSum {
     }
 
     pub fn get(&self, owner: &i128, recipient: &U256) -> Point {
-        let key_: String = values_to_str(&owner.to_string(), recipient);
-        self.dict.get(key_.as_str()).unwrap_or_default()
+        Point {
+            bias: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        POINTS_SUM_DICT, "_bias_", owner, "_", recipient
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+
+            slope: self
+                .dict
+                .get(
+                    hash(format!(
+                        "{}{}{}{}{}",
+                        POINTS_SUM_DICT, "_slope_", owner, "_", recipient
+                    ))
+                    .as_str(),
+                )
+                .unwrap_or_default(),
+        }
     }
 
     pub fn set(&self, owner: &i128, recipient: &U256, value: Point) {
-        let key_: String = values_to_str(&owner.to_string(), recipient);
-        self.dict.set(key_.as_str(), value);
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                POINTS_SUM_DICT, "_bias_", owner, "_", recipient
+            ))
+            .as_str(),
+            value.bias,
+        );
+
+        self.dict.set(
+            hash(format!(
+                "{}{}{}{}{}",
+                POINTS_SUM_DICT, "_slope_", owner, "_", recipient
+            ))
+            .as_str(),
+            value.slope,
+        );
     }
 }
 
@@ -417,7 +598,10 @@ impl TimeTypeWeight {
 
     pub fn push(&mut self, value: U256) {
         self.dict.set(self.length.to_string().as_str(), value);
-        self.length = self.length.checked_add(1.into()).unwrap_or_revert();
+        self.length = self
+            .length
+            .checked_add(1.into())
+            .unwrap_or_revert_with(Error::GaugeControllerOverFlow30);
     }
 }
 
