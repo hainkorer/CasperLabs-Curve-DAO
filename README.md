@@ -579,7 +579,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 ```
-rustup install nightly-2022-04-04
+rustup install nightly-2022-11-17
 ```
 
 ## Check that nightly toolchain version is installed(this will list stable and nightly versions)
