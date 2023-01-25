@@ -591,7 +591,7 @@ rustup toolchain list
 ## Set rust nightly as default
 
 ```
-rustup default nightly-2022-04-04-x86_64-unknown-linux-gnu
+rustup default nightly-2022-11-17-x86_64-unknown-linux-gnu
 ```
 
 ## Install wasm32-unknown-unknown
