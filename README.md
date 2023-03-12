@@ -583,6 +583,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ```
 rustup install nightly-2022-04-04
+rustup install nightly-2022-11-17
 ```
 
 ## Check that nightly toolchain version is installed(this will list stable and nightly versions)
@@ -591,7 +592,7 @@ rustup install nightly-2022-04-04
 rustup toolchain list
 ```
 
-## Set rust nightly as default
+## Set rust nightly as default (this is the older one for contracts)
 
 ```
 rustup default nightly-2022-04-04-x86_64-unknown-linux-gnu
@@ -626,7 +627,7 @@ cmake --version
 ## Install the Casper Crates
 
 ```
-cargo install cargo-casper
+cargo +nightly-2022-11-17-x86_64-unknown-linux-gnu install cargo-casper
 ```
 
 ## Add Casper repository
@@ -658,7 +659,7 @@ sudo apt install pkg-config
 ## Install the Casper client software
 
 ```
-cargo +nightly-2022-04-04-x86_64-unknown-linux-gnu install casper-client
+cargo +nightly-2022-11-17-x86_64-unknown-linux-gnu install casper-client
 ```
 
 ## To check Casper Client Version
