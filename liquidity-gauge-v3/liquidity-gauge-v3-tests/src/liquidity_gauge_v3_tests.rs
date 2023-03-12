@@ -406,7 +406,7 @@ mod t9 {
         contract.deposit(owner, amount, None, None, time_now);
         contract.approve(owner, Address::from(spender), amount, time_now);
         contract.transfer_from(
-            owner,
+            spender,
             Address::from(owner),
             Address::from(recipient),
             amount,

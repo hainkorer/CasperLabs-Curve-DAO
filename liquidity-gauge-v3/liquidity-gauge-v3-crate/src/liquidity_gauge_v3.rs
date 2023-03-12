@@ -763,19 +763,19 @@ pub trait LIQUIDITYTGAUGEV3<Storage: ContractStorage>:
                         },
                     );
                 }
-                let lp_token = self.lp_token();
-                let token_hash_add_array = match lp_token {
-                    Key::Hash(package) => package,
-                    _ => runtime::revert(ApiError::UnexpectedKeyVariant),
-                };
-                let token_package_hash = ContractPackageHash::new(token_hash_add_array);
-                let _result: () = runtime::call_versioned_contract(
-                    token_package_hash,
-                    None,
-                    "transfer",
-                    runtime_args! {"to" => Address::from(self.get_caller()),"value" => value},
-                );
             }
+            let lp_token = self.lp_token();
+            let token_hash_add_array = match lp_token {
+                Key::Hash(package) => package,
+                _ => runtime::revert(ApiError::UnexpectedKeyVariant),
+            };
+            let token_package_hash = ContractPackageHash::new(token_hash_add_array);
+            let _result: () = runtime::call_versioned_contract(
+                token_package_hash,
+                None,
+                "transfer",
+                runtime_args! {"recipient" => Address::from(self.get_caller()),"amount" => value},
+            );
         }
         self.emit(&LiquidityGaugeV3Event::Withdraw {
             provider: self.get_caller(),
