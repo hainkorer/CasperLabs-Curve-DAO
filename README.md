@@ -678,7 +678,7 @@ casper-client <command> --help
 ## Generate the keys
 
 ```
-casper-client keygen keys
+casper-client keygen script/keys
 ```
 
 ## Fund the key
