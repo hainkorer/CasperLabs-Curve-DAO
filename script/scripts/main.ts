@@ -701,7 +701,10 @@ const deployContract = async () => {
 
   // --- Vesting Escrow --- //
 
-  console.log("Vesting Escorw being deployed...");
+  // incase we need to manually resume, comment the above out and manually paste in your erc20 token package hash here (from the hashes directory)
+  // tokenPackageHash = "792fda2ac6db16cfe995f3a8b6001fdc9590dfa577c3a99a2eea56b37bc7ef52"
+
+  console.log("Vesting Escrow being deployed...");
 
   contractName = VESTING_ESCROW + version;
   runtimeArgs = RuntimeArgs.fromMap({
@@ -738,7 +741,7 @@ const deployContract = async () => {
 
   // --- Vesting Escrow Factory --- //
 
-  console.log("Vesting Escorw Factory being deployed...");
+  console.log("Vesting Escrow Factory being deployed...");
 
   contractName = VESTING_ESCROW_FACTORY + version;
   runtimeArgs = RuntimeArgs.fromMap({
@@ -776,7 +779,7 @@ const deployContract = async () => {
 
   // --- Vesting Escrow Simple --- //
 
-  console.log("Vesting Escorw Simple being deployed...");
+  console.log("Vesting Escrow Simple being deployed...");
 
   contractName = VESTING_ESCROW_SIMPLE + version;
   runtimeArgs = RuntimeArgs.fromMap({
